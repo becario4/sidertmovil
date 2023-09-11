@@ -1,6 +1,7 @@
 package com.sidert.sidertmovil.activities;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
@@ -78,9 +79,9 @@ public class MisCierresDeDia extends AppCompatActivity {
 
         ctx = this;
 
-        session = new SessionManager(ctx);
+        session = SessionManager.getInstance(ctx);
 
-        dBhelper = new DBhelper(ctx);
+        dBhelper = DBhelper.getInstance(ctx);
         db = dBhelper.getWritableDatabase();
 
         tbMain = findViewById(R.id.tbMain);
@@ -158,6 +159,14 @@ public class MisCierresDeDia extends AppCompatActivity {
 
     /**Funcion para filtrar el listado de cierres de dia*/
     private void GetFiltros(){
+
+        int sizeH = 900;
+        Activity activity = this;
+        if (activity != null) {
+            View decorateView = activity.getWindow().getDecorView();
+            sizeH = (int) (decorateView.getHeight() / 2.0);
+        }
+
         DialogPlus filtros_dg = DialogPlus.newDialog(ctx)
                 .setContentHolder(new ViewHolder(R.layout.sheet_dialog_filtros_cierres))
                 .setGravity(Gravity.TOP)
@@ -170,110 +179,106 @@ public class MisCierresDeDia extends AppCompatActivity {
                         /**Se crea un map donde se guardaran los filtros aplicados para almacenar en variable de sesion*/
                         HashMap<String, String> filtros = new HashMap<>();
                         InputMethodManager imm = (InputMethodManager)ctx.getSystemService(Context.INPUT_METHOD_SERVICE);
-                        switch (view.getId()) {/**Obtiene el id de la vista(objecto al que se le da click )*/
-                            case R.id.btnFiltrar:/**Selecciono el boton de filtrar*/
-                                /**Se valida se el campo de nombre este lleno*/
-                                if (!aetNombre.getText().toString().trim().isEmpty()){
-                                    /**agrega al map el nombre para ser guardado en variable de sesion*/
-                                    filtros.put("nombre_cierre",aetNombre.getText().toString().trim());
-                                    /**aumenta el contador de filtros*/
-                                    cont_filtros += 1;
-                                    /**agrega al condicional que buscará por nombre*/
-                                    where = " AND nombre LIKE '%"+aetNombre.getText().toString().trim()+"%'";
-                                }
-                                /**Cuando esta vacio el campo nombre guarda en el map de variable de sesion vacio*/
-                                else filtros.put("nombre_cierre","");
+                        int id = view.getId(); /**Obtiene el id de la vista(objecto al que se le da click )*/
+                        if (id == R.id.btnFiltrar) {/**Selecciono el boton de filtrar*/
+                            /**Se valida se el campo de nombre este lleno*/
+                            if (!aetNombre.getText().toString().trim().isEmpty()) {
+                                /**agrega al map el nombre para ser guardado en variable de sesion*/
+                                filtros.put("nombre_cierre", aetNombre.getText().toString().trim());
+                                /**aumenta el contador de filtros*/
+                                cont_filtros += 1;
+                                /**agrega al condicional que buscará por nombre*/
+                                where = " AND nombre LIKE '%" + aetNombre.getText().toString().trim() + "%'";
+                            }
+                            /**Cuando esta vacio el campo nombre guarda en el map de variable de sesion vacio*/
+                            else filtros.put("nombre_cierre", "");
 
-                                /**Valida si los checkbox de contestada y pendiente de contestar esten selecionado*/
-                                if (cbContestadas.isChecked() && cbPendientes.isChecked()){
-                                    /**Agrega al map ambos filtros */
-                                    filtros.put("estatus_conte_cierre","1");
-                                    filtros.put("estatus_pendi_cierre","1");
-                                    /**Aumenta 2 al contador */
-                                    cont_filtros += 2;
-                                    /**agrega al condicional buscar por estatus de gestion
-                                     * 0=cuando no han gestioado,
-                                     * 1=cuando gestionaron pero esta en pendiente de envio
-                                     * 2=cuando gestionaron y ya se guardo en el servidor*/
-                                    where += " AND estatus IN (0,1,2)";
-                                }
-                                /**Valida que solo selecciono cierres de dia contestados*/
-                                else if (cbContestadas.isChecked()){
-                                    /**agrega al map filtros*/
-                                    filtros.put("estatus_conte_cierre","1");
-                                    filtros.put("estatus_pendi_cierre","0");
-                                    /**aumenta el contador de filtros*/
-                                    cont_filtros += 1;
-                                    /**agrega al condicional para buscar en estatus mayor que 0*/
-                                    where += " AND estatus > 0";
-                                }
-                                /**Valida que solo selecciono cierres de dia pendientes de contestae*/
-                                else if (cbPendientes.isChecked()){
-                                    /**agrega al map filtros*/
-                                    filtros.put("estatus_conte_cierre","0");
-                                    filtros.put("estatus_pendi_cierre","1");
-                                    /**aumenta el contador de filtros*/
-                                    cont_filtros += 1;
-                                    /**agrega al condicional para buscar en estatus igual a 0*/
-                                    where += " AND estatus = 0";
-                                }
-                                /**En caso de no seleccionar los checklist solo guarda en el map
-                                 * para variables de sesion*/
-                                else {
-                                    filtros.put("estatus_conte_cierre","0");
-                                    filtros.put("estatus_pendi_cierre","0");
-                                }
+                            /**Valida si los checkbox de contestada y pendiente de contestar esten selecionado*/
+                            if (cbContestadas.isChecked() && cbPendientes.isChecked()) {
+                                /**Agrega al map ambos filtros */
+                                filtros.put("estatus_conte_cierre", "1");
+                                filtros.put("estatus_pendi_cierre", "1");
+                                /**Aumenta 2 al contador */
+                                cont_filtros += 2;
+                                /**agrega al condicional buscar por estatus de gestion
+                                 * 0=cuando no han gestioado,
+                                 * 1=cuando gestionaron pero esta en pendiente de envio
+                                 * 2=cuando gestionaron y ya se guardo en el servidor*/
+                                where += " AND estatus IN (0,1,2)";
+                            }
+                            /**Valida que solo selecciono cierres de dia contestados*/
+                            else if (cbContestadas.isChecked()) {
+                                /**agrega al map filtros*/
+                                filtros.put("estatus_conte_cierre", "1");
+                                filtros.put("estatus_pendi_cierre", "0");
+                                /**aumenta el contador de filtros*/
+                                cont_filtros += 1;
+                                /**agrega al condicional para buscar en estatus mayor que 0*/
+                                where += " AND estatus > 0";
+                            }
+                            /**Valida que solo selecciono cierres de dia pendientes de contestae*/
+                            else if (cbPendientes.isChecked()) {
+                                /**agrega al map filtros*/
+                                filtros.put("estatus_conte_cierre", "0");
+                                filtros.put("estatus_pendi_cierre", "1");
+                                /**aumenta el contador de filtros*/
+                                cont_filtros += 1;
+                                /**agrega al condicional para buscar en estatus igual a 0*/
+                                where += " AND estatus = 0";
+                            }
+                            /**En caso de no seleccionar los checklist solo guarda en el map
+                             * para variables de sesion*/
+                            else {
+                                filtros.put("estatus_conte_cierre", "0");
+                                filtros.put("estatus_pendi_cierre", "0");
+                            }
 
-                                /**Agrega el contador de filtros al map*/
-                                filtros.put("contador_cierre", String.valueOf(cont_filtros));
-                                /**Guarda el map de los filtros en variables de sesion*/
-                                session.setFiltrosCierre(filtros);
+                            /**Agrega el contador de filtros al map*/
+                            filtros.put("contador_cierre", String.valueOf(cont_filtros));
+                            /**Guarda el map de los filtros en variables de sesion*/
+                            session.setFiltrosCierre(filtros);
 
-                                /**Oculta el teclado virtal*/
-                                imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-                                Log.e("where",where);
-                                /**Valida si la variable where su contienido es mayor 4 para anteponer
-                                 * la palabra reservada WHERE de sqlite */
-                                if (where.length() > 4)
-                                    GetCierresDia(" WHERE" + where.substring(4));
-                                else {
-                                    /**En caso de no seleccionar ningun filtro se obtienen los
-                                     * cierres de dia sin ningun filtro*/
-                                    GetCierresDia("");
-                                }
-                                /**Cierra el dialog de filtros*/
-                                dialog.dismiss();
-
-                                break;
-                            case R.id.btnBorrarFiltros:/**Selecciono el boton de borrar filtros*/
-                                /**Limpia los valores de los filtros*/
-                                cbContestadas.setChecked(false);
-                                cbPendientes.setChecked(false);
-                                aetNombre.setText("");
-                                cont_filtros = 0;
-                                /**Se crea un map de filtros vacios*/
-                                filtros = new HashMap<>();
-                                filtros.put("nombre_cierre","");
-                                filtros.put("estatus_conte_cierre","0");
-                                filtros.put("estatus_pendi_cierre","0");
-                                filtros.put("contador_cierre", "0");
-                                /**se coloca el map de filtros en variables de sesion*/
-                                session.setFiltrosCierre(filtros);
-
-                                /**Oculta el teclado virtual*/
-                                imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-                                /**Obtiene el listado de todos los cierres de dia sin ningun filtro*/
+                            /**Oculta el teclado virtal*/
+                            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                            Log.e("where", where);
+                            /**Valida si la variable where su contienido es mayor 4 para anteponer
+                             * la palabra reservada WHERE de sqlite */
+                            if (where.length() > 4)
+                                GetCierresDia(" WHERE" + where.substring(4));
+                            else {
+                                /**En caso de no seleccionar ningun filtro se obtienen los
+                                 * cierres de dia sin ningun filtro*/
                                 GetCierresDia("");
+                            }
+                            /**Cierra el dialog de filtros*/
+                            dialog.dismiss();
+                        } else if (id == R.id.btnBorrarFiltros) {/**Selecciono el boton de borrar filtros*/
+                            /**Limpia los valores de los filtros*/
+                            cbContestadas.setChecked(false);
+                            cbPendientes.setChecked(false);
+                            aetNombre.setText("");
+                            cont_filtros = 0;
+                            /**Se crea un map de filtros vacios*/
+                            filtros = new HashMap<>();
+                            filtros.put("nombre_cierre", "");
+                            filtros.put("estatus_conte_cierre", "0");
+                            filtros.put("estatus_pendi_cierre", "0");
+                            filtros.put("contador_cierre", "0");
+                            /**se coloca el map de filtros en variables de sesion*/
+                            session.setFiltrosCierre(filtros);
 
-                                aetNombre.setAdapter(adapterNombre);
+                            /**Oculta el teclado virtual*/
+                            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                            /**Obtiene el listado de todos los cierres de dia sin ningun filtro*/
+                            GetCierresDia("");
 
-                                break;
+                            aetNombre.setAdapter(adapterNombre);
                         }
                         setupBadge();
 
                     }
                 })
-                .setExpanded(true, 550)
+                .setExpanded(true, sizeH)
                 .create();
         aetNombre       = filtros_dg.getHolderView().findViewById(R.id.aetNombre);
         cbContestadas   = filtros_dg.getHolderView().findViewById(R.id.cbContestadas);
@@ -362,15 +367,12 @@ public class MisCierresDeDia extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                finish();
-                break;
-            case R.id.nvFiltro:
-                GetFiltros();
-                break;
-            case R.id.nvInfo:
-                break;
+        int itemId = item.getItemId();
+        if (itemId == android.R.id.home) {
+            finish();
+        } else if (itemId == R.id.nvFiltro) {
+            GetFiltros();
+        } else if (itemId == R.id.nvInfo) {
         }
         return super.onOptionsItemSelected(item);
     }

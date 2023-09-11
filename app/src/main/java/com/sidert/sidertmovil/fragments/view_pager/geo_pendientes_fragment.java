@@ -1,6 +1,7 @@
 package com.sidert.sidertmovil.fragments.view_pager;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
@@ -101,11 +102,11 @@ public class geo_pendientes_fragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_geo_pendientes, container,false);
         ctx = getContext();
         boostrap = (Home) getActivity();
-        session = new SessionManager(ctx);
+        session = SessionManager.getInstance(ctx);
 
         parent = (geolocalizacion_fragment)getParentFragment();
 
-        dBhelper = new DBhelper(ctx);
+        dBhelper = DBhelper.getInstance(ctx);
         db = dBhelper.getWritableDatabase();
 
         tvNoInfo            = view.findViewById(R.id.tvNoInfo);
@@ -358,6 +359,15 @@ public class geo_pendientes_fragment extends Fragment {
 
     @SuppressLint("ClickableViewAccessibility")
     private void Filtros (){
+
+        int sizeH = 900;
+        Activity activity = this.getActivity();
+        if (activity != null) {
+            View decorateView = activity.getWindow().getDecorView();
+            sizeH = (int) (decorateView.getHeight() / 2.0);
+        }
+
+
         DialogPlus filtros_dg = DialogPlus.newDialog(boostrap)
                 .setContentHolder(new ViewHolder(R.layout.sheet_dialog_filtros))
                 .setGravity(Gravity.TOP)
@@ -369,85 +379,75 @@ public class geo_pendientes_fragment extends Fragment {
                         cont_filtros = 0;
                         HashMap<String, String> filtros = new HashMap<>();
                         InputMethodManager imm = (InputMethodManager)boostrap.getSystemService(Context.INPUT_METHOD_SERVICE);
-                        switch (view.getId()) {
-                            case R.id.btnFiltrar:
-                                if (!aetNombre.getText().toString().trim().isEmpty()){
-                                    filtros.put("nombre_p",aetNombre.getText().toString().trim());
-                                    cont_filtros += 1;
-                                    where = " AND nombre LIKE '%"+aetNombre.getText().toString().trim()+"%'";
-                                }
-                                else filtros.put("nombre_p","");
+                        int id = view.getId();
+                        if (id == R.id.btnFiltrar) {
+                            if (!aetNombre.getText().toString().trim().isEmpty()) {
+                                filtros.put("nombre_p", aetNombre.getText().toString().trim());
+                                cont_filtros += 1;
+                                where = " AND nombre LIKE '%" + aetNombre.getText().toString().trim() + "%'";
+                            } else filtros.put("nombre_p", "");
 
-                                if (!aetColonia.getText().toString().trim().isEmpty()) {
-                                    filtros.put("colonia_p",aetColonia.getText().toString().trim());
-                                    cont_filtros += 1;
-                                    where += " AND colonia LIKE '%" + aetColonia.getText().toString().trim() + "%'";
-                                }
-                                else filtros.put("colonia_p","");
+                            if (!aetColonia.getText().toString().trim().isEmpty()) {
+                                filtros.put("colonia_p", aetColonia.getText().toString().trim());
+                                cont_filtros += 1;
+                                where += " AND colonia LIKE '%" + aetColonia.getText().toString().trim() + "%'";
+                            } else filtros.put("colonia_p", "");
 
-                                if (!aetAsesor.getText().toString().trim().isEmpty()) {
-                                    filtros.put("asesor_p",aetAsesor.getText().toString().trim());
-                                    cont_filtros += 1;
-                                    where += " AND asesor_nombre LIKE '%" + aetAsesor.getText().toString().trim() + "%'";
-                                }
-                                else filtros.put("asesor_p","");
+                            if (!aetAsesor.getText().toString().trim().isEmpty()) {
+                                filtros.put("asesor_p", aetAsesor.getText().toString().trim());
+                                cont_filtros += 1;
+                                where += " AND asesor_nombre LIKE '%" + aetAsesor.getText().toString().trim() + "%'";
+                            } else filtros.put("asesor_p", "");
 
-                                if (cbInd.isChecked() && cbGpo.isChecked()){
-                                    filtros.put("individual_p","1");
-                                    filtros.put("grupal_p","1");
-                                    cont_filtros += 2;
-                                    where += " AND tipo_ficha IN (1,2)";
-                                }
-                                else if (cbInd.isChecked()){
-                                    filtros.put("individual_p","1");
-                                    filtros.put("grupal_p","0");
-                                    cont_filtros += 1;
-                                    where += " AND tipo_ficha = "+1;
-                                }
-                                else if (cbGpo.isChecked()){
-                                    filtros.put("individual_p","0");
-                                    filtros.put("grupal_p","1");
-                                    cont_filtros += 1;
-                                    where += " AND tipo_ficha = "+2;
-                                }else {
-                                    filtros.put("individual_p","0");
-                                    filtros.put("grupal_p","0");
-                                }
-                                filtros.put("contador_p", String.valueOf(cont_filtros));
-                                session.setFiltrosGeoPend(filtros);
+                            if (cbInd.isChecked() && cbGpo.isChecked()) {
+                                filtros.put("individual_p", "1");
+                                filtros.put("grupal_p", "1");
+                                cont_filtros += 2;
+                                where += " AND tipo_ficha IN (1,2)";
+                            } else if (cbInd.isChecked()) {
+                                filtros.put("individual_p", "1");
+                                filtros.put("grupal_p", "0");
+                                cont_filtros += 1;
+                                where += " AND tipo_ficha = " + 1;
+                            } else if (cbGpo.isChecked()) {
+                                filtros.put("individual_p", "0");
+                                filtros.put("grupal_p", "1");
+                                cont_filtros += 1;
+                                where += " AND tipo_ficha = " + 2;
+                            } else {
+                                filtros.put("individual_p", "0");
+                                filtros.put("grupal_p", "0");
+                            }
+                            filtros.put("contador_p", String.valueOf(cont_filtros));
+                            session.setFiltrosGeoPend(filtros);
 
-                                imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-                                if (where.length() > 0)
-                                    GetGeolocalizacion(" WHERE "+where.substring(5, where.length()));
-                                else
-                                    GetGeolocalizacion("");
-                                dialog.dismiss();
-
-                                break;
-                            case R.id.btnBorrarFiltros:
-
-                                cont_filtros = 0;
-                                filtros = new HashMap<>();
-                                filtros.put("nombre_cartera_p","");
-                                filtros.put("colonia_cartera_p","");
-                                filtros.put("dia_semana_p","");
-                                filtros.put("asesor_cartera_p","");
-                                filtros.put("individual_p","0");
-                                filtros.put("grupal_p","0");
-                                filtros.put("contador_cartera_p", "0");
-
-                                session.setFiltrosGeoPend(filtros);
-                                imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                            if (where.length() > 0)
+                                GetGeolocalizacion(" WHERE " + where.substring(5, where.length()));
+                            else
                                 GetGeolocalizacion("");
-                                dialog.dismiss();
+                            dialog.dismiss();
+                        } else if (id == R.id.btnBorrarFiltros) {
+                            cont_filtros = 0;
+                            filtros = new HashMap<>();
+                            filtros.put("nombre_cartera_p", "");
+                            filtros.put("colonia_cartera_p", "");
+                            filtros.put("dia_semana_p", "");
+                            filtros.put("asesor_cartera_p", "");
+                            filtros.put("individual_p", "0");
+                            filtros.put("grupal_p", "0");
+                            filtros.put("contador_cartera_p", "0");
 
-                                break;
+                            session.setFiltrosGeoPend(filtros);
+                            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                            GetGeolocalizacion("");
+                            dialog.dismiss();
                         }
                         setupBadge();
 
                     }
                 })
-                .setExpanded(true, 900)
+                .setExpanded(true, sizeH)
                 .create();
         aetNombre   = filtros_dg.getHolderView().findViewById(R.id.aetNombre);
         aetColonia  = filtros_dg.getHolderView().findViewById(R.id.aetColonia);
@@ -524,17 +524,16 @@ public class geo_pendientes_fragment extends Fragment {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.nvFiltro:
-                Filtros();
-                return true;
-            case R.id.nvInfo:
-                Intent i_resumen = new Intent(boostrap, ResumenGeo.class);
-                startActivity(i_resumen);
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
+        int itemId = item.getItemId();
+        if (itemId == R.id.nvFiltro) {
+            Filtros();
+            return true;
+        } else if (itemId == R.id.nvInfo) {
+            Intent i_resumen = new Intent(boostrap, ResumenGeo.class);
+            startActivity(i_resumen);
+            return true;
         }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override

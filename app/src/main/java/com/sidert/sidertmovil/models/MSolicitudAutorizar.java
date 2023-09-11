@@ -2298,6 +2298,9 @@ public class MSolicitudAutorizar implements Serializable {
         }
 
         public void setMontoMaximo(Double montoMaximo) {
+            if(montoMaximo == null){
+                montoMaximo = 123.00;
+            }
             this.montoMaximo = montoMaximo;
         }
 

@@ -9,6 +9,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;*/
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -34,6 +35,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 
+import java.util.ArrayList;
+
 import static com.sidert.sidertmovil.utils.Constants.ID_PRESTAMO;
 import static com.sidert.sidertmovil.utils.Constants.MONTO_AMORTIZACION;
 import static com.sidert.sidertmovil.utils.Constants.TBL_AMORTIZACIONES_T;
@@ -46,10 +49,14 @@ import static com.sidert.sidertmovil.utils.NameFragments.RECUPERACION_GPO;
 import static com.sidert.sidertmovil.utils.NameFragments.RECUPERACION_GPO_INT;
 import static com.sidert.sidertmovil.utils.NameFragments.REPORTE_PAGOS_GPO;
 
-/**Clase para visualiar detalle del prestamo grupal, Realizar gestiones o ver tabla de pagos*/
+/**
+ * Clase para visualiar detalle del prestamo grupal, Realizar gestiones o ver tabla de pagos
+ */
 public class RecuperacionGrupal extends AppCompatActivity {
 
-    /**Variables globales para ser consultadas en vistas como detalle del prestamo, recuperacion, o reporte de pagos*/
+    /**
+     * Variables globales para ser consultadas en vistas como detalle del prestamo, recuperacion, o reporte de pagos
+     */
     public String id_prestamo = "";
     public String id_respuesta = "";
     public String monto_amortiz = "";
@@ -73,9 +80,9 @@ public class RecuperacionGrupal extends AppCompatActivity {
         setContentView(R.layout.activity_recuperacion_grupal);
         Context ctx = this;
 
-        SessionManager session = new SessionManager(ctx);
+        SessionManager session = SessionManager.getInstance(ctx);
 
-        DBhelper dBhelper = new DBhelper(ctx);
+        DBhelper dBhelper = DBhelper.getInstance(ctx);
         Toolbar TBmain = findViewById(R.id.TBmain);
         BottomNavigationView nvMenu = findViewById(R.id.nvMenu);
         BottomNavigationViewHelper.disableShiftMode(nvMenu);
@@ -96,8 +103,8 @@ public class RecuperacionGrupal extends AppCompatActivity {
         Cursor row = dBhelper.getRecords(TBL_RESPUESTAS_GPO_T, " WHERE id_prestamo = ?", " ORDER BY _id ASC", new String[]{id_prestamo});
 
         row.moveToLast();
-        if (row.getCount() > 0){
-            if (row.getInt(25) == 0){/**row.getInt(25) es la columna de estatus de gestion*/
+        if (row.getCount() > 0) {
+            if (row.getInt(25) == 0) {/**row.getInt(25) es la columna de estatus de gestion*/
                 id_respuesta = row.getString(0); /**Se obtiene el id de respuesta gestion para tenerlo como variable global*/
                 latitud = row.getString(2);
                 longitud = row.getString(3);
@@ -106,7 +113,7 @@ public class RecuperacionGrupal extends AppCompatActivity {
         row.close();
 
         /**Consulta para obtener los datos del detalle del prestamo*/
-        row = dBhelper.customSelect(TBL_PRESTAMOS_GPO_T + " AS p", "p.*, c.nombre, c.tesorera, c.clave", " INNER JOIN "+TBL_CARTERA_GPO_T  + " AS c ON p.id_grupo = c.id_cartera WHERE p.id_prestamo = ?", "", new String[]{id_prestamo});
+        row = dBhelper.customSelect(TBL_PRESTAMOS_GPO_T + " AS p", "p.*, c.nombre, c.tesorera, c.clave", " INNER JOIN " + TBL_CARTERA_GPO_T + " AS c ON p.id_grupo = c.id_cartera WHERE p.id_prestamo = ?", "", new String[]{id_prestamo});
 
         if (row.getCount() > 0) {
             row.moveToFirst();
@@ -127,7 +134,7 @@ public class RecuperacionGrupal extends AppCompatActivity {
         /**Consulta para obtener el saldo al corte del prestamo y se guarda en variable global*/
         row = dBhelper.customSelect(TBL_AMORTIZACIONES_T + " AS a", " SUM(total - total_pagado) AS saldo_corte", " WHERE id_prestamo = ?", "", new String[]{id_prestamo});
 
-        if (row.getCount() > 0){
+        if (row.getCount() > 0) {
             row.moveToFirst();
             saldo_corte = row.getDouble(0);
         }
@@ -136,7 +143,7 @@ public class RecuperacionGrupal extends AppCompatActivity {
         /**Consulta para obtener el telefono de la tesorera buscando en la tabla de miembros
          * y se guarda en variable global*/
         row = dBhelper.customSelect(TBL_MIEMBROS_GPO_T, "*", " WHERE tipo_integrante = 'TESORERO' AND id_prestamo = ?", "", new String[]{id_prestamo});
-        if (row.getCount() > 0){
+        if (row.getCount() > 0) {
             row.moveToFirst();
             telTesorero = row.getString(8);
         }
@@ -147,15 +154,21 @@ public class RecuperacionGrupal extends AppCompatActivity {
          * si podrá realizar gestiones o se bloquera el menu de Recuperacion
          * para que no pueda entrar*/
         try {
-            JSONArray modulos = new JSONArray(session.getUser().get(8));
-            for (int i = 0; i < modulos.length(); i++){
-                JSONObject item = modulos.getJSONObject(i);
-                if (item.getString("nombre").trim().toLowerCase().equals("cartera")){
-                    JSONArray permisos = item.getJSONArray("permisos");
-                    for(int j = 0; j < permisos.length(); j++){
-                        JSONObject item_permiso = permisos.getJSONObject(j);
-                        if (item_permiso.getString("nombre").toLowerCase().equals("editar")){
-                            is_recuperacion = true;
+            ArrayList<String> userdata = session.getUser();
+            if (userdata != null) {
+                String permissions = userdata.get(0);
+                if (permissions != null) {
+                    JSONArray modulos = new JSONArray(permissions);
+                    for (int i = 0; i < modulos.length(); i++) {
+                        JSONObject item = modulos.getJSONObject(i);
+                        if (item.getString("nombre").trim().equalsIgnoreCase("cartera")) {
+                            JSONArray permisos = item.getJSONArray("permisos");
+                            for (int j = 0; j < permisos.length(); j++) {
+                                JSONObject item_permiso = permisos.getJSONObject(j);
+                                if (item_permiso.getString("nombre").equalsIgnoreCase("editar")) {
+                                    is_recuperacion = true;
+                                }
+                            }
                         }
                     }
                 }
@@ -164,7 +177,7 @@ public class RecuperacionGrupal extends AppCompatActivity {
             /**Si tiene el permiso de editar_cartera se coloca la vista de recuperacion*/
             if (is_recuperacion)
                 nvMenu.setSelectedItemId(R.id.nvGestion);
-            else{
+            else {
                 /**En caso de no tener el permiso se bloquea el menu de recuperacion y se manda
                  * a la vista del detalle del prestamo*/
                 menu.getItem(1).setEnabled(false);
@@ -186,29 +199,29 @@ public class RecuperacionGrupal extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    /**Escuchador del menu para cambiar de vista*/
+    /**
+     * Escuchador del menu para cambiar de vista
+     */
     private BottomNavigationView.OnNavigationItemSelectedListener nvMenu_onClick = new BottomNavigationView.OnNavigationItemSelectedListener() {
         @Override
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-            switch (item.getItemId()) {
-                case R.id.nvDatos:
-                    setFragment(DETALLE_GPO, null);
-                    break;
-                case R.id.nvIntegrantes:
-                    setFragment(RECUPERACION_GPO_INT, null);
-                    break;
-                case R.id.nvGestion:
-                    setFragment(RECUPERACION_GPO, null);
-                    break;
-                case R.id.nvReporte:
-                    setFragment(REPORTE_PAGOS_GPO, null);
-                    break;
+            int itemId = item.getItemId();
+            if (itemId == R.id.nvDatos) {
+                setFragment(DETALLE_GPO, null);
+            } else if (itemId == R.id.nvIntegrantes) {
+                setFragment(RECUPERACION_GPO_INT, null);
+            } else if (itemId == R.id.nvGestion) {
+                setFragment(RECUPERACION_GPO, null);
+            } else if (itemId == R.id.nvReporte) {
+                setFragment(REPORTE_PAGOS_GPO, null);
             }
             return true;
         }
     };
 
-    /**Funcion para realizar las transiciones de las vistas*/
+    /**
+     * Funcion para realizar las transiciones de las vistas
+     */
     public void setFragment(String fragment, Bundle extras) {
         Fragment current = getSupportFragmentManager().findFragmentById(R.id.flMain);
         FragmentManager manager = getSupportFragmentManager();
@@ -217,7 +230,7 @@ public class RecuperacionGrupal extends AppCompatActivity {
 
         switch (fragment) {
             case DETALLE_GPO:/**Para cambiar a la vista del Detalle del Prestamo*/
-                if (!(current instanceof rg_detalle_fragment)){
+                if (!(current instanceof rg_detalle_fragment)) {
                     rg_detalle_fragment detalle = new rg_detalle_fragment();
                     detalle.setArguments(extras);
                     transaction.replace(R.id.flMain, detalle, DETALLE_GPO);
@@ -226,7 +239,7 @@ public class RecuperacionGrupal extends AppCompatActivity {
                     return;
                 break;
             case RECUPERACION_GPO:/**PAra cambiar a la vista de Recuperacion*/
-                if (!(current instanceof recuperacion_gpo_fragment)){
+                if (!(current instanceof recuperacion_gpo_fragment)) {
                     recuperacion_gpo_fragment recuperacion = new recuperacion_gpo_fragment();
                     recuperacion.setArguments(extras);
                     transaction.replace(R.id.flMain, recuperacion, RECUPERACION_GPO);
@@ -236,7 +249,7 @@ public class RecuperacionGrupal extends AppCompatActivity {
 
                 break;
             case REPORTE_PAGOS_GPO: /**PAra cambiar a la vista de reporte de pagos*/
-                if (!(current instanceof rg_pagos_fragment)){
+                if (!(current instanceof rg_pagos_fragment)) {
                     rg_pagos_fragment reporte = new rg_pagos_fragment();
                     reporte.setArguments(extras);
                     transaction.replace(R.id.flMain, reporte, REPORTE_PAGOS_GPO);
@@ -246,12 +259,12 @@ public class RecuperacionGrupal extends AppCompatActivity {
                 break;
         }
 
-        if(!tokenFragment.equals(RECUPERACION_GPO) && !tokenFragment.equals(DETALLE_GPO) && !tokenFragment.equals(REPORTE_PAGOS_GPO)) {
+        if (!tokenFragment.equals(RECUPERACION_GPO) && !tokenFragment.equals(DETALLE_GPO) && !tokenFragment.equals(REPORTE_PAGOS_GPO)) {
             int count = manager.getBackStackEntryCount();
-            if(count > 0) {
+            if (count > 0) {
                 int index = count - 1;
                 String tag = manager.getBackStackEntryAt(index).getName();
-                if(!tag.equals(tokenFragment)) {
+                if (!tag.equals(tokenFragment)) {
                     transaction.addToBackStack(tokenFragment);
                 }
             } else {

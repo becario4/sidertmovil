@@ -1,72 +1,63 @@
 package com.sidert.sidertmovil;
 
-import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.os.Build;
-import android.os.Handler;
-//import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
-//import android.telephony.SmsManager;
+import android.os.Handler;
 import android.provider.Settings;
-import android.telephony.TelephonyManager;
 import android.util.Log;
-//import android.widget.Toast;
-
-import androidx.annotation.RequiresApi;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-
 
 import com.google.firebase.FirebaseApp;
 import com.sidert.sidertmovil.database.DBhelper;
-//import com.sidert.sidertmovil.utils.AES;
 import com.sidert.sidertmovil.models.catalogos.Localidad;
 import com.sidert.sidertmovil.models.catalogos.LocalidadDao;
 import com.sidert.sidertmovil.utils.Miscellaneous;
 import com.sidert.sidertmovil.utils.Servicios_Sincronizado;
 import com.sidert.sidertmovil.utils.SessionManager;
-//import com.sidert.sidertmovil.utils.WebServicesRoutes;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-//import java.net.MalformedURLException;
 import java.net.NetworkInterface;
-//import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
+import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AppCompatActivity;
+
 import static com.sidert.sidertmovil.database.SidertTables.SidertEntry.TABLE_COLONIAS;
 import static com.sidert.sidertmovil.database.SidertTables.SidertEntry.TABLE_MUNICIPIOS;
-import static com.sidert.sidertmovil.utils.Constants.LOCALIDADES;
 import static com.sidert.sidertmovil.utils.Constants.LOGIN_REPORT_T;
+import static com.sidert.sidertmovil.utils.Constants.TBL_CATALOGOS_CAMPANAS;
+import static com.sidert.sidertmovil.utils.Constants.TBL_DATOS_ENTREGA_CARTERA;
 import static org.apache.commons.lang3.CharEncoding.UTF_8;
 
 public class SplashSidertActivity extends AppCompatActivity {
-
-    /**  nunca renuncies a un sueño sólo por el tiempo que te llevará realizarlo. el tiempo pasará de todos modos */
-
+    /** VERSION ORIGINAL - DEMO */
     private Context ctx;
-    DBhelper dBhelper;
-    SQLiteDatabase db;
+    static DBhelper dBhelper;
+    static SQLiteDatabase db;
     boolean colonia = false;
     boolean municipio = false;
     boolean localidad = false;
+    boolean campana = false;
+    boolean entCartera = false;
 
+    @SuppressLint("HardwareIds")
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
-        dBhelper = new DBhelper(this);
+        dBhelper = DBhelper.getInstance(this);
         db = dBhelper.getWritableDatabase();
         dBhelper.onUpgrade(db, 1, 2);
 
@@ -78,14 +69,14 @@ public class SplashSidertActivity extends AppCompatActivity {
         Cursor row;
 
         /**Clase donde se guardan todas las variables de sesion*/
-        SessionManager session = new SessionManager(this);
+        SessionManager session = SessionManager.getInstance(this);
 
         /**Es para obtener la direccion MAC y guardarlo en variables de sesion*/
         try {
             Log.e("MODEL", Build.MODEL);
             List<NetworkInterface> all = Collections.list(NetworkInterface.getNetworkInterfaces());
 
-            if(Build.MODEL.trim().equals("SM-A022M") || Build.MODEL.trim().equals("SM-A127M") || Build.MODEL.trim().equals("SM-S908E"))
+            if(Build.MODEL.trim().equals("SM-A022M") || Build.MODEL.trim().equals("SM-A127M") || Build.MODEL.trim().equals("SM-S908E") || Build.MODEL.trim().equals("SM-A045M") || Build.MODEL.trim().equals("SM-A145M") )
             {
                 Log.e("MAC", Settings.Secure.getString(getApplicationContext().getContentResolver(), Settings.Secure.ANDROID_ID).toUpperCase());
                 session.setAddress(Settings.Secure.getString(getApplicationContext().getContentResolver(), Settings.Secure.ANDROID_ID).toUpperCase());
@@ -123,9 +114,9 @@ public class SplashSidertActivity extends AppCompatActivity {
                 Log.e("MAC NIF ADDRESS", newMacAddress);
 
                 /**Se guarda la MacAddress en variable de sesion*/
-                if(Build.MODEL.trim().equals("SM-A022M") || Build.MODEL.trim().equals("SM-A127M") || Build.MODEL.trim().equals("SM-S908E"))
+                if(Build.MODEL.trim().equals("SM-A022M") || Build.MODEL.trim().equals("SM-A127M") || Build.MODEL.trim().equals("SM-S908E") || Build.MODEL.trim().equals("SM-A045M") || Build.MODEL.trim().equals("SM-A145M"))
                 {
-                    //session.setAddress(Settings.Secure.getString(getApplicationContext().getContentResolver(), Settings.Secure.ANDROID_ID).toUpperCase());
+                    session.setAddress(Settings.Secure.getString(getApplicationContext().getContentResolver(), Settings.Secure.ANDROID_ID).toUpperCase());
                 }
                 else
                 {
@@ -135,18 +126,18 @@ public class SplashSidertActivity extends AppCompatActivity {
         } catch (Exception ex) {
             //handle exception
         }
+        /** MODIFCAR EL CAMPO EDAD - VALIDAR CAMPOS DOCUMENTOS 29 - 05 - 2023*/
         //Log.e("Mac_address", Miscellaneous.DecodePassword("MkQ6UzQ6cjQ6EjM6YTQ6MkR="));
-        //session.setDominio("http://192.168.100.104:","8083"); /** LOCALHOST - HOME  */
-        //session.setDominio("http://sidert.ddns.net:", "86");//PRUEBAS
-        session.setDominio("http://192.168.3.141:", "8083");//LOCALHOST
-        //session.setDominio("http://192.168.3.118:", "8083"); //API - SERVIDOR PRODUCCIÓN - TEST - VIA LOCALHOST
+        session.setDominio("http://sidert.ddns.net:86");//PRUEBAS
+        //session.setDominio("http://192.168.3.177:", "8083");//LOCALHOST
+        //session.setDominio("http://192.168.0.125:", "8083");
         //session.setDominio("http://sidert.ddns.net:", "83");//PRODUCCION
-
+        //session.setDominio("http://sidert.ddns.net:", "84");
+        //session.setDominio("http://10.0.1.124:", "8086");
         /**Se obtiene el ultimo login registrado*/
         String sql = "SELECT * FROM " + LOGIN_REPORT_T + " ORDER BY login_timestamp DESC limit 1";
         row = db.rawQuery(sql, null);
         /**Encontraron registros de login*/
-
         if (row.getCount() > 0){
             row.moveToFirst();
 
@@ -175,13 +166,15 @@ public class SplashSidertActivity extends AppCompatActivity {
         }
 
         /**Funciones para registrar catalogos de colonias, municipios, localidades es para solo para
-        las secciones de originacion y renovacion de los estados de
-        Veracruz, Puebla, Tlaxcala y solo se registra por primera vez cuando se borran datos*/
+         las secciones de originacion y renovacion de los estados de
+         Veracruz, Puebla, Tlaxcala y solo se registra por primera vez cuando se borran datos*/
         Servicios_Sincronizado ss = new Servicios_Sincronizado();
         ss.GetServiciosSincronizados(ctx, false);
+        new RegistrarCampana().execute();
         new RegistrarColonias().execute();
         new RegistrarMunicipios().execute();
         new RegistrarLocalidades().execute();
+        new RegistrarEntregaCartera().execute();
 
 
         /**Este proceso era antes de lanzar originacion y renovacion*/
@@ -210,7 +203,7 @@ public class SplashSidertActivity extends AppCompatActivity {
                 Log.e("LOCALIDADES", "INTENTANDO REGISTRAR");
                 try {
                     /**Lee el archivo que se encuentra en la carpeta res/raw/localidades*/
-                    InputStream is = getResources().openRawResource(R.raw.localidades);
+                    InputStream is = getResources().openRawResource(R.raw.localidades2);
                     BufferedReader reader = new BufferedReader(
                             new InputStreamReader(is, Charset.forName(UTF_8))
                     );
@@ -240,18 +233,18 @@ public class SplashSidertActivity extends AppCompatActivity {
             localidad = true;
 
             /**cuando se registren todas las localidades, municipios y colonias
-            se validara en la clase MainActivity si requiere login o ya no*/
+             se validara en la clase MainActivity si requiere login o ya no*/
             //if (localidad && municipio && colonia){
-                Handler handler_home=new Handler();
-                handler_home.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        Intent start = new Intent(ctx, MainActivity.class);
-                        start.putExtra("login", false);
-                        startActivity(start);
-                        finish();
-                    }
-                },3000);
+            Handler handler_home=new Handler();
+            handler_home.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    Intent start = new Intent(ctx, MainActivity.class);
+                    start.putExtra("login", false);
+                    startActivity(start);
+                    finish();
+                }
+            },3000);
             //}
         }
     }
@@ -272,6 +265,7 @@ public class SplashSidertActivity extends AppCompatActivity {
                     String line;
                     while ((line = reader.readLine()) != null) {
                         String[] municipio = line.split(",");
+                        Log.e("MUNICIPIOS", "LEYENDO ARCHIVO");
 
                         /**Registra los municipios*/
                         HashMap<Integer, String> values = new HashMap<>();
@@ -296,7 +290,7 @@ public class SplashSidertActivity extends AppCompatActivity {
             municipio = true;
 
             /**cuando se registren todas las localidades, municipios y colonias
-            se validara en la clase MainActivity si requiere login o ya no*/
+             se validara en la clase MainActivity si requiere login o ya no*/
             if (localidad && municipio && colonia){
                 Handler handler_home=new Handler();
                 handler_home.postDelayed(new Runnable() {
@@ -329,7 +323,7 @@ public class SplashSidertActivity extends AppCompatActivity {
                     int i = 0;
                     while ((line = reader.readLine()) != null) {
                         String[] colonia = line.split(";");
-
+                        Log.e("COLONIAS", "LEYENDO ARCHIVO");
                         /**Se registra las colonias*/
                         HashMap<Integer, String> values = new HashMap<>();
                         values.put(0, colonia[0].trim());
@@ -355,7 +349,7 @@ public class SplashSidertActivity extends AppCompatActivity {
             colonia =  true;
 
             /**cuando se registren todas las localidades, municipios y colonias
-            se validara en la clase MainActivity si requiere login o ya no*/
+             se validara en la clase MainActivity si requiere login o ya no*/
             if (localidad && municipio && colonia){
                 Handler handler_home=new Handler();
                 handler_home.postDelayed(new Runnable() {
@@ -370,5 +364,110 @@ public class SplashSidertActivity extends AppCompatActivity {
             }
         }
     }
+
+    public class RegistrarCampana extends AsyncTask<Void, Void, String>{
+        @Override
+        protected String doInBackground(Void... voids){
+            Cursor row = dBhelper.getRecords(TBL_CATALOGOS_CAMPANAS, "","",null);
+            if(row.getCount() == 0){
+                try {
+
+                    InputStream is = getResources().openRawResource(R.raw.campana);
+                    BufferedReader reader = new BufferedReader(
+                            new InputStreamReader(is, Charset.forName(UTF_8))
+                    );
+
+                    String line;
+                    int i = 0;
+                    while ((line = reader.readLine()) != null) {
+                        String[] campanas = line.split(",");
+
+                        HashMap<Integer, String> values = new HashMap<>();
+                        values.put(0, campanas[0]);
+                        values.put(1, campanas[1]);
+                        values.put(2, campanas[2]);
+                        dBhelper.saveCatalogosCampanas(db, values);
+                    }
+                }catch (IOException e){
+                    e.printStackTrace();
+                }
+            }
+            row.close();
+            return "Campañas";
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+            campana =  true;
+
+            if (localidad && municipio && campana){
+                Handler handler_home=new Handler();
+                handler_home.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        Intent start = new Intent(ctx, MainActivity.class);
+                        start.putExtra("login", false);
+                        startActivity(start);
+                        finish();
+                    }
+                },3000);
+            }
+        }
+    }
+
+    public class RegistrarEntregaCartera extends AsyncTask<Void, Void, String>{
+
+        @Override
+        protected String doInBackground(Void... voids){
+            Cursor row = dBhelper.getRecords(TBL_DATOS_ENTREGA_CARTERA, "", "", null);
+            if(row.getCount() == 0){
+                try{
+                    InputStream is = getResources().openRawResource(R.raw.entregacartera);
+                    BufferedReader reader = new BufferedReader(
+                            new InputStreamReader(is, Charset.forName(UTF_8))
+                    );
+
+                    String line;
+                    while ((line = reader.readLine()) != null){
+                        String entCartera[] = line.split(",");
+
+                        HashMap<Integer,String> values = new HashMap<>();
+                        values.put(0,entCartera[0]);
+                        values.put(1,entCartera[1]);
+                        values.put(2,entCartera[2]);
+                        dBhelper.saveCatalogoEntregaCartera(db, values);
+                    }
+
+                }catch (IOException e){
+                    e.printStackTrace();
+                }
+            }
+            row.close();
+            return "entCartera";
+        }
+
+        @Override
+        protected void onPostExecute(String s){
+            super.onPostExecute(s);
+            if(localidad && municipio && colonia && campana){
+                Handler handler_home = new Handler();
+                handler_home.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        Intent start = new Intent(ctx, MainActivity.class);
+                        start.putExtra("login",false);
+                        startActivity(start);
+                        finish();
+                    }
+                },3000);
+            }
+
+        }
+
+
+
+    }
+
 
 }

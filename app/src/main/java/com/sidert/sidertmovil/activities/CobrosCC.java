@@ -68,9 +68,9 @@ public class CobrosCC extends AppCompatActivity {
 
         tbMain  = findViewById(R.id.TBmain);
 
-        dBhelper = new DBhelper(ctx);
+        dBhelper = DBhelper.getInstance(ctx);
         db = dBhelper.getWritableDatabase();
-        session = new SessionManager(ctx);
+        session = SessionManager.getInstance(ctx);
 
         rbCobros        = findViewById(R.id.rbCobrados);
         rbRecibos       = findViewById(R.id.rbRecibos);

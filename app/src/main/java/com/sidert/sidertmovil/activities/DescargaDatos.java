@@ -128,10 +128,10 @@ public class DescargaDatos extends AppCompatActivity {
 
         ctx = this;
 
-        dBhelper = new DBhelper(ctx);
+        dBhelper = DBhelper.getInstance(ctx);
         db = dBhelper.getWritableDatabase();
 
-        session = new SessionManager(ctx);
+        session = SessionManager.getInstance(ctx);
 
         cbImpresiones = findViewById(R.id.cbImpresiones);
         cbGeolocalizaciones = findViewById(R.id.cbGeolocalizaciones);
@@ -147,7 +147,7 @@ public class DescargaDatos extends AppCompatActivity {
         GetUltimasImpresiones();
     }
 
-    private void GetInformacion() {
+    public void GetInformacion() {
         /**Se descargan catalgos que se ocuparan para originacion y renovacion*/
         Sincronizar_Catalogos sc = new Sincronizar_Catalogos();
         sc.GetCategoriasTickets(ctx);
@@ -197,7 +197,7 @@ public class DescargaDatos extends AppCompatActivity {
      * ademas como agregar el nivel de bateria y la ubicacion*/
     private void GetUltimasImpresiones() {
         /**Interfaz para la peticion de ultimos recibos*/
-        final ManagerInterface api = new RetrofitClient().generalRF(CONTROLLER_API, ctx).create(ManagerInterface.class);
+        final ManagerInterface api = RetrofitClient.generalRF(CONTROLLER_API, ctx).create(ManagerInterface.class);
 
         /**Se obtiene el nivel de bateria*/
         IntentFilter ifilter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
@@ -482,7 +482,7 @@ public class DescargaDatos extends AppCompatActivity {
     private void GetCartera(){
         Log.e("AQUI", "GETCARTERA");
         /**Interfaz para relizar la consulta de la cartera*/
-        ManagerInterface api = new RetrofitClient().generalRF(Constants.CONTROLLER_MOVIL, ctx).create(ManagerInterface.class);
+        ManagerInterface api = RetrofitClient.generalRF(Constants.CONTROLLER_MOVIL, ctx).create(ManagerInterface.class);
 
         /**Se prepara la peticion colocando el id del usuario*/
         Call<List<MCartera>> call = api.getCartera(session.getUser().get(9),"Bearer "+ session.getUser().get(7));
@@ -752,7 +752,7 @@ public class DescargaDatos extends AppCompatActivity {
     /**Funcion para obtener prestamos individuales*/
     private void GetPrestamoInd(final int id, final PrestamoIndCallbacks prestamoCallbacks){
         /**Interfaz para consultar prestamos*/
-        ManagerInterface api = new RetrofitClient().generalRF(Constants.CONTROLLER_MOVIL, ctx).create(ManagerInterface.class);
+        ManagerInterface api = RetrofitClient.generalRF(Constants.CONTROLLER_MOVIL, ctx).create(ManagerInterface.class);
         /**Se prepara la peticion para obtener los prestamos colocando el id de la cartera*/
         Call<List<MPrestamoRes>> call = api.getPrestamosInd(id,"Bearer "+ session.getUser().get(7));
         /**Se realiza la peticion para obtener los prestamos*/
@@ -1091,7 +1091,7 @@ public class DescargaDatos extends AppCompatActivity {
                                     List<DocumentoCliente> documentosClientes = documentoClienteDao.findAllByPrestamoId(prestamos.get(i).getId());
 
                                     if (documentosClientes.size() <= 1) {
-                                        DocumentoClienteService api = new RetrofitClient().generalRF(Constants.CONTROLLER_MOVIL, ctx).create(DocumentoClienteService.class);
+                                        DocumentoClienteService api = RetrofitClient.generalRF(Constants.CONTROLLER_MOVIL, ctx).create(DocumentoClienteService.class);
                                         Call<List<DocumentoCliente>> callDocumentoCliente = api.show(prestamos.get(i).getId(), "Bearer " + session.getUser().get(7));
                                         callDocumentoCliente.enqueue(new Callback<List<DocumentoCliente>>() {
                                             @Override
@@ -1158,7 +1158,7 @@ public class DescargaDatos extends AppCompatActivity {
     /**Funcion para obtener los datos del prestamo de grupales*/
     private void GetPrestmoGpo(final int id, final PrestamoGpoCallbacks prestamoGpoCallbacks){
         /**Interfaz para consultar prestamos grupales*/
-        ManagerInterface api = new RetrofitClient().generalRF(Constants.CONTROLLER_MOVIL, ctx).create(ManagerInterface.class);
+        ManagerInterface api = RetrofitClient.generalRF(Constants.CONTROLLER_MOVIL, ctx).create(ManagerInterface.class);
         /**Se prepara la peticion colocando el id de la cartera */
         Call<List<MPrestamoGpoRes>> call = api.getPrestamosGpo(id,"Bearer "+ session.getUser().get(7));
         /**Se realiza la peticion para obtener los datos del prestamo grupal*/
@@ -1244,7 +1244,7 @@ public class DescargaDatos extends AppCompatActivity {
                                             List<DocumentoCliente> documentosClientes = documentoClienteDao.findAllByPrestamoId(mIntegrante.getPrestamoId());
 
                                             if (documentosClientes.size() <= 1) {
-                                                DocumentoClienteService api = new RetrofitClient().generalRF(Constants.CONTROLLER_MOVIL, ctx).create(DocumentoClienteService.class);
+                                                DocumentoClienteService api = RetrofitClient.generalRF(Constants.CONTROLLER_MOVIL, ctx).create(DocumentoClienteService.class);
                                                 Call<List<DocumentoCliente>> callDocumentoCliente = api.show(mIntegrante.getPrestamoId(), "Bearer " + session.getUser().get(7));
                                                 callDocumentoCliente.enqueue(new Callback<List<DocumentoCliente>>() {
                                                     @Override
@@ -1478,7 +1478,7 @@ public class DescargaDatos extends AppCompatActivity {
                                             List<DocumentoCliente> documentosClientes = documentoClienteDao.findAllByPrestamoId(mIntegrante.getPrestamoId());
 
                                             if (documentosClientes.size() <= 1) {
-                                                DocumentoClienteService api = new RetrofitClient().generalRF(Constants.CONTROLLER_MOVIL, ctx).create(DocumentoClienteService.class);
+                                                DocumentoClienteService api = RetrofitClient.generalRF(Constants.CONTROLLER_MOVIL, ctx).create(DocumentoClienteService.class);
                                                 Call<List<DocumentoCliente>> callDocumentoCliente = api.show(mIntegrante.getPrestamoId(), "Bearer " + session.getUser().get(7));
                                                 callDocumentoCliente.enqueue(new Callback<List<DocumentoCliente>>() {
                                                     @Override
@@ -1647,7 +1647,7 @@ public class DescargaDatos extends AppCompatActivity {
     private void QuitarLoading(int total, int avance){
         tvRegistradas.setText(String.valueOf(avance));
         if (avance == total) {
-            SessionManager session = new SessionManager(ctx);
+            SessionManager session = SessionManager.getInstance(ctx);
 
             /**Procesos para obtener las respuestas realizadas de la semana actual*/
             Servicios_Sincronizado ss = new Servicios_Sincronizado();

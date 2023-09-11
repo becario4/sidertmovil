@@ -7,22 +7,9 @@ import android.content.res.Configuration;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
-/*import android.support.design.widget.CoordinatorLayout;
-import android.support.design.widget.NavigationView;
-import android.support.design.widget.TabLayout;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;*/
-import androidx.appcompat.app.AppCompatActivity;
-/*import android.support.v4.view.GravityCompat;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
-import androidx.appcompat.app.AppCompatActivity;*/
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import androidx.appcompat.widget.Toolbar;
-
 import android.os.Environment;
 import android.provider.Settings;
 import android.util.Log;
@@ -33,35 +20,18 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import androidx.appcompat.app.ActionBarDrawerToggle;
-import androidx.coordinatorlayout.widget.CoordinatorLayout;
-import androidx.core.content.ContextCompat;
-import androidx.core.view.GravityCompat;
-import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
-
-/*import io.fabric.sdk.android.Fabric;
-import com.crashlytics.android.Crashlytics;*/
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.FirebaseApp;
-import com.google.gson.JsonArray;
-import com.sidert.sidertmovil.fragments.calculadoraPrestamo;
-import com.sidert.sidertmovil.views.apoyogastosfunerarios.ApoyoGastosFunerariosActivity;
 import com.sidert.sidertmovil.activities.CobrosCC;
 import com.sidert.sidertmovil.activities.Configuracion;
 import com.sidert.sidertmovil.activities.Perfil;
-import com.sidert.sidertmovil.views.renovacion.RenovacionCredito;
 import com.sidert.sidertmovil.activities.ReporteInicioSesion;
-import com.sidert.sidertmovil.views.originacion.SolicitudCredito;
-import com.sidert.sidertmovil.views.solicitudesautorizadas.Solicitudes;
 import com.sidert.sidertmovil.activities.TrackerAsesor;
 import com.sidert.sidertmovil.database.DBhelper;
 import com.sidert.sidertmovil.fragments.autorizaciones_cc_fragment;
+import com.sidert.sidertmovil.fragments.calculadoraPrestamo;
 import com.sidert.sidertmovil.fragments.dialogs.dialog_logout;
 import com.sidert.sidertmovil.fragments.geolocalizacion_fragment;
 import com.sidert.sidertmovil.fragments.impression_history_fragment;
@@ -72,7 +42,11 @@ import com.sidert.sidertmovil.utils.CustomDrawerLayout;
 import com.sidert.sidertmovil.utils.CustomRelativeLayout;
 import com.sidert.sidertmovil.utils.NameFragments;
 import com.sidert.sidertmovil.utils.SessionManager;
+import com.sidert.sidertmovil.views.apoyogastosfunerarios.ApoyoGastosFunerariosActivity;
+import com.sidert.sidertmovil.views.originacion.SolicitudCredito;
 import com.sidert.sidertmovil.views.pdfreader.PdfReaderActivity;
+import com.sidert.sidertmovil.views.renovacion.RenovacionCredito;
+import com.sidert.sidertmovil.views.solicitudesautorizadas.Solicitudes;
 import com.sidert.sidertmovil.views.verificaciondomiciliaria.VerificacionDomiciliariaActivity;
 
 import org.json.JSONArray;
@@ -83,6 +57,17 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import androidx.core.content.ContextCompat;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import static com.sidert.sidertmovil.utils.Constants.SINCRONIZADO_T;
 import static com.sidert.sidertmovil.utils.NameFragments.CALCULADORA;
@@ -121,7 +106,7 @@ public class Home extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
         ctx             = getApplicationContext();
-        session         = new SessionManager(ctx);
+        session         = SessionManager.getInstance(ctx);
         FirebaseApp.initializeApp(this);
 
         //Fabric.with(this, new Crashlytics());
@@ -141,7 +126,7 @@ public class Home extends AppCompatActivity {
         txtRole         = view.findViewById(R.id.txtRolUser);
         Log.e("MAC", session.getMacAddress());
 
-       SessionManager sen = new SessionManager(ctx);
+       SessionManager sen = SessionManager.getInstance(ctx);
         try {
            getTipoRolB(sen);
         } catch (Exception e) {
@@ -151,7 +136,7 @@ public class Home extends AppCompatActivity {
 
         /**Se valida si el dominio y el puerto guardado es diferente al de produccion
          * por lo tanto esta apuntando a un ambiente de pruebas y muestra la leyenda de pruebas*/
-        if (!session.getDominio().get(0).contains("sidert.ddns.net") || !session.getDominio().get(1).equals("83")) {
+        if (!session.getDominio().contains("sidert.ddns.net")) {
             tvVersionAppAmbiente.setText(getResources().getString(R.string.app_version) + " PRUEBAS");
             tvVersionAppAmbiente.setTextColor(ContextCompat.getColor(ctx, R.color.red));
         }
@@ -176,7 +161,7 @@ public class Home extends AppCompatActivity {
                     public void onDrawerOpened(View drawerView) {
 
                         super.onDrawerOpened(drawerView);
-                        DBhelper dBhelper = new DBhelper(ctx);
+                        DBhelper dBhelper = DBhelper.getInstance(ctx);
                         SQLiteDatabase db = dBhelper.getWritableDatabase();
                         MenuItem itemCalcu = menuGeneral.findItem(R.id.nvCalculadora);
 
@@ -265,34 +250,26 @@ public class Home extends AppCompatActivity {
 
         @Override
         public boolean onNavigationItemSelected(MenuItem item) {
-            switch (item.getItemId()) {
-                case R.id.nvCartera:/**Cuando seleccioan el menu Cartera: Cartera que tiene asignado el asesor/gestor*/
-                    setFragment(ORDERS, null);
-                    break;
-                case R.id.nvOriginacion:/**Cuando seleccioan el menu Originación para crear una nueva solicitud Individual o grupal*/
-                    Intent i_solicitud = new Intent(getApplicationContext(), SolicitudCredito.class);
-                    startActivity(i_solicitud);
-                    break;
-                case R.id.nvRenovacion:/**Cuando seleccioan el menu Renovación para crear un reonvacion individal o grupal*/
-                    Intent i_renovacion = new Intent(getApplicationContext(), RenovacionCredito.class);
-                    startActivity(i_renovacion);
-                    break;
-                case R.id.nvSolicitudes:/**Cuando seleccionan el menu Solicitudes son las que ve el gerentes que ya fueron autorizadas por la admin y solo falta que el autorice*/
-                    Intent i_solicitudes = new Intent(getApplicationContext(), Solicitudes.class);
-                    startActivity(i_solicitudes);
-                    break;
-                case R.id.nvConfiguraciones:/**Cuando seleccionan Configuraciones es para Sincronizado manual (envio/descarga de datos) que quedaron pendiente de envio*/
-                    Intent i_config = new Intent(getApplicationContext(), Configuracion.class);
-                    startActivity(i_config);
-                    break;
-                case R.id.nvImpresiones:/**Cuando seleccionan Impresion es para ver el log de impresiones realizadas Recuperacion/Cobranza/Vencida*/
-                    setFragment(NameFragments.IMPRESSION_HISTORY, null);
-                    //setFragment(NameFragments.AUTORIZAR_CC, null);
-                    break;
-
-                case R.id.nvCalculadora:
-                    setFragment(CALCULADORA,null);
-                    break;
+            int itemId = item.getItemId();
+            if (itemId == R.id.nvCartera) {/**Cuando seleccioan el menu Cartera: Cartera que tiene asignado el asesor/gestor*/
+                setFragment(ORDERS, null);
+            } else if (itemId == R.id.nvOriginacion) {/**Cuando seleccioan el menu Originación para crear una nueva solicitud Individual o grupal*/
+                Intent i_solicitud = new Intent(getApplicationContext(), SolicitudCredito.class);
+                startActivity(i_solicitud);
+            } else if (itemId == R.id.nvRenovacion) {/**Cuando seleccioan el menu Renovación para crear un reonvacion individal o grupal*/
+                Intent i_renovacion = new Intent(getApplicationContext(), RenovacionCredito.class);
+                startActivity(i_renovacion);
+            } else if (itemId == R.id.nvSolicitudes) {/**Cuando seleccionan el menu Solicitudes son las que ve el gerentes que ya fueron autorizadas por la admin y solo falta que el autorice*/
+                Intent i_solicitudes = new Intent(getApplicationContext(), Solicitudes.class);
+                startActivity(i_solicitudes);
+            } else if (itemId == R.id.nvConfiguraciones) {/**Cuando seleccionan Configuraciones es para Sincronizado manual (envio/descarga de datos) que quedaron pendiente de envio*/
+                Intent i_config = new Intent(getApplicationContext(), Configuracion.class);
+                startActivity(i_config);
+            } else if (itemId == R.id.nvImpresiones) {/**Cuando seleccionan Impresion es para ver el log de impresiones realizadas Recuperacion/Cobranza/Vencida*/
+                setFragment(NameFragments.IMPRESSION_HISTORY, null);
+                //setFragment(NameFragments.AUTORIZAR_CC, null);
+            } else if (itemId == R.id.nvCalculadora) {
+                setFragment(CALCULADORA, null);
 
                 /*case R.id.nvCC:
                     //Intent i_cc = new Intent(getApplicationContext(), CirculoCredito.class);
@@ -301,63 +278,51 @@ public class Home extends AppCompatActivity {
                     //Intent i_cc = new Intent(getApplicationContext(), ConsultadosCC.class);
                     startActivity(i_cc);
                     break;*/
-                case R.id.nvCobroCC:/**Cuando seleccioan Cobro CC es para realizar un cobro en efectivo e impresion de CC*/
-                    Intent i_cc = new Intent(getApplicationContext(), CobrosCC.class);
-                    startActivity(i_cc);
-                    break;
-                case R.id.nvCobroAGF:/**Cuando seleccioan Cobro AGF es para realizar un cobro en efectivo e impresion de AGF*/
-                    Intent i_agf = new Intent(getApplicationContext(), ApoyoGastosFunerariosActivity.class);
-                    startActivity(i_agf);
-                    break;
-                case R.id.nvRuta:/**Cuando seleccioan Ruta es para poder buscar la ruta que ha realizado el asesor por dia*/
-                    Intent i_ruta = new Intent(getApplicationContext(), TrackerAsesor.class);
-                    startActivity(i_ruta);
-                    break;
-                case R.id.nvGeolocalizar:/**Cuando seleccionan Geolocalizar para poder realizar la geolocalizaciones de los clientes*/
-                    setFragment(GEOLOCALIZACION, null);
-                    break;
-                case R.id.nvLogin:/**Cuando seleccionan Sesiones podran visualizar los inicios de sesiones de los asesores por dia*/
-                    Intent i_log_login = new Intent(getApplicationContext(), ReporteInicioSesion.class);
-                    startActivity(i_log_login);
-                    break;
-                case R.id.nvMesaAyuda:/**Cuando seleccionan Mesa de ayuda los asesores podran reportar detalles que tengan con el equipo/cartera/impresiones*/
-                    setFragment(MESA_AYUDA, null);
-                    break;
-                case R.id.nvGuiaRapida:/**Cuando seleccionan Mesa de ayuda los asesores podran reportar detalles que tengan con el equipo/cartera/impresiones*/
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                        if (Environment.isExternalStorageManager()){
-                            Intent help = new Intent(ctx, PdfReaderActivity.class);
-                            startActivity(help);
-                        }else{
-                            Intent intent = new Intent();
-                            intent.setAction(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION);
-                            Uri uri = Uri.fromParts("package", getPackageName(), null);
-                            intent.setData(uri);
-                            startActivity(intent);
-                        }
-                    }
-                    else
-                    {
+            } else if (itemId == R.id.nvCobroCC) {/**Cuando seleccioan Cobro CC es para realizar un cobro en efectivo e impresion de CC*/
+                Intent i_cc = new Intent(getApplicationContext(), CobrosCC.class);
+                startActivity(i_cc);
+            } else if (itemId == R.id.nvCobroAGF) {/**Cuando seleccioan Cobro AGF es para realizar un cobro en efectivo e impresion de AGF*/
+                Intent i_agf = new Intent(getApplicationContext(), ApoyoGastosFunerariosActivity.class);
+                startActivity(i_agf);
+            } else if (itemId == R.id.nvRuta) {/**Cuando seleccioan Ruta es para poder buscar la ruta que ha realizado el asesor por dia*/
+                Intent i_ruta = new Intent(getApplicationContext(), TrackerAsesor.class);
+                startActivity(i_ruta);
+            } else if (itemId == R.id.nvGeolocalizar) {/**Cuando seleccionan Geolocalizar para poder realizar la geolocalizaciones de los clientes*/
+                setFragment(GEOLOCALIZACION, null);
+            } else if (itemId == R.id.nvLogin) {/**Cuando seleccionan Sesiones podran visualizar los inicios de sesiones de los asesores por dia*/
+                Intent i_log_login = new Intent(getApplicationContext(), ReporteInicioSesion.class);
+                startActivity(i_log_login);
+            } else if (itemId == R.id.nvMesaAyuda) {/**Cuando seleccionan Mesa de ayuda los asesores podran reportar detalles que tengan con el equipo/cartera/impresiones*/
+                setFragment(MESA_AYUDA, null);
+            } else if (itemId == R.id.nvGuiaRapida) {/**Cuando seleccionan Mesa de ayuda los asesores podran reportar detalles que tengan con el equipo/cartera/impresiones*/
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                    if (Environment.isExternalStorageManager()) {
                         Intent help = new Intent(ctx, PdfReaderActivity.class);
                         startActivity(help);
+                    } else {
+                        Intent intent = new Intent();
+                        intent.setAction(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION);
+                        Uri uri = Uri.fromParts("package", getPackageName(), null);
+                        intent.setData(uri);
+                        startActivity(intent);
                     }
+                } else {
+                    Intent help = new Intent(ctx, PdfReaderActivity.class);
+                    startActivity(help);
+                }
 
-                    break;
-      /*          case R.id.nvConsultaCC: --Cuando seleccionan Mesa de ayuda los asesores podran reportar detalles que tengan con el equipo/cartera/impresiones
+                    /*          case R.id.nvConsultaCC: --Cuando seleccionan Mesa de ayuda los asesores podran reportar detalles que tengan con el equipo/cartera/impresiones
                     Intent consulta_cc = new Intent(getApplicationContext(), ConsultarCC.class);
                     startActivity(consulta_cc);
                     break;
                     */
-                case R.id.nvVerificacionDomiciliaria:/**/
-                    Intent verDom = new Intent(ctx, VerificacionDomiciliariaActivity.class);
-                    startActivity(verDom);
-                    break;
-
-                default:/**Manda directo a la validacion de inicio de sesion o cartera*/
-                    Intent intent = new Intent(getApplicationContext(),MainActivity.class);
-                    startActivity(intent);
-                    finish();
-                    break;
+            } else if (itemId == R.id.nvVerificacionDomiciliaria) {/**/
+                Intent verDom = new Intent(ctx, VerificacionDomiciliariaActivity.class);
+                startActivity(verDom);
+            } else {/**Manda directo a la validacion de inicio de sesion o cartera*/
+                Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                startActivity(intent);
+                finish();
             }
             if(!mDrawerLayout.isLocked()) mDrawerLayout.closeDrawer(NVmenu);
             return true;
@@ -500,9 +465,6 @@ public class Home extends AppCompatActivity {
         }
     }
 
-
-
-    //SI EL PROBLEMA PERSISTE UTILIZA HAST MAPS - ERGO - ARRAYLIST - UTILIZA FOR AND FORECH
     //PARA RECORRER EL ARREGLO Y OBTENER EL DATO ESPECIFICO
     public void getTipoRolB(SessionManager sen){
         txtRole = findViewById(R.id.txtRolUser);
@@ -522,7 +484,7 @@ public class Home extends AppCompatActivity {
 
                 txtRole.setText("dato: " + b);
             } else
-                txtRole.setText("NEL PERRO");
+                txtRole.setText("NULL");
         }
     }
 
@@ -652,8 +614,5 @@ public class Home extends AppCompatActivity {
             e.printStackTrace();
         }
     }
-   /* public void getAutorizacionRole(SessionManager sen)throws JSONException {
 
-
-    }*/
 }

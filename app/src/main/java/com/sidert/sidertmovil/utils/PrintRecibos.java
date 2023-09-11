@@ -43,7 +43,7 @@ public class PrintRecibos {
     public void WriteTicket(Context ctx, RecibosAgfCC ticket, JSONObject object) {
         posPtr = new ESCPOSPrinter();
         date = df.format(Calendar.getInstance().getTime());
-        session = new SessionManager(ctx);
+        session = SessionManager.getInstance(ctx);
 
         HeadTicket(ctx, ticket);
         BodyTicket(ctx, ticket, object);
@@ -157,7 +157,7 @@ public class PrintRecibos {
 
     private void FooterTicket(Context ctx, RecibosAgfCC ticket, JSONObject object) throws JSONException {
 
-        DBhelper dBhelper = new DBhelper(ctx);
+        DBhelper dBhelper = DBhelper.getInstance(ctx);
         SQLiteDatabase db = dBhelper.getWritableDatabase();
         Cursor row;
         HashMap<Integer, String> params;

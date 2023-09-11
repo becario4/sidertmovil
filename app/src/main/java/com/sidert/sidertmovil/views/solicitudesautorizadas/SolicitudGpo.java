@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -74,7 +75,7 @@ public class SolicitudGpo extends AppCompatActivity {
 
         ctx = this;
 
-        dBhelper = new DBhelper(ctx);
+        dBhelper = DBhelper.getInstance(ctx);
         db = dBhelper.getWritableDatabase();
 
         TBmain = findViewById(R.id.TBmain);
@@ -208,61 +209,56 @@ public class SolicitudGpo extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                break;
-            case R.id.enviar:
+        int itemId = item.getItemId();
+        if (itemId == android.R.id.home) {
+        } else if (itemId == R.id.enviar) {
+            String sql = "SELECT " +
+                    "SUM (CASE WHEN o.estatus_completado = 1 THEN 1 " +
+                    "ELSE 0 END) AS completadas, " +
+                    "SUM (CASE " +
+                    "WHEN o.estatus_completado = 0 THEN 1 " +
+                    "ELSE 0 END) AS pendientes FROM " + TBL_OTROS_DATOS_INTEGRANTE_AUTO + " AS o " +
+                    "INNER JOIN " + TBL_INTEGRANTES_GPO_AUTO + " AS i ON i.id = o.id_integrante " +
+                    "WHERE i.id_credito = ? GROUP BY id_credito";
+            Cursor row_total = db.rawQuery(sql, new String[]{String.valueOf(id_credito)});
 
-                String sql = "SELECT " +
-                        "SUM (CASE WHEN o.estatus_completado = 1 THEN 1 " +
-                        "ELSE 0 END) AS completadas, " +
-                        "SUM (CASE " +
-                        "WHEN o.estatus_completado = 0 THEN 1 " +
-                        "ELSE 0 END) AS pendientes FROM " + TBL_OTROS_DATOS_INTEGRANTE_AUTO + " AS o " +
-                        "INNER JOIN " + TBL_INTEGRANTES_GPO_AUTO + " AS i ON i.id = o.id_integrante " +
-                        "WHERE i.id_credito = ? GROUP BY id_credito";
-                Cursor row_total = db.rawQuery(sql, new String[]{String.valueOf(id_credito)});
+            //Cursor row_total = dBhelper.customSelect(TBL_OTROS_DATOS_INTEGRANTE_AUTO , "SUM (CASE WHEN estatus_completado = 1 THEN 1 ELSE 0 END) AS completadas, SUM (CASE WHEN estatus_completado = 0 THEN 1 ELSE 0 END) AS pendientes", " WHERE id_credito = ?"," GROUP BY id_credito", new String[]{String.valueOf(id_credito)});
+            row_total.moveToFirst();
 
-                //Cursor row_total = dBhelper.customSelect(TBL_OTROS_DATOS_INTEGRANTE_AUTO , "SUM (CASE WHEN estatus_completado = 1 THEN 1 ELSE 0 END) AS completadas, SUM (CASE WHEN estatus_completado = 0 THEN 1 ELSE 0 END) AS pendientes", " WHERE id_credito = ?"," GROUP BY id_credito", new String[]{String.valueOf(id_credito)});
-                row_total.moveToFirst();
+            if (row_total.getInt(1) == 0) {
+                final AlertDialog fachada_dlg = Popups.showDialogConfirm(ctx, Constants.question,
+                        R.string.enviar_informacion, R.string.enviar, new Popups.DialogMessage() {
+                            @Override
+                            public void OnClickListener(AlertDialog dialog) {
+                                ContentValues cv = new ContentValues();
+                                cv.put("estatus_completado", 1);
 
-                if (row_total.getInt(1) == 0){
-                    final AlertDialog fachada_dlg = Popups.showDialogConfirm(ctx, Constants.question,
-                            R.string.enviar_informacion, R.string.enviar, new Popups.DialogMessage() {
-                                @Override
-                                public void OnClickListener(AlertDialog dialog) {
-                                    ContentValues cv = new ContentValues();
-                                    cv.put("estatus_completado", 1);
+                                db.update(TBL_CREDITO_GPO_AUTO, cv, "id = ?", new String[]{String.valueOf(id_credito)});
 
-                                    db.update(TBL_CREDITO_GPO_AUTO, cv, "id = ?", new String[]{String.valueOf(id_credito)});
+                                ContentValues cv_solicitud = new ContentValues();
+                                cv_solicitud.put("estatus", 1);
+                                // cv_solicitud.put("fecha_termino", Miscellaneous.ObtenerFecha("timestamp"));
 
-                                    ContentValues cv_solicitud = new ContentValues();
-                                    cv_solicitud.put("estatus", 1);
-                                   // cv_solicitud.put("fecha_termino", Miscellaneous.ObtenerFecha("timestamp"));
+                                db.update(TBL_SOLICITUDES_AUTO, cv_solicitud, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
 
-                                    db.update(TBL_SOLICITUDES_AUTO, cv_solicitud, "id_solicitud = ?" , new String[]{String.valueOf(id_solicitud)});
+                                Servicios_Sincronizado ss = new Servicios_Sincronizado();
+                                ss.MontoAutorizado(ctx, false);
 
-                                    Servicios_Sincronizado ss = new Servicios_Sincronizado();
-                                    ss.MontoAutorizado(ctx, false);
+                                dialog.dismiss();
+                                finish();
 
-                                    dialog.dismiss();
-                                    finish();
-
-                                }
-                            }, R.string.cancel, new Popups.DialogMessage() {
-                                @Override
-                                public void OnClickListener(AlertDialog dialog) {
-                                    dialog.dismiss();
-                                }
-                            });
-                    Objects.requireNonNull(fachada_dlg.getWindow()).requestFeature(Window.FEATURE_NO_TITLE);
-                    fachada_dlg.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
-                    fachada_dlg.show();
-                }
-                else
-                    Mensaje("Existen integrantes que no se ha especificado el monto autorizado.");
-
-                break;
+                            }
+                        }, R.string.cancel, new Popups.DialogMessage() {
+                            @Override
+                            public void OnClickListener(AlertDialog dialog) {
+                                dialog.dismiss();
+                            }
+                        });
+                Objects.requireNonNull(fachada_dlg.getWindow()).requestFeature(Window.FEATURE_NO_TITLE);
+                fachada_dlg.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                fachada_dlg.show();
+            } else
+                Mensaje("Existen integrantes que no se ha especificado el monto autorizado.");
         }
         return super.onOptionsItemSelected(item);
     }

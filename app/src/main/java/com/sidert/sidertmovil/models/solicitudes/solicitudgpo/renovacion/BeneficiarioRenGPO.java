@@ -13,7 +13,7 @@ import java.io.Serializable;
 
 public class BeneficiarioRenGPO extends BaseModel implements Serializable, IFillModel {
 
-    public static final String  TBL                              = "tbl_datos_beneficiario_gpo";
+    public static final String  TBL                              = "tbl_datos_beneficiario_gpo_ren";
     public static final String  COL_ID_BENEFICIARIO              = "idBeneficiario";
     public static final String  COL_ID_SOLICITUD                 = "id_solicitud";
     public static final String  COL_ID_SOLICITUD_INTEGRANTE      = "id_solicitud_integrante";

@@ -68,8 +68,8 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
         super.onMessageReceived(remoteMessage);
-        session = new SessionManager(this);
-        dBhelper = new DBhelper(this);
+        session = SessionManager.getInstance(this);
+        dBhelper = DBhelper.getInstance(this);
         db = dBhelper.getWritableDatabase();
         Log.e("Mensaje", remoteMessage.getData().toString());
         JSONObject notify = new JSONObject(remoteMessage.getData());

@@ -13,7 +13,7 @@ public class DomicilioIntegranteRenDao {
     final SQLiteDatabase db;
 
     public DomicilioIntegranteRenDao(Context ctx){
-        this.dbHelper = new DBhelper(ctx);
+        this.dbHelper = DBhelper.getInstance(ctx);
         this.db = dbHelper.getWritableDatabase();
     }
 

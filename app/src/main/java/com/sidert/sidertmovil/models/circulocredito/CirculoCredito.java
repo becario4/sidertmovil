@@ -43,6 +43,26 @@ public class CirculoCredito implements Serializable {
     @Expose
     private String fechaEnvio;
 
+    public String[] processFolio() {
+        String[] folio = null;
+
+        if (getFolio() != null && !getFolio().equals("")) {
+            folio = getFolio().split("-");
+        }
+        return folio;
+
+    }
+
+    public String processFolioManual() {
+        String folioManual = null;
+
+        if (getFolioManual() != null && !getFolioManual().equals("")) {
+            folioManual = (String) getFolioManual();
+        }
+        return folioManual;
+    }
+
+
     public String getProducto() {
         return producto;
     }

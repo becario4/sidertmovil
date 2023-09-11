@@ -7,6 +7,9 @@ import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 
 import androidx.appcompat.app.AlertDialog;
+
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -109,6 +112,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
@@ -121,10 +125,10 @@ import static com.sidert.sidertmovil.utils.Constants.*;
 
 public class Servicios_Sincronizado {
 
-    public void GetGeolocalizacion(final Context ctx, final boolean showDG, final boolean incluir_gestiones){
+    public void GetGeolocalizacion(final Context ctx, final boolean showDG, final boolean incluir_gestiones) {
         //Log.e("GetGeolocalizacion", "Inicia la obtencion de fichas "+incluir_gestiones);
-        SessionManager session = new SessionManager(ctx);
-        final DBhelper dBhelper = new DBhelper(ctx);
+        SessionManager session = SessionManager.getInstance(ctx);
+        final DBhelper dBhelper = DBhelper.getInstance(ctx);
         final SQLiteDatabase db = dBhelper.getWritableDatabase();
 
         final AlertDialog loading = Popups.showLoadingDialog(ctx, R.string.please_wait, R.string.loading_info);
@@ -133,26 +137,26 @@ public class Servicios_Sincronizado {
             loading.show();
         GetGeolocalizadas(ctx);
 
-        ManagerInterface api = new RetrofitClient().generalRF(CONTROLLER_MOVIL, ctx).create(ManagerInterface.class);
+        ManagerInterface api = RetrofitClient.generalRF(CONTROLLER_MOVIL, ctx).create(ManagerInterface.class);
 
-        Call<ModeloGeolocalizacion> call = api.getGeolocalizacion("Bearer "+ session.getUser().get(7));
+        Call<ModeloGeolocalizacion> call = api.getGeolocalizacion("Bearer " + session.getUser().get(7));
         call.enqueue(new Callback<ModeloGeolocalizacion>() {
             @Override
             public void onResponse(Call<ModeloGeolocalizacion> call, Response<ModeloGeolocalizacion> response) {
 
-                Log.e("Geolocalizacion Code", ""+response.code());
+                Log.e("Geolocalizacion Code", "" + response.code());
                 switch (response.code()) {
                     case 200:
                         ModeloGeolocalizacion modeloGeo = response.body();
 
-                        if(modeloGeo.getGrupalesGestionadas().size() > 0){
-                            for (int h = 0; h < modeloGeo.getGrupalesGestionadas().size(); h++){
+                        if (modeloGeo.getGrupalesGestionadas().size() > 0) {
+                            for (int h = 0; h < modeloGeo.getGrupalesGestionadas().size(); h++) {
                                 Cursor rowGeoGG;
 
                                 String sql = "SELECT g.* FROM " + TBL_GEO_RESPUESTAS_T + " AS g LEFT JOIN " + TBL_CARTERA_GPO_T + " AS cg ON cg.id_cartera = g.id_cartera LEFT JOIN " + TBL_PRESTAMOS_GPO_T + " AS pg ON pg.id_grupo = cg.id_cartera LEFT JOIN " + TBL_MIEMBROS_GPO_T + " AS m ON m.id_prestamo = pg.id_prestamo WHERE g.clave = ?";
                                 rowGeoGG = db.rawQuery(sql, new String[]{modeloGeo.getGrupalesGestionadas().get(h).getTipo()});
 
-                                if (rowGeoGG.getCount() > 0){
+                                if (rowGeoGG.getCount() > 0) {
                                     rowGeoGG.moveToFirst();
                                     Log.e("ACtualza", "grupal");
                                     ContentValues cv = new ContentValues();
@@ -160,7 +164,7 @@ public class Servicios_Sincronizado {
                                     cv.put("longitud", modeloGeo.getGrupalesGestionadas().get(h).getLongitud());
                                     cv.put("direccion_capturada", modeloGeo.getGrupalesGestionadas().get(h).getDireccion());
                                     cv.put("codigo_barras", modeloGeo.getGrupalesGestionadas().get(h).getBarcode());
-                                    cv.put("fachada", modeloGeo.getGrupalesGestionadas().get(h).getFotoFachada().replace("\"",""));
+                                    cv.put("fachada", modeloGeo.getGrupalesGestionadas().get(h).getFotoFachada().replace("\"", ""));
                                     cv.put("comentario", modeloGeo.getGrupalesGestionadas().get(h).getComentario());
                                     cv.put("fecha_fin_geo", modeloGeo.getGrupalesGestionadas().get(h).getFechaGestionFin());
                                     cv.put("fecha_envio_geo", modeloGeo.getGrupalesGestionadas().get(h).getFechaEnvio());
@@ -175,9 +179,9 @@ public class Servicios_Sincronizado {
                             }//Fin de For para guardado de Grupales Gestionadas
                         }//Fin de Grupales Gestionadas
 
-                        Log.e("Individuales conte", modeloGeo.getIndividualesGestionadas().size()+" ------------");
-                        if(modeloGeo.getIndividualesGestionadas().size() > 0){
-                            for (int h = 0; h < modeloGeo.getIndividualesGestionadas().size(); h++){
+                        Log.e("Individuales conte", modeloGeo.getIndividualesGestionadas().size() + " ------------");
+                        if (modeloGeo.getIndividualesGestionadas().size() > 0) {
+                            for (int h = 0; h < modeloGeo.getIndividualesGestionadas().size(); h++) {
                                 Cursor rowGeoGi;
 
                                 String sql = "SELECT g.* FROM " + TBL_GEO_RESPUESTAS_T + " AS g LEFT JOIN " + TBL_CARTERA_IND_T + " AS ci ON ci.id_cartera = g.id_cartera LEFT JOIN " + TBL_PRESTAMOS_IND_T + " AS pi ON pi.id_cliente = ci.id_cartera  WHERE g.tipo_geolocalizacion = ? AND pi.id_prestamo = ?";
@@ -188,7 +192,7 @@ public class Servicios_Sincronizado {
                                 Log.e("SQL_IND", modeloGeo.getIndividualesGestionadas().get(h).getTipo());
                                 Log.e("-", "------------------------------------------------------");
 
-                                if (rowGeoGi.getCount() > 0){
+                                if (rowGeoGi.getCount() > 0) {
                                     rowGeoGi.moveToFirst();
 
                                     Log.e("ACtualza", "individual");
@@ -213,7 +217,7 @@ public class Servicios_Sincronizado {
                                     cv.put("longitud", modeloGeo.getIndividualesGestionadas().get(h).getLongitud());
                                     cv.put("direccion_capturada", modeloGeo.getIndividualesGestionadas().get(h).getDireccion());
                                     cv.put("codigo_barras", modeloGeo.getIndividualesGestionadas().get(h).getBarcode());
-                                    cv.put("fachada", modeloGeo.getIndividualesGestionadas().get(h).getFotoFachada().replace("\"",""));
+                                    cv.put("fachada", modeloGeo.getIndividualesGestionadas().get(h).getFotoFachada().replace("\"", ""));
                                     cv.put("comentario", modeloGeo.getIndividualesGestionadas().get(h).getComentario());
                                     cv.put("fecha_fin_geo", modeloGeo.getIndividualesGestionadas().get(h).getFechaGestionFin());
                                     cv.put("fecha_envio_geo", modeloGeo.getIndividualesGestionadas().get(h).getFechaEnvio());
@@ -245,25 +249,25 @@ public class Servicios_Sincronizado {
         });
     }
 
-    public void SaveGeolocalizacion(Context ctx, boolean flag){
+    public void SaveGeolocalizacion(Context ctx, boolean flag) {
 
         final AlertDialog loading = Popups.showLoadingDialog(ctx, R.string.please_wait, R.string.loading_info);
         loading.setCancelable(false);
         if (flag)
             loading.show();
 
-        final DBhelper dBhelper = new DBhelper(ctx);
+        final DBhelper dBhelper = DBhelper.getInstance(ctx);
         final SQLiteDatabase db = dBhelper.getWritableDatabase();
 
         Cursor row;
 
-        String sql = "SELECT * FROM (SELECT gri.*, pi.id_prestamo, pi.fecha_dispositivo FROM " + TBL_GEO_RESPUESTAS_T + " AS gri INNER JOIN " + TBL_PRESTAMOS_IND_T + " AS pi ON pi.id_cliente = gri.id_cartera WHERE gri.estatus = 0 AND gri.tipo_ficha = 1 UNION SELECT grg.*, pg.id_prestamo, pg.fecha_dispositivo FROM "+TBL_GEO_RESPUESTAS_T+" AS grg INNER JOIN "+TBL_PRESTAMOS_GPO_T+" AS pg ON pg.id_grupo = grg.id_cartera WHERE grg.estatus = 0 AND grg.tipo_ficha = 2)  AS geo_respuestas";
+        String sql = "SELECT * FROM (SELECT gri.*, pi.id_prestamo, pi.fecha_dispositivo FROM " + TBL_GEO_RESPUESTAS_T + " AS gri INNER JOIN " + TBL_PRESTAMOS_IND_T + " AS pi ON pi.id_cliente = gri.id_cartera WHERE gri.estatus = 0 AND gri.tipo_ficha = 1 UNION SELECT grg.*, pg.id_prestamo, pg.fecha_dispositivo FROM " + TBL_GEO_RESPUESTAS_T + " AS grg INNER JOIN " + TBL_PRESTAMOS_GPO_T + " AS pg ON pg.id_grupo = grg.id_cartera WHERE grg.estatus = 0 AND grg.tipo_ficha = 2)  AS geo_respuestas";
 
         row = db.rawQuery(sql, null);
 
-        if (row.getCount() > 0){
+        if (row.getCount() > 0) {
             row.moveToFirst();
-            for(int i = 0; i < row.getCount(); i++){
+            for (int i = 0; i < row.getCount(); i++) {
                 JSONObject object = new JSONObject();
                 try {
                     if (row.getInt(3) == 1)
@@ -278,11 +282,12 @@ public class Servicios_Sincronizado {
                     object.put(DIRECCION, row.getString(10));
                     object.put(COMENTARIO, row.getString(13));
                     object.put(FACHADA, row.getString(12));
-                    object.put(FECHA_DISPOSITIVO, row.getString(19));
+                    object.put(FECHA_DISPOSITIVO, row.getString(20));
                     object.put(FECHA_RESPUESTA, row.getString(14));
                     object.put(FECHA_INI_GEO, row.getString(14));
                     object.put(FECHA_FIN_GEO, row.getString(14));
                     object.put(FECHA_ENVIO, Miscellaneous.ObtenerFecha(TIMESTAMP));
+                    object.put(ID_CARTERAEN, row.getInt(18));
                     SendGeolocalizacion(ctx, object, row.getLong(0));
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -296,16 +301,16 @@ public class Servicios_Sincronizado {
             loading.dismiss();
     }
 
-    private void SendGeolocalizacion(final Context ctx, JSONObject respuesta, final Long _id){
+    private void SendGeolocalizacion(final Context ctx, JSONObject respuesta, final Long _id) {
         Log.e("JSONGeo", respuesta.toString());
-        SessionManager session = new SessionManager(ctx);
-        DBhelper dBhelper = new DBhelper(ctx);
+        SessionManager session = SessionManager.getInstance(ctx);
+        DBhelper dBhelper = DBhelper.getInstance(ctx);
         final SQLiteDatabase db = dBhelper.getWritableDatabase();
-        if (NetworkStatus.haveNetworkConnection(ctx)){
+        if (NetworkStatus.haveNetworkConnection(ctx)) {
             try {
 
 
-                final File image = new File(ROOT_PATH + "Fachada/"+respuesta.getString(FACHADA));
+                final File image = new File(ROOT_PATH + "Fachada/" + respuesta.getString(FACHADA));
 
                 RequestBody latBody = RequestBody.create(MultipartBody.FORM, respuesta.getString(LATITUD));
                 RequestBody lngBody = RequestBody.create(MultipartBody.FORM, respuesta.getString(LONGITUD));
@@ -319,6 +324,8 @@ public class Servicios_Sincronizado {
                 RequestBody tipoBody = RequestBody.create(MultipartBody.FORM, respuesta.getString(TIPO));
                 RequestBody fichaTipoBody = RequestBody.create(MultipartBody.FORM, respuesta.getString(FICHA_TIPO));
                 RequestBody prestamoIdBody = RequestBody.create(MultipartBody.FORM, respuesta.getString(PRESTAMO_ID));
+                RequestBody id_carteraEnBody = RequestBody.create(MultipartBody.FORM, String.valueOf(respuesta.getInt(ID_CARTERAEN)));
+
                 MultipartBody.Part body = null;
                 if (image != null) {
                     RequestBody imageBody =
@@ -328,28 +335,30 @@ public class Servicios_Sincronizado {
                     body = MultipartBody.Part.createFormData("foto_fachada", image.getName(), imageBody);
                 }
 
-                ManagerInterface api = new RetrofitClient().generalRF(CONTROLLER_MOVIL, ctx).create(ManagerInterface.class);
+                ManagerInterface api = RetrofitClient.generalRF(CONTROLLER_MOVIL, ctx).create(ManagerInterface.class);
 
-                Call<ModeloResSaveGeo> call = api.guardarGeo("Bearer "+ session.getUser().get(7),
-                                                                tipoBody,
-                                                                fichaTipoBody,
-                                                                prestamoIdBody,
-                                                                latBody,
-                                                                lngBody,
-                                                                direccionBody,
-                                                                barcodeBody,
-                                                                comentarioBody,
-                                                                fechaGestionIniBody,
-                                                                fechaGestionIniBody,
-                                                                fechaGestionFinBody,
-                                                                fechaDispositivoBody,
-                                                                fechaEnvioBody,
-                                                                body);
+
+                Call<ModeloResSaveGeo> call = api.guardarGeo("Bearer " + session.getUser().get(7),
+                        tipoBody,
+                        fichaTipoBody,
+                        prestamoIdBody,
+                        latBody,
+                        lngBody,
+                        direccionBody,
+                        barcodeBody,
+                        comentarioBody,
+                        fechaGestionIniBody,
+                        fechaGestionIniBody,
+                        fechaGestionFinBody,
+                        fechaDispositivoBody,
+                        fechaEnvioBody,
+                        body,
+                        id_carteraEnBody);
 
                 call.enqueue(new Callback<ModeloResSaveGeo>() {
                     @Override
                     public void onResponse(Call<ModeloResSaveGeo> call, Response<ModeloResSaveGeo> response) {
-                        switch (response.code()){
+                        switch (response.code()) {
                             case 200:
                                 ModeloResSaveGeo res = response.body();
                                 Log.e("ResponseGuardado", new GsonBuilder().create().toJson(res));
@@ -362,7 +371,7 @@ public class Servicios_Sincronizado {
 
                                 break;
                             default:
-                                Log.e("Mensaje Code", response.code()+" : "+response.message());
+                                Log.e("Mensaje Code", response.code() + " : " + response.message());
                                 //Toast.makeText(ctx, "No se logró enviar codigo: " +response.code(), Toast.LENGTH_SHORT).show();
                                 break;
                         }
@@ -380,29 +389,29 @@ public class Servicios_Sincronizado {
         }
     }
 
-    public void SaveRespuestaGestion(Context ctx, boolean showDG){
+    public void SaveRespuestaGestion(Context ctx, boolean showDG) {
 
         final AlertDialog loading = Popups.showLoadingDialog(ctx, R.string.please_wait, R.string.loading_info);
         loading.setCancelable(false);
 
         //if ((!((Activity) ctx).isFinishing())) {
-            if (showDG)
-                loading.show();
+        if (showDG)
+            loading.show();
         //}
-        SessionManager session = new SessionManager(ctx);
-        final DBhelper dBhelper = new DBhelper(ctx);
+        SessionManager session = SessionManager.getInstance(ctx);
+        final DBhelper dBhelper = DBhelper.getInstance(ctx);
         final SQLiteDatabase db = dBhelper.getWritableDatabase();
 
         Cursor row;
 
         String query;
 
-        query = "SELECT * FROM (SELECT i._id,i.id_prestamo,i.latitud,i.longitud,i.contacto,i.motivo_aclaracion,i.comentario,i.actualizar_telefono,i.nuevo_telefono,i.resultado_gestion,i.motivo_no_pago,i.fecha_fallecimiento,i.medio_pago,i.fecha_pago,i.pagara_requerido AS x,i.pago_realizado,i.imprimir_recibo,i.folio,i.evidencia,i.tipo_imagen,i.gerente,i.firma,i.fecha_inicio,i.fecha_fin,i.res_impresion,i.estatus_pago,i.saldo_corte,i.saldo_actual,'1' AS tipo_gestion,pi.num_solicitud,pi.fecha_establecida, ci.dia AS dia_semana, pi.monto_requerido, pi.tipo_cartera, pi.monto_amortizacion, i.dias_atraso, '' AS fecha_monto_promesa, '' AS monto_promesa, 'VIGENTE' AS tipo, 0 AS prestamo_id_integrante, '' AS serial_id FROM "+ TBL_RESPUESTAS_IND_T + " AS i INNER JOIN " + TBL_PRESTAMOS_IND_T + " AS pi ON i.id_prestamo = pi.id_prestamo INNER JOIN " + TBL_CARTERA_IND_T + " AS ci ON pi.id_cliente = ci.id_cartera WHERE i.estatus = ? UNION SELECT g._id,g.id_prestamo,g.latitud,g.longitud,g.contacto,g.motivo_aclaracion,g.comentario,g.actualizar_telefono,g.nuevo_telefono,g.resultado_gestion,g.motivo_no_pago,g.fecha_fallecimiento,g.medio_pago,g.fecha_pago,g.detalle_ficha AS x,g.pago_realizado,g.imprimir_recibo,g.folio,g.evidencia,g.tipo_imagen,g.gerente,g.firma,g.fecha_inicio,g.fecha_fin,g.res_impresion,g.estatus_pago,g.saldo_corte,g.saldo_actual,'2' AS tipo_gestion,pg.num_solicitud,pg.fecha_establecida, cg.dia AS dia_semana, pg.monto_requerido, pg.tipo_cartera, pg.monto_amortizacion, g.dias_atraso, '' AS fecha_monto_promesa, '' AS monto_promesa, 'VIGENTE' AS tipo, 0 AS prestamo_id_integrante, '' AS serial_id FROM " + TBL_RESPUESTAS_GPO_T + " AS g INNER JOIN " + TBL_PRESTAMOS_GPO_T + " AS pg ON g.id_prestamo = pg.id_prestamo INNER JOIN " + TBL_CARTERA_GPO_T + " AS cg ON pg.id_grupo = cg.id_cartera WHERE g.estatus = ? UNION SELECT vi._id, vi.id_prestamo, vi.latitud, vi.longitud, vi.contacto, '' AS motivo_aclaracion, vi.comentario, vi.actualizar_telefono, vi.nuevo_telefono, vi.resultado_gestion, vi.motivo_no_pago, vi.fecha_fallecimiento, vi.medio_pago, vi.fecha_pago, vi.pagara_requerido AS x, vi.pago_realizado, vi.imprimir_recibo, vi.folio, vi.evidencia, vi.tipo_imagen, vi.gerente, vi.firma, vi.fecha_inicio, vi.fecha_fin, vi.res_impresion, vi.estatus_pago, vi.saldo_corte, vi.saldo_actual,'1' AS tipo_gestion, pvi.num_solicitud, pvi.fecha_establecida, cvi.dia AS dia_semana, pvi.monto_requerido, 'VENCIDA' AS tipo_cartera, pvi.monto_amortizacion, vi.dias_atraso, vi.fecha_monto_promesa, vi.monto_promesa, 'VENCIDA' as tipo, 0 AS prestamo_id_integrante, vi.serial_id FROM "+TBL_RESPUESTAS_IND_V_T+" AS vi INNER JOIN " + TBL_PRESTAMOS_IND_T + " AS pvi ON vi.id_prestamo = pvi.id_prestamo INNER JOIN " + TBL_CARTERA_IND_T + " AS cvi ON pvi.id_cliente = cvi.id_cartera WHERE vi.estatus = ? UNION SELECT v._id, v.id_prestamo, v.latitud, v.longitud, v.contacto, '' AS motivo_aclaracion, v.comentario, v.actualizar_telefono, v.nuevo_telefono, v.resultado_gestion, v.motivo_no_pago, v.fecha_fallecimiento, v.medio_pago, v.fecha_pago,v.pagara_requerido AS x, v.pago_realizado, v.imprimir_recibo, v.folio, v.evidencia, v.tipo_imagen, v.gerente, v.firma, v.fecha_inicio, v.fecha_fin, v.res_impresion, v.estatus_pago,v.saldo_corte, v.saldo_actual,'2' AS tipo_gestion, pv.num_solicitud, pv.fecha_establecida, cv.dia AS dia_semana, mv.monto_requerido, 'VENCIDA' AS tipo_cartera, mv.monto_requerido AS monto_amortizacion, v.dias_atraso, v.fecha_monto_promesa, v.monto_promesa, 'VENCIDA' AS tipo, mv.id_prestamo_integrante AS prestamo_id_integrante, v.serial_id FROM " + TBL_RESPUESTAS_INTEGRANTE_T + " AS v INNER JOIN " + TBL_PRESTAMOS_GPO_T + " AS pv ON v.id_prestamo = pv.id_prestamo INNER JOIN " + TBL_CARTERA_GPO_T + " AS cv ON pv.id_grupo = cv.id_cartera INNER JOIN " + TBL_MIEMBROS_GPO_T + " AS mv ON mv.id_integrante = v.id_integrante WHERE v.estatus = ?) AS respuestas";
+        query = "SELECT * FROM (SELECT i._id,i.id_prestamo,i.latitud,i.longitud,i.contacto,i.motivo_aclaracion,i.comentario,i.actualizar_telefono,i.nuevo_telefono,i.resultado_gestion,i.motivo_no_pago,i.fecha_fallecimiento,i.medio_pago,i.fecha_pago,i.pagara_requerido AS x,i.pago_realizado,i.imprimir_recibo,i.folio,i.evidencia,i.tipo_imagen,i.gerente,i.firma,i.fecha_inicio,i.fecha_fin,i.res_impresion,i.estatus_pago,i.saldo_corte,i.saldo_actual,'1' AS tipo_gestion,pi.num_solicitud,pi.fecha_establecida, ci.dia AS dia_semana, pi.monto_requerido, pi.tipo_cartera, pi.monto_amortizacion, i.dias_atraso, '' AS fecha_monto_promesa, '' AS monto_promesa, 'VIGENTE' AS tipo, 0 AS prestamo_id_integrante, '' AS serial_id FROM " + TBL_RESPUESTAS_IND_T + " AS i INNER JOIN " + TBL_PRESTAMOS_IND_T + " AS pi ON i.id_prestamo = pi.id_prestamo INNER JOIN " + TBL_CARTERA_IND_T + " AS ci ON pi.id_cliente = ci.id_cartera WHERE i.estatus = ? UNION SELECT g._id,g.id_prestamo,g.latitud,g.longitud,g.contacto,g.motivo_aclaracion,g.comentario,g.actualizar_telefono,g.nuevo_telefono,g.resultado_gestion,g.motivo_no_pago,g.fecha_fallecimiento,g.medio_pago,g.fecha_pago,g.detalle_ficha AS x,g.pago_realizado,g.imprimir_recibo,g.folio,g.evidencia,g.tipo_imagen,g.gerente,g.firma,g.fecha_inicio,g.fecha_fin,g.res_impresion,g.estatus_pago,g.saldo_corte,g.saldo_actual,'2' AS tipo_gestion,pg.num_solicitud,pg.fecha_establecida, cg.dia AS dia_semana, pg.monto_requerido, pg.tipo_cartera, pg.monto_amortizacion, g.dias_atraso, '' AS fecha_monto_promesa, '' AS monto_promesa, 'VIGENTE' AS tipo, 0 AS prestamo_id_integrante, '' AS serial_id FROM " + TBL_RESPUESTAS_GPO_T + " AS g INNER JOIN " + TBL_PRESTAMOS_GPO_T + " AS pg ON g.id_prestamo = pg.id_prestamo INNER JOIN " + TBL_CARTERA_GPO_T + " AS cg ON pg.id_grupo = cg.id_cartera WHERE g.estatus = ? UNION SELECT vi._id, vi.id_prestamo, vi.latitud, vi.longitud, vi.contacto, '' AS motivo_aclaracion, vi.comentario, vi.actualizar_telefono, vi.nuevo_telefono, vi.resultado_gestion, vi.motivo_no_pago, vi.fecha_fallecimiento, vi.medio_pago, vi.fecha_pago, vi.pagara_requerido AS x, vi.pago_realizado, vi.imprimir_recibo, vi.folio, vi.evidencia, vi.tipo_imagen, vi.gerente, vi.firma, vi.fecha_inicio, vi.fecha_fin, vi.res_impresion, vi.estatus_pago, vi.saldo_corte, vi.saldo_actual,'1' AS tipo_gestion, pvi.num_solicitud, pvi.fecha_establecida, cvi.dia AS dia_semana, pvi.monto_requerido, 'VENCIDA' AS tipo_cartera, pvi.monto_amortizacion, vi.dias_atraso, vi.fecha_monto_promesa, vi.monto_promesa, 'VENCIDA' as tipo, 0 AS prestamo_id_integrante, vi.serial_id FROM " + TBL_RESPUESTAS_IND_V_T + " AS vi INNER JOIN " + TBL_PRESTAMOS_IND_T + " AS pvi ON vi.id_prestamo = pvi.id_prestamo INNER JOIN " + TBL_CARTERA_IND_T + " AS cvi ON pvi.id_cliente = cvi.id_cartera WHERE vi.estatus = ? UNION SELECT v._id, v.id_prestamo, v.latitud, v.longitud, v.contacto, '' AS motivo_aclaracion, v.comentario, v.actualizar_telefono, v.nuevo_telefono, v.resultado_gestion, v.motivo_no_pago, v.fecha_fallecimiento, v.medio_pago, v.fecha_pago,v.pagara_requerido AS x, v.pago_realizado, v.imprimir_recibo, v.folio, v.evidencia, v.tipo_imagen, v.gerente, v.firma, v.fecha_inicio, v.fecha_fin, v.res_impresion, v.estatus_pago,v.saldo_corte, v.saldo_actual,'2' AS tipo_gestion, pv.num_solicitud, pv.fecha_establecida, cv.dia AS dia_semana, mv.monto_requerido, 'VENCIDA' AS tipo_cartera, mv.monto_requerido AS monto_amortizacion, v.dias_atraso, v.fecha_monto_promesa, v.monto_promesa, 'VENCIDA' AS tipo, mv.id_prestamo_integrante AS prestamo_id_integrante, v.serial_id FROM " + TBL_RESPUESTAS_INTEGRANTE_T + " AS v INNER JOIN " + TBL_PRESTAMOS_GPO_T + " AS pv ON v.id_prestamo = pv.id_prestamo INNER JOIN " + TBL_CARTERA_GPO_T + " AS cv ON pv.id_grupo = cv.id_cartera INNER JOIN " + TBL_MIEMBROS_GPO_T + " AS mv ON mv.id_integrante = v.id_integrante WHERE v.estatus = ?) AS respuestas";
 
         row = db.rawQuery(query, new String[]{"1", "1", "1", "1"});
 
-        Log.e("rowGestionada", row.getCount()+" total");
-        if (row.getCount() > 0){
+        Log.e("rowGestionada", row.getCount() + " total");
+        if (row.getCount() > 0) {
             row.moveToFirst();
 
             /*String fileNameReport = "dGFibGUtY29i.csv";
@@ -425,13 +434,13 @@ public class Servicios_Sincronizado {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }*/
-                for (int i = 0; i < row.getCount(); i++) {
-                    HashMap<String, String> params = new HashMap<>();
-                    params.put("id_prestamo", row.getString(1));
-                    params.put("num_solicitud", row.getString(29));
-                    JSONObject json_res = Miscellaneous.RowTOJson(row, ctx);
-                    params.put("respuesta", json_res.toString());
-                    params.put("tipo", row.getString(38));
+            for (int i = 0; i < row.getCount(); i++) {
+                HashMap<String, String> params = new HashMap<>();
+                params.put("id_prestamo", row.getString(1));
+                params.put("num_solicitud", row.getString(29));
+                JSONObject json_res = Miscellaneous.RowTOJson(row, ctx);
+                params.put("respuesta", json_res.toString());
+                params.put("tipo", row.getString(38));
 
                     /*String val = row.getString(1) + "," + row.getString(29) + "," + json_res.toString() + "\n";
                     try {
@@ -440,25 +449,25 @@ public class Servicios_Sincronizado {
                         e.printStackTrace();
                     }*/
 
-                    try {
-                        String evidencia = "";
-                        String tipo_imagen = "-1";
-                        String firma = "";
-                        if (json_res.has("evidencia"))
-                            evidencia = json_res.getString("evidencia");
-                        if (json_res.has("tipo_imagen"))
-                            tipo_imagen = json_res.getString("tipo_imagen");
-                        if (json_res.has("firma"))
-                            firma = json_res.getString("firma");
+                try {
+                    String evidencia = "";
+                    String tipo_imagen = "-1";
+                    String firma = "";
+                    if (json_res.has("evidencia"))
+                        evidencia = json_res.getString("evidencia");
+                    if (json_res.has("tipo_imagen"))
+                        tipo_imagen = json_res.getString("tipo_imagen");
+                    if (json_res.has("firma"))
+                        firma = json_res.getString("firma");
 
-                        Log.e("res_envio", json_res.toString());
+                    Log.e("res_envio", json_res.toString());
 
-                        SendrespuestaGestion(ctx, params, row.getInt(28), row.getString(0), evidencia, tipo_imagen, firma, showDG);
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                    row.moveToNext();
+                    SendrespuestaGestion(ctx, params, row.getInt(28), row.getString(0), evidencia, tipo_imagen, firma, showDG);
+                } catch (JSONException e) {
+                    e.printStackTrace();
                 }
+                row.moveToNext();
+            }
 
                 /*
                 try {
@@ -472,25 +481,25 @@ public class Servicios_Sincronizado {
         row.close();
 
         //if ((!((Activity) ctx).isFinishing())) {
-            if (showDG)
-                loading.dismiss();
+        if (showDG)
+            loading.dismiss();
         //}
 
     }
 
-    public void SaveCierreDia(Context ctx, boolean showDG){
-        final DBhelper dBhelper = new DBhelper(ctx);
+    public void SaveCierreDia(Context ctx, boolean showDG) {
+        final DBhelper dBhelper = DBhelper.getInstance(ctx);
         final SQLiteDatabase db = dBhelper.getWritableDatabase();
 
         Cursor row;
 
-        String query =  "SELECT * FROM " + TBL_CIERRE_DIA_T + " WHERE estatus = 1";
+        String query = "SELECT * FROM " + TBL_CIERRE_DIA_T + " WHERE estatus = 1";
         row = db.rawQuery(query, null);
 
-        if (row.getCount() > 0){
+        if (row.getCount() > 0) {
             row.moveToFirst();
 
-            for (int i = 0; i < row.getCount(); i++){
+            for (int i = 0; i < row.getCount(); i++) {
                 MCierreDia item = new MCierreDia();
                 item.setId(row.getString(0));
                 item.setNombre(row.getString(14));
@@ -514,13 +523,13 @@ public class Servicios_Sincronizado {
 
     }
 
-    private void SendrespuestaGestion(final Context ctx, final HashMap<String, String> params, final int tipo_gestion, final String _id, String imagen, String tipo_imagen, String firma, final boolean DGshow){
+    private void SendrespuestaGestion(final Context ctx, final HashMap<String, String> params, final int tipo_gestion, final String _id, String imagen, String tipo_imagen, String firma, final boolean DGshow) {
         final AlertDialog loading = Popups.showLoadingDialog(ctx, R.string.please_wait, R.string.loading_info);
 
         if (DGshow)
             loading.show();
-        SessionManager session = new SessionManager(ctx);
-        final DBhelper dBhelper = new DBhelper(ctx);
+        SessionManager session = SessionManager.getInstance(ctx);
+        final DBhelper dBhelper = DBhelper.getInstance(ctx);
         final SQLiteDatabase db = dBhelper.getWritableDatabase();
         if (NetworkStatus.haveNetworkConnection(ctx)) {
             RequestBody idPrestamoBody = RequestBody.create(MultipartBody.FORM, params.get("id_prestamo"));
@@ -532,7 +541,7 @@ public class Servicios_Sincronizado {
             MultipartBody.Part evidenciaBody = null;
             File imagen_evidencia = null;
 
-            switch (tipo_imagen){
+            switch (tipo_imagen) {
                 case "0":
                     imagen_evidencia = new File(ROOT_PATH + "Fachada/" + imagen);
                     break;
@@ -548,33 +557,31 @@ public class Servicios_Sincronizado {
                                 MediaType.parse("image/*"), imagen_evidencia);
 
                 evidenciaBody = MultipartBody.Part.createFormData("evidencia", imagen_evidencia.getName(), imageBody);
-            }
-            else {
+            } else {
                 RequestBody attachmentEmpty = RequestBody.create(MediaType.parse("text/plain"), "");
                 evidenciaBody = MultipartBody.Part.createFormData("evidencia", "", attachmentEmpty);
             }
 
             MultipartBody.Part firmaBody = null;
-            final File image_firma = new File(ROOT_PATH + "Firma/"+firma);
+            final File image_firma = new File(ROOT_PATH + "Firma/" + firma);
             if (!firma.isEmpty() && image_firma != null) {
                 RequestBody imageBody =
                         RequestBody.create(
                                 MediaType.parse("image/*"), image_firma);
 
                 firmaBody = MultipartBody.Part.createFormData("firma", image_firma.getName(), imageBody);
-            }
-            else {
+            } else {
                 RequestBody attachmentEmpty = RequestBody.create(MediaType.parse("text/plain"), "");
                 firmaBody = MultipartBody.Part.createFormData("firma", "", attachmentEmpty);
             }
 
-            ManagerInterface api = new RetrofitClient().generalRF(CONTROLLER_MOVIL, ctx).create(ManagerInterface.class);
+            ManagerInterface api = RetrofitClient.generalRF(CONTROLLER_MOVIL, ctx).create(ManagerInterface.class);
 
-            Log.e("idPRestamo", params.get("id_prestamo") );
+            Log.e("idPRestamo", params.get("id_prestamo"));
             Log.e("numSolicitud", params.get("num_solicitud"));
             Log.e("RespuestaGes", params.get("respuesta"));
             Log.e("RespuestaGes", params.get("tipo"));
-            Call<MRespuestaGestion> call = api.guardarRespuesta("Bearer "+ session.getUser().get(7),
+            Call<MRespuestaGestion> call = api.guardarRespuesta("Bearer " + session.getUser().get(7),
                     idPrestamoBody,
                     numSolicitudBody,
                     respuestaBody,
@@ -585,8 +592,8 @@ public class Servicios_Sincronizado {
             call.enqueue(new Callback<MRespuestaGestion>() {
                 @Override
                 public void onResponse(Call<MRespuestaGestion> call, Response<MRespuestaGestion> response) {
-                    Log.e("Response", "Code: "+response.code());
-                    switch (response.code()){
+                    Log.e("Response", "Code: " + response.code());
+                    switch (response.code()) {
                         case 200:
                             MRespuestaGestion r = response.body();
                             ContentValues cv = new ContentValues();
@@ -594,9 +601,9 @@ public class Servicios_Sincronizado {
                             cv.put("estatus", 2);
 
                             if (params.get("tipo").equals("VIGENTE"))
-                                db.update((tipo_gestion == 1)?TBL_RESPUESTAS_IND_T:TBL_RESPUESTAS_GPO_T, cv, "_id = ?", new String[]{_id});
+                                db.update((tipo_gestion == 1) ? TBL_RESPUESTAS_IND_T : TBL_RESPUESTAS_GPO_T, cv, "_id = ?", new String[]{_id});
                             else
-                                db.update((tipo_gestion == 1)?TBL_RESPUESTAS_IND_V_T:TBL_RESPUESTAS_INTEGRANTE_T, cv, "_id = ?", new String[]{_id});
+                                db.update((tipo_gestion == 1) ? TBL_RESPUESTAS_IND_V_T : TBL_RESPUESTAS_INTEGRANTE_T, cv, "_id = ?", new String[]{_id});
 
                             break;
                         default:
@@ -626,12 +633,11 @@ public class Servicios_Sincronizado {
 
         List<GestionVerificacionDomiciliaria> gestiones = gestionDao.findAllByEstatus(1L);
 
-        for(GestionVerificacionDomiciliaria gestion : gestiones)
-        {
+        for (GestionVerificacionDomiciliaria gestion : gestiones) {
             new GuardarVerDom().execute(ctx, gestion);
         }
 
-        if(flag) loading.dismiss();
+        if (flag) loading.dismiss();
     }
 
     public void GetGestionesVerDom(Context ctx, boolean flag) {
@@ -639,32 +645,29 @@ public class Servicios_Sincronizado {
 
         if (flag) loading.show();
 
-        SessionManager session = new SessionManager(ctx);
+        SessionManager session = SessionManager.getInstance(ctx);
         VerificacionDomiciliariaDao verificacionDao = new VerificacionDomiciliariaDao(ctx);
 
-        VerificacionDomiciliariaService verificacionService = new RetrofitClient().newInstance(ctx).create(VerificacionDomiciliariaService.class);
-        Call<List<VerificacionDomiciliaria>> call = verificacionService.show("Bearer "+ session.getUser().get(7));
+        VerificacionDomiciliariaService verificacionService = RetrofitClient.newInstance(ctx).create(VerificacionDomiciliariaService.class);
+        Call<List<VerificacionDomiciliaria>> call = verificacionService.show("Bearer " + session.getUser().get(7));
 
         call.enqueue(new Callback<List<VerificacionDomiciliaria>>() {
             @Override
             public void onResponse(Call<List<VerificacionDomiciliaria>> call, Response<List<VerificacionDomiciliaria>> response) {
-                switch (response.code()){
+                switch (response.code()) {
                     case 200:
                         List<VerificacionDomiciliaria> verificaciones = response.body();
 
-                        if (verificaciones != null && verificaciones.size() > 0){
-                            for (VerificacionDomiciliaria item : verificaciones){
+                        if (verificaciones != null && verificaciones.size() > 0) {
+                            for (VerificacionDomiciliaria item : verificaciones) {
                                 VerificacionDomiciliaria verificacionDb = null;
 
                                 verificacionDb = verificacionDao.findByVerificacionDomiciliariaId(item.getVerificacionDomiciliariaId());
 
-                                if(verificacionDb != null)
-                                {
+                                if (verificacionDb != null) {
                                     item.setId(verificacionDb.getId());
                                     verificacionDao.update(item);
-                                }
-                                else
-                                {
+                                } else {
                                     verificacionDao.store(item);
                                 }
                             }
@@ -680,7 +683,7 @@ public class Servicios_Sincronizado {
 
             @Override
             public void onFailure(Call<List<VerificacionDomiciliaria>> call, Throwable t) {
-                Log.e("ErrorAgf", "Fail AGG"+t.getMessage());
+                Log.e("ErrorAgf", "Fail AGG" + t.getMessage());
                 loading.dismiss();
                 t.printStackTrace();
             }
@@ -705,8 +708,8 @@ public class Servicios_Sincronizado {
             Context ctx = (Context) params[1];
             String _id = (String) params[2];
 
-            DBhelper dBhelper = new DBhelper(ctx);
-            SessionManager session = new SessionManager(ctx);
+            DBhelper dBhelper = DBhelper.getInstance(ctx);
+            SessionManager session = SessionManager.getInstance(ctx);
             SQLiteDatabase db = dBhelper.getWritableDatabase();
 
             ContentValues cv = new ContentValues();
@@ -714,9 +717,9 @@ public class Servicios_Sincronizado {
             try {
                 cv.put("fachada", Miscellaneous.save(
                         Miscellaneous.descargarImagen(
-                                 session.getDominio().get(0)+session.getDominio().get(1)+ WebServicesRoutes.CONTROLLER_FICHAS +
+                                session.getDominio() + WebServicesRoutes.CONTROLLER_FICHAS +
                                         WebServicesRoutes.IMAGES_GEOLOCALIZACION +
-                                        nombre_imagen.replace("\"","")), 1));
+                                        nombre_imagen.replace("\"", "")), 1));
 
                 db.update(TBL_GEO_RESPUESTAS_T, cv, "_id = ?", new String[]{_id});
             } catch (IOException e) {
@@ -735,549 +738,529 @@ public class Servicios_Sincronizado {
         }
     }
 
-    public void SendOriginacionInd (Context ctx, boolean flag){
+    public void SendOriginacionInd(Context ctx, boolean flag) {
         final AlertDialog loading = Popups.showLoadingDialog(ctx, R.string.please_wait, R.string.loading_info);
 
         if (flag)
             loading.show();
-        SessionManager session = new SessionManager(ctx);
-        final DBhelper dBhelper = new DBhelper(ctx);
+        SessionManager session = SessionManager.getInstance(ctx);
+        final DBhelper dBhelper = DBhelper.getInstance(ctx);
         final SQLiteDatabase db = dBhelper.getWritableDatabase();
 
         Cursor row = dBhelper.getRecords(TBL_SOLICITUDES, " WHERE tipo_solicitud = 1 AND estatus = 1", "", null);
 
-        if (row.getCount() > 0){
+        if (row.getCount() > 0) {
             row.moveToFirst();
 
-            Log.e("count solicitudes", row.getCount()+" total");
-            for (int i = 0; i < row.getCount(); i++){
+            Log.e("count solicitudes", row.getCount() + " total");
+            for (int i = 0; i < row.getCount(); i++) {
                 Cursor row_soli = dBhelper.getRecords(TBL_CREDITO_IND, " WHERE id_solicitud = ?", "", new String[]{row.getString(0)});
 
+                row_soli.moveToFirst();
+                JSONObject json_solicitud = new JSONObject();
+                try {
+                    Log.e("Plazo", row_soli.getString(2) + " plazo");
+                    json_solicitud.put(K_PLAZO, Miscellaneous.GetPlazo(row_soli.getString(2)));
+                    json_solicitud.put(K_PERIODICIDAD, Miscellaneous.GetPeriodicidad(row_soli.getString(3)));
+                    json_solicitud.put(K_FECHA_DESEMBOLSO, row_soli.getString(4));
+                    json_solicitud.put(K_HORA_VISITA, row_soli.getString(6));
+                    json_solicitud.put(K_MONTO_PRESTAMO, Integer.parseInt(row_soli.getString(7).replace(",", "")));
+                    int montoPres = Integer.parseInt(row_soli.getString(7).replace(",", ""));
+                    json_solicitud.put(K_MONTO_LETRA, (Miscellaneous.cantidadLetra(row_soli.getString(7).replace(",", "")).toUpperCase() + " PESOS MEXICANOS").replace("  ", " "));
+                    json_solicitud.put(K_DESTINO_PRESTAMO, row_soli.getString(8));
+                    json_solicitud.put(K_CLASIFICACION_RIESGO, row_soli.getString(9));
+                    json_solicitud.put(K_TIPO_SOLICITUD, "ORIGINACION");
+                    int montoRefinanciar = 0;
+                    if (row_soli.getString(11) != null && !row_soli.getString(11).isEmpty())
+                        montoRefinanciar = Integer.parseInt(row_soli.getString(11).replace(",", ""));
+                    json_solicitud.put(K_MONTO_REFINANCIAR, montoRefinanciar);
+                    row_soli.close();//Cierra datos de credito
+                    json_solicitud.put(K_FECHA_INICIO, row.getString(6));
+                    json_solicitud.put(K_FECHA_TERMINO, row.getString(7));
+                    json_solicitud.put(K_FECHA_ENVIO, Miscellaneous.ObtenerFecha(TIMESTAMP));
+
+
+                    row_soli = dBhelper.getRecords(TBL_CLIENTE_IND, " WHERE id_solicitud = ?", "", new String[]{row.getString(0)});
                     row_soli.moveToFirst();
-                    JSONObject json_solicitud = new JSONObject();
-                    try {
-                        Log.e("Plazo", row_soli.getString(2)+" plazo");
-                        json_solicitud.put(K_PLAZO, Miscellaneous.GetPlazo(row_soli.getString(2)));
-                        json_solicitud.put(K_PERIODICIDAD, Miscellaneous.GetPeriodicidad(row_soli.getString(3)));
-                        json_solicitud.put(K_FECHA_DESEMBOLSO, row_soli.getString(4));
-                        json_solicitud.put(K_HORA_VISITA, row_soli.getString(6));
-                        json_solicitud.put(K_MONTO_PRESTAMO, Integer.parseInt(row_soli.getString(7).replace(",","")));
-                        int montoPres = Integer.parseInt(row_soli.getString(7).replace(",",""));
-                        json_solicitud.put(K_MONTO_LETRA, (Miscellaneous.cantidadLetra(row_soli.getString(7).replace(",","")).toUpperCase() + " PESOS MEXICANOS").replace("  ", " "));
-                        json_solicitud.put(K_DESTINO_PRESTAMO, row_soli.getString(8));
-                        json_solicitud.put(K_CLASIFICACION_RIESGO, row_soli.getString(9));
-                        json_solicitud.put(K_TIPO_SOLICITUD, "ORIGINACION");
-                        int montoRefinanciar = 0;
-                        if(row_soli.getString(11) != null && !row_soli.getString(11).isEmpty()) montoRefinanciar = Integer.parseInt(row_soli.getString(11).replace(",",""));
-                        json_solicitud.put(K_MONTO_REFINANCIAR, montoRefinanciar);
-                        row_soli.close();//Cierra datos de credito
-                        json_solicitud.put(K_FECHA_INICIO, row.getString(6));
-                        json_solicitud.put(K_FECHA_TERMINO, row.getString(7));
-                        json_solicitud.put(K_FECHA_ENVIO, Miscellaneous.ObtenerFecha(TIMESTAMP));
+                    JSONObject json_solicitante = new JSONObject();
+                    json_solicitante.put(K_NOMBRE, row_soli.getString(2));
+                    json_solicitante.put(K_PATERNO, row_soli.getString(3));
+                    json_solicitante.put(K_MATERNO, row_soli.getString(4));
+                    json_solicitante.put(K_FECHA_NACIMIENTO, row_soli.getString(5));
+                    json_solicitante.put(K_EDAD, row_soli.getInt(6));
+                    json_solicitante.put(K_GENERO, row_soli.getInt(7));
+                    json_solicitante.put(K_ESTADO_NACIMIENTO, row_soli.getString(8));
+                    json_solicitante.put(K_RFC, row_soli.getString(9));
+                    json_solicitante.put(K_CURP, row_soli.getString(10) + row_soli.getString(11));
+                    json_solicitante.put(K_OCUPACION, row_soli.getString(12));
+                    json_solicitante.put(K_ACTIVIDAD_ECONOMICA, row_soli.getString(13));
+                    json_solicitante.put(K_IDENTIFICACION_TIPO, row_soli.getString(14));
+                    json_solicitante.put(K_NO_IDENTIFICACION, row_soli.getString(15));
+                    json_solicitante.put(K_NIVEL_ESTUDIO, row_soli.getString(16));
+                    String estadoCivil = row_soli.getString(17);
+                    json_solicitante.put(K_ESTADO_CIVIL, row_soli.getString(17));
+                    if (row_soli.getString(17).equals("CASADO(A)"))
+                        json_solicitante.put(K_BIENES, (row_soli.getInt(18) == 1) ? "MANCOMUNADOS" : "SEPARADOS");
+                    json_solicitante.put(K_TIPO_VIVIENDA, row_soli.getString(19));
+                    if (row_soli.getString(19).equals("CASA FAMILIAR"))
+                        json_solicitante.put(K_PARENTESCO, row_soli.getString(20));
+                    else if (row_soli.getString(19).equals("OTRO"))
+                        json_solicitante.put(K_OTRO_TIPO_VIVIENDA, row_soli.getString(21));
+                    Cursor row_dir = dBhelper.getRecords(TBL_DIRECCIONES, " WHERE id_direccion = ? AND tipo_direccion = ?", "", new String[]{row_soli.getString(22), "CLIENTE"});
+                    row_dir.moveToFirst();
+                    json_solicitante.put(K_LATITUD, row_dir.getString(2));
+                    json_solicitante.put(K_LONGITUD, row_dir.getString(3));
+                    json_solicitante.put(K_CALLE, row_dir.getString(4));
+                    json_solicitante.put(K_NO_EXTERIOR, row_dir.getString(5));
+                    json_solicitante.put(K_NO_INTERIOR, row_dir.getString(6));
+                    json_solicitante.put(K_NO_LOTE, row_dir.getString(7));
+                    json_solicitante.put(K_NO_MANZANA, row_dir.getString(8));
+                    json_solicitante.put(K_CODIGO_POSTAL, row_dir.getInt(9));
+                    json_solicitante.put(K_COLONIA, row_dir.getString(10));
+                    json_solicitante.put(K_CIUDAD, row_dir.getString(11));
+                    json_solicitante.put(K_LOCALIDAD, row_dir.getString(12));
+                    json_solicitante.put(K_MUNICIPIO, row_dir.getString(13));
+                    json_solicitante.put(K_ESTADO, row_dir.getString(14));
+                    json_solicitante.put(K_LOCATED_AT, row_dir.getString(15));
+                    row_dir.close();
+                    json_solicitante.put(K_TEL_CASA, row_soli.getString(23));
+                    json_solicitante.put(K_TEL_CELULAR, row_soli.getString(24));
+                    json_solicitante.put(K_TEL_MENSAJE, row_soli.getString(25));
+                    json_solicitante.put(K_TEL_TRABAJO, row_soli.getString(26));
+                    json_solicitante.put(K_TIEMPO_VIVIR_SITIO, row_soli.getInt(27));
+                    json_solicitante.put(K_DEPENDIENTES_ECONOMICO, row_soli.getInt(28));
+                    json_solicitante.put(K_MEDIO_CONTACTO, row_soli.getString(29));
+                    json_solicitante.put(K_ESTADO_CUENTA, row_soli.getString(30));
+                    json_solicitante.put(K_EMAIL, row_soli.getString(31));
+                    json_solicitante.put(K_FOTO_FACHADA, row_soli.getString(32));
+                    json_solicitante.put(K_REFERENCIA_DOMICILIARIA, row_soli.getString(33));
+                    json_solicitante.put(K_FIRMA, row_soli.getString(34));
+                    json_solicitante.put(K_SOL_LATITUD, row_soli.getString(38));
+                    json_solicitante.put(K_SOL_LONGITUD, row_soli.getString(39));
+                    json_solicitante.put(K_SOL_LOCATED_AT, row_soli.getString(40));
+                    json_solicitante.put(K_TIENE_FIRMA, "SI");
+                    json_solicitante.put(K_NOMBRE_QUIEN_FIRMA, "");
 
 
-                        row_soli = dBhelper.getRecords(TBL_CLIENTE_IND, " WHERE id_solicitud = ?", "", new String[]{row.getString(0)});
-                        row_soli.moveToFirst();
-                        JSONObject json_solicitante = new JSONObject();
-                        json_solicitante.put(K_NOMBRE, row_soli.getString(2));
-                        json_solicitante.put(K_PATERNO, row_soli.getString(3));
-                        json_solicitante.put(K_MATERNO, row_soli.getString(4));
-                        json_solicitante.put(K_FECHA_NACIMIENTO, row_soli.getString(5));
-                        json_solicitante.put(K_EDAD, row_soli.getInt(6));
-                        json_solicitante.put(K_GENERO, row_soli.getInt(7));
-                        json_solicitante.put(K_ESTADO_NACIMIENTO, row_soli.getString(8));
-                        json_solicitante.put(K_RFC, row_soli.getString(9));
-                        json_solicitante.put(K_CURP, row_soli.getString(10) + row_soli.getString(11));
-                        json_solicitante.put(K_OCUPACION, row_soli.getString(12));
-                        json_solicitante.put(K_ACTIVIDAD_ECONOMICA, row_soli.getString(13));
-                        json_solicitante.put(K_IDENTIFICACION_TIPO, row_soli.getString(14));
-                        json_solicitante.put(K_NO_IDENTIFICACION, row_soli.getString(15));
-                        json_solicitante.put(K_NIVEL_ESTUDIO, row_soli.getString(16));
-                        String estadoCivil = row_soli.getString(17);
-                        json_solicitante.put(K_ESTADO_CIVIL, row_soli.getString(17));
-                        if (row_soli.getString(17).equals("CASADO(A)"))
-                            json_solicitante.put(K_BIENES, (row_soli.getInt(18) == 1)?"MANCOMUNADOS":"SEPARADOS");
-                        json_solicitante.put(K_TIPO_VIVIENDA, row_soli.getString(19));
-                        if (row_soli.getString(19).equals("CASA FAMILIAR"))
-                            json_solicitante.put(K_PARENTESCO, row_soli.getString(20));
-                        else if (row_soli.getString(19).equals("OTRO"))
-                            json_solicitante.put(K_OTRO_TIPO_VIVIENDA, row_soli.getString(21));
-                        Cursor row_dir = dBhelper.getRecords(TBL_DIRECCIONES, " WHERE id_direccion = ? AND tipo_direccion = ?", "", new String[]{row_soli.getString(22), "CLIENTE"});
-                        row_dir.moveToFirst();
-                        json_solicitante.put(K_LATITUD, row_dir.getString(2));
-                        json_solicitante.put(K_LONGITUD, row_dir.getString(3));
-                        json_solicitante.put(K_CALLE, row_dir.getString(4));
-                        json_solicitante.put(K_NO_EXTERIOR, row_dir.getString(5));
-                        json_solicitante.put(K_NO_INTERIOR, row_dir.getString(6));
-                        json_solicitante.put(K_NO_LOTE, row_dir.getString(7));
-                        json_solicitante.put(K_NO_MANZANA, row_dir.getString(8));
-                        json_solicitante.put(K_CODIGO_POSTAL, row_dir.getInt(9));
-                        json_solicitante.put(K_COLONIA, row_dir.getString(10));
-                        json_solicitante.put(K_CIUDAD, row_dir.getString(11));
-                        json_solicitante.put(K_LOCALIDAD, row_dir.getString(12));
-                        json_solicitante.put(K_MUNICIPIO,row_dir.getString(13));
-                        json_solicitante.put(K_ESTADO, row_dir.getString(14));
-                        json_solicitante.put(K_LOCATED_AT, row_dir.getString(15));
-                        row_dir.close();
-                        json_solicitante.put(K_TEL_CASA, row_soli.getString(23));
-                        json_solicitante.put(K_TEL_CELULAR, row_soli.getString(24));
-                        json_solicitante.put(K_TEL_MENSAJE, row_soli.getString(25));
-                        json_solicitante.put(K_TEL_TRABAJO, row_soli.getString(26));
-                        json_solicitante.put(K_TIEMPO_VIVIR_SITIO, row_soli.getInt(27));
-                        json_solicitante.put(K_DEPENDIENTES_ECONOMICO, row_soli.getInt(28));
-                        json_solicitante.put(K_MEDIO_CONTACTO, row_soli.getString(29));
-                        json_solicitante.put(K_ESTADO_CUENTA, row_soli.getString(30));
-                        json_solicitante.put(K_EMAIL, row_soli.getString(31));
-                        json_solicitante.put(K_FOTO_FACHADA, row_soli.getString(32));
-                        json_solicitante.put(K_REFERENCIA_DOMICILIARIA, row_soli.getString(33));
-                        json_solicitante.put(K_FIRMA, row_soli.getString(34));
-                        json_solicitante.put(K_SOL_LATITUD, row_soli.getString(38));
-                        json_solicitante.put(K_SOL_LONGITUD, row_soli.getString(39));
-                        json_solicitante.put(K_SOL_LOCATED_AT, row_soli.getString(40));
-                        json_solicitante.put(K_TIENE_FIRMA, "SI");
-                        json_solicitante.put(K_NOMBRE_QUIEN_FIRMA, "");
+                    json_solicitud.put(K_SOLICITANTE, json_solicitante);
+                    String fachadaCli = row_soli.getString(32);
+                    String firmaCli = row_soli.getString(34);
+                    row_soli.close(); //Cierra datos del solicitante
 
+                    Log.e("solicitante", json_solicitante.toString());
 
-                        json_solicitud.put(K_SOLICITANTE, json_solicitante);
-                        String fachadaCli = row_soli.getString(32);
-                        String firmaCli = row_soli.getString(34);
-                        row_soli.close(); //Cierra datos del solicitante
-
-                        Log.e("solicitante", json_solicitante.toString());
-
-                        if (estadoCivil.equals("CASADO(A)") ||
+                    if (estadoCivil.equals("CASADO(A)") ||
                             estadoCivil.equals("UNION LIBRE")) {
-                            JSONObject json_conyuge = new JSONObject();
-                            row_soli = dBhelper.getRecords(TBL_CONYUGE_IND, " WHERE id_solicitud = ?", "", new String[]{row.getString(0)});
-                            row_soli.moveToFirst();
-                            json_conyuge.put(K_NOMBRE, row_soli.getString(2));
-                            json_conyuge.put(K_PATERNO, row_soli.getString(3));
-                            json_conyuge.put(K_MATERNO, row_soli.getString(4));
-                            json_conyuge.put(K_NACIONALIDAD, row_soli.getString(5));
-                            json_conyuge.put(K_OCUPACION, row_soli.getString(6));
-
-                            row_dir = dBhelper.getRecords(TBL_DIRECCIONES, " WHERE id_direccion = ? AND tipo_direccion = ?", "", new String[]{row_soli.getString(7), "CONYUGE"});
-                            row_dir.moveToFirst();
-                            json_conyuge.put(K_CALLE, row_dir.getString(4));
-                            json_conyuge.put(K_NO_EXTERIOR,row_dir.getString(5));
-                            json_conyuge.put(K_NO_INTERIOR, row_dir.getString(6));
-                            json_conyuge.put(K_NO_LOTE, row_dir.getString(7));
-                            json_conyuge.put(K_NO_MANZANA, row_dir.getString(8));
-                            json_conyuge.put(K_CODIGO_POSTAL, row_dir.getInt(9));
-                            json_conyuge.put(K_COLONIA, row_dir.getString(10));
-                            json_conyuge.put(K_CIUDAD, row_dir.getString(11));
-                            json_conyuge.put(K_LOCALIDAD,row_dir.getString(12));
-                            json_conyuge.put(K_MUNICIPIO,row_dir.getString(13));
-                            json_conyuge.put(K_ESTADO, row_dir.getString(14));
-                            row_dir.close();
-                            json_conyuge.put(K_INGRESO_MENSUAL, Double.parseDouble(row_soli.getString(8).replace(",","")));
-                            json_conyuge.put(K_GASTO_MENSUAL, Double.parseDouble(row_soli.getString(9).replace(",","")));
-                            json_conyuge.put(K_TEL_CASA, row_soli.getString(10));
-                            json_conyuge.put(K_TEL_CELULAR, row_soli.getString(11));
-
-                            json_solicitud.put(K_SOLICITANTE_CONYUGE, json_conyuge);
-                            row_soli.close(); //Cierra datos de conyuge
-
-                            Log.e("conyuge", json_conyuge.toString());
-                        }
-
-                        Log.e("Solicituf", json_solicitud.toString());
-                        if (montoPres >= 30000){
-                            row_soli = dBhelper.getRecords(TBL_ECONOMICOS_IND, " WHERE id_solicitud = ?", "", new String[]{row.getString(0)});
-                            row_soli.moveToFirst();
-                            JSONObject json_economicos = new JSONObject();
-                            json_economicos.put(K_PROPIEDADES, row_soli.getString(2));
-                            json_economicos.put(K_VALOR_APROXIMADO, row_soli.getString(3));
-                            json_economicos.put(K_UBICACION, row_soli.getString(4));
-                            json_economicos.put(K_INGRESO, row_soli.getString(5).replace(",",""));
-
-                            json_solicitud.put(K_SOLICITANTE_DATOS_ECONOMICOS, json_economicos);
-                            row_soli.close(); //Cierra datos economicos
-
-                            Log.e("economicos", json_economicos.toString());
-                        }
-
-
-
-                        row_soli = dBhelper.getRecords(TBL_NEGOCIO_IND, " WHERE id_solicitud = ?", "", new String[]{row.getString(0)});
+                        JSONObject json_conyuge = new JSONObject();
+                        row_soli = dBhelper.getRecords(TBL_CONYUGE_IND, " WHERE id_solicitud = ?", "", new String[]{row.getString(0)});
                         row_soli.moveToFirst();
-                        JSONObject json_negocio = new JSONObject();
-                        json_negocio.put(K_NOMBRE, row_soli.getString(2));
+                        json_conyuge.put(K_NOMBRE, row_soli.getString(2));
+                        json_conyuge.put(K_PATERNO, row_soli.getString(3));
+                        json_conyuge.put(K_MATERNO, row_soli.getString(4));
+                        json_conyuge.put(K_NACIONALIDAD, row_soli.getString(5));
+                        json_conyuge.put(K_OCUPACION, row_soli.getString(6));
 
-                        row_dir = dBhelper.getRecords(TBL_DIRECCIONES, " WHERE id_direccion = ? AND tipo_direccion = ?", "", new String[]{row_soli.getString(3), "NEGOCIO"});
+                        row_dir = dBhelper.getRecords(TBL_DIRECCIONES, " WHERE id_direccion = ? AND tipo_direccion = ?", "", new String[]{row_soli.getString(7), "CONYUGE"});
                         row_dir.moveToFirst();
-                        json_negocio.put(K_LATITUD, row_dir.getString(2));
-                        json_negocio.put(K_LONGITUD, row_dir.getString(3));
-                        json_negocio.put(K_CALLE, row_dir.getString(4));
-                        json_negocio.put(K_NO_EXTERIOR, row_dir.getString(5));
-                        json_negocio.put(K_NO_INTERIOR, row_dir.getString(6));
-                        json_negocio.put(K_NO_LOTE, row_dir.getString(7));
-                        json_negocio.put(K_NO_MANZANA, row_dir.getString(8));
-                        json_negocio.put(K_CODIGO_POSTAL, row_dir.getInt(9));
-                        json_negocio.put(K_COLONIA, row_dir.getString(10));
-                        json_negocio.put(K_CIUDAD, row_dir.getString(11));
-                        json_negocio.put(K_LOCALIDAD, row_dir.getString(12));
-                        json_negocio.put(K_MUNICIPIO, row_dir.getString(13));
-                        json_negocio.put(K_ESTADO, row_dir.getString(14));
-                        json_negocio.put(K_LOCATED_AT, row_dir.getString(15));
-                        row_dir.close(); //Cierra datos de direccion del negocio
-
-                        json_negocio.put(K_OCUPACION, row_soli.getString(4));
-                        json_negocio.put(K_ACTIVIDAD_ECONOMICA, row_soli.getString(5));
-                        json_negocio.put(K_DESTINO_CREDITO, row_soli.getString(6));
-                        if (row_soli.getString(6).contains("OTRO"))
-                            json_negocio.put(K_OTRO_DESTINO_CREDITO, row_soli.getString(7));
-                        json_negocio.put(K_ANTIGUEDAD, row_soli.getString(8));
-                        json_negocio.put(K_INGRESO_MENSUAL, row_soli.getString(9).replace(",",""));
-                        json_negocio.put(K_INGRESOS_OTROS, row_soli.getString(10).replace(",",""));
-                        json_negocio.put(K_GASTO_MENSUAL, row_soli.getString(11).replace(",",""));
-                        json_negocio.put(K_GASTO_AGUA, row_soli.getString(12).replace(",",""));
-                        json_negocio.put(K_GASTO_LUZ, row_soli.getString(13).replace(",",""));
-                        json_negocio.put(K_GASTO_TELEFONO, row_soli.getString(14).replace(",",""));
-                        json_negocio.put(K_GASTO_RENTA, row_soli.getString(15).replace(",",""));
-                        json_negocio.put(K_GASTO_OTROS, row_soli.getString(16).replace(",",""));
-                        //json_negocio.put(K_CAPACIDAD_PAGO, row_soli.getString(17).replace(",",""));//se intercambia con monto maximo
-                        json_negocio.put(K_CAPACIDAD_PAGO, row_soli.getString(20).replace(",",""));
-                        String aux = "";
-                        if (!row_soli.getString(18).trim().isEmpty()){
-                            String[] medios = row_soli.getString(18).split(",");
-
-                            if (medios.length > 0){
-                                for (int m = 0; m < medios.length; m++){
-                                    if (m == 0)
-                                        aux = "'"+medios[m].trim()+"'";
-                                    else
-                                        aux += ","+"'"+medios[m].trim()+"'";
-                                }
-                            }
-                        }
-
-                        String sql = "SELECT * FROM " + TBL_MEDIOS_PAGO_ORI + " WHERE nombre IN ("+aux+")";
-                        Cursor row_medio_pago  = db.rawQuery(sql, null);
-                        if (row_medio_pago.getCount() > 0){
-                            row_medio_pago.moveToFirst();
-                            String medios_pagos_ids = "";
-                            for(int k = 0; k < row_medio_pago.getCount(); k++){
-                                if (k == 0)
-                                    medios_pagos_ids = row_medio_pago.getString(1).trim();
-                                else
-                                    medios_pagos_ids += ","+row_medio_pago.getString(1).trim();
-
-                                row_medio_pago.moveToNext();
-                            }
-                            json_negocio.put(K_MEDIOS_PAGOS, medios_pagos_ids);
-                        }
-                        else{
-                            json_negocio.put(K_MEDIOS_PAGOS, "");
-                        }
-                        row_medio_pago.close();
-
-                        if (row_soli.getString(18).contains("OTRO"))
-                            json_negocio.put(K_OTRO_MEDIOS_PAGOS, row_soli.getString(19));
-
-                        //json_negocio.put(K_MONTO_MAXIMO, row_soli.getString(20).replace(",",""));//se intercambia con capacidad de pago
-                        json_negocio.put(K_MONTO_MAXIMO, row_soli.getString(17).replace(",",""));
-
-                        json_negocio.put(K_NUM_OPERACIONES_MENSUAL, row_soli.getInt(21));
-
-                        if (row_soli.getString(18).contains("EFECTIVO"))
-                            json_negocio.put(K_NUM_OPERACIONES_MENSUAL_EFECTIVO, row_soli.getInt(22));
-
-                        json_negocio.put(K_DIAS_VENTA, row_soli.getString(23));
-                        json_negocio.put(K_FOTO_FACHADA, row_soli.getString(24));
-                        String fachadaNeg = row_soli.getString(24);
-                        json_negocio.put(K_REFERENCIA_NEGOCIO, row_soli.getString(25));
-
-                        json_solicitud.put(K_SOLICITANTE_NEGOCIO, json_negocio);
-                        row_soli.close(); // Cierra datos del negocio
-
-                        Log.e("negocio", json_negocio.toString());
-
-                        row_soli = dBhelper.getRecords(TBL_AVAL_IND, " WHERE id_solicitud = ?", "", new String[]{row.getString(0)});
-                        row_soli.moveToFirst();
-                        JSONObject json_aval = new JSONObject();
-                        json_aval.put(K_NOMBRE, row_soli.getString(2));
-                        json_aval.put(K_PATERNO, row_soli.getString(3));
-                        json_aval.put(K_MATERNO, row_soli.getString(4));
-                        json_aval.put(K_FECHA_NACIMIENTO, row_soli.getString(5));
-                        json_aval.put(K_EDAD, row_soli.getInt(6));
-                        json_aval.put(K_GENERO, row_soli.getInt(7));
-                        json_aval.put(K_ESTADO_NACIMIENTO, row_soli.getString(8));
-                        json_aval.put(K_RFC, row_soli.getString(9));
-                        json_aval.put(K_CURP, row_soli.getString(10)+row_soli.getString(11));
-                        json_aval.put(K_PARENTESCO_SOLICITANTE, row_soli.getString(12));
-                        json_aval.put(K_IDENTIFICACION_TIPO, row_soli.getString(13));
-                        json_aval.put(K_NO_IDENTIFICACION, row_soli.getString(14));
-                        json_aval.put(K_OCUPACION, row_soli.getString(15));
-                        json_aval.put(K_ACTIVIDAD_ECONOMICA, row_soli.getString(16));
-
-                        row_dir = dBhelper.getRecords(TBL_DIRECCIONES, " WHERE id_direccion = ? AND tipo_direccion = ?", "", new String[]{row_soli.getString(19), "AVAL"});
-                        row_dir.moveToFirst();
-                        json_aval.put(K_LATITUD, row_dir.getString(2));
-                        json_aval.put(K_LONGITUD, row_dir.getString(3));
-                        json_aval.put(K_CALLE, row_dir.getString(4));
-                        json_aval.put(K_NO_EXTERIOR, row_dir.getString(5));
-                        json_aval.put(K_NO_INTERIOR, row_dir.getString(6));
-                        json_aval.put(K_NO_LOTE, row_dir.getString(7));
-                        json_aval.put(K_NO_MANZANA, row_dir.getString(8));
-                        json_aval.put(K_CODIGO_POSTAL, row_dir.getInt(9));
-                        json_aval.put(K_COLONIA, row_dir.getString(10));
-                        json_aval.put(K_CIUDAD,row_dir.getString(11));
-                        json_aval.put(K_LOCALIDAD, row_dir.getString(12));
-                        json_aval.put(K_MUNICIPIO,row_dir.getString(13));
-                        json_aval.put(K_ESTADO, row_dir.getString(14));
-                        json_aval.put(K_LOCATED_AT, row_dir.getString(15));
+                        json_conyuge.put(K_CALLE, row_dir.getString(4));
+                        json_conyuge.put(K_NO_EXTERIOR, row_dir.getString(5));
+                        json_conyuge.put(K_NO_INTERIOR, row_dir.getString(6));
+                        json_conyuge.put(K_NO_LOTE, row_dir.getString(7));
+                        json_conyuge.put(K_NO_MANZANA, row_dir.getString(8));
+                        json_conyuge.put(K_CODIGO_POSTAL, row_dir.getInt(9));
+                        json_conyuge.put(K_COLONIA, row_dir.getString(10));
+                        json_conyuge.put(K_CIUDAD, row_dir.getString(11));
+                        json_conyuge.put(K_LOCALIDAD, row_dir.getString(12));
+                        json_conyuge.put(K_MUNICIPIO, row_dir.getString(13));
+                        json_conyuge.put(K_ESTADO, row_dir.getString(14));
                         row_dir.close();
+                        json_conyuge.put(K_INGRESO_MENSUAL, Double.parseDouble(row_soli.getString(8).replace(",", "")));
+                        json_conyuge.put(K_GASTO_MENSUAL, Double.parseDouble(row_soli.getString(9).replace(",", "")));
+                        json_conyuge.put(K_TEL_CASA, row_soli.getString(10));
+                        json_conyuge.put(K_TEL_CELULAR, row_soli.getString(11));
 
-                        json_aval.put(K_TIPO_VIVIENDA, row_soli.getString(20));
-                        if (row_soli.getString(20).equals("CASA FAMILIAR") || row_soli.getString(20).equals("CASA RENTADA")){
-                            json_aval.put(K_NOMBRE_TITULAR, row_soli.getString(21));
-                            json_aval.put(K_PARENTESCO_TITULAR, row_soli.getString(22));
-                        }
-                        json_aval.put(K_CARACTERISTICAS_DOMICILIO, row_soli.getString(23));
-                        json_aval.put(K_TIENE_NEGOCIO, row_soli.getInt(25) == 1);
-                        if (row_soli.getInt(25) == 1) {
-                            json_aval.put(K_NOMBRE_NEGOCIO, row_soli.getString(26).trim().toUpperCase());
-                            json_aval.put(K_ANTIGUEDAD, row_soli.getInt(24));
-                        }
-                        json_aval.put(K_INGRESO_MENSUAL, Double.parseDouble(row_soli.getString(27).replace(",","")));
-                        json_aval.put(K_INGRESOS_OTROS, Double.parseDouble(row_soli.getString(28).replace(",","")));
-                        json_aval.put(K_GASTO_MENSUAL, Double.parseDouble(row_soli.getString(29).replace(",","")));
-                        json_aval.put(K_GASTO_AGUA, Double.parseDouble(row_soli.getString(30).replace(",","")));
-                        json_aval.put(K_GASTO_LUZ, Double.parseDouble(row_soli.getString(31).replace(",","")));
-                        json_aval.put(K_GASTO_TELEFONO, Double.parseDouble(row_soli.getString(32).replace(",","")));
-                        json_aval.put(K_GASTO_RENTA, Double.parseDouble(row_soli.getString(33).replace(",","")));
-                        json_aval.put(K_GASTO_OTROS, Double.parseDouble(row_soli.getString(34).replace(",","")));
-                        //json_aval.put(K_MONTO_MAXIMO, Double.parseDouble(row_soli.getString(38).replace(",","")));//se intercambiar con capacidad de pago
-                        //json_aval.put(K_CAPACIDAD_PAGO, Double.parseDouble(row_soli.getString(35).replace(",","")));//se intercambia con monto maximo
-                        json_aval.put(K_MONTO_MAXIMO, Double.parseDouble(row_soli.getString(35).replace(",","")));
-                        json_aval.put(K_CAPACIDAD_PAGO, Double.parseDouble(row_soli.getString(38).replace(",","")));
+                        json_solicitud.put(K_SOLICITANTE_CONYUGE, json_conyuge);
+                        row_soli.close(); //Cierra datos de conyuge
 
-                        aux = "";
-                        if (!row_soli.getString(36).trim().isEmpty()){
-                            String[] medios = row_soli.getString(36).split(",");
-
-                            if (medios.length > 0){
-                                for (int m = 0; m < medios.length; m++){
-                                    if (m == 0)
-                                        aux = "'"+medios[m].trim()+"'";
-                                    else
-                                        aux += ","+"'"+medios[m].trim()+"'";
-                                }
-                            }
-                        }
-
-                        sql = "SELECT * FROM " + TBL_MEDIOS_PAGO_ORI + " WHERE nombre IN ("+aux+")";
-                        row_medio_pago  = db.rawQuery(sql, null);
-                        if (row_medio_pago.getCount() > 0){
-                            row_medio_pago.moveToFirst();
-                            String medios_pagos_ids = "";
-                            for(int k = 0; k < row_medio_pago.getCount(); k++){
-                                if (k == 0)
-                                    medios_pagos_ids = row_medio_pago.getString(1).trim();
-                                else
-                                    medios_pagos_ids += ","+row_medio_pago.getString(1).trim();
-
-                                row_medio_pago.moveToNext();
-                            }
-                            json_aval.put(K_MEDIOS_PAGOS, medios_pagos_ids);
-                        }
-                        else{
-                            json_aval.put(K_MEDIOS_PAGOS, "");
-                        }
-                        row_medio_pago.close();
-
-                        if (row_soli.getString(36).contains("OTRO"))
-                            json_aval.put(K_OTRO_MEDIOS_PAGOS, row_soli.getString(37));
-
-                        json_aval.put(K_HORA_LOCALIZACION, row_soli.getString(39));
-                        json_aval.put(K_ACTIVOS_OBSERVABLES, row_soli.getString(40));
-                        json_aval.put(K_TEL_CASA, row_soli.getString(41));
-                        json_aval.put(K_TEL_CELULAR, row_soli.getString(42));
-                        json_aval.put(K_TEL_MENSAJE, row_soli.getString(43));
-                        json_aval.put(K_TEL_TRABAJO, row_soli.getString(44));
-                        json_aval.put(K_EMAIL, row_soli.getString(45));
-                        json_aval.put(K_FOTO_FACHADA, row_soli.getString(46));
-                        String fachadaAval = row_soli.getString(46);
-                        json_aval.put(K_REFERENCIA_DOMICILIARIA, row_soli.getString(47));
-                        json_aval.put(K_FIRMA, row_soli.getString(48));
-                        json_aval.put(K_AVAL_LATITUD, row_soli.getString(52));
-                        json_aval.put(K_AVAL_LONGITUD, row_soli.getString(53));
-                        json_aval.put(K_AVAL_LOCATED_AT, row_soli.getString(54));
-                        String firmaAval = row_soli.getString(48);
-
-                        json_solicitud.put(K_SOLICITANTE_AVAL, json_aval);
-
-                        row_soli.close(); //Cierre de datos del aval
-
-                        Log.e("aval", json_aval.toString());
-
-                        row_soli = dBhelper.getRecords(TBL_REFERENCIA_IND, " WHERE id_solicitud = ?", "", new String[]{row.getString(0)});
-                        row_soli.moveToFirst();
-
-                        JSONObject json_referencia = new JSONObject();
-                        json_referencia.put(K_NOMBRE, row_soli.getString(2));
-                        json_referencia.put(K_PATERNO, row_soli.getString(3));
-                        json_referencia.put(K_MATERNO, row_soli.getString(4));
-                        json_referencia.put(K_FECHA_NACIMIENTO, row_soli.getString(5));
-
-                        row_dir = dBhelper.getRecords(TBL_DIRECCIONES, " WHERE id_direccion = ? AND tipo_direccion = ?", "", new String[]{row_soli.getString(6), "REFERENCIA"});
-                        row_dir.moveToFirst();
-                        json_referencia.put(K_CALLE, row_dir.getString(4));
-                        json_referencia.put(K_NO_EXTERIOR, row_dir.getString(5));
-                        json_referencia.put(K_NO_INTERIOR, row_dir.getString(6));
-                        json_referencia.put(K_NO_LOTE, row_dir.getString(7));
-                        json_referencia.put(K_NO_MANZANA, row_dir.getString(8));
-                        json_referencia.put(K_CODIGO_POSTAL, row_dir.getInt(9));
-                        json_referencia.put(K_COLONIA, row_dir.getString(10));
-                        json_referencia.put(K_CIUDAD,row_dir.getString(11));
-                        json_referencia.put(K_LOCALIDAD, row_dir.getString(12));
-                        json_referencia.put(K_MUNICIPIO,row_dir.getString(13));
-                        json_referencia.put(K_ESTADO, row_dir.getString(14));
-                        row_dir.close();//Cierre de datos de referencia
-                        json_referencia.put(K_TEL_CELULAR, row_soli.getString(7));
-
-                        json_solicitud.put(K_SOLICITANTE_REFERENCIA, json_referencia);
-                        row_soli.close(); //Cierre de datos de referencia
-
-                        Log.e("referencia", json_referencia.toString());
-
-                        row_soli = dBhelper.getRecords(TBL_CROQUIS_IND, " WHERE id_solicitud = ?", "", new String[]{row.getString(0)});
-                        row_soli.moveToFirst();
-                        JSONObject json_croquis = new JSONObject();
-                        json_croquis.put(K_CALLE_ENFRENTE, row_soli.getString(2));
-                        json_croquis.put(K_CALLE_LATERAL_IZQ, row_soli.getString(3));
-                        json_croquis.put(K_CALLE_LATERAL_DER, row_soli.getString(4));
-                        json_croquis.put(K_CALLE_ATRAS, row_soli.getString(5));
-                        json_croquis.put(K_REFERENCIAS, row_soli.getString(6));
-                        json_croquis.put(K_CARACTERISTICAS_DOMICILIO, row_soli.getString(9));
-                        json_solicitud.put(K_SOLICITANTE_CROQUIS, json_croquis);
-                        row_soli.close(); //Cierra datos del croquis
-
-                        Log.e("croquis", json_croquis.toString());
-
-                        row_soli = dBhelper.getRecords(TBL_POLITICAS_PLD_IND, " WHERE id_solicitud = ?", "", new String[]{row.getString(0)});
-                        row_soli.moveToFirst();
-                        JSONObject json_politicas = new JSONObject();
-                        json_politicas.put(K_PROPIETARIO, row_soli.getInt(2) == 1);
-                        json_politicas.put(K_PROVEEDOR_RECURSOS, row_soli.getInt(3) == 1);
-                        json_politicas.put(K_POLITICAMENTE_EXP, row_soli.getInt(4) == 1);
-                        json_solicitud.put(K_SOLICITANTE_POLITICAS, json_politicas);
-                        row_soli.close(); //Cierra datos de politicas pld
-                        Log.e("politicas", json_politicas.toString());
-
-                        row_soli = dBhelper.getRecords(TBL_DOCUMENTOS, " WHERE id_solicitud = ?", "", new String[]{row.getString(0)});
-                        row_soli.moveToFirst();
-                        JSONObject json_documentos = new JSONObject();
-                        json_documentos.put(K_IDENTIFICACION_FRONTAL, row_soli.getString(2));
-                        String identiFrontal = row_soli.getString(2);
-                        json_documentos.put(K_IDENTIFICACION_REVERSO, row_soli.getString(3));
-                        String identiReverso = row_soli.getString(3);
-                        json_documentos.put(K_CURP, row_soli.getString(4));
-                        String curp = row_soli.getString(4);
-                        json_documentos.put(K_COMPROBANTE_DOMICILIO, row_soli.getString(5));
-                        String comprobante = row_soli.getString(5);
-                        json_documentos.put(K_CODIGO_BARRAS, row_soli.getString(6));
-                        json_documentos.put(K_FIRMA_ASESOR, row_soli.getString(7));
-                        String firmaAsesor = row_soli.getString(7);
-
-                        String identificacionSelfie = "";
-                        if(row_soli.getString(9) != null)
-                        {
-                            json_documentos.put(K_IDENTIFICACION_SELFIE, row_soli.getString(9));
-                            identificacionSelfie = row_soli.getString(9);
-                        }
-                        else
-                        {
-                            json_documentos.put(K_IDENTIFICACION_SELFIE, "");
-                        }
-
-                        String comprobanteGarantia = "";
-                        if(row_soli.getString(10) != null)
-                        {
-                            json_documentos.put(K_COMPROBANTE_GARANTIA, row_soli.getString(10));
-                            comprobanteGarantia = row_soli.getString(10);
-                        }
-                        else
-                        {
-                            json_documentos.put(K_COMPROBANTE_GARANTIA, "");
-                        }
-
-                        String identificacionFrontalAval = "";
-                        if(row_soli.getString(11) != null)
-                        {
-                            json_documentos.put(K_IDENTIFICACION_FRONTAL_AVAL, row_soli.getString(11));
-                            identificacionFrontalAval = row_soli.getString(11);
-                        }
-                        else
-                        {
-                            json_documentos.put(K_IDENTIFICACION_FRONTAL_AVAL, "");
-                        }
-
-                        String identificacionReversoAval = "";
-                        if(row_soli.getString(12) != null)
-                        {
-                            json_documentos.put(K_IDENTIFICACION_REVERSO_AVAL, row_soli.getString(12));
-                            identificacionReversoAval = row_soli.getString(12);
-                        }
-                        else
-                        {
-                            json_documentos.put(K_IDENTIFICACION_REVERSO_AVAL, "");
-                        }
-
-                        String curpAval = "";
-                        if(row_soli.getString(13) != null)
-                        {
-                            json_documentos.put(K_CURP_AVAL, row_soli.getString(13));
-                            curpAval = row_soli.getString(13);
-                        }
-                        else
-                        {
-                            json_documentos.put(K_CURP_AVAL, "");
-                        }
-
-                        String comprobanteAval = "";
-                        if(row_soli.getString(14) != null)
-                        {
-                            json_documentos.put(K_COMPROBANTE_DOMICILIO_AVAL, row_soli.getString(14));
-                            comprobanteAval = row_soli.getString(14);
-                        }
-                        else
-                        {
-                            json_documentos.put(K_COMPROBANTE_DOMICILIO_AVAL, "");
-                        }
-
-                        json_solicitud.put(K_SOLICITANTE_DOCUMENTOS, json_documentos);
-
-                        row_soli.close(); //Cierre de datos de documentos
-
-                        Log.e("documentos", json_documentos.toString());
-                        new GuardarSolicitudInd().execute(
-                                ctx,
-                                json_solicitud,
-                                fachadaCli,
-                                firmaCli,
-                                fachadaNeg,
-                                fachadaAval,
-                                firmaAval,
-                                identiFrontal,
-                                identiReverso,
-                                curp,
-                                comprobante,
-                                firmaAsesor,
-                                row.getString(0),
-                                row.getLong(4),
-                                identificacionSelfie,
-                                comprobanteGarantia,
-                                identificacionFrontalAval,
-                                identificacionReversoAval,
-                                curpAval,
-                                comprobanteAval
-                        );
-
-                    } catch (JSONException e) {
-                        e.printStackTrace();
+                        Log.e("conyuge", json_conyuge.toString());
                     }
+
+                    Log.e("Solicituf", json_solicitud.toString());
+                    if (montoPres >= 30000) {
+                        row_soli = dBhelper.getRecords(TBL_ECONOMICOS_IND, " WHERE id_solicitud = ?", "", new String[]{row.getString(0)});
+                        row_soli.moveToFirst();
+                        JSONObject json_economicos = new JSONObject();
+                        json_economicos.put(K_PROPIEDADES, row_soli.getString(2));
+                        json_economicos.put(K_VALOR_APROXIMADO, row_soli.getString(3));
+                        json_economicos.put(K_UBICACION, row_soli.getString(4));
+                        json_economicos.put(K_INGRESO, row_soli.getString(5).replace(",", ""));
+
+                        json_solicitud.put(K_SOLICITANTE_DATOS_ECONOMICOS, json_economicos);
+                        row_soli.close(); //Cierra datos economicos
+
+                        Log.e("economicos", json_economicos.toString());
+                    }
+
+
+                    row_soli = dBhelper.getRecords(TBL_NEGOCIO_IND, " WHERE id_solicitud = ?", "", new String[]{row.getString(0)});
+                    row_soli.moveToFirst();
+                    JSONObject json_negocio = new JSONObject();
+                    json_negocio.put(K_NOMBRE, row_soli.getString(2));
+
+                    row_dir = dBhelper.getRecords(TBL_DIRECCIONES, " WHERE id_direccion = ? AND tipo_direccion = ?", "", new String[]{row_soli.getString(3), "NEGOCIO"});
+                    row_dir.moveToFirst();
+                    json_negocio.put(K_LATITUD, row_dir.getString(2));
+                    json_negocio.put(K_LONGITUD, row_dir.getString(3));
+                    json_negocio.put(K_CALLE, row_dir.getString(4));
+                    json_negocio.put(K_NO_EXTERIOR, row_dir.getString(5));
+                    json_negocio.put(K_NO_INTERIOR, row_dir.getString(6));
+                    json_negocio.put(K_NO_LOTE, row_dir.getString(7));
+                    json_negocio.put(K_NO_MANZANA, row_dir.getString(8));
+                    json_negocio.put(K_CODIGO_POSTAL, row_dir.getInt(9));
+                    json_negocio.put(K_COLONIA, row_dir.getString(10));
+                    json_negocio.put(K_CIUDAD, row_dir.getString(11));
+                    json_negocio.put(K_LOCALIDAD, row_dir.getString(12));
+                    json_negocio.put(K_MUNICIPIO, row_dir.getString(13));
+                    json_negocio.put(K_ESTADO, row_dir.getString(14));
+                    json_negocio.put(K_LOCATED_AT, row_dir.getString(15));
+                    row_dir.close(); //Cierra datos de direccion del negocio
+
+                    json_negocio.put(K_OCUPACION, row_soli.getString(4));
+                    json_negocio.put(K_ACTIVIDAD_ECONOMICA, row_soli.getString(5));
+                    json_negocio.put(K_DESTINO_CREDITO, row_soli.getString(6));
+                    if (row_soli.getString(6).contains("OTRO"))
+                        json_negocio.put(K_OTRO_DESTINO_CREDITO, row_soli.getString(7));
+                    json_negocio.put(K_ANTIGUEDAD, row_soli.getString(8));
+                    json_negocio.put(K_INGRESO_MENSUAL, row_soli.getString(9).replace(",", ""));
+                    json_negocio.put(K_INGRESOS_OTROS, row_soli.getString(10).replace(",", ""));
+                    json_negocio.put(K_GASTO_MENSUAL, row_soli.getString(11).replace(",", ""));
+                    json_negocio.put(K_GASTO_AGUA, row_soli.getString(12).replace(",", ""));
+                    json_negocio.put(K_GASTO_LUZ, row_soli.getString(13).replace(",", ""));
+                    json_negocio.put(K_GASTO_TELEFONO, row_soli.getString(14).replace(",", ""));
+                    json_negocio.put(K_GASTO_RENTA, row_soli.getString(15).replace(",", ""));
+                    json_negocio.put(K_GASTO_OTROS, row_soli.getString(16).replace(",", ""));
+                    //json_negocio.put(K_CAPACIDAD_PAGO, row_soli.getString(17).replace(",",""));//se intercambia con monto maximo
+                    json_negocio.put(K_CAPACIDAD_PAGO, row_soli.getString(20).replace(",", ""));
+                    String aux = "";
+                    if (!row_soli.getString(18).trim().isEmpty()) {
+                        String[] medios = row_soli.getString(18).split(",");
+
+                        if (medios.length > 0) {
+                            for (int m = 0; m < medios.length; m++) {
+                                if (m == 0)
+                                    aux = "'" + medios[m].trim() + "'";
+                                else
+                                    aux += "," + "'" + medios[m].trim() + "'";
+                            }
+                        }
+                    }
+
+                    String sql = "SELECT * FROM " + TBL_MEDIOS_PAGO_ORI + " WHERE nombre IN (" + aux + ")";
+                    Cursor row_medio_pago = db.rawQuery(sql, null);
+                    if (row_medio_pago.getCount() > 0) {
+                        row_medio_pago.moveToFirst();
+                        String medios_pagos_ids = "";
+                        for (int k = 0; k < row_medio_pago.getCount(); k++) {
+                            if (k == 0)
+                                medios_pagos_ids = row_medio_pago.getString(1).trim();
+                            else
+                                medios_pagos_ids += "," + row_medio_pago.getString(1).trim();
+
+                            row_medio_pago.moveToNext();
+                        }
+                        json_negocio.put(K_MEDIOS_PAGOS, medios_pagos_ids);
+                    } else {
+                        json_negocio.put(K_MEDIOS_PAGOS, "");
+                    }
+                    row_medio_pago.close();
+
+                    if (row_soli.getString(18).contains("OTRO"))
+                        json_negocio.put(K_OTRO_MEDIOS_PAGOS, row_soli.getString(19));
+
+                    //json_negocio.put(K_MONTO_MAXIMO, row_soli.getString(20).replace(",",""));//se intercambia con capacidad de pago
+                    json_negocio.put(K_MONTO_MAXIMO, row_soli.getString(17).replace(",", ""));
+
+                    json_negocio.put(K_NUM_OPERACIONES_MENSUAL, row_soli.getInt(21));
+
+                    if (row_soli.getString(18).contains("EFECTIVO"))
+                        json_negocio.put(K_NUM_OPERACIONES_MENSUAL_EFECTIVO, row_soli.getInt(22));
+
+                    json_negocio.put(K_DIAS_VENTA, row_soli.getString(23));
+                    json_negocio.put(K_FOTO_FACHADA, row_soli.getString(24));
+                    String fachadaNeg = row_soli.getString(24);
+                    json_negocio.put(K_REFERENCIA_NEGOCIO, row_soli.getString(25));
+
+                    json_solicitud.put(K_SOLICITANTE_NEGOCIO, json_negocio);
+                    row_soli.close(); // Cierra datos del negocio
+
+                    Log.e("negocio", json_negocio.toString());
+
+                    row_soli = dBhelper.getRecords(TBL_AVAL_IND, " WHERE id_solicitud = ?", "", new String[]{row.getString(0)});
+                    row_soli.moveToFirst();
+                    JSONObject json_aval = new JSONObject();
+                    json_aval.put(K_NOMBRE, row_soli.getString(2));
+                    json_aval.put(K_PATERNO, row_soli.getString(3));
+                    json_aval.put(K_MATERNO, row_soli.getString(4));
+                    json_aval.put(K_FECHA_NACIMIENTO, row_soli.getString(5));
+                    json_aval.put(K_EDAD, row_soli.getInt(6));
+                    json_aval.put(K_GENERO, row_soli.getInt(7));
+                    json_aval.put(K_ESTADO_NACIMIENTO, row_soli.getString(8));
+                    json_aval.put(K_RFC, row_soli.getString(9));
+                    json_aval.put(K_CURP, row_soli.getString(10) + row_soli.getString(11));
+                    json_aval.put(K_PARENTESCO_SOLICITANTE, row_soli.getString(12));
+                    json_aval.put(K_IDENTIFICACION_TIPO, row_soli.getString(13));
+                    json_aval.put(K_NO_IDENTIFICACION, row_soli.getString(14));
+                    json_aval.put(K_OCUPACION, row_soli.getString(15));
+                    json_aval.put(K_ACTIVIDAD_ECONOMICA, row_soli.getString(16));
+
+                    row_dir = dBhelper.getRecords(TBL_DIRECCIONES, " WHERE id_direccion = ? AND tipo_direccion = ?", "", new String[]{row_soli.getString(19), "AVAL"});
+                    row_dir.moveToFirst();
+                    json_aval.put(K_LATITUD, row_dir.getString(2));
+                    json_aval.put(K_LONGITUD, row_dir.getString(3));
+                    json_aval.put(K_CALLE, row_dir.getString(4));
+                    json_aval.put(K_NO_EXTERIOR, row_dir.getString(5));
+                    json_aval.put(K_NO_INTERIOR, row_dir.getString(6));
+                    json_aval.put(K_NO_LOTE, row_dir.getString(7));
+                    json_aval.put(K_NO_MANZANA, row_dir.getString(8));
+                    json_aval.put(K_CODIGO_POSTAL, row_dir.getInt(9));
+                    json_aval.put(K_COLONIA, row_dir.getString(10));
+                    json_aval.put(K_CIUDAD, row_dir.getString(11));
+                    json_aval.put(K_LOCALIDAD, row_dir.getString(12));
+                    json_aval.put(K_MUNICIPIO, row_dir.getString(13));
+                    json_aval.put(K_ESTADO, row_dir.getString(14));
+                    json_aval.put(K_LOCATED_AT, row_dir.getString(15));
+                    row_dir.close();
+
+                    json_aval.put(K_TIPO_VIVIENDA, row_soli.getString(20));
+                    if (row_soli.getString(20).equals("CASA FAMILIAR") || row_soli.getString(20).equals("CASA RENTADA")) {
+                        json_aval.put(K_NOMBRE_TITULAR, row_soli.getString(21));
+                        json_aval.put(K_PARENTESCO_TITULAR, row_soli.getString(22));
+                    }
+                    json_aval.put(K_CARACTERISTICAS_DOMICILIO, row_soli.getString(23));
+                    json_aval.put(K_TIENE_NEGOCIO, row_soli.getInt(25) == 1);
+                    if (row_soli.getInt(25) == 1) {
+                        json_aval.put(K_NOMBRE_NEGOCIO, row_soli.getString(26).trim().toUpperCase());
+                        json_aval.put(K_ANTIGUEDAD, row_soli.getInt(24));
+                    }
+                    json_aval.put(K_INGRESO_MENSUAL, Double.parseDouble(row_soli.getString(27).replace(",", "")));
+                    json_aval.put(K_INGRESOS_OTROS, Double.parseDouble(row_soli.getString(28).replace(",", "")));
+                    json_aval.put(K_GASTO_MENSUAL, Double.parseDouble(row_soli.getString(29).replace(",", "")));
+                    json_aval.put(K_GASTO_AGUA, Double.parseDouble(row_soli.getString(30).replace(",", "")));
+                    json_aval.put(K_GASTO_LUZ, Double.parseDouble(row_soli.getString(31).replace(",", "")));
+                    json_aval.put(K_GASTO_TELEFONO, Double.parseDouble(row_soli.getString(32).replace(",", "")));
+                    json_aval.put(K_GASTO_RENTA, Double.parseDouble(row_soli.getString(33).replace(",", "")));
+                    json_aval.put(K_GASTO_OTROS, Double.parseDouble(row_soli.getString(34).replace(",", "")));
+                    //json_aval.put(K_MONTO_MAXIMO, Double.parseDouble(row_soli.getString(38).replace(",","")));//se intercambiar con capacidad de pago
+                    //json_aval.put(K_CAPACIDAD_PAGO, Double.parseDouble(row_soli.getString(35).replace(",","")));//se intercambia con monto maximo
+                    json_aval.put(K_MONTO_MAXIMO, Double.parseDouble(row_soli.getString(35).replace(",", "")));
+                    json_aval.put(K_CAPACIDAD_PAGO, Double.parseDouble(row_soli.getString(38).replace(",", "")));
+
+                    aux = "";
+                    if (!row_soli.getString(36).trim().isEmpty()) {
+                        String[] medios = row_soli.getString(36).split(",");
+
+                        if (medios.length > 0) {
+                            for (int m = 0; m < medios.length; m++) {
+                                if (m == 0)
+                                    aux = "'" + medios[m].trim() + "'";
+                                else
+                                    aux += "," + "'" + medios[m].trim() + "'";
+                            }
+                        }
+                    }
+
+                    sql = "SELECT * FROM " + TBL_MEDIOS_PAGO_ORI + " WHERE nombre IN (" + aux + ")";
+                    row_medio_pago = db.rawQuery(sql, null);
+                    if (row_medio_pago.getCount() > 0) {
+                        row_medio_pago.moveToFirst();
+                        String medios_pagos_ids = "";
+                        for (int k = 0; k < row_medio_pago.getCount(); k++) {
+                            if (k == 0)
+                                medios_pagos_ids = row_medio_pago.getString(1).trim();
+                            else
+                                medios_pagos_ids += "," + row_medio_pago.getString(1).trim();
+
+                            row_medio_pago.moveToNext();
+                        }
+                        json_aval.put(K_MEDIOS_PAGOS, medios_pagos_ids);
+                    } else {
+                        json_aval.put(K_MEDIOS_PAGOS, "");
+                    }
+                    row_medio_pago.close();
+
+                    if (row_soli.getString(36).contains("OTRO"))
+                        json_aval.put(K_OTRO_MEDIOS_PAGOS, row_soli.getString(37));
+
+                    json_aval.put(K_HORA_LOCALIZACION, row_soli.getString(39));
+                    json_aval.put(K_ACTIVOS_OBSERVABLES, row_soli.getString(40));
+                    json_aval.put(K_TEL_CASA, row_soli.getString(41));
+                    json_aval.put(K_TEL_CELULAR, row_soli.getString(42));
+                    json_aval.put(K_TEL_MENSAJE, row_soli.getString(43));
+                    json_aval.put(K_TEL_TRABAJO, row_soli.getString(44));
+                    json_aval.put(K_EMAIL, row_soli.getString(45));
+                    json_aval.put(K_FOTO_FACHADA, row_soli.getString(46));
+                    String fachadaAval = row_soli.getString(46);
+                    json_aval.put(K_REFERENCIA_DOMICILIARIA, row_soli.getString(47));
+                    json_aval.put(K_FIRMA, row_soli.getString(48));
+                    json_aval.put(K_AVAL_LATITUD, row_soli.getString(52));
+                    json_aval.put(K_AVAL_LONGITUD, row_soli.getString(53));
+                    json_aval.put(K_AVAL_LOCATED_AT, row_soli.getString(54));
+                    String firmaAval = row_soli.getString(48);
+
+                    json_solicitud.put(K_SOLICITANTE_AVAL, json_aval);
+
+                    row_soli.close(); //Cierre de datos del aval
+
+                    Log.e("aval", json_aval.toString());
+
+                    row_soli = dBhelper.getRecords(TBL_REFERENCIA_IND, " WHERE id_solicitud = ?", "", new String[]{row.getString(0)});
+                    row_soli.moveToFirst();
+
+                    JSONObject json_referencia = new JSONObject();
+                    json_referencia.put(K_NOMBRE, row_soli.getString(2));
+                    json_referencia.put(K_PATERNO, row_soli.getString(3));
+                    json_referencia.put(K_MATERNO, row_soli.getString(4));
+                    json_referencia.put(K_FECHA_NACIMIENTO, row_soli.getString(5));
+
+                    row_dir = dBhelper.getRecords(TBL_DIRECCIONES, " WHERE id_direccion = ? AND tipo_direccion = ?", "", new String[]{row_soli.getString(6), "REFERENCIA"});
+                    row_dir.moveToFirst();
+                    json_referencia.put(K_CALLE, row_dir.getString(4));
+                    json_referencia.put(K_NO_EXTERIOR, row_dir.getString(5));
+                    json_referencia.put(K_NO_INTERIOR, row_dir.getString(6));
+                    json_referencia.put(K_NO_LOTE, row_dir.getString(7));
+                    json_referencia.put(K_NO_MANZANA, row_dir.getString(8));
+                    json_referencia.put(K_CODIGO_POSTAL, row_dir.getInt(9));
+                    json_referencia.put(K_COLONIA, row_dir.getString(10));
+                    json_referencia.put(K_CIUDAD, row_dir.getString(11));
+                    json_referencia.put(K_LOCALIDAD, row_dir.getString(12));
+                    json_referencia.put(K_MUNICIPIO, row_dir.getString(13));
+                    json_referencia.put(K_ESTADO, row_dir.getString(14));
+                    row_dir.close();//Cierre de datos de referencia
+                    json_referencia.put(K_TEL_CELULAR, row_soli.getString(7));
+
+                    json_solicitud.put(K_SOLICITANTE_REFERENCIA, json_referencia);
+                    row_soli.close(); //Cierre de datos de referencia
+
+                    Log.e("referencia", json_referencia.toString());
+
+                    row_soli = dBhelper.getRecords(TBL_CROQUIS_IND, " WHERE id_solicitud = ?", "", new String[]{row.getString(0)});
+                    row_soli.moveToFirst();
+                    JSONObject json_croquis = new JSONObject();
+                    json_croquis.put(K_CALLE_ENFRENTE, row_soli.getString(2));
+                    json_croquis.put(K_CALLE_LATERAL_IZQ, row_soli.getString(3));
+                    json_croquis.put(K_CALLE_LATERAL_DER, row_soli.getString(4));
+                    json_croquis.put(K_CALLE_ATRAS, row_soli.getString(5));
+                    json_croquis.put(K_REFERENCIAS, row_soli.getString(6));
+                    json_croquis.put(K_CARACTERISTICAS_DOMICILIO, row_soli.getString(9));
+                    json_solicitud.put(K_SOLICITANTE_CROQUIS, json_croquis);
+                    row_soli.close(); //Cierra datos del croquis
+
+                    Log.e("croquis", json_croquis.toString());
+
+                    row_soli = dBhelper.getRecords(TBL_POLITICAS_PLD_IND, " WHERE id_solicitud = ?", "", new String[]{row.getString(0)});
+                    row_soli.moveToFirst();
+                    JSONObject json_politicas = new JSONObject();
+                    json_politicas.put(K_PROPIETARIO, row_soli.getInt(2) == 1);
+                    json_politicas.put(K_PROVEEDOR_RECURSOS, row_soli.getInt(3) == 1);
+                    json_politicas.put(K_POLITICAMENTE_EXP, row_soli.getInt(4) == 1);
+                    json_solicitud.put(K_SOLICITANTE_POLITICAS, json_politicas);
+                    row_soli.close(); //Cierra datos de politicas pld
+                    Log.e("politicas", json_politicas.toString());
+
+                    row_soli = dBhelper.getRecords(TBL_DOCUMENTOS, " WHERE id_solicitud = ?", "", new String[]{row.getString(0)});
+                    row_soli.moveToFirst();
+                    JSONObject json_documentos = new JSONObject();
+                    json_documentos.put(K_IDENTIFICACION_FRONTAL, row_soli.getString(2));
+                    String identiFrontal = row_soli.getString(2);
+                    json_documentos.put(K_IDENTIFICACION_REVERSO, row_soli.getString(3));
+                    String identiReverso = row_soli.getString(3);
+                    json_documentos.put(K_CURP, row_soli.getString(4));
+                    String curp = row_soli.getString(4);
+                    json_documentos.put(K_COMPROBANTE_DOMICILIO, row_soli.getString(5));
+                    String comprobante = row_soli.getString(5);
+                    json_documentos.put(K_CODIGO_BARRAS, row_soli.getString(6));
+                    json_documentos.put(K_FIRMA_ASESOR, row_soli.getString(7));
+                    String firmaAsesor = row_soli.getString(7);
+
+                    String identificacionSelfie = "";
+                    if (row_soli.getString(9) != null) {
+                        json_documentos.put(K_IDENTIFICACION_SELFIE, row_soli.getString(9));
+                        identificacionSelfie = row_soli.getString(9);
+                    } else {
+                        json_documentos.put(K_IDENTIFICACION_SELFIE, "");
+                    }
+
+                    String comprobanteGarantia = "";
+                    if (row_soli.getString(10) != null) {
+                        json_documentos.put(K_COMPROBANTE_GARANTIA, row_soli.getString(10));
+                        comprobanteGarantia = row_soli.getString(10);
+                    } else {
+                        json_documentos.put(K_COMPROBANTE_GARANTIA, "");
+                    }
+
+                    String identificacionFrontalAval = "";
+                    if (row_soli.getString(11) != null) {
+                        json_documentos.put(K_IDENTIFICACION_FRONTAL_AVAL, row_soli.getString(11));
+                        identificacionFrontalAval = row_soli.getString(11);
+                    } else {
+                        json_documentos.put(K_IDENTIFICACION_FRONTAL_AVAL, "");
+                    }
+
+                    String identificacionReversoAval = "";
+                    if (row_soli.getString(12) != null) {
+                        json_documentos.put(K_IDENTIFICACION_REVERSO_AVAL, row_soli.getString(12));
+                        identificacionReversoAval = row_soli.getString(12);
+                    } else {
+                        json_documentos.put(K_IDENTIFICACION_REVERSO_AVAL, "");
+                    }
+
+                    String curpAval = "";
+                    if (row_soli.getString(13) != null) {
+                        json_documentos.put(K_CURP_AVAL, row_soli.getString(13));
+                        curpAval = row_soli.getString(13);
+                    } else {
+                        json_documentos.put(K_CURP_AVAL, "");
+                    }
+
+                    String comprobanteAval = "";
+                    if (row_soli.getString(14) != null) {
+                        json_documentos.put(K_COMPROBANTE_DOMICILIO_AVAL, row_soli.getString(14));
+                        comprobanteAval = row_soli.getString(14);
+                    } else {
+                        json_documentos.put(K_COMPROBANTE_DOMICILIO_AVAL, "");
+                    }
+
+                    json_solicitud.put(K_SOLICITANTE_DOCUMENTOS, json_documentos);
+
+                    row_soli.close(); //Cierre de datos de documentos
+
+                    Log.e("documentos", json_documentos.toString());
+                    new GuardarSolicitudInd().execute(
+                            ctx,
+                            json_solicitud,
+                            fachadaCli,
+                            firmaCli,
+                            fachadaNeg,
+                            fachadaAval,
+                            firmaAval,
+                            identiFrontal,
+                            identiReverso,
+                            curp,
+                            comprobante,
+                            firmaAsesor,
+                            row.getString(0),
+                            row.getLong(4),
+                            identificacionSelfie,
+                            comprobanteGarantia,
+                            identificacionFrontalAval,
+                            identificacionReversoAval,
+                            curpAval,
+                            comprobanteAval
+                    );
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
 
                 row.moveToNext();
             }
@@ -1285,33 +1268,33 @@ public class Servicios_Sincronizado {
 
     }
 
-    public void SendRenovacionInd (Context ctx, boolean flag){
+    public void SendRenovacionInd(Context ctx, boolean flag) {
         final AlertDialog loading = Popups.showLoadingDialog(ctx, R.string.please_wait, R.string.loading_info);
-        final DBhelper dBhelper = new DBhelper(ctx);
+        final DBhelper dBhelper = DBhelper.getInstance(ctx);
         final SQLiteDatabase db = dBhelper.getWritableDatabase();
 
         if (flag) loading.show();
 
         Cursor row = dBhelper.getRecords(TBL_SOLICITUDES_REN, " WHERE tipo_solicitud = 1 AND estatus = 1", "", null);
 
-        if (row.getCount() > 0){
+        if (row.getCount() > 0) {
             row.moveToFirst();
 
-            Log.e("count solicitudes", row.getCount()+" total");
-            for (int i = 0; i < row.getCount(); i++){
+            Log.e("count solicitudes", row.getCount() + " total");
+            for (int i = 0; i < row.getCount(); i++) {
                 Cursor row_soli = dBhelper.getRecords(TBL_CREDITO_IND_REN, " WHERE id_solicitud = ?", "", new String[]{row.getString(0)});
 
                 row_soli.moveToFirst();
                 JSONObject json_solicitud = new JSONObject();
                 try {
-                    Log.e("Plazo", row_soli.getString(2)+" plazo");
+                    Log.e("Plazo", row_soli.getString(2) + " plazo");
                     json_solicitud.put(K_PLAZO, Miscellaneous.GetPlazo(row_soli.getString(2)));
                     json_solicitud.put(K_PERIODICIDAD, Miscellaneous.GetPeriodicidad(row_soli.getString(3)));
                     json_solicitud.put(K_FECHA_DESEMBOLSO, row_soli.getString(4));
                     json_solicitud.put(K_HORA_VISITA, row_soli.getString(6));
-                    json_solicitud.put(K_MONTO_PRESTAMO, Integer.parseInt(row_soli.getString(7).replace(",","")));
-                    int montoPres = Integer.parseInt(row_soli.getString(7).replace(",",""));
-                    json_solicitud.put(K_MONTO_LETRA, (Miscellaneous.cantidadLetra(row_soli.getString(7).replace(",","")).toUpperCase() + " PESOS MEXICANOS").replace("  ", " "));
+                    json_solicitud.put(K_MONTO_PRESTAMO, Integer.parseInt(row_soli.getString(7).replace(",", "")));
+                    int montoPres = Integer.parseInt(row_soli.getString(7).replace(",", ""));
+                    json_solicitud.put(K_MONTO_LETRA, (Miscellaneous.cantidadLetra(row_soli.getString(7).replace(",", "")).toUpperCase() + " PESOS MEXICANOS").replace("  ", " "));
                     json_solicitud.put(K_DESTINO_PRESTAMO, row_soli.getString(13));
                     json_solicitud.put(K_CLASIFICACION_RIESGO, row_soli.getString(14));
                     json_solicitud.put(K_COMPORTAMIENTO_PAGO, row_soli.getString(10));
@@ -1319,7 +1302,8 @@ public class Servicios_Sincronizado {
                     json_solicitud.put(K_TIPO_SOLICITUD, "RENOVACION");
                     json_solicitud.put(K_CLIENTE_ID, row_soli.getLong(11));
                     int montoRefinanciar = 0;
-                    if(row_soli.getString(16) != null && !row_soli.getString(16).isEmpty()) montoRefinanciar = Integer.parseInt(row_soli.getString(16).replace(",",""));
+                    if (row_soli.getString(16) != null && !row_soli.getString(16).isEmpty())
+                        montoRefinanciar = Integer.parseInt(row_soli.getString(16).replace(",", ""));
                     json_solicitud.put(K_MONTO_REFINANCIAR, montoRefinanciar);
 
                     row_soli.close();//Cierra datos de credito
@@ -1347,7 +1331,7 @@ public class Servicios_Sincronizado {
                     String estadoCivil = row_soli.getString(17);
                     json_solicitante.put(K_ESTADO_CIVIL, row_soli.getString(17));
                     if (row_soli.getString(17).equals("CASADO(A)"))
-                        json_solicitante.put(K_BIENES, (row_soli.getInt(18) == 1)?"MANCOMUNADOS":"SEPARADOS");
+                        json_solicitante.put(K_BIENES, (row_soli.getInt(18) == 1) ? "MANCOMUNADOS" : "SEPARADOS");
                     json_solicitante.put(K_TIPO_VIVIENDA, row_soli.getString(19));
                     if (row_soli.getString(19).equals("CASA FAMILIAR"))
                         json_solicitante.put(K_PARENTESCO, row_soli.getString(20));
@@ -1366,7 +1350,7 @@ public class Servicios_Sincronizado {
                     json_solicitante.put(K_COLONIA, row_dir.getString(10));
                     json_solicitante.put(K_CIUDAD, row_dir.getString(11));
                     json_solicitante.put(K_LOCALIDAD, row_dir.getString(12));
-                    json_solicitante.put(K_MUNICIPIO,row_dir.getString(13));
+                    json_solicitante.put(K_MUNICIPIO, row_dir.getString(13));
                     json_solicitante.put(K_ESTADO, row_dir.getString(14));
                     json_solicitante.put(K_LOCATED_AT, row_dir.getString(15));
                     row_dir.close();
@@ -1409,19 +1393,19 @@ public class Servicios_Sincronizado {
                         row_dir = dBhelper.getRecords(TBL_DIRECCIONES_REN, " WHERE id_direccion = ? AND tipo_direccion = ?", "", new String[]{row_soli.getString(7), "CONYUGE"});
                         row_dir.moveToFirst();
                         json_conyuge.put(K_CALLE, row_dir.getString(4));
-                        json_conyuge.put(K_NO_EXTERIOR,row_dir.getString(5));
+                        json_conyuge.put(K_NO_EXTERIOR, row_dir.getString(5));
                         json_conyuge.put(K_NO_INTERIOR, row_dir.getString(6));
                         json_conyuge.put(K_NO_LOTE, row_dir.getString(7));
                         json_conyuge.put(K_NO_MANZANA, row_dir.getString(8));
                         json_conyuge.put(K_CODIGO_POSTAL, row_dir.getInt(9));
                         json_conyuge.put(K_COLONIA, row_dir.getString(10));
                         json_conyuge.put(K_CIUDAD, row_dir.getString(11));
-                        json_conyuge.put(K_LOCALIDAD,row_dir.getString(12));
-                        json_conyuge.put(K_MUNICIPIO,row_dir.getString(13));
+                        json_conyuge.put(K_LOCALIDAD, row_dir.getString(12));
+                        json_conyuge.put(K_MUNICIPIO, row_dir.getString(13));
                         json_conyuge.put(K_ESTADO, row_dir.getString(14));
                         row_dir.close();
-                        json_conyuge.put(K_INGRESO_MENSUAL, Double.parseDouble(row_soli.getString(8).replace(",","")));
-                        json_conyuge.put(K_GASTO_MENSUAL, Double.parseDouble(row_soli.getString(9).replace(",","")));
+                        json_conyuge.put(K_INGRESO_MENSUAL, Double.parseDouble(row_soli.getString(8).replace(",", "")));
+                        json_conyuge.put(K_GASTO_MENSUAL, Double.parseDouble(row_soli.getString(9).replace(",", "")));
                         json_conyuge.put(K_TEL_CASA, row_soli.getString(10));
                         json_conyuge.put(K_TEL_CELULAR, row_soli.getString(11));
 
@@ -1432,21 +1416,20 @@ public class Servicios_Sincronizado {
                     }
 
                     Log.e("Solicitud", json_solicitud.toString());
-                    if (montoPres >= 30000){
+                    if (montoPres >= 30000) {
                         row_soli = dBhelper.getRecords(TBL_ECONOMICOS_IND_REN, " WHERE id_solicitud = ?", "", new String[]{row.getString(0)});
                         row_soli.moveToFirst();
                         JSONObject json_economicos = new JSONObject();
                         json_economicos.put(K_PROPIEDADES, row_soli.getString(2));
                         json_economicos.put(K_VALOR_APROXIMADO, row_soli.getString(3));
                         json_economicos.put(K_UBICACION, row_soli.getString(4));
-                        json_economicos.put(K_INGRESO, row_soli.getString(5).replace(",",""));
+                        json_economicos.put(K_INGRESO, row_soli.getString(5).replace(",", ""));
 
                         json_solicitud.put(K_SOLICITANTE_DATOS_ECONOMICOS, json_economicos);
                         row_soli.close(); //Cierra datos economicos
 
                         Log.e("economicos", json_economicos.toString());
                     }
-
 
 
                     row_soli = dBhelper.getRecords(TBL_NEGOCIO_IND_REN, " WHERE id_solicitud = ?", "", new String[]{row.getString(0)});
@@ -1478,46 +1461,45 @@ public class Servicios_Sincronizado {
                     if (row_soli.getString(6).contains("OTRO"))
                         json_negocio.put(K_OTRO_DESTINO_CREDITO, row_soli.getString(7));
                     json_negocio.put(K_ANTIGUEDAD, row_soli.getString(8));
-                    json_negocio.put(K_INGRESO_MENSUAL, row_soli.getString(9).replace(",",""));
-                    json_negocio.put(K_INGRESOS_OTROS, row_soli.getString(10).replace(",",""));
-                    json_negocio.put(K_GASTO_MENSUAL, row_soli.getString(11).replace(",",""));
-                    json_negocio.put(K_GASTO_AGUA, row_soli.getString(12).replace(",",""));
-                    json_negocio.put(K_GASTO_LUZ, row_soli.getString(13).replace(",",""));
-                    json_negocio.put(K_GASTO_TELEFONO, row_soli.getString(14).replace(",",""));
-                    json_negocio.put(K_GASTO_RENTA, row_soli.getString(15).replace(",",""));
-                    json_negocio.put(K_GASTO_OTROS, row_soli.getString(16).replace(",",""));
+                    json_negocio.put(K_INGRESO_MENSUAL, row_soli.getString(9).replace(",", ""));
+                    json_negocio.put(K_INGRESOS_OTROS, row_soli.getString(10).replace(",", ""));
+                    json_negocio.put(K_GASTO_MENSUAL, row_soli.getString(11).replace(",", ""));
+                    json_negocio.put(K_GASTO_AGUA, row_soli.getString(12).replace(",", ""));
+                    json_negocio.put(K_GASTO_LUZ, row_soli.getString(13).replace(",", ""));
+                    json_negocio.put(K_GASTO_TELEFONO, row_soli.getString(14).replace(",", ""));
+                    json_negocio.put(K_GASTO_RENTA, row_soli.getString(15).replace(",", ""));
+                    json_negocio.put(K_GASTO_OTROS, row_soli.getString(16).replace(",", ""));
                     //json_negocio.put(K_CAPACIDAD_PAGO, row_soli.getString(17).replace(",",""));//se intercambio con monto maximo
-                    json_negocio.put(K_MONTO_MAXIMO, row_soli.getString(17).replace(",",""));
+                    json_negocio.put(K_MONTO_MAXIMO, row_soli.getString(17).replace(",", ""));
                     String aux = "";
-                    if (!row_soli.getString(18).trim().isEmpty()){
+                    if (!row_soli.getString(18).trim().isEmpty()) {
                         String[] medios = row_soli.getString(18).split(",");
 
-                        if (medios.length > 0){
-                            for (int m = 0; m < medios.length; m++){
+                        if (medios.length > 0) {
+                            for (int m = 0; m < medios.length; m++) {
                                 if (m == 0)
-                                    aux = "'"+medios[m].trim()+"'";
+                                    aux = "'" + medios[m].trim() + "'";
                                 else
-                                    aux += ","+"'"+medios[m].trim()+"'";
+                                    aux += "," + "'" + medios[m].trim() + "'";
                             }
                         }
                     }
 
-                    String sql = "SELECT * FROM " + TBL_MEDIOS_PAGO_ORI + " WHERE nombre IN ("+aux+")";
-                    Cursor row_medio_pago  = db.rawQuery(sql, null);
-                    if (row_medio_pago.getCount() > 0){
+                    String sql = "SELECT * FROM " + TBL_MEDIOS_PAGO_ORI + " WHERE nombre IN (" + aux + ")";
+                    Cursor row_medio_pago = db.rawQuery(sql, null);
+                    if (row_medio_pago.getCount() > 0) {
                         row_medio_pago.moveToFirst();
                         String medios_pagos_ids = "";
-                        for(int k = 0; k < row_medio_pago.getCount(); k++){
+                        for (int k = 0; k < row_medio_pago.getCount(); k++) {
                             if (k == 0)
                                 medios_pagos_ids = row_medio_pago.getString(1).trim();
                             else
-                                medios_pagos_ids += ","+row_medio_pago.getString(1).trim();
+                                medios_pagos_ids += "," + row_medio_pago.getString(1).trim();
 
                             row_medio_pago.moveToNext();
                         }
                         json_negocio.put(K_MEDIOS_PAGOS, medios_pagos_ids);
-                    }
-                    else{
+                    } else {
                         json_negocio.put(K_MEDIOS_PAGOS, "");
                     }
                     row_medio_pago.close();
@@ -1526,7 +1508,7 @@ public class Servicios_Sincronizado {
                         json_negocio.put(K_OTRO_MEDIOS_PAGOS, row_soli.getString(19));
 
                     //json_negocio.put(K_MONTO_MAXIMO, row_soli.getString(20).replace(",",""));//se intercambia con capacidad de pago
-                    json_negocio.put(K_CAPACIDAD_PAGO, row_soli.getString(20).replace(",",""));//se intercambia con capacidad de pago
+                    json_negocio.put(K_CAPACIDAD_PAGO, row_soli.getString(20).replace(",", ""));//se intercambia con capacidad de pago
 
                     json_negocio.put(K_NUM_OPERACIONES_MENSUAL, row_soli.getInt(21));
 
@@ -1554,7 +1536,7 @@ public class Servicios_Sincronizado {
                     json_aval.put(K_GENERO, row_soli.getInt(7));
                     json_aval.put(K_ESTADO_NACIMIENTO, row_soli.getString(8));
                     json_aval.put(K_RFC, row_soli.getString(9));
-                    json_aval.put(K_CURP, row_soli.getString(10)+row_soli.getString(11));
+                    json_aval.put(K_CURP, row_soli.getString(10) + row_soli.getString(11));
                     json_aval.put(K_PARENTESCO_SOLICITANTE, row_soli.getString(12));
                     json_aval.put(K_IDENTIFICACION_TIPO, row_soli.getString(13));
                     json_aval.put(K_NO_IDENTIFICACION, row_soli.getString(14));
@@ -1572,15 +1554,15 @@ public class Servicios_Sincronizado {
                     json_aval.put(K_NO_MANZANA, row_dir.getString(8));
                     json_aval.put(K_CODIGO_POSTAL, row_dir.getInt(9));
                     json_aval.put(K_COLONIA, row_dir.getString(10));
-                    json_aval.put(K_CIUDAD,row_dir.getString(11));
+                    json_aval.put(K_CIUDAD, row_dir.getString(11));
                     json_aval.put(K_LOCALIDAD, row_dir.getString(12));
-                    json_aval.put(K_MUNICIPIO,row_dir.getString(13));
+                    json_aval.put(K_MUNICIPIO, row_dir.getString(13));
                     json_aval.put(K_ESTADO, row_dir.getString(14));
                     json_aval.put(K_LOCATED_AT, row_dir.getString(15));
                     row_dir.close();
 
                     json_aval.put(K_TIPO_VIVIENDA, row_soli.getString(20));
-                    if (row_soli.getString(20).equals("CASA FAMILIAR") || row_soli.getString(20).equals("CASA RENTADA")){
+                    if (row_soli.getString(20).equals("CASA FAMILIAR") || row_soli.getString(20).equals("CASA RENTADA")) {
                         json_aval.put(K_NOMBRE_TITULAR, row_soli.getString(21));
                         json_aval.put(K_PARENTESCO_TITULAR, row_soli.getString(22));
                     }
@@ -1590,49 +1572,48 @@ public class Servicios_Sincronizado {
                         json_aval.put(K_NOMBRE_NEGOCIO, row_soli.getString(26).trim().toUpperCase());
                         json_aval.put(K_ANTIGUEDAD, row_soli.getInt(24));
                     }
-                    json_aval.put(K_INGRESO_MENSUAL, Double.parseDouble(row_soli.getString(27).replace(",","")));
-                    json_aval.put(K_INGRESOS_OTROS, Double.parseDouble(row_soli.getString(28).replace(",","")));
-                    json_aval.put(K_GASTO_MENSUAL, Double.parseDouble(row_soli.getString(29).replace(",","")));
-                    json_aval.put(K_GASTO_AGUA, Double.parseDouble(row_soli.getString(30).replace(",","")));
-                    json_aval.put(K_GASTO_LUZ, Double.parseDouble(row_soli.getString(31).replace(",","")));
-                    json_aval.put(K_GASTO_TELEFONO, Double.parseDouble(row_soli.getString(32).replace(",","")));
-                    json_aval.put(K_GASTO_RENTA, Double.parseDouble(row_soli.getString(33).replace(",","")));
-                    json_aval.put(K_GASTO_OTROS, Double.parseDouble(row_soli.getString(34).replace(",","")));
+                    json_aval.put(K_INGRESO_MENSUAL, Double.parseDouble(row_soli.getString(27).replace(",", "")));
+                    json_aval.put(K_INGRESOS_OTROS, Double.parseDouble(row_soli.getString(28).replace(",", "")));
+                    json_aval.put(K_GASTO_MENSUAL, Double.parseDouble(row_soli.getString(29).replace(",", "")));
+                    json_aval.put(K_GASTO_AGUA, Double.parseDouble(row_soli.getString(30).replace(",", "")));
+                    json_aval.put(K_GASTO_LUZ, Double.parseDouble(row_soli.getString(31).replace(",", "")));
+                    json_aval.put(K_GASTO_TELEFONO, Double.parseDouble(row_soli.getString(32).replace(",", "")));
+                    json_aval.put(K_GASTO_RENTA, Double.parseDouble(row_soli.getString(33).replace(",", "")));
+                    json_aval.put(K_GASTO_OTROS, Double.parseDouble(row_soli.getString(34).replace(",", "")));
                     //json_aval.put(K_MONTO_MAXIMO, Double.parseDouble(row_soli.getString(38).replace(",","")));//se intercambia con capacidad de pago
-                    json_aval.put(K_CAPACIDAD_PAGO, Double.parseDouble(row_soli.getString(38).replace(",","")));
+                    json_aval.put(K_CAPACIDAD_PAGO, Double.parseDouble(row_soli.getString(38).replace(",", "")));
                     //json_aval.put(K_CAPACIDAD_PAGO, Double.parseDouble(row_soli.getString(35).replace(",","")));//se intercambia con monto maximo
-                    json_aval.put(K_MONTO_MAXIMO, Double.parseDouble(row_soli.getString(35).replace(",","")));
+                    json_aval.put(K_MONTO_MAXIMO, Double.parseDouble(row_soli.getString(35).replace(",", "")));
 
                     aux = "";
-                    if (!row_soli.getString(36).trim().isEmpty()){
+                    if (!row_soli.getString(36).trim().isEmpty()) {
                         String[] medios = row_soli.getString(36).split(",");
 
-                        if (medios.length > 0){
-                            for (int m = 0; m < medios.length; m++){
+                        if (medios.length > 0) {
+                            for (int m = 0; m < medios.length; m++) {
                                 if (m == 0)
-                                    aux = "'"+medios[m].trim()+"'";
+                                    aux = "'" + medios[m].trim() + "'";
                                 else
-                                    aux += ","+"'"+medios[m].trim()+"'";
+                                    aux += "," + "'" + medios[m].trim() + "'";
                             }
                         }
                     }
 
-                    sql = "SELECT * FROM " + TBL_MEDIOS_PAGO_ORI + " WHERE nombre IN ("+aux+")";
-                    row_medio_pago  = db.rawQuery(sql, null);
-                    if (row_medio_pago.getCount() > 0){
+                    sql = "SELECT * FROM " + TBL_MEDIOS_PAGO_ORI + " WHERE nombre IN (" + aux + ")";
+                    row_medio_pago = db.rawQuery(sql, null);
+                    if (row_medio_pago.getCount() > 0) {
                         row_medio_pago.moveToFirst();
                         String medios_pagos_ids = "";
-                        for(int k = 0; k < row_medio_pago.getCount(); k++){
+                        for (int k = 0; k < row_medio_pago.getCount(); k++) {
                             if (k == 0)
                                 medios_pagos_ids = row_medio_pago.getString(1).trim();
                             else
-                                medios_pagos_ids += ","+row_medio_pago.getString(1).trim();
+                                medios_pagos_ids += "," + row_medio_pago.getString(1).trim();
 
                             row_medio_pago.moveToNext();
                         }
                         json_aval.put(K_MEDIOS_PAGOS, medios_pagos_ids);
-                    }
-                    else{
+                    } else {
                         json_aval.put(K_MEDIOS_PAGOS, "");
                     }
                     row_medio_pago.close();
@@ -1680,9 +1661,9 @@ public class Servicios_Sincronizado {
                     json_referencia.put(K_NO_MANZANA, row_dir.getString(8));
                     json_referencia.put(K_CODIGO_POSTAL, row_dir.getInt(9));
                     json_referencia.put(K_COLONIA, row_dir.getString(10));
-                    json_referencia.put(K_CIUDAD,row_dir.getString(11));
+                    json_referencia.put(K_CIUDAD, row_dir.getString(11));
                     json_referencia.put(K_LOCALIDAD, row_dir.getString(12));
-                    json_referencia.put(K_MUNICIPIO,row_dir.getString(13));
+                    json_referencia.put(K_MUNICIPIO, row_dir.getString(13));
                     json_referencia.put(K_ESTADO, row_dir.getString(14));
                     row_dir.close();//Cierre de datos de referencia
                     json_referencia.put(K_TEL_CELULAR, row_soli.getString(7));
@@ -1730,68 +1711,50 @@ public class Servicios_Sincronizado {
                     json_documentos.put(K_FIRMA_ASESOR, row_soli.getString(7));
                     String firmaAsesor = row_soli.getString(7);
                     String identificacionSelfie = "";
-                    if(row_soli.getString(9) != null)
-                    {
+                    if (row_soli.getString(9) != null) {
                         json_documentos.put(K_IDENTIFICACION_SELFIE, row_soli.getString(9));
                         identificacionSelfie = row_soli.getString(9);
-                    }
-                    else
-                    {
+                    } else {
                         json_documentos.put(K_IDENTIFICACION_SELFIE, "");
                     }
 
                     String comprobanteGarantia = "";
-                    if(row_soli.getString(10) != null)
-                    {
+                    if (row_soli.getString(10) != null) {
                         json_documentos.put(K_COMPROBANTE_GARANTIA, row_soli.getString(10));
                         comprobanteGarantia = row_soli.getString(10);
-                    }
-                    else
-                    {
+                    } else {
                         json_documentos.put(K_COMPROBANTE_GARANTIA, "");
                     }
 
                     String identificacionFrontalAval = "";
-                    if(row_soli.getString(11) != null)
-                    {
+                    if (row_soli.getString(11) != null) {
                         json_documentos.put(K_IDENTIFICACION_FRONTAL_AVAL, row_soli.getString(11));
                         identificacionFrontalAval = row_soli.getString(11);
-                    }
-                    else
-                    {
+                    } else {
                         json_documentos.put(K_IDENTIFICACION_FRONTAL_AVAL, "");
                     }
 
                     String identificacionReversoAval = "";
-                    if(row_soli.getString(12) != null)
-                    {
+                    if (row_soli.getString(12) != null) {
                         json_documentos.put(K_IDENTIFICACION_REVERSO_AVAL, row_soli.getString(12));
                         identificacionReversoAval = row_soli.getString(12);
-                    }
-                    else
-                    {
+                    } else {
                         json_documentos.put(K_IDENTIFICACION_REVERSO_AVAL, "");
                     }
 
                     String curpAval = "";
-                    if(row_soli.getString(13) != null)
-                    {
+                    if (row_soli.getString(13) != null) {
                         json_documentos.put(K_CURP_AVAL, row_soli.getString(13));
                         curpAval = row_soli.getString(13);
-                    }
-                    else
-                    {
+                    } else {
                         json_documentos.put(K_CURP_AVAL, "");
                     }
 
                     String comprobanteAval = "";
-                    if(row_soli.getString(14) != null)
-                    {
+                    if (row_soli.getString(14) != null) {
                         json_documentos.put(K_COMPROBANTE_DOMICILIO_AVAL, row_soli.getString(14));
                         comprobanteAval = row_soli.getString(14);
-                    }
-                    else
-                    {
+                    } else {
                         json_documentos.put(K_COMPROBANTE_DOMICILIO_AVAL, "");
                     }
 
@@ -1800,29 +1763,29 @@ public class Servicios_Sincronizado {
                     row_soli.close(); //Cierre de datos de documentos
 
                     Log.e("documentos", json_documentos.toString());
-                    Log.e("-----","--------------------------------------------------------");
-                    Log.e("Renovacion",json_solicitud.toString());
-                    Log.e("-----","--------------------------------------------------------");
+                    Log.e("-----", "--------------------------------------------------------");
+                    Log.e("Renovacion", json_solicitud.toString());
+                    Log.e("-----", "--------------------------------------------------------");
                     new GuardarRenovacionInd().execute(
-                        ctx,
-                        json_solicitud,
-                        fachadaCli,
-                        firmaCli,
-                        fachadaNeg,
-                        fachadaAval,
-                        firmaAval,
-                        identiFrontal,
-                        identiReverso,
-                        comprobante,
-                        firmaAsesor,
-                        row.getString(0),
-                        row.getLong(4),
-                        identificacionSelfie,
-                        comprobanteGarantia,
-                        identificacionFrontalAval,
-                        identificacionReversoAval,
-                        curpAval,
-                        comprobanteAval
+                            ctx,
+                            json_solicitud,
+                            fachadaCli,
+                            firmaCli,
+                            fachadaNeg,
+                            fachadaAval,
+                            firmaAval,
+                            identiFrontal,
+                            identiReverso,
+                            comprobante,
+                            firmaAsesor,
+                            row.getString(0),
+                            row.getLong(4),
+                            identificacionSelfie,
+                            comprobanteGarantia,
+                            identificacionFrontalAval,
+                            identificacionReversoAval,
+                            curpAval,
+                            comprobanteAval
                     );
 
                 } catch (JSONException e) {
@@ -1835,17 +1798,15 @@ public class Servicios_Sincronizado {
 
     }
 
-    public void SendIntegranteOriginacionGpo(Context ctx, int iIndex, int iTotalRegistros, String sDato0, Long lDato4, String sDato6, String sDato12, String sDato14, String sDato15, String sDato16, String sDato17, String sDato19)
-    {
-        final DBhelper dBhelper = new DBhelper(ctx);
+    public void SendIntegranteOriginacionGpo(Context ctx, int iIndex, int iTotalRegistros, String sDato0, Long lDato4, String sDato6, String sDato12, String sDato14, String sDato15, String sDato16, String sDato17, String sDato19) {
+        final DBhelper dBhelper = DBhelper.getInstance(ctx);
         final SQLiteDatabase db = dBhelper.getWritableDatabase();
 
         String sql;
         Cursor rowTotal;
         int iTotal;
 
-        if(iTotalRegistros < 0)
-        {
+        if (iTotalRegistros < 0) {
 
             sql = "SELECT i.*, t.*, d.*, n.*, c.*, o.*, docu.*, p.*, cro.* FROM " + TBL_INTEGRANTES_GPO + " AS i " +
                     "INNER JOIN " + TBL_TELEFONOS_INTEGRANTE + " AS t ON i.id = t.id_integrante " +
@@ -1860,9 +1821,7 @@ public class Servicios_Sincronizado {
                     "order by i.id_credito ";
             rowTotal = db.rawQuery(sql, new String[]{sDato12, "1"});
             iTotal = rowTotal.getCount();
-        }
-        else
-        {
+        } else {
             iTotal = iTotalRegistros;
         }
 
@@ -2020,24 +1979,24 @@ public class Servicios_Sincronizado {
                 "o.monto_refinanciar," +
                 "cro.caracteristicas_domicilio," +
                 "docu.ine_selfie" +
-            " FROM " + TBL_INTEGRANTES_GPO + " AS i " +
-            "INNER JOIN " + TBL_TELEFONOS_INTEGRANTE + " AS t ON i.id = t.id_integrante " +
-            "INNER JOIN " + TBL_DOMICILIO_INTEGRANTE + " AS d ON i.id = d.id_integrante " +
-            "INNER JOIN " + TBL_NEGOCIO_INTEGRANTE + " AS n ON i.id = n.id_integrante " +
-            "INNER JOIN " + TBL_CONYUGE_INTEGRANTE + " AS c ON i.id = c.id_integrante " +
-            "INNER JOIN " + TBL_OTROS_DATOS_INTEGRANTE + " AS o ON i.id = o.id_integrante " +
-            "INNER JOIN " + TBL_CROQUIS_GPO + " AS cro ON i.id = cro.id_integrante " +
-            "INNER JOIN " + TBL_POLITICAS_PLD_INTEGRANTE + " AS p ON i.id = p.id_integrante " +
-            "INNER JOIN " + TBL_DOCUMENTOS_INTEGRANTE + " AS docu ON i.id = docu.id_integrante " +
-            "WHERE i.id_credito = ? AND i.estatus_completado = ? " +
-            "order by i.id_credito " +
-            "limit 1 "
-            //"limit 1 offset " + iIndex
-        ;
+                " FROM " + TBL_INTEGRANTES_GPO + " AS i " +
+                "INNER JOIN " + TBL_TELEFONOS_INTEGRANTE + " AS t ON i.id = t.id_integrante " +
+                "INNER JOIN " + TBL_DOMICILIO_INTEGRANTE + " AS d ON i.id = d.id_integrante " +
+                "INNER JOIN " + TBL_NEGOCIO_INTEGRANTE + " AS n ON i.id = n.id_integrante " +
+                "INNER JOIN " + TBL_CONYUGE_INTEGRANTE + " AS c ON i.id = c.id_integrante " +
+                "INNER JOIN " + TBL_OTROS_DATOS_INTEGRANTE + " AS o ON i.id = o.id_integrante " +
+                "INNER JOIN " + TBL_CROQUIS_GPO + " AS cro ON i.id = cro.id_integrante " +
+                "INNER JOIN " + TBL_POLITICAS_PLD_INTEGRANTE + " AS p ON i.id = p.id_integrante " +
+                "INNER JOIN " + TBL_DOCUMENTOS_INTEGRANTE + " AS docu ON i.id = docu.id_integrante " +
+                "WHERE i.id_credito = ? AND i.estatus_completado = ? " +
+                "order by i.id_credito " +
+                "limit 1 "
+                //"limit 1 offset " + iIndex
+                ;
 
         Cursor rowIntegrante = db.rawQuery(sqlIntegrante, new String[]{sDato12, "1"});
 
-        if(rowIntegrante.getCount() > 0) {
+        if (rowIntegrante.getCount() > 0) {
             rowIntegrante.moveToFirst();
             String id_solicitud = sDato0;
             Log.e("Count", "a: " + sDato14);
@@ -2129,7 +2088,8 @@ public class Servicios_Sincronizado {
                 json_otros_datos.put(K_MONTO_LETRA, (Miscellaneous.cantidadLetra(rowIntegrante.getString(118)).toUpperCase() + " PESOS MEXICANOS").replace("  ", " "));
                 json_otros_datos.put(K_CASA_REUNION, (rowIntegrante.getInt(119) == 1));
                 int montoRefinanciar = 0;
-                if(rowIntegrante.getString(150) != null && !rowIntegrante.getString(150).isEmpty()) montoRefinanciar = Integer.parseInt(rowIntegrante.getString(150).replace(",",""));
+                if (rowIntegrante.getString(150) != null && !rowIntegrante.getString(150).isEmpty())
+                    montoRefinanciar = Integer.parseInt(rowIntegrante.getString(150).replace(",", ""));
                 json_otros_datos.put(K_MONTO_REFINANCIAR, montoRefinanciar);
                 json_solicitud.put(K_OTROS_DATOS, json_otros_datos);
 
@@ -2253,13 +2213,10 @@ public class Servicios_Sincronizado {
                 String comprobante = rowIntegrante.getString(127);
 
                 String identiSelfie = "";
-                if(rowIntegrante.getString(152) != null)
-                {
+                if (rowIntegrante.getString(152) != null) {
                     json_documentos.put(K_IDENTIFICACION_SELFIE, rowIntegrante.getString(152));
                     identiSelfie = rowIntegrante.getString(152);
-                }
-                else
-                {
+                } else {
                     json_documentos.put(K_IDENTIFICACION_SELFIE, "");
                 }
 
@@ -2289,7 +2246,7 @@ public class Servicios_Sincronizado {
                 Log.e("AQUI ID SOLICITUD", String.valueOf(rowIntegrante.getInt(22)));
 
                 String solicitudGrupalIdValidado = String.valueOf(lDato4);
-                if(rowIntegrante.getInt(22) == 0) solicitudGrupalIdValidado = "0";
+                if (rowIntegrante.getInt(22) == 0) solicitudGrupalIdValidado = "0";
 
                 new GuardarSolicitudGpo().execute(
                         ctx,
@@ -2324,98 +2281,88 @@ public class Servicios_Sincronizado {
                 e.printStackTrace();
             }
         }
-            //rowIntegrante.moveToNext();
+        //rowIntegrante.moveToNext();
         //}
         rowIntegrante.close();
     }
 
-    public void SendOriginacionGpo (Context ctx, boolean flag){
+    public void SendOriginacionGpo(Context ctx, boolean flag) {
         final AlertDialog loading = Popups.showLoadingDialog(ctx, R.string.please_wait, R.string.loading_info);
 
         if (flag) loading.show();
 
-        final DBhelper dBhelper = new DBhelper(ctx);
+        final DBhelper dBhelper = DBhelper.getInstance(ctx);
         final SQLiteDatabase db = dBhelper.getWritableDatabase();
 
-        String sql = "SELECT s.*, c.* FROM " + TBL_SOLICITUDES + " AS s INNER JOIN " +TBL_CREDITO_GPO + " AS c ON s.id_solicitud = c.id_solicitud WHERE s.tipo_solicitud = 2 AND s.estatus = 1";
+        String sql = "SELECT s.*, c.* FROM " + TBL_SOLICITUDES + " AS s INNER JOIN " + TBL_CREDITO_GPO + " AS c ON s.id_solicitud = c.id_solicitud WHERE s.tipo_solicitud = 2 AND s.estatus = 1";
         Cursor row = db.rawQuery(sql, null);
         //Cursor row = dBhelper.getRecords(TBL_SOLICITUDES, " WHERE tipo_solicitud = 2", "", null);
 
-        if (row.getCount() > 0){
+        if (row.getCount() > 0) {
             row.moveToFirst();
 
-            for(int i = 0; i < row.getCount(); i++)
-            {
+            for (int i = 0; i < row.getCount(); i++) {
                 SendIntegranteOriginacionGpo(
-                    ctx,
-                    0,
-                    -1,
-                    row.getString(0),
-                    row.getLong(4),
-                    row.getString(6),
-                    row.getString(12),
-                    row.getString(14),
-                    row.getString(15),
-                    row.getString(16),
-                    row.getString(17),
-                    row.getString(19)
+                        ctx,
+                        0,
+                        -1,
+                        row.getString(0),
+                        row.getLong(4),
+                        row.getString(6),
+                        row.getString(12),
+                        row.getString(14),
+                        row.getString(15),
+                        row.getString(16),
+                        row.getString(17),
+                        row.getString(19)
                 );
 
                 row.moveToNext();
             }
 
-            Log.e("count solicitudes", row.getCount()+" total");
+            Log.e("count solicitudes", row.getCount() + " total");
         }
 
         row.close();
     }
 
-    public void GetPrestamos(Context ctx, boolean flag)
-    {
-        SessionManager session = new SessionManager(ctx);
+    public void GetPrestamos(Context ctx, boolean flag) {
+        SessionManager session = SessionManager.getInstance(ctx);
         PrestamoDao prestamoDao = new PrestamoDao(ctx);
         ApoyoGastosFunerariosDao agfDao = new ApoyoGastosFunerariosDao(ctx);
 
-        PrestamoService prestamoService = new RetrofitClient().newInstance(ctx).create(PrestamoService.class);
-        Call<List<Prestamo>> call = prestamoService.show("Bearer "+ session.getUser().get(7));
+        PrestamoService prestamoService = RetrofitClient.newInstance(ctx).create(PrestamoService.class);
+        Call<List<Prestamo>> call = prestamoService.show("Bearer " + session.getUser().get(7));
 
         call.enqueue(new Callback<List<Prestamo>>() {
             @Override
             public void onResponse(Call<List<Prestamo>> call, Response<List<Prestamo>> response) {
-                switch (response.code()){
+                switch (response.code()) {
                     case 200:
                         List<Prestamo> prestamos = response.body();
 
-                        if (prestamos != null && prestamos.size() > 0){
-                            for (Prestamo item : prestamos){
+                        if (prestamos != null && prestamos.size() > 0) {
+                            for (Prestamo item : prestamos) {
                                 Prestamo prestamoDb = null;
                                 ApoyoGastosFunerarios agf = null;
 
                                 if (item.getGrupoId() > 1) {
                                     prestamoDb = prestamoDao.findByGrupoIdAndNumSolicitud(item.getGrupoId(), item.getNumSolicitud());
-                                }
-                                else
-                                {
+                                } else {
                                     prestamoDb = prestamoDao.findByClienteIdAndNumSolicitud(item.getClienteId(), item.getNumSolicitud());
                                 }
 
-                                if(prestamoDb != null)
-                                {
+                                if (prestamoDb != null) {
                                     if (item.getGrupoId() > 1) {
                                         agf = agfDao.findByGrupoIdAndNumSolicitud(item.getGrupoId(), item.getNumSolicitud());
-                                    }
-                                    else
-                                    {
+                                    } else {
                                         agf = agfDao.findByClienteIdAndNumSolicitud(item.getClienteId(), item.getNumSolicitud());
                                     }
 
-                                    if(agf == null)
-                                    {
+                                    if (agf == null) {
                                         prestamoDao.update(prestamoDb.getId(), item);
                                     }
-                                }
-                                else
-                                {
+                                } else {
                                     prestamoDao.store(item);
                                 }
                             }
@@ -2429,7 +2376,7 @@ public class Servicios_Sincronizado {
 
             @Override
             public void onFailure(Call<List<Prestamo>> call, Throwable t) {
-                Log.e("ErrorAgf", "Fail AGG"+t.getMessage());
+                Log.e("ErrorAgf", "Fail AGG" + t.getMessage());
                 t.printStackTrace();
             }
         });
@@ -2445,38 +2392,34 @@ public class Servicios_Sincronizado {
             String sDato7,
             String sDato12,
             String sDato14,
-            String sDato15, String sDato16, String sDato17, String sDato19, String sDato21, String sDato23)
-    {
-        final DBhelper dBhelper = new DBhelper(ctx);
+            String sDato15, String sDato16, String sDato17, String sDato19, String sDato21, String sDato23) {
+        final DBhelper dBhelper = DBhelper.getInstance(ctx);
         final SQLiteDatabase db = dBhelper.getWritableDatabase();
 
         String sql;
         Cursor rowTotal;
         int iTotal;
 
-        if(iTotalRegistros < 0)
-        {
+        if (iTotalRegistros < 0) {
             sql = "SELECT i.*, t.*, d.*, n.*, c.*, o.*, docu.*, p.*, cro.* FROM " + TBL_INTEGRANTES_GPO_REN + " AS i " +
-                "INNER JOIN " + TBL_TELEFONOS_INTEGRANTE_REN + " AS t ON i.id = t.id_integrante " +
-                "INNER JOIN " + TBL_DOMICILIO_INTEGRANTE_REN + " AS d ON i.id = d.id_integrante " +
-                "INNER JOIN " + TBL_NEGOCIO_INTEGRANTE_REN + " AS n ON i.id = n.id_integrante " +
-                "INNER JOIN " + TBL_CONYUGE_INTEGRANTE_REN + " AS c ON i.id = c.id_integrante " +
-                "INNER JOIN " + TBL_OTROS_DATOS_INTEGRANTE_REN + " AS o ON i.id = o.id_integrante " +
-                "INNER JOIN " + TBL_CROQUIS_GPO_REN + " AS cro ON i.id = cro.id_integrante " +
-                "INNER JOIN " + TBL_POLITICAS_PLD_INTEGRANTE_REN + " AS p ON i.id = p.id_integrante " +
-                "INNER JOIN " + TBL_DOCUMENTOS_INTEGRANTE_REN + " AS docu ON i.id = docu.id_integrante " +
-                "WHERE i.id_credito = ? " +
-                //"AND i.id_solicitud_integrante = ? " +
-                "AND i.estatus_completado = 1 " +
-                "order by i.id_credito"
+                    "INNER JOIN " + TBL_TELEFONOS_INTEGRANTE_REN + " AS t ON i.id = t.id_integrante " +
+                    "INNER JOIN " + TBL_DOMICILIO_INTEGRANTE_REN + " AS d ON i.id = d.id_integrante " +
+                    "INNER JOIN " + TBL_NEGOCIO_INTEGRANTE_REN + " AS n ON i.id = n.id_integrante " +
+                    "INNER JOIN " + TBL_CONYUGE_INTEGRANTE_REN + " AS c ON i.id = c.id_integrante " +
+                    "INNER JOIN " + TBL_OTROS_DATOS_INTEGRANTE_REN + " AS o ON i.id = o.id_integrante " +
+                    "INNER JOIN " + TBL_CROQUIS_GPO_REN + " AS cro ON i.id = cro.id_integrante " +
+                    "INNER JOIN " + TBL_POLITICAS_PLD_INTEGRANTE_REN + " AS p ON i.id = p.id_integrante " +
+                    "INNER JOIN " + TBL_DOCUMENTOS_INTEGRANTE_REN + " AS docu ON i.id = docu.id_integrante " +
+                    "WHERE i.id_credito = ? " +
+                    //"AND i.id_solicitud_integrante = ? " +
+                    "AND i.estatus_completado = 1 " +
+                    "order by i.id_credito"
             ;
 
             //rowTotal = db.rawQuery(sql, new String[]{sDato12, "0"});
             rowTotal = db.rawQuery(sql, new String[]{sDato12});
             iTotal = rowTotal.getCount();
-        }
-        else
-        {
+        } else {
             iTotal = iTotalRegistros;
         }
 
@@ -2636,21 +2579,20 @@ public class Servicios_Sincronizado {
                 "o.monto_refinanciar," +
                 "cro.caracteristicas_domicilio," +
                 "docu.ine_selfie" +
-            " FROM " + TBL_INTEGRANTES_GPO_REN + " AS i " +
-            "INNER JOIN " + TBL_TELEFONOS_INTEGRANTE_REN + " AS t ON i.id = t.id_integrante " +
-            "INNER JOIN " + TBL_DOMICILIO_INTEGRANTE_REN + " AS d ON i.id = d.id_integrante " +
-            "INNER JOIN " + TBL_NEGOCIO_INTEGRANTE_REN + " AS n ON i.id = n.id_integrante " +
-            "INNER JOIN " + TBL_CONYUGE_INTEGRANTE_REN + " AS c ON i.id = c.id_integrante " +
-            "INNER JOIN " + TBL_OTROS_DATOS_INTEGRANTE_REN + " AS o ON i.id = o.id_integrante " +
-            "INNER JOIN " + TBL_CROQUIS_GPO_REN + " AS cro ON i.id = cro.id_integrante " +
-            "INNER JOIN " + TBL_POLITICAS_PLD_INTEGRANTE_REN + " AS p ON i.id = p.id_integrante " +
-            "INNER JOIN " + TBL_DOCUMENTOS_INTEGRANTE_REN + " AS docu ON i.id = docu.id_integrante " +
-            "WHERE i.id_credito = ? " +
-            //"AND i.id_solicitud_integrante = ? " +
-            "AND i.estatus_completado = 1 " +
-            "order by i.id_credito " +
-            "limit 1"
-        ;
+                " FROM " + TBL_INTEGRANTES_GPO_REN + " AS i " +
+                "INNER JOIN " + TBL_TELEFONOS_INTEGRANTE_REN + " AS t ON i.id = t.id_integrante " +
+                "INNER JOIN " + TBL_DOMICILIO_INTEGRANTE_REN + " AS d ON i.id = d.id_integrante " +
+                "INNER JOIN " + TBL_NEGOCIO_INTEGRANTE_REN + " AS n ON i.id = n.id_integrante " +
+                "INNER JOIN " + TBL_CONYUGE_INTEGRANTE_REN + " AS c ON i.id = c.id_integrante " +
+                "INNER JOIN " + TBL_OTROS_DATOS_INTEGRANTE_REN + " AS o ON i.id = o.id_integrante " +
+                "INNER JOIN " + TBL_CROQUIS_GPO_REN + " AS cro ON i.id = cro.id_integrante " +
+                "INNER JOIN " + TBL_POLITICAS_PLD_INTEGRANTE_REN + " AS p ON i.id = p.id_integrante " +
+                "INNER JOIN " + TBL_DOCUMENTOS_INTEGRANTE_REN + " AS docu ON i.id = docu.id_integrante " +
+                "WHERE i.id_credito = ? " +
+                //"AND i.id_solicitud_integrante = ? " +
+                "AND i.estatus_completado = 1 " +
+                "order by i.id_credito " +
+                "limit 1";
 
         //Cursor rowIntegrante = db.rawQuery(sqlIntegrante, new String[]{sDato12, "0"});
         Cursor rowIntegrante = db.rawQuery(sqlIntegrante, new String[]{sDato12});
@@ -2660,11 +2602,10 @@ public class Servicios_Sincronizado {
         String id_solicitud = sDato0;
         Long id_solicitud_grupal = lDato4;
 
-        Log.e("Count","a: "+ lDato4);
-        Log.e("RENOVACION_GPO", "Total: "+rowIntegrante.getCount());
+        Log.e("Count", "a: " + lDato4);
+        Log.e("RENOVACION_GPO", "Total: " + rowIntegrante.getCount());
 
-        for (int j = 0; j < rowIntegrante.getCount(); j++)
-        {
+        for (int j = 0; j < rowIntegrante.getCount(); j++) {
             JSONObject json_solicitud = new JSONObject();
             try {
                 json_solicitud.put(K_TOTAL_INTEGRANTES, rowIntegrante.getCount());
@@ -2754,7 +2695,8 @@ public class Servicios_Sincronizado {
                 json_otros_datos.put(K_MONTO_LETRA, (Miscellaneous.cantidadLetra(rowIntegrante.getString(120)).toUpperCase() + " PESOS MEXICANOS").replace("  ", " "));
                 json_otros_datos.put(K_CASA_REUNION, (rowIntegrante.getInt(121) == 1));
                 int montoRefinanciar = 0;
-                if(rowIntegrante.getString(152) != null && !rowIntegrante.getString(152).isEmpty()) montoRefinanciar = Integer.parseInt(rowIntegrante.getString(152).replace(",",""));
+                if (rowIntegrante.getString(152) != null && !rowIntegrante.getString(152).isEmpty())
+                    montoRefinanciar = Integer.parseInt(rowIntegrante.getString(152).replace(",", ""));
                 json_otros_datos.put(K_MONTO_REFINANCIAR, montoRefinanciar);
                 json_solicitud.put(K_OTROS_DATOS, json_otros_datos);
 
@@ -2878,13 +2820,10 @@ public class Servicios_Sincronizado {
                 String comprobante = rowIntegrante.getString(129);
 
                 String identiSelfie = "";
-                if(rowIntegrante.getString(154) != null)
-                {
+                if (rowIntegrante.getString(154) != null) {
                     json_documentos.put(K_IDENTIFICACION_SELFIE, rowIntegrante.getString(154));
                     identiSelfie = rowIntegrante.getString(154);
-                }
-                else
-                {
+                } else {
                     json_documentos.put(K_IDENTIFICACION_SELFIE, "");
                 }
 
@@ -2896,7 +2835,7 @@ public class Servicios_Sincronizado {
                 json_politicas.put(K_POLITICAMENTE_EXP, rowIntegrante.getInt(135) == 1);
                 json_solicitud.put(K_SOLICITANTE_POLITICAS, json_politicas);
 
-                if (rowIntegrante.getInt(121) == 1){
+                if (rowIntegrante.getInt(121) == 1) {
                     JSONObject json_croquis = new JSONObject();
                     json_croquis.put(K_CALLE_ENFRENTE, rowIntegrante.getString(139));
                     json_croquis.put(K_CALLE_LATERAL_IZQ, rowIntegrante.getString(140));
@@ -2907,40 +2846,40 @@ public class Servicios_Sincronizado {
                     json_solicitud.put(K_SOLICITANTE_CROQUIS, json_croquis);
                 }
 
-                Log.e("_","_______________________________________________________________________-");
+                Log.e("_", "_______________________________________________________________________-");
                 Log.e("solicitudInt", json_solicitud.toString());
-                Log.e("_","_______________________________________________________________________-");
+                Log.e("_", "_______________________________________________________________________-");
 
                 new GuardarRenovacionGpo().execute(
-                    ctx,
-                    json_solicitud,
-                    fachadaCli,
-                    firmaCli,
-                    fachadaNeg,
-                    identiFrontal,
-                    identiReverso,
-                    curp,
-                    comprobante,
-                    rowIntegrante.getString(0),
-                    rowIntegrante.getString(1),
-                    id_solicitud,
-                    String.valueOf(rowIntegrante.getLong(22)),
-                    String.valueOf(lDato4),
-                    iIndex,
-                    iTotal,
-                    sDato0,
-                    lDato4,
-                    sDato6,
-                    sDato7,
-                    sDato12,
-                    sDato14,
-                    sDato15,
-                    sDato16,
-                    sDato17,
-                    sDato19,
-                    sDato21,
-                    sDato23,
-                    identiSelfie
+                        ctx,
+                        json_solicitud,
+                        fachadaCli,
+                        firmaCli,
+                        fachadaNeg,
+                        identiFrontal,
+                        identiReverso,
+                        curp,
+                        comprobante,
+                        rowIntegrante.getString(0),
+                        rowIntegrante.getString(1),
+                        id_solicitud,
+                        String.valueOf(rowIntegrante.getLong(22)),
+                        String.valueOf(lDato4),
+                        iIndex,
+                        iTotal,
+                        sDato0,
+                        lDato4,
+                        sDato6,
+                        sDato7,
+                        sDato12,
+                        sDato14,
+                        sDato15,
+                        sDato16,
+                        sDato17,
+                        sDato19,
+                        sDato21,
+                        sDato23,
+                        identiSelfie
                 );
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -2951,13 +2890,13 @@ public class Servicios_Sincronizado {
         rowIntegrante.close();
     }
 
-    public void SendRenovacionGpo(Context ctx, boolean flag){
+    public void SendRenovacionGpo(Context ctx, boolean flag) {
         final AlertDialog loading = Popups.showLoadingDialog(ctx, R.string.please_wait, R.string.loading_info);
 
         if (flag)
             loading.show();
-        SessionManager session = new SessionManager(ctx);
-        final DBhelper dBhelper = new DBhelper(ctx);
+        SessionManager session = SessionManager.getInstance(ctx);
+        final DBhelper dBhelper = DBhelper.getInstance(ctx);
         final SQLiteDatabase db = dBhelper.getWritableDatabase();
 
         String sql = "SELECT " +
@@ -2973,71 +2912,70 @@ public class Servicios_Sincronizado {
                 "s.fecha_dispositivo, " +
                 "s.fecha_guardado, " +
                 "s.estatus, " +
-                "c.* FROM " + TBL_SOLICITUDES_REN + " AS s INNER JOIN " +TBL_CREDITO_GPO_REN + " AS c ON s.id_solicitud = c.id_solicitud WHERE s.tipo_solicitud = 2 AND s.estatus = 1";
+                "c.* FROM " + TBL_SOLICITUDES_REN + " AS s INNER JOIN " + TBL_CREDITO_GPO_REN + " AS c ON s.id_solicitud = c.id_solicitud WHERE s.tipo_solicitud = 2 AND s.estatus = 1";
         Cursor row = db.rawQuery(sql, null);
         //Cursor row = dBhelper.getRecords(TBL_SOLICITUDES, " WHERE tipo_solicitud = 2", "", null);
 
 
-        if (row.getCount() > 0){
+        if (row.getCount() > 0) {
             row.moveToFirst();
 
-            for(int i = 0; i < row.getCount(); i++)
-            {
+            for (int i = 0; i < row.getCount(); i++) {
                 SendIntegranteRenovacionGpo(
-                    ctx,
-                    0,
-                    -1,
-                    row.getString(0),
-                    row.getLong(4),
-                    row.getString(6),
-                    row.getString(7),
-                    row.getString(12),
-                    row.getString(14),
-                    row.getString(15),
-                    row.getString(16),
-                    row.getString(17),
-                    row.getString(19),
-                    row.getString(21),
-                    row.getString(23)
+                        ctx,
+                        0,
+                        -1,
+                        row.getString(0),
+                        row.getLong(4),
+                        row.getString(6),
+                        row.getString(7),
+                        row.getString(12),
+                        row.getString(14),
+                        row.getString(15),
+                        row.getString(16),
+                        row.getString(17),
+                        row.getString(19),
+                        row.getString(21),
+                        row.getString(23)
                 );
 
                 row.moveToNext();
             }
 
-            Log.e("count solicitudes", row.getCount()+" total");
+            Log.e("count solicitudes", row.getCount() + " total");
         }
 
         row.close();
     }
 
-    public void MontoAutorizado (Context ctx, boolean flag){
+    public void MontoAutorizado(Context ctx, boolean flag) {
         final AlertDialog loading = Popups.showLoadingDialog(ctx, R.string.please_wait, R.string.loading_info);
 
         if (flag)
             loading.show();
-        SessionManager session = new SessionManager(ctx);
-        final DBhelper dBhelper = new DBhelper(ctx);
+        SessionManager session = SessionManager.getInstance(ctx);
+        final DBhelper dBhelper = DBhelper.getInstance(ctx);
         final SQLiteDatabase db = dBhelper.getWritableDatabase();
 
         String sql = "SELECT * FROM " + TBL_SOLICITUDES_AUTO + " WHERE estatus = ? AND solicitud = ?";
         Cursor rs = db.rawQuery(sql, new String[]{"1", "1"});
 
-        Log.e("MontAuto", rs.getCount()+" TOTAL");
-        if (rs.getCount() > 0){
+        Log.e("MontAuto", rs.getCount() + " TOTAL");
+        if (rs.getCount() > 0) {
             rs.moveToFirst();
-            for (int i = 0; i < rs.getCount(); i++){
+            for (int i = 0; i < rs.getCount(); i++) {
                 sql = "SELECT * FROM " + TBL_CREDITO_IND_AUTO + " WHERE id_solicitud = ?";
                 Cursor rc = db.rawQuery(sql, new String[]{rs.getString(0)});
                 rc.moveToFirst();
-                Log.e("tipoSolicitud", rs.getLong(1)+" Tipo");
+                Log.e("tipoSolicitud", rs.getLong(1) + " Tipo");
                 new SendMontoAutorizado().execute(
-                    ctx,                //Contexto
-                    rs.getString(0), //id_solicitud
-                    rs.getLong(1),   //TipoSolicitud
-                    rs.getLong(4),   //SolicitudId
-                    rc.getLong(16),   //MontoAutorizado
-                    rc.getLong(0),   //creditoId
-                    rs.getLong(0)
+                        ctx,                //Contexto
+                        rs.getString(0), //id_solicitud
+                        rs.getLong(1),   //TipoSolicitud
+                        rs.getLong(4),   //SolicitudId
+                        rc.getLong(16),   //MontoAutorizado
+                        rc.getLong(0),   //creditoId
+                        rs.getLong(0)
                 );
                 rc.close();
 
@@ -3050,24 +2988,24 @@ public class Servicios_Sincronizado {
         //obtiene a los grupales
         sql = "SELECT * FROM " + TBL_SOLICITUDES_AUTO + " WHERE estatus = ? AND solicitud = ?";
         rs = db.rawQuery(sql, new String[]{"1", "2"});
-        Log.e("SoliGPO", "TotalSolicitudes"+rs.getCount());
-        if (rs.getCount() > 0){
+        Log.e("SoliGPO", "TotalSolicitudes" + rs.getCount());
+        if (rs.getCount() > 0) {
             rs.moveToFirst();
             for (int i = 0; i < rs.getCount(); i++) {
                 sql = "SELECT * FROM " + TBL_CREDITO_GPO_AUTO + " WHERE id_solicitud = ?";
                 Cursor rc = db.rawQuery(sql, new String[]{rs.getString(0)});
-                Log.e("SoliGPO", "TotalCreditos"+rc.getCount());
-                if (rc.getCount() > 0){
+                Log.e("SoliGPO", "TotalCreditos" + rc.getCount());
+                if (rc.getCount() > 0) {
                     rc.moveToFirst();
-                    for (int j = 0; j < rc.getCount(); j++){
+                    for (int j = 0; j < rc.getCount(); j++) {
                         sql = "SELECT i.*, o.monto_autorizado FROM " + TBL_INTEGRANTES_GPO_AUTO + " AS i " +
-                                "INNER JOIN " +TBL_OTROS_DATOS_INTEGRANTE_AUTO + " AS o ON o.id_integrante = i.id " +
+                                "INNER JOIN " + TBL_OTROS_DATOS_INTEGRANTE_AUTO + " AS o ON o.id_integrante = i.id " +
                                 "WHERE i.id_credito = ? AND o.estatus_completado = ? AND i.estatus_completado = ?";
                         Cursor ri = db.rawQuery(sql, new String[]{rc.getString(0), "1", "1"});
-                        Log.e("SoliGPO", "TotalIntegrantes"+ri.getCount());
-                        if (ri.getCount() > 0){
+                        Log.e("SoliGPO", "TotalIntegrantes" + ri.getCount());
+                        if (ri.getCount() > 0) {
                             ri.moveToFirst();
-                            for (int k = 0; k < ri.getCount(); k ++){
+                            for (int k = 0; k < ri.getCount(); k++) {
                                 /*Log.e("Autorizado","idMovil: "+ ri.getString(0)+"\n"+
                                         "TipoSoli: "+rs.getLong(1)+"\n"+
                                         "SolicitudId: "+ri.getLong(22)+"\n"+
@@ -3099,38 +3037,38 @@ public class Servicios_Sincronizado {
     }
 
     //Obtiene los datos de un prestamo en especifico
-    public void GetPrestamo(final Context ctx, final int id_cartera, int tipo_prestamo){
+    public void GetPrestamo(final Context ctx, final int id_cartera, int tipo_prestamo) {
         final AlertDialog loading = Popups.showLoadingDialog(ctx, R.string.please_wait, R.string.loading_info);
         loading.show();
 
-        SessionManager session = new SessionManager(ctx);
-        ManagerInterface api = new RetrofitClient().generalRF(CONTROLLER_MOVIL, ctx).create(ManagerInterface.class);
+        SessionManager session = SessionManager.getInstance(ctx);
+        ManagerInterface api = RetrofitClient.generalRF(CONTROLLER_MOVIL, ctx).create(ManagerInterface.class);
 
-        if(tipo_prestamo == 1){ //Obtiene prestamos individuales
-            Log.e("IdCarteraInd", id_cartera+"ads");
-            Call<List<MPrestamoRes>> call = api.getPrestamosInd(id_cartera,"Bearer "+ session.getUser().get(7));
+        if (tipo_prestamo == 1) { //Obtiene prestamos individuales
+            Log.e("IdCarteraInd", id_cartera + "ads");
+            Call<List<MPrestamoRes>> call = api.getPrestamosInd(id_cartera, "Bearer " + session.getUser().get(7));
             call.enqueue(new Callback<List<MPrestamoRes>>() {
                 @Override
                 public void onResponse(Call<List<MPrestamoRes>> call, Response<List<MPrestamoRes>> response) {
-                    Log.e("ind","id_carteta: "+id_cartera+ " code"+response.code());
+                    Log.e("ind", "id_carteta: " + id_cartera + " code" + response.code());
                     if (response.code() == 200) {
                         List<MPrestamoRes> prestamos = response.body();
-                        if (prestamos.size() > 0){
-                            DBhelper dBhelper = new DBhelper(ctx);
+                        if (prestamos.size() > 0) {
+                            DBhelper dBhelper = DBhelper.getInstance(ctx);
                             SQLiteDatabase db = dBhelper.getWritableDatabase();
                             Cursor row;
 
-                            Log.e("size antes for", ""+prestamos.size());
-                            for (int i = 0; i < prestamos.size(); i++){
-                                Log.e("Count i", ""+i);
-                                Log.e("id_prestamo", ""+prestamos.get(i).getId());
+                            Log.e("size antes for", "" + prestamos.size());
+                            for (int i = 0; i < prestamos.size(); i++) {
+                                Log.e("Count i", "" + i);
+                                Log.e("id_prestamo", "" + prestamos.get(i).getId());
                                 String where = " WHERE id_prestamo = ?";
                                 String order = "";
-                                String[] args =  new String[] {String.valueOf(prestamos.get(i).getId())};
+                                String[] args = new String[]{String.valueOf(prestamos.get(i).getId())};
 
                                 row = dBhelper.getRecords(TBL_PRESTAMOS_IND_T, where, order, args);
 
-                                if (row.getCount() == 0){ //Registra el prestamo de ind
+                                if (row.getCount() == 0) { //Registra el prestamo de ind
                                     Log.e("Prestamo", "Registra Prestamo");
                                     HashMap<Integer, String> values = new HashMap<>();
                                     values.put(0, String.valueOf(prestamos.get(i).getId()));                    //ID PRESTAMO
@@ -3145,12 +3083,12 @@ public class Servicios_Sincronizado {
                                     values.put(9, String.valueOf(prestamos.get(i).getNumAmortizacion()));       //NUM AMORTIZACION
                                     values.put(10, prestamos.get(i).getFechaEstablecida());                     //FECHA ESTABLECIDA
                                     values.put(11, prestamos.get(i).getTipoCartera());                          //TIPO CARTERA
-                                    values.put(12, (prestamos.get(i).getPagada().equals("PAGADA"))?"1":"0");                     //PAGADA
+                                    values.put(12, (prestamos.get(i).getPagada().equals("PAGADA")) ? "1" : "0");                     //PAGADA
                                     values.put(13, Miscellaneous.ObtenerFecha(TIMESTAMP));                      //FECHA CREACION
                                     values.put(14, Miscellaneous.ObtenerFecha(TIMESTAMP));                      //FECHA ACTUALIZACION
 
                                     Log.e("ParamsPres", values.toString());
-                                    Log.e("--","-----------------------------------------------------");
+                                    Log.e("--", "-----------------------------------------------------");
                                     dBhelper.savePrestamosInd(db, TBL_PRESTAMOS_IND_T, values);
 
                                     if (prestamos.get(i).getAval() != null) {
@@ -3169,14 +3107,14 @@ public class Servicios_Sincronizado {
 
                                     }
 
-                                    if (prestamos.get(i).getAmortizaciones().size() > 0){
-                                        for (int j = 0; j < prestamos.get(i).getAmortizaciones().size(); j++){
+                                    if (prestamos.get(i).getAmortizaciones().size() > 0) {
+                                        for (int j = 0; j < prestamos.get(i).getAmortizaciones().size(); j++) {
                                             MAmortizacion mAmortizacion = prestamos.get(i).getAmortizaciones().get(j);
                                             HashMap<Integer, String> values_amortiz = new HashMap<>();
                                             values_amortiz.put(0, String.valueOf(mAmortizacion.getId()));                                   //ID AMORTIZACION
                                             values_amortiz.put(1, String.valueOf(mAmortizacion.getPrestamoId()));                           //ID PRESTAMOS
                                             values_amortiz.put(2, mAmortizacion.getFecha());                                                //FECHA
-                                            values_amortiz.put(3, (mAmortizacion.getFechaPago() != null)?mAmortizacion.getFechaPago():"");  //FECHA PAGO
+                                            values_amortiz.put(3, (mAmortizacion.getFechaPago() != null) ? mAmortizacion.getFechaPago() : "");  //FECHA PAGO
                                             values_amortiz.put(4, String.valueOf(mAmortizacion.getCapital()));                              //CAPITAL
                                             values_amortiz.put(5, String.valueOf(mAmortizacion.getInteres()));                              //INTERES
                                             values_amortiz.put(6, String.valueOf(mAmortizacion.getIva()));                                  //IVA
@@ -3199,22 +3137,21 @@ public class Servicios_Sincronizado {
                                         }
                                     }
 
-                                    if (prestamos.get(i).getPagos() != null && prestamos.get(i).getPagos().size() > 0){
-                                        for (int k = 0; k < prestamos.get(i).getPagos().size(); k++){
+                                    if (prestamos.get(i).getPagos() != null && prestamos.get(i).getPagos().size() > 0) {
+                                        for (int k = 0; k < prestamos.get(i).getPagos().size(); k++) {
                                             MPago mPago = prestamos.get(i).getPagos().get(k);
                                             HashMap<Integer, String> values_pago = new HashMap<>();
                                             values_pago.put(0, String.valueOf(prestamos.get(i).getId()));            //ID PRESTAMO
                                             values_pago.put(1, mPago.getFecha());                                    //FECHA
                                             values_pago.put(2, String.valueOf(mPago.getMonto()));                    //MONTO
-                                            values_pago.put(3,mPago.getBanco());                                     //BANCO
+                                            values_pago.put(3, mPago.getBanco());                                     //BANCO
                                             values_pago.put(4, Miscellaneous.ObtenerFecha(TIMESTAMP));               //FECHA DISPOSITIVO
                                             values_pago.put(5, Miscellaneous.ObtenerFecha(TIMESTAMP));               //FECHA ACTUALIZADO
 
                                             dBhelper.savePagos(db, TBL_PAGOS_T, values_pago);
                                         }
                                     }
-                                }
-                                else{ //Actualiza la cartera de ind
+                                } else { //Actualiza la cartera de ind
                                     row.moveToFirst();
                                     ContentValues cv = new ContentValues();
                                     cv.put("fecha_entrega", prestamos.get(i).getFechaEntrega());
@@ -3225,7 +3162,7 @@ public class Servicios_Sincronizado {
                                     cv.put("num_amortizacion", String.valueOf(prestamos.get(i).getNumAmortizacion()));
                                     cv.put("fecha_establecida", prestamos.get(i).getFechaEstablecida());
                                     cv.put("tipo_cartera", prestamos.get(i).getTipoCartera());
-                                    cv.put("pagada", (prestamos.get(i).getPagada().equals("PAGADA"))?"1":"0");
+                                    cv.put("pagada", (prestamos.get(i).getPagada().equals("PAGADA")) ? "1" : "0");
                                     cv.put("fecha_actualizado", Miscellaneous.ObtenerFecha("timestamp"));
 
                                     db.update(TBL_PRESTAMOS_IND_T, cv,
@@ -3245,12 +3182,12 @@ public class Servicios_Sincronizado {
                                                 "id_prestamo = ?", new String[]{String.valueOf(prestamos.get(i).getId())});
                                     }
 
-                                    if (prestamos.get(i).getAmortizaciones().size() > 0){
-                                        for (int j = 0; j < prestamos.get(i).getAmortizaciones().size(); j++){
+                                    if (prestamos.get(i).getAmortizaciones().size() > 0) {
+                                        for (int j = 0; j < prestamos.get(i).getAmortizaciones().size(); j++) {
                                             MAmortizacion mAmortizacion = prestamos.get(i).getAmortizaciones().get(j);
                                             ContentValues cv_amortiz = new ContentValues();
                                             cv_amortiz.put("fecha", mAmortizacion.getFecha());                                                //FECHA
-                                            cv_amortiz.put("fecha_pago", (mAmortizacion.getFechaPago() != null)?mAmortizacion.getFechaPago():"");  //FECHA PAGO
+                                            cv_amortiz.put("fecha_pago", (mAmortizacion.getFechaPago() != null) ? mAmortizacion.getFechaPago() : "");  //FECHA PAGO
                                             cv_amortiz.put("capital", String.valueOf(mAmortizacion.getCapital()));                              //CAPITAL
                                             cv_amortiz.put("interes", String.valueOf(mAmortizacion.getInteres()));                              //INTERES
                                             cv_amortiz.put("iva", String.valueOf(mAmortizacion.getIva()));                                  //IVA
@@ -3273,17 +3210,17 @@ public class Servicios_Sincronizado {
                                         }
                                     }
 
-                                    if (prestamos.get(i).getPagos() != null &&prestamos.get(i).getPagos().size() > 0){
-                                        for (int k = 0; k < prestamos.get(i).getPagos().size(); k++){
+                                    if (prestamos.get(i).getPagos() != null && prestamos.get(i).getPagos().size() > 0) {
+                                        for (int k = 0; k < prestamos.get(i).getPagos().size(); k++) {
                                             MPago mPago = prestamos.get(i).getPagos().get(k);
                                             Cursor row_pago = dBhelper.getRecords(TBL_PAGOS_T, " WHERE id_prestamo = ? AND fecha = ? AND monto = ? AND banco = ?", "",
-                                                    new String[]{String.valueOf(prestamos.get(i).getId()),mPago.getFecha(), String.valueOf(mPago.getMonto()), mPago.getBanco(),});
-                                            if (row_pago.getCount() == 0){
+                                                    new String[]{String.valueOf(prestamos.get(i).getId()), mPago.getFecha(), String.valueOf(mPago.getMonto()), mPago.getBanco(),});
+                                            if (row_pago.getCount() == 0) {
                                                 HashMap<Integer, String> cv_pago = new HashMap<>();
                                                 cv_pago.put(0, String.valueOf(prestamos.get(i).getId()));            //ID PRESTAMO
                                                 cv_pago.put(1, mPago.getFecha());                                    //FECHA
                                                 cv_pago.put(2, String.valueOf(mPago.getMonto()));                    //MONTO
-                                                cv_pago.put(3,mPago.getBanco());                                     //BANCO
+                                                cv_pago.put(3, mPago.getBanco());                                     //BANCO
                                                 cv_pago.put(4, Miscellaneous.ObtenerFecha(TIMESTAMP));               //FECHA DISPOSITIVO
                                                 cv_pago.put(5, Miscellaneous.ObtenerFecha(TIMESTAMP));               //FECHA ACTUALIZADO
 
@@ -3306,32 +3243,31 @@ public class Servicios_Sincronizado {
                 }
             });
 
-        }
-        else if (tipo_prestamo == 2){ //Obtiene prestamos grupales
-            Log.e("IDcartera",id_cartera+"asd");
-            Call<List<MPrestamoGpoRes>> call = api.getPrestamosGpo(id_cartera,"Bearer "+ session.getUser().get(7));
+        } else if (tipo_prestamo == 2) { //Obtiene prestamos grupales
+            Log.e("IDcartera", id_cartera + "asd");
+            Call<List<MPrestamoGpoRes>> call = api.getPrestamosGpo(id_cartera, "Bearer " + session.getUser().get(7));
             call.enqueue(new Callback<List<MPrestamoGpoRes>>() {
                 @Override
                 public void onResponse(Call<List<MPrestamoGpoRes>> call, Response<List<MPrestamoGpoRes>> response) {
-                    Log.e("gpo","id_carteta: "+id_cartera+ " code"+response.code());
-                    if (response.code() == 200){
+                    Log.e("gpo", "id_carteta: " + id_cartera + " code" + response.code());
+                    if (response.code() == 200) {
                         List<MPrestamoGpoRes> prestamos = response.body();
-                        if (prestamos.size() > 0){
-                            DBhelper dBhelper = new DBhelper(ctx);
+                        if (prestamos.size() > 0) {
+                            DBhelper dBhelper = DBhelper.getInstance(ctx);
                             SQLiteDatabase db = dBhelper.getWritableDatabase();
                             Cursor row;
 
-                            Log.e("size antes for", ""+prestamos.size());
-                            for (int i = 0; i < prestamos.size(); i++){
-                                Log.e("Count i", ""+i);
-                                Log.e("id_prestamo", ""+prestamos.get(i).getId());
+                            Log.e("size antes for", "" + prestamos.size());
+                            for (int i = 0; i < prestamos.size(); i++) {
+                                Log.e("Count i", "" + i);
+                                Log.e("id_prestamo", "" + prestamos.get(i).getId());
                                 String where = " WHERE id_prestamo = ?";
                                 String order = "";
-                                String[] args =  new String[] {String.valueOf(prestamos.get(i).getId())};
+                                String[] args = new String[]{String.valueOf(prestamos.get(i).getId())};
 
                                 row = dBhelper.getRecords(TBL_PRESTAMOS_GPO_T, where, order, args);
 
-                                if (row.getCount() == 0){ //Registra el prestamo de gpo
+                                if (row.getCount() == 0) { //Registra el prestamo de gpo
                                     Log.e("Prestamo", "Registra Prestamo");
                                     HashMap<Integer, String> values = new HashMap<>();
                                     values.put(0, String.valueOf(prestamos.get(i).getId()));                    //ID PRESTAMO
@@ -3346,14 +3282,14 @@ public class Servicios_Sincronizado {
                                     values.put(9, String.valueOf(prestamos.get(i).getNumAmortizacion()));       //NUM AMORTIZACION
                                     values.put(10, prestamos.get(i).getFechaEstablecida());                     //FECHA ESTABLECIDA
                                     values.put(11, prestamos.get(i).getTipoCartera());                          //TIPO CARTERA
-                                    values.put(12, (prestamos.get(i).getPagada().equals("PAGADA"))?"1":"0");    //PAGADA
+                                    values.put(12, (prestamos.get(i).getPagada().equals("PAGADA")) ? "1" : "0");    //PAGADA
                                     values.put(13, Miscellaneous.ObtenerFecha(TIMESTAMP));                      //FECHA CREACION
                                     values.put(14, Miscellaneous.ObtenerFecha(TIMESTAMP));                      //FECHA ACTUALIZACION
 
                                     dBhelper.savePrestamosGpo(db, TBL_PRESTAMOS_GPO_T, values);
 
                                     if (prestamos.get(i).getIntegrantes() != null) {
-                                        for (int l = 0; l < prestamos.get(i).getIntegrantes().size(); l++){
+                                        for (int l = 0; l < prestamos.get(i).getIntegrantes().size(); l++) {
                                             MIntegrante mIntegrante = prestamos.get(i).getIntegrantes().get(l);
                                             HashMap<Integer, String> values_miembro = new HashMap<>();
                                             values_miembro.put(0, String.valueOf(prestamos.get(i).getId()));            //ID PRESTAMO
@@ -3377,14 +3313,14 @@ public class Servicios_Sincronizado {
                                         }
                                     }
 
-                                    if (prestamos.get(i).getAmortizaciones().size() > 0){
-                                        for (int j = 0; j < prestamos.get(i).getAmortizaciones().size(); j++){
+                                    if (prestamos.get(i).getAmortizaciones().size() > 0) {
+                                        for (int j = 0; j < prestamos.get(i).getAmortizaciones().size(); j++) {
                                             MAmortizacion mAmortizacion = prestamos.get(i).getAmortizaciones().get(j);
                                             HashMap<Integer, String> values_amortiz = new HashMap<>();
                                             values_amortiz.put(0, String.valueOf(mAmortizacion.getId()));                      //ID AMORTIZACION
                                             values_amortiz.put(1, String.valueOf(mAmortizacion.getPrestamoId()));              //ID PRESTAMOS
                                             values_amortiz.put(2, mAmortizacion.getFecha());                                   //FECHA
-                                            values_amortiz.put(3, (mAmortizacion.getFechaPago() != null)?mAmortizacion.getFechaPago():"");        //FECHA PAGO
+                                            values_amortiz.put(3, (mAmortizacion.getFechaPago() != null) ? mAmortizacion.getFechaPago() : "");        //FECHA PAGO
                                             values_amortiz.put(4, String.valueOf(mAmortizacion.getCapital()));                 //CAPITAL
                                             values_amortiz.put(5, String.valueOf(mAmortizacion.getInteres()));                 //INTERES
                                             values_amortiz.put(6, String.valueOf(mAmortizacion.getIva()));                     //IVA
@@ -3407,22 +3343,21 @@ public class Servicios_Sincronizado {
                                         }
                                     }
 
-                                    if (prestamos.get(i).getPagos() != null &&prestamos.get(i).getPagos().size() > 0){
-                                        for (int k = 0; k < prestamos.get(i).getPagos().size(); k++){
+                                    if (prestamos.get(i).getPagos() != null && prestamos.get(i).getPagos().size() > 0) {
+                                        for (int k = 0; k < prestamos.get(i).getPagos().size(); k++) {
                                             MPago mPago = prestamos.get(i).getPagos().get(k);
                                             HashMap<Integer, String> values_pago = new HashMap<>();
                                             values_pago.put(0, String.valueOf(prestamos.get(i).getId()));            //ID PRESTAMO
                                             values_pago.put(1, mPago.getFecha());                                    //FECHA
                                             values_pago.put(2, String.valueOf(mPago.getMonto()));                    //MONTO
-                                            values_pago.put(3,mPago.getBanco());                                     //BANCO
+                                            values_pago.put(3, mPago.getBanco());                                     //BANCO
                                             values_pago.put(4, Miscellaneous.ObtenerFecha(TIMESTAMP));               //FECHA DISPOSITIVO
                                             values_pago.put(5, Miscellaneous.ObtenerFecha(TIMESTAMP));               //FECHA ACTUALIZADO
 
                                             dBhelper.savePagos(db, TBL_PAGOS_T, values_pago);
                                         }
                                     }
-                                }
-                                else{ //Actualiza la prestamo gpo
+                                } else { //Actualiza la prestamo gpo
                                     row.moveToFirst();
                                     ContentValues cv_prestamo = new ContentValues();
                                     cv_prestamo.put("fecha_entrega", prestamos.get(i).getFechaEntrega());                          //FECHA_ENTREGA
@@ -3433,14 +3368,14 @@ public class Servicios_Sincronizado {
                                     cv_prestamo.put("num_amortizacion", String.valueOf(prestamos.get(i).getNumAmortizacion()));       //NUM AMORTIZACION
                                     cv_prestamo.put("fecha_establecida", prestamos.get(i).getFechaEstablecida());                     //FECHA ESTABLECIDA
                                     cv_prestamo.put("tipo_cartera", prestamos.get(i).getTipoCartera());                          //TIPO CARTERA
-                                    cv_prestamo.put("pagada", (prestamos.get(i).getPagada().equals("PAGADA"))?"1":"0");                     //PAGADA
+                                    cv_prestamo.put("pagada", (prestamos.get(i).getPagada().equals("PAGADA")) ? "1" : "0");                     //PAGADA
                                     cv_prestamo.put("fecha_actualizado", Miscellaneous.ObtenerFecha(TIMESTAMP));                      //FECHA ACTUALIZACION
 
                                     db.update(TBL_PRESTAMOS_GPO_T, cv_prestamo,
                                             "_id = ?", new String[]{row.getString(0)});
 
                                     if (prestamos.get(i).getIntegrantes() != null) {
-                                        for (int l = 0; l < prestamos.get(i).getIntegrantes().size(); l++){
+                                        for (int l = 0; l < prestamos.get(i).getIntegrantes().size(); l++) {
                                             MIntegrante mIntegrante = prestamos.get(i).getIntegrantes().get(l);
                                             ContentValues cv_miembro = new ContentValues();
                                             cv_miembro.put("nombre", mIntegrante.getNombre());                                //NOMBRE
@@ -3460,12 +3395,12 @@ public class Servicios_Sincronizado {
                                         }
                                     }//Termina If de actualizado de integrantes
 
-                                    if (prestamos.get(i).getAmortizaciones().size() > 0){
-                                        for (int j = 0; j < prestamos.get(i).getAmortizaciones().size(); j++){
+                                    if (prestamos.get(i).getAmortizaciones().size() > 0) {
+                                        for (int j = 0; j < prestamos.get(i).getAmortizaciones().size(); j++) {
                                             MAmortizacion mAmortizacion = prestamos.get(i).getAmortizaciones().get(j);
                                             ContentValues cv_amortiz = new ContentValues();
                                             cv_amortiz.put("fecha", mAmortizacion.getFecha());                                                //FECHA
-                                            cv_amortiz.put("fecha_pago", (mAmortizacion.getFechaPago() != null)?mAmortizacion.getFechaPago():"");  //FECHA PAGO
+                                            cv_amortiz.put("fecha_pago", (mAmortizacion.getFechaPago() != null) ? mAmortizacion.getFechaPago() : "");  //FECHA PAGO
                                             cv_amortiz.put("capital", String.valueOf(mAmortizacion.getCapital()));                              //CAPITAL
                                             cv_amortiz.put("interes", String.valueOf(mAmortizacion.getInteres()));                              //INTERES
                                             cv_amortiz.put("iva", String.valueOf(mAmortizacion.getIva()));                                  //IVA
@@ -3488,31 +3423,31 @@ public class Servicios_Sincronizado {
                                         }
                                     }//Termina If de Actualizado de amortizaciones
 
-                                    if (prestamos.get(i).getPagos() != null &&prestamos.get(i).getPagos().size() > 0){
-                                        for (int k = 0; k < prestamos.get(i).getPagos().size(); k++){
+                                    if (prestamos.get(i).getPagos() != null && prestamos.get(i).getPagos().size() > 0) {
+                                        for (int k = 0; k < prestamos.get(i).getPagos().size(); k++) {
                                             MPago mPago = prestamos.get(i).getPagos().get(k);
-                                            Log.e("--","................................................");
+                                            Log.e("--", "................................................");
                                             Log.e("prestamoId", String.valueOf(prestamos.get(i).getId()));
                                             Log.e("fecha", mPago.getFecha());
                                             Log.e("banco", mPago.getBanco());
                                             Log.e("monto", String.valueOf(mPago.getMonto()));
                                             Cursor row_pago = dBhelper.getRecords(TBL_PAGOS_T, " WHERE id_prestamo = ? AND fecha = ? AND monto = ? AND banco = ?", "",
-                                                    new String[]{String.valueOf(prestamos.get(i).getId()),mPago.getFecha(), String.valueOf(mPago.getMonto()),mPago.getBanco()});
-                                            Log.e("RowPago",row.getCount()+"asd");
-                                            if (row_pago.getCount() == 0){
-                                                Log.e("registra","Pago");
+                                                    new String[]{String.valueOf(prestamos.get(i).getId()), mPago.getFecha(), String.valueOf(mPago.getMonto()), mPago.getBanco()});
+                                            Log.e("RowPago", row.getCount() + "asd");
+                                            if (row_pago.getCount() == 0) {
+                                                Log.e("registra", "Pago");
                                                 HashMap<Integer, String> cv_pago = new HashMap<>();
                                                 cv_pago.put(0, String.valueOf(prestamos.get(i).getId()));            //ID PRESTAMO
                                                 cv_pago.put(1, mPago.getFecha());                                    //FECHA
                                                 cv_pago.put(2, String.valueOf(mPago.getMonto()));                    //MONTO
-                                                cv_pago.put(3,mPago.getBanco());                                     //BANCO
+                                                cv_pago.put(3, mPago.getBanco());                                     //BANCO
                                                 cv_pago.put(4, Miscellaneous.ObtenerFecha(TIMESTAMP));               //FECHA DISPOSITIVO
                                                 cv_pago.put(5, Miscellaneous.ObtenerFecha(TIMESTAMP));               //FECHA ACTUALIZADO
 
                                                 dBhelper.savePagos(db, TBL_PAGOS_T, cv_pago);
                                             }
                                             row_pago.close();
-                                            Log.e("--","...............................................");
+                                            Log.e("--", "...............................................");
                                         }
                                     }//Termina If de Actualizar pagos
 
@@ -3522,6 +3457,7 @@ public class Servicios_Sincronizado {
                     }
                     loading.dismiss();
                 }
+
                 @Override
                 public void onFailure(Call<List<MPrestamoGpoRes>> call, Throwable t) {
                     loading.dismiss();
@@ -3531,16 +3467,16 @@ public class Servicios_Sincronizado {
     }
 
     //Enviar la impresiones realizadas
-    public void SendImpresionesVi (Context ctx, boolean showDG){
+    public void SendImpresionesVi(Context ctx, boolean showDG) {
         final AlertDialog loading = Popups.showLoadingDialog(ctx, R.string.please_wait, R.string.loading_info);
         loading.setCancelable(false);
 
         //if ((!((Activity) ctx).isFinishing())) {
-            if (showDG)
-                loading.show();
+        if (showDG)
+            loading.show();
         //}
-        SessionManager session = new SessionManager(ctx);
-        final DBhelper dBhelper = new DBhelper(ctx);
+        SessionManager session = SessionManager.getInstance(ctx);
+        final DBhelper dBhelper = DBhelper.getInstance(ctx);
         final SQLiteDatabase db = dBhelper.getWritableDatabase();
 
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -3551,26 +3487,25 @@ public class Servicios_Sincronizado {
         Log.e("sqlImpresion", sql);
         row = db.rawQuery(sql, new String[]{"0"});
 
-        Log.e("RowCount", row.getCount()+"....12345");
+        Log.e("RowCount", row.getCount() + "....12345");
 
-        if (row.getCount() > 0){
+        if (row.getCount() > 0) {
             row.moveToFirst();
-            for(int i = 0; i < row.getCount(); i++){
+            for (int i = 0; i < row.getCount(); i++) {
                 List<MSendImpresion> _impresiones = new ArrayList<>();
                 MSendImpresion item = new MSendImpresion();
-                String external_id =  "";
+                String external_id = "";
                 String fInicio = "";
                 Cursor row_gestion;
-                int tipo_impresion = (row.getString(13).equals("VIGENTE"))?1:2;
-                if (row.getInt(12) == 1){ //Busca respuestas en individual
+                int tipo_impresion = (row.getString(13).equals("VIGENTE")) ? 1 : 2;
+                if (row.getInt(12) == 1) { //Busca respuestas en individual
                     String[] str = row.getString(1).split("-");
 
                     if (row.getString(13).equals("VIGENTE"))
                         row_gestion = dBhelper.customSelect(TBL_RESPUESTAS_IND_T, "fecha_inicio", " WHERE _id = ?", "", new String[]{str[2]});
                     else
                         row_gestion = dBhelper.customSelect(TBL_RESPUESTAS_IND_V_T, "fecha_inicio", " WHERE _id = ?", "", new String[]{str[2]});
-                }
-                else{ //Busca respuestas en grupal
+                } else { //Busca respuestas en grupal
                     String[] str = row.getString(1).split("-");
 
                     if (row.getString(13).equals("VIGENTE"))
@@ -3625,12 +3560,12 @@ public class Servicios_Sincronizado {
         }
 
         //if ((!((Activity) ctx).isFinishing())) {
-            if (showDG)
-                loading.dismiss();
+        if (showDG)
+            loading.dismiss();
         //}
     }
 
-    public void SendRecibos(Context ctx, boolean showDG){
+    public void SendRecibos(Context ctx, boolean showDG) {
         final AlertDialog loading = Popups.showLoadingDialog(ctx, R.string.please_wait, R.string.loading_info);
         loading.setCancelable(false);
 
@@ -3650,74 +3585,67 @@ public class Servicios_Sincronizado {
 
         gestiones = gestionDao.findAllByEstatus(estatus);
 
-        for(Gestion g : gestiones)
-        {
-            List<Recibo> recibos = null;
+        for (Gestion g : gestiones) {
 
-            if(g.getGrupoId().equals("1"))
-            {
-                recibos = reciboDao.findAllByNombreAndNumSolicitud(g.getNombre(), g.getNumSolicitud());
+            List<Recibo> recibos0;
+            if (g.getGrupoId().equals("1")) {
+                recibos0 = reciboDao.findAllByNombreAndNumSolicitud(g.getNombre(), g.getNumSolicitud());
+            } else {
+                recibos0 = reciboDao.findAllByGrupoIdAndNumSolicitud(g.getGrupoId(), g.getNumSolicitud());
             }
-            else
-            {
-                recibos = reciboDao.findAllByGrupoIdAndNumSolicitud(g.getGrupoId(), g.getNumSolicitud());
-            }
+            List<Recibo> recibos = new ArrayList<>(recibos0);
 
-            if(recibos.size() > 0)
-            {
-                for(Recibo r : recibos)
-                {
-                    new GuardarAgf().execute(ctx, g, r);
-                }
-            }
-            else
-            {
+            if (recibos.size() > 0) {
+                Handler handler = new Handler(Looper.getMainLooper());
+                handler.post(() -> {
+                    for (Recibo r : recibos) {
+                        new GuardarAgf().doInProcess(ctx, g, r);
+                    }
+                });
+            } else {
                 Recibo r = new Recibo();
                 Prestamo p = null;
 
-                if(g.getGrupoId().equals("1"))
-                {
+                if (g.getGrupoId().equals("1")) {
                     p = prestamoDao.findByClienteIdAndNumSolicitud(g.getClienteId(), Integer.parseInt(g.getNumSolicitud()));
-                }
-                else
-                {
+                } else {
                     p = prestamoDao.findByGrupoIdAndNumSolicitud(Integer.parseInt(g.getGrupoId()), Integer.parseInt(g.getNumSolicitud()));
                 }
 
-                r.setPlazo( (p == null)? 0 : p.getPlazo() );
+                r.setPlazo((p == null) ? 0 : p.getPlazo());
+                Handler handler = new Handler(Looper.getMainLooper());
+                handler.post(() -> {
+                    new GuardarAgf().doInProcess(ctx, g, r);
+                });
 
-                new GuardarAgf().execute(ctx, g, r);
             }
         }
 
         gestionesCirculoCredito = gestionCirculoCreditoDao.findAllByEstatus(estatus);
 
-        for(GestionCirculoCredito gcc : gestionesCirculoCredito)
-        {
+        for (GestionCirculoCredito gcc : gestionesCirculoCredito) {
             List<ReciboCirculoCredito> recibosCirculoCredito = reciboCirculoCreditoDao.findAllByCurp(gcc.getCurp());
 
-            if(recibosCirculoCredito.size() > 0)
-            {
-                for(ReciboCirculoCredito rcc : recibosCirculoCredito)
-                {
+            if (recibosCirculoCredito.size() > 0) {
+                for (ReciboCirculoCredito rcc : recibosCirculoCredito) {
 
-                    if(gcc.getFolio() == 0)
-                    {
+                    if (gcc.getFolio() == 0) {
                         gcc.setFolio(rcc.getFolio());
                         gestionCirculoCreditoDao.update(gcc.getId(), gcc);
                     }
-
-                    new GuardarCC().execute(ctx, gcc, rcc);
+                    Handler handler = new Handler(Looper.getMainLooper());
+                    handler.post(() -> {
+                        new GuardarCC().doInProcess(ctx, gcc, rcc);
+                    });
                 }
-            }
-            else
-            {
-                ReciboCirculoCredito rcc = new ReciboCirculoCredito();
-
-                if(gcc.getFolio() > 0 || (gcc.getEvidencia() != null && !gcc.getEvidencia().equals("")))
-                {
-                    new GuardarCC().execute(ctx, gcc, rcc);
-                }
+            } else {
+                Handler handler = new Handler(Looper.getMainLooper());
+                handler.post(() -> {
+                    ReciboCirculoCredito rcc = new ReciboCirculoCredito();
+                    if (gcc.getFolio() > 0 || (gcc.getEvidencia() != null && !gcc.getEvidencia().equals(""))) {
+                        new GuardarCC().doInProcess(ctx, gcc, rcc);
+                    }
+                });
             }
         }
 
@@ -3726,8 +3654,7 @@ public class Servicios_Sincronizado {
 
     }
 
-    public void CloseGestionesApoyoGastosFunerarios(Context ctx)
-    {
+    public void CloseGestionesApoyoGastosFunerarios(Context ctx) {
         GestionDao gestionDao = new GestionDao(ctx);
         PrestamoDao prestamoDao = new PrestamoDao(ctx);
         ReciboDao reciboDao = new ReciboDao(ctx);
@@ -3741,77 +3668,65 @@ public class Servicios_Sincronizado {
 
         gestiones = gestionDao.findAllByEstatusLastWeek(estatus);
 
-        for(Gestion g : gestiones)
-        {
-            if(g.getEstatus() == 0) g.setEstatus(1);
+        for (Gestion g : gestiones) {
+            if (g.getEstatus() == 0) g.setEstatus(1);
 
-            List<Recibo> recibos = null;
+            final List<Recibo> recibos = new ArrayList<>();
 
-            if(g.getGrupoId().equals("1"))
-            {
-                recibos = reciboDao.findAllByNombreAndNumSolicitud(g.getNombre(), g.getNumSolicitud());
-            }
-            else
-            {
-                recibos = reciboDao.findAllByGrupoIdAndNumSolicitud(g.getGrupoId(), g.getNumSolicitud());
+            if (g.getGrupoId().equals("1")) {
+                recibos.addAll(reciboDao.findAllByNombreAndNumSolicitud(g.getNombre(), g.getNumSolicitud()));
+            } else {
+                recibos.addAll(reciboDao.findAllByGrupoIdAndNumSolicitud(g.getGrupoId(), g.getNumSolicitud()));
             }
 
-            if(recibos.size() > 0)
-            {
-                for(Recibo r : recibos)
-                {
-                    new GuardarAgf().execute(ctx, g, r);
-                }
-            }
-            else
-            {
+            if (recibos.size() > 0) {
+                Handler handler = new Handler(Looper.getMainLooper());
+                handler.post(() -> {
+                    for (Recibo r : recibos) {
+                        new GuardarAgf().doInProcess(ctx, g, r);
+                    }
+                });
+            } else {
                 Recibo r = new Recibo();
                 Prestamo p = null;
 
-                if(g.getGrupoId().equals("1"))
-                {
+                if (g.getGrupoId().equals("1")) {
                     p = prestamoDao.findByClienteIdAndNumSolicitud(g.getClienteId(), Integer.parseInt(g.getNumSolicitud()));
-                }
-                else
-                {
+                } else {
                     p = prestamoDao.findByGrupoIdAndNumSolicitud(Integer.parseInt(g.getGrupoId()), Integer.parseInt(g.getNumSolicitud()));
                 }
 
-                r.setPlazo( (p == null)? 0 : p.getPlazo() );
-
-                new GuardarAgf().execute(ctx, g, r);
+                r.setPlazo((p == null) ? 0 : p.getPlazo());
+                Handler handler = new Handler(Looper.getMainLooper());
+                handler.post(() -> {
+                    new GuardarAgf().doInProcess(ctx, g, r);
+                });
             }
         }
     }
 
-    public void CloseGestionesCobroCirculoCredtio(Context ctx)
-    {
-
-    }
-
-    public void SendSoporte(Context ctx, boolean showDG){
+    public void SendSoporte(Context ctx, boolean showDG) {
         final AlertDialog loading = Popups.showLoadingDialog(ctx, R.string.please_wait, R.string.loading_info);
 
         //if (showDG)
         //loading.show();
-        SessionManager session = new SessionManager(ctx);
-        final DBhelper dBhelper = new DBhelper(ctx);
+        SessionManager session = SessionManager.getInstance(ctx);
+        final DBhelper dBhelper = DBhelper.getInstance(ctx);
         final SQLiteDatabase db = dBhelper.getWritableDatabase();
 
         String sql = "SELECT * FROM " + TBL_SOPORTE + " WHERE estatus_envio = ?";
         Cursor row = db.rawQuery(sql, new String[]{"0"});
 
-        if (row.getCount() > 0){
+        if (row.getCount() > 0) {
             row.moveToFirst();
-            for (int i = 0; i < row.getCount(); i++){
+            for (int i = 0; i < row.getCount(); i++) {
                 MSendSoporte soporte = new MSendSoporte();
                 soporte.setUsuarioId(Long.parseLong(session.getUser().get(9)));
                 soporte.setCategoria(row.getLong(1));
                 if (row.getInt(2) == 1) {
                     soporte.setClienteId(row.getLong(5));
                     soporte.setNoSolicitud(row.getLong(6));
-                }
-                else if (row.getInt(2) == 2) {
+                } else if (row.getInt(2) == 2) {
                     soporte.setGrupoId(row.getLong(4));
                     soporte.setNoSolicitud(row.getLong(6));
                 }
@@ -3837,30 +3752,30 @@ public class Servicios_Sincronizado {
 
     }
 
-    public void GetSolicitudesRechazadasInd(Context ctx, boolean showDG){
-        final DBhelper dBhelper = new DBhelper(ctx);
+    public void GetSolicitudesRechazadasInd(Context ctx, boolean showDG) {
+        final DBhelper dBhelper = DBhelper.getInstance(ctx);
         final SQLiteDatabase db = dBhelper.getWritableDatabase();
-        SessionManager session = new SessionManager(ctx);
+        SessionManager session = SessionManager.getInstance(ctx);
 
-        ManagerInterface api = new RetrofitClient().generalRF(CONTROLLER_SOLICITUDES, ctx).create(ManagerInterface.class);
+        ManagerInterface api = RetrofitClient.generalRF(CONTROLLER_SOLICITUDES, ctx).create(ManagerInterface.class);
 
-        Call<List<MSolicitudRechazoInd>> call = api.getSolicitudRechazoInd("Bearer "+ session.getUser().get(7));
+        Call<List<MSolicitudRechazoInd>> call = api.getSolicitudRechazoInd("Bearer " + session.getUser().get(7));
 
         call.enqueue(new Callback<List<MSolicitudRechazoInd>>() {
             @Override
             public void onResponse(Call<List<MSolicitudRechazoInd>> call, Response<List<MSolicitudRechazoInd>> response) {
 
-                switch (response.code()){
+                switch (response.code()) {
                     case 200:
                         List<MSolicitudRechazoInd> solicitudes = response.body();
-                        if (solicitudes.size() > 0){
-                            for (MSolicitudRechazoInd item : solicitudes){
+                        if (solicitudes.size() > 0) {
+                            for (MSolicitudRechazoInd item : solicitudes) {
                                 ContentValues cv;
                                 String sql = "";
                                 Cursor row = null;
                                 if (item.getTipoSolicitud() == 1) {
 
-                                    Log.e("EstautsXXXXXX",item.getSolicitudEstadoId()+" XXXXXXXXXx");
+                                    Log.e("EstautsXXXXXX", item.getSolicitudEstadoId() + " XXXXXXXXXx");
                                     //                 0                1               2              3                4                 5             6             7               8
                                     sql = "SELECT s.id_solicitud, cre.id_credito, cli.id_cliente, con.id_conyuge, eco.id_economico, neg.id_negocio, ava.id_aval, ref.id_referencia, cro.id FROM " + TBL_SOLICITUDES + " AS s " +
                                             "JOIN " + TBL_CREDITO_IND + " AS cre ON s.id_solicitud = cre.id_solicitud " +
@@ -3874,7 +3789,7 @@ public class Servicios_Sincronizado {
                                             "WHERE s.id_originacion = ? AND s.estatus >= 2";
                                     row = db.rawQuery(sql, new String[]{String.valueOf(item.getId())});
 
-                                    Log.e("XXXXCount", row.getCount()+" Total");
+                                    Log.e("XXXXCount", row.getCount() + " Total");
                                     if (row.getCount() > 0) {
                                         row.moveToFirst();
                                         if (item.getSolicitudEstadoId() == 4) { //Actualiza solicitudes de originacion que fueron rechazadas por error de datos
@@ -3961,10 +3876,9 @@ public class Servicios_Sincronizado {
                                                 cv.put("comentario_rechazo", Miscellaneous.validStr(item.getComentarioAdminCroquis()));
                                                 db.update(TBL_CROQUIS_IND, cv, "id_solicitud = ? AND id = ?", new String[]{row.getString(0), row.getString(8)});
                                             }
-                                        }
-                                        else if (item.getSolicitudEstadoId() == 2) { //Actualiza solicitudes de originacion que fueron solicitudes rechazadas
-                                            Log.e("XXXXXXXX","xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");
-                                            Log.e("Comentario",  Miscellaneous.validStr(item.getComentarioAdminCliente()));
+                                        } else if (item.getSolicitudEstadoId() == 2) { //Actualiza solicitudes de originacion que fueron solicitudes rechazadas
+                                            Log.e("XXXXXXXX", "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");
+                                            Log.e("Comentario", Miscellaneous.validStr(item.getComentarioAdminCliente()));
                                             cv = new ContentValues();
                                             cv.put("estatus", 5);
                                             db.update(TBL_SOLICITUDES, cv, "id_solicitud = ?", new String[]{row.getString(0)});
@@ -3975,8 +3889,7 @@ public class Servicios_Sincronizado {
                                         }
                                     }
                                     row.close();
-                                }
-                                else{ //Actualiza solicitudes de renovacion que fueron rechazadas por la administradora
+                                } else { //Actualiza solicitudes de renovacion que fueron rechazadas por la administradora
                                     sql = "SELECT s.id_solicitud, cre.id_credito, cli.id_cliente, con.id_conyuge, eco.id_economico, neg.id_negocio, ava.id_aval, ref.id_referencia, cro.id FROM " + TBL_SOLICITUDES_REN + " AS s " +
                                             "JOIN " + TBL_CREDITO_IND_REN + " AS cre ON s.id_solicitud = cre.id_solicitud " +
                                             "JOIN " + TBL_CLIENTE_IND_REN + " AS cli ON s.id_solicitud = cli.id_solicitud " +
@@ -4070,8 +3983,7 @@ public class Servicios_Sincronizado {
                                                 cv.put("comentario_rechazo", Miscellaneous.validStr(item.getComentarioAdminCroquis()));
                                                 db.update(TBL_CROQUIS_IND_REN, cv, "id_solicitud = ? AND id = ?", new String[]{row.getString(0), row.getString(8)});
                                             }
-                                        }
-                                        else if (item.getSolicitudEstadoId() == 2) { //Solicitud de renovacion rechazada
+                                        } else if (item.getSolicitudEstadoId() == 2) { //Solicitud de renovacion rechazada
                                             Log.e("AQUI RECHAZI IND idsol", row.getString(0));
                                             Log.e("AQUI RECHAZI IND idcli", row.getString(8));
 
@@ -4102,31 +4014,31 @@ public class Servicios_Sincronizado {
 
     }
 
-    public void GetSolicitudesRechazadasGpo(Context ctx, boolean showDG){
-        final DBhelper dBhelper = new DBhelper(ctx);
+    public void GetSolicitudesRechazadasGpo(Context ctx, boolean showDG) {
+        final DBhelper dBhelper = DBhelper.getInstance(ctx);
         final SQLiteDatabase db = dBhelper.getWritableDatabase();
-        SessionManager session = new SessionManager(ctx);
+        SessionManager session = SessionManager.getInstance(ctx);
 
-        ManagerInterface api = new RetrofitClient().generalRF(CONTROLLER_SOLICITUDES, ctx).create(ManagerInterface.class);
+        ManagerInterface api = RetrofitClient.generalRF(CONTROLLER_SOLICITUDES, ctx).create(ManagerInterface.class);
 
-        Call<List<MSolicitudRechazoGpo>> call = api.getSolicitudRechazoGpo("Bearer "+ session.getUser().get(7));
+        Call<List<MSolicitudRechazoGpo>> call = api.getSolicitudRechazoGpo("Bearer " + session.getUser().get(7));
 
         call.enqueue(new Callback<List<MSolicitudRechazoGpo>>() {
             @Override
             public void onResponse(Call<List<MSolicitudRechazoGpo>> call, Response<List<MSolicitudRechazoGpo>> response) {
-                Log.e("CodeGetRechazados", response.code()+" xD");
-                Log.e("Mesage,Rechas",response.message());
-                switch (response.code()){
+                Log.e("CodeGetRechazados", response.code() + " xD");
+                Log.e("Mesage,Rechas", response.message());
+                switch (response.code()) {
                     case 200:
                         Log.e("AQUI RECHAZADO", response.body().toString());
                         List<MSolicitudRechazoGpo> solicitudes = response.body();
-                        if (solicitudes.size() > 0){
-                            for (MSolicitudRechazoGpo item : solicitudes){
+                        if (solicitudes.size() > 0) {
+                            for (MSolicitudRechazoGpo item : solicitudes) {
                                 ContentValues cv;
                                 String sql = "";
                                 Cursor row = null;
                                 if (item.getTipoSolicitud() == 1) { //rechazo de solicitud de originacion
-                                    Log.e("IDSOLCIITUD", "ID: "+item.getIdSolicitudIntegrante());
+                                    Log.e("IDSOLCIITUD", "ID: " + item.getIdSolicitudIntegrante());
                                     //                 0                        1                   2              3                4              5               6                    7               8                  9
                                     sql = "SELECT i.id AS id_integrante, tel.id_telefonico, dom.id_domicilio, neg.id_negocio, con.id_conyuge, otr.id_otro, cro.id AS id_croquis, pol.id_politica, doc.id_documento, sol.id_solicitud FROM " + TBL_INTEGRANTES_GPO + " AS i " +
                                             "JOIN " + TBL_CREDITO_GPO + " AS cre ON i.id_credito = cre.id " +
@@ -4143,7 +4055,7 @@ public class Servicios_Sincronizado {
 
                                     row = db.rawQuery(sql, new String[]{String.valueOf(item.getIdSolicitudIntegrante())});
 
-                                    if (row.getCount() > 0){ //Existe algun registro de originacion
+                                    if (row.getCount() > 0) { //Existe algun registro de originacion
                                         row.moveToFirst();
                                         if (item.getSolicitudEstadoIdIntegrante() == 4) { //Es rechazo parcial
                                             cv = new ContentValues();
@@ -4193,8 +4105,7 @@ public class Servicios_Sincronizado {
                                             cv.put("fecha_envio", "");
                                             cv.put("fecha_guardado", "");
                                             db.update(TBL_SOLICITUDES, cv, "id_solicitud = ?", new String[]{row.getString(9)});
-                                        }
-                                        else{ //Es rechazo completo de la solicitud
+                                        } else { //Es rechazo completo de la solicitud
                                             cv = new ContentValues();
                                             //cv.put("estatus_completado", 0);
                                             cv.put("comentario_rechazo", item.getComentarioAdmin());
@@ -4202,7 +4113,8 @@ public class Servicios_Sincronizado {
 
                                             cv = new ContentValues();
 
-                                            if(item.getSolicitudEstadoIdSolicitud() == 2) cv.put("estatus", 5);
+                                            if (item.getSolicitudEstadoIdSolicitud() == 2)
+                                                cv.put("estatus", 5);
 
                                             cv.put("id_originacion", String.valueOf(item.getId()));
                                             //cv.put("fecha_termino", "");
@@ -4211,8 +4123,7 @@ public class Servicios_Sincronizado {
                                             db.update(TBL_SOLICITUDES, cv, "id_solicitud = ?", new String[]{row.getString(9)});
                                         }
                                     }
-                                }
-                                else{ //rechazo de solicitud grupal de renovacion
+                                } else { //rechazo de solicitud grupal de renovacion
                                     //                 0                        1                   2              3                4              5               6                    7               8                  9
                                     sql = "SELECT " +
                                             "i.id AS id_integrante, " +
@@ -4225,22 +4136,22 @@ public class Servicios_Sincronizado {
                                             "pol.id_politica, " +
                                             "doc.id_documento, " +
                                             "sol.id_solicitud " +
-                                        "FROM " + TBL_INTEGRANTES_GPO_REN + " AS i " +
-                                        "JOIN " + TBL_CREDITO_GPO_REN + " AS cre ON i.id_credito = cre.id " +
-                                        "JOIN " + TBL_SOLICITUDES_REN + " AS sol ON cre.id_solicitud = sol.id_solicitud " +
-                                        "JOIN " + TBL_TELEFONOS_INTEGRANTE_REN + " AS tel ON i.id = tel.id_integrante " +
-                                        "JOIN " + TBL_DOMICILIO_INTEGRANTE_REN + " AS dom ON i.id = doc.id_integrante " +
-                                        "JOIN " + TBL_NEGOCIO_INTEGRANTE_REN + " AS neg ON i.id = neg.id_integrante " +
-                                        "JOIN " + TBL_CONYUGE_INTEGRANTE_REN + " AS con ON i.id = con.id_integrante " +
-                                        "JOIN " + TBL_OTROS_DATOS_INTEGRANTE_REN + " AS otr ON i.id = otr.id_integrante " +
-                                        "JOIN " + TBL_CROQUIS_GPO_REN + " AS cro ON i.id = cro.id_integrante " +
-                                        "JOIN " + TBL_POLITICAS_PLD_INTEGRANTE_REN + " AS pol ON i.id = pol.id_integrante " +
-                                        "JOIN " + TBL_DOCUMENTOS_INTEGRANTE_REN + " AS doc ON i.id = doc.id_integrante " +
-                                        "WHERE i.id_solicitud_integrante = ? AND i.estatus_completado >= 2";
+                                            "FROM " + TBL_INTEGRANTES_GPO_REN + " AS i " +
+                                            "JOIN " + TBL_CREDITO_GPO_REN + " AS cre ON i.id_credito = cre.id " +
+                                            "JOIN " + TBL_SOLICITUDES_REN + " AS sol ON cre.id_solicitud = sol.id_solicitud " +
+                                            "JOIN " + TBL_TELEFONOS_INTEGRANTE_REN + " AS tel ON i.id = tel.id_integrante " +
+                                            "JOIN " + TBL_DOMICILIO_INTEGRANTE_REN + " AS dom ON i.id = doc.id_integrante " +
+                                            "JOIN " + TBL_NEGOCIO_INTEGRANTE_REN + " AS neg ON i.id = neg.id_integrante " +
+                                            "JOIN " + TBL_CONYUGE_INTEGRANTE_REN + " AS con ON i.id = con.id_integrante " +
+                                            "JOIN " + TBL_OTROS_DATOS_INTEGRANTE_REN + " AS otr ON i.id = otr.id_integrante " +
+                                            "JOIN " + TBL_CROQUIS_GPO_REN + " AS cro ON i.id = cro.id_integrante " +
+                                            "JOIN " + TBL_POLITICAS_PLD_INTEGRANTE_REN + " AS pol ON i.id = pol.id_integrante " +
+                                            "JOIN " + TBL_DOCUMENTOS_INTEGRANTE_REN + " AS doc ON i.id = doc.id_integrante " +
+                                            "WHERE i.id_solicitud_integrante = ? AND i.estatus_completado >= 2";
 
                                     row = db.rawQuery(sql, new String[]{String.valueOf(item.getIdSolicitudIntegrante())});
 
-                                    if (row.getCount() > 0){ //Existe algun registro de renovacion
+                                    if (row.getCount() > 0) { //Existe algun registro de renovacion
                                         row.moveToFirst();
                                         if (item.getSolicitudEstadoIdIntegrante() == 4) { //Es rechazo parcial
                                             cv = new ContentValues();
@@ -4287,8 +4198,7 @@ public class Servicios_Sincronizado {
                                             cv.put("fecha_envio", "");
                                             cv.put("fecha_guardado", "");
                                             db.update(TBL_SOLICITUDES_REN, cv, "id_solicitud = ?", new String[]{row.getString(9)});
-                                        }
-                                        else{//Es rechazo de solcitud completo
+                                        } else {//Es rechazo de solcitud completo
                                             cv = new ContentValues();
                                             //cv.put("estatus_completado", 0);
                                             cv.put("comentario_rechazo", item.getComentarioAdmin());
@@ -4296,7 +4206,8 @@ public class Servicios_Sincronizado {
 
                                             cv = new ContentValues();//cv.put("estatus", 0);
 
-                                            if(item.getSolicitudEstadoIdSolicitud() == 2) cv.put("estatus", 5);
+                                            if (item.getSolicitudEstadoIdSolicitud() == 2)
+                                                cv.put("estatus", 5);
 
                                             cv.put("id_originacion", String.valueOf(item.getId()));
                                             //cv.put("fecha_termino", "");
@@ -4332,22 +4243,20 @@ public class Servicios_Sincronizado {
 
     }
 
-    public void GetSolicitudesEstatusInd(Context ctx, boolean showDG){
-        SessionManager session = new SessionManager(ctx);
-        SolicitudIndService solicitudIndService = new RetrofitClient().newInstance(ctx).create(SolicitudIndService.class);
+    public void GetSolicitudesEstatusInd(Context ctx, boolean showDG) {
+        SessionManager session = SessionManager.getInstance(ctx);
+        SolicitudIndService solicitudIndService = RetrofitClient.newInstance(ctx).create(SolicitudIndService.class);
         Call<List<SolicitudDetalleEstatusInd>> call = solicitudIndService.showEstatusSolicitudes("Bearer " + session.getUser().get(7));
 
         call.enqueue(new Callback<List<SolicitudDetalleEstatusInd>>() {
             @Override
             public void onResponse(Call<List<SolicitudDetalleEstatusInd>> call, Response<List<SolicitudDetalleEstatusInd>> response) {
-                switch (response.code()){
+                switch (response.code()) {
                     case 200:
                         List<SolicitudDetalleEstatusInd> solicitudes = response.body();
 
-                        for(SolicitudDetalleEstatusInd se : solicitudes)
-                        {
-                            if(se.getTipoSolicitud() == 1)
-                            {
+                        for (SolicitudDetalleEstatusInd se : solicitudes) {
+                            if (se.getTipoSolicitud() == 1) {
                                 Log.e("AQUI ORIGINACION IND", String.valueOf(se.getSolicitudEstadoId()));
                                 ClienteDao clienteDao = new ClienteDao(ctx);
                                 SolicitudDao solicitudDao = new SolicitudDao(ctx);
@@ -4355,32 +4264,27 @@ public class Servicios_Sincronizado {
                                 Cliente cliente = null;
                                 Solicitud solicitud = solicitudDao.findByIdOriginacion(se.getId());
 
-                                if(solicitud != null) cliente = clienteDao.findByIdSolicitud(solicitud.getIdSolicitud());
+                                if (solicitud != null)
+                                    cliente = clienteDao.findByIdSolicitud(solicitud.getIdSolicitud());
 
-                                if(cliente != null)
-                                {
+                                if (cliente != null) {
                                     String comentario = "";
 
                                     Log.e("AQUI CLIENTE ID", String.valueOf(cliente.getIdCliente()));
                                     Log.e("AQUI SOLICITUD ESTADO", String.valueOf(se.getSolicitudEstadoId()));
 
-                                    if(se.getSolicitudEstadoId() == 1)
-                                    {
+                                    if (se.getSolicitudEstadoId() == 1) {
                                         solicitud.setEstatus(2);
                                         comentario = "EN REVISIÓN";
-                                    }
-                                    else if(se.getSolicitudEstadoId() == 3)
-                                    {
+                                    } else if (se.getSolicitudEstadoId() == 3) {
                                         solicitud.setEstatus(3);
                                         comentario = "VALIDADO";
-                                    }
-                                    else
-                                    {
+                                    } else {
                                         //solicitud.setEstatus(3);
                                         //comentario = cliente.getComentarioRechazo();
                                     }
 
-                                    if(se.getSolicitudEstadoId() == 2) solicitud.setEstatus(5);
+                                    if (se.getSolicitudEstadoId() == 2) solicitud.setEstatus(5);
 
 
                                     Log.e("AQUI comentario", comentario);
@@ -4390,38 +4294,31 @@ public class Servicios_Sincronizado {
 
                                     solicitudDao.updateEstatus(solicitud);
                                 }
-                            }
-                            else
-                            {
+                            } else {
                                 ClienteRenDao clienteDao = new ClienteRenDao(ctx);
                                 SolicitudRenDao solicitudDao = new SolicitudRenDao(ctx);
 
                                 ClienteRen cliente = null;
                                 SolicitudRen solicitud = solicitudDao.findByIdOriginacion(se.getId());
 
-                                if(solicitud != null) cliente = clienteDao.findByIdSolicitud(solicitud.getIdSolicitud());
+                                if (solicitud != null)
+                                    cliente = clienteDao.findByIdSolicitud(solicitud.getIdSolicitud());
 
-                                if(cliente != null)
-                                {
+                                if (cliente != null) {
                                     String comentario = "";
 
-                                    if(se.getSolicitudEstadoId() == 1)
-                                    {
+                                    if (se.getSolicitudEstadoId() == 1) {
                                         comentario = "EN REVISIÓN";
                                         solicitud.setEstatus(2);
-                                    }
-                                    else if(se.getSolicitudEstadoId() == 3)
-                                    {
+                                    } else if (se.getSolicitudEstadoId() == 3) {
                                         comentario = "VALIDADO";
                                         solicitud.setEstatus(3);
-                                    }
-                                    else
-                                    {
+                                    } else {
                                         //comentario = cliente.getComentarioRechazo();
                                         //solicitud.setEstatus(3);
                                     }
 
-                                    if(se.getSolicitudEstadoId() == 2) solicitud.setEstatus(5);
+                                    if (se.getSolicitudEstadoId() == 2) solicitud.setEstatus(5);
 
                                     cliente.setComentarioRechazo(comentario);
                                     clienteDao.updateEstatus(cliente);
@@ -4445,22 +4342,20 @@ public class Servicios_Sincronizado {
 
     }
 
-    public void GetSolicitudesEstatusGpo(Context ctx, boolean showDG){
-        SessionManager session = new SessionManager(ctx);
-        SolicitudGpoService solicitudGpoService = new RetrofitClient().newInstance(ctx).create(SolicitudGpoService.class);
+    public void GetSolicitudesEstatusGpo(Context ctx, boolean showDG) {
+        SessionManager session = SessionManager.getInstance(ctx);
+        SolicitudGpoService solicitudGpoService = RetrofitClient.newInstance(ctx).create(SolicitudGpoService.class);
         Call<List<SolicitudDetalleEstatusGpo>> call = solicitudGpoService.showEstatusSolicitudes("Bearer " + session.getUser().get(7));
 
         call.enqueue(new Callback<List<SolicitudDetalleEstatusGpo>>() {
             @Override
             public void onResponse(Call<List<SolicitudDetalleEstatusGpo>> call, Response<List<SolicitudDetalleEstatusGpo>> response) {
-                switch (response.code()){
+                switch (response.code()) {
                     case 200:
                         List<SolicitudDetalleEstatusGpo> solicitudes = response.body();
 
-                        for(SolicitudDetalleEstatusGpo se : solicitudes)
-                        {
-                            if(se.getTipoSolicitud() == 1)
-                            {
+                        for (SolicitudDetalleEstatusGpo se : solicitudes) {
+                            if (se.getTipoSolicitud() == 1) {
                                 CreditoGpoDao creditoDao = new CreditoGpoDao(ctx);
                                 IntegranteGpoDao integranteDao = new IntegranteGpoDao(ctx);
                                 SolicitudDao solicitudDao = new SolicitudDao(ctx);
@@ -4471,28 +4366,26 @@ public class Servicios_Sincronizado {
 
                                 integrante = integranteDao.findByIdSolicitudIntegrante(se.getIdSolicitudIntegrante());
 
-                                if(integrante != null) credito = creditoDao.findById(integrante.getIdCredito());
-                                if(credito != null) solicitud = solicitudDao.findByIdSolicitud(credito.getIdSolicitud());
+                                if (integrante != null)
+                                    credito = creditoDao.findById(integrante.getIdCredito());
+                                if (credito != null)
+                                    solicitud = solicitudDao.findByIdSolicitud(credito.getIdSolicitud());
 
-                                if(solicitud != null)
-                                {
+                                if (solicitud != null) {
                                     String comentario = "";
 
-                                    if(se.getSolicitudEstadoIdIntegrante() == 1)
-                                    {
+                                    if (se.getSolicitudEstadoIdIntegrante() == 1) {
                                         comentario = "EN REVISIÓN";
-                                    }
-                                    else if (se.getSolicitudEstadoIdIntegrante() == 3)
-                                    {
+                                    } else if (se.getSolicitudEstadoIdIntegrante() == 3) {
                                         comentario = "VALIDADO";
-                                    }
-                                    else
-                                    {
+                                    } else {
                                         //comentario = se.getComentarioAdmin();
                                     }
 
-                                    if(se.getSolicitudEstadoIdSolicitud() == 2) solicitud.setEstatus(5);
-                                    if(se.getSolicitudEstadoIdSolicitud() == 3) solicitud.setEstatus(3);
+                                    if (se.getSolicitudEstadoIdSolicitud() == 2)
+                                        solicitud.setEstatus(5);
+                                    if (se.getSolicitudEstadoIdSolicitud() == 3)
+                                        solicitud.setEstatus(3);
 
                                     Log.e("AQUI ORI", String.valueOf(se.getId()));
 
@@ -4502,9 +4395,7 @@ public class Servicios_Sincronizado {
                                     solicitud.setIdOriginacion(se.getId());
                                     solicitudDao.updateEstatus(solicitud);
                                 }
-                            }
-                            else
-                            {
+                            } else {
                                 CreditoGpoRenDao creditoDao = new CreditoGpoRenDao(ctx);
                                 IntegranteGpoRenDao integranteDao = new IntegranteGpoRenDao(ctx);
                                 SolicitudRenDao solicitudDao = new SolicitudRenDao(ctx);
@@ -4515,10 +4406,12 @@ public class Servicios_Sincronizado {
 
                                 integrante = integranteDao.findByIdSolicitudIntegrante(se.getIdSolicitudIntegrante());
 
-                                if(integrante != null) credito = creditoDao.findById(integrante.getIdCredito());
-                                if(credito != null) solicitud = solicitudDao.findByIdSolicitud(credito.getIdSolicitud());
+                                if (integrante != null)
+                                    credito = creditoDao.findById(integrante.getIdCredito());
+                                if (credito != null)
+                                    solicitud = solicitudDao.findByIdSolicitud(credito.getIdSolicitud());
 
-                                if(solicitud != null) {
+                                if (solicitud != null) {
                                     String comentario = "";
 
                                     if (se.getSolicitudEstadoIdIntegrante() == 1) {
@@ -4531,8 +4424,10 @@ public class Servicios_Sincronizado {
 
                                     Log.e("AQUI REN", String.valueOf(se.getId()));
 
-                                    if(se.getSolicitudEstadoIdSolicitud() == 2) solicitud.setEstatus(5);
-                                    if(se.getSolicitudEstadoIdSolicitud() == 3) solicitud.setEstatus(3);
+                                    if (se.getSolicitudEstadoIdSolicitud() == 2)
+                                        solicitud.setEstatus(5);
+                                    if (se.getSolicitudEstadoIdSolicitud() == 3)
+                                        solicitud.setEstatus(3);
 
                                     integrante.setComentarioRechazo(comentario);
                                     integranteDao.updateEstatus(integrante);
@@ -4556,25 +4451,25 @@ public class Servicios_Sincronizado {
         });
     }
 
-    public void GetPrestamosAutorizados(final Context ctx, boolean showDG){
-        final DBhelper dBhelper = new DBhelper(ctx);
+    public void GetPrestamosAutorizados(final Context ctx, boolean showDG) {
+        final DBhelper dBhelper = DBhelper.getInstance(ctx);
         final SQLiteDatabase db = dBhelper.getWritableDatabase();
-        SessionManager session = new SessionManager(ctx);
+        SessionManager session = SessionManager.getInstance(ctx);
 
-        ManagerInterface api = new RetrofitClient().generalRF(CONTROLLER_MOVIL, ctx).create(ManagerInterface.class);
+        ManagerInterface api = RetrofitClient.generalRF(CONTROLLER_MOVIL, ctx).create(ManagerInterface.class);
 
         Call<MSolicitudAutorizar> call = api.getSolicitudesAutorizadas(3L,
-                                                                       "Bearer "+ session.getUser().get(7));
+                "Bearer " + session.getUser().get(7));
 
         call.enqueue(new Callback<MSolicitudAutorizar>() {
             @Override
             public void onResponse(Call<MSolicitudAutorizar> call, Response<MSolicitudAutorizar> response) {
-                Log.e("CodeSolicitude", "Autorizar: "+response.code());
-                switch (response.code()){
+                Log.e("CodeSolicitude", "Autorizar: " + response.code());
+                switch (response.code()) {
                     case 200:
                         MSolicitudAutorizar mSolicitud = response.body();
-                        for (MSolicitudAutorizar.SolicitudIndividual item : mSolicitud.getSolicitudesIndividuales()){
-                            String sql = "SELECT * FROM "+TBL_SOLICITUDES_AUTO + " WHERE id_originacion = ?";
+                        for (MSolicitudAutorizar.SolicitudIndividual item : mSolicitud.getSolicitudesIndividuales()) {
+                            String sql = "SELECT * FROM " + TBL_SOLICITUDES_AUTO + " WHERE id_originacion = ?";
                             Cursor row = db.rawQuery(sql, new String[]{String.valueOf(item.getPrestamo().getSolicitudId())});
                             if (row.getCount() == 0) {
                                 MSolicitudAutorizar.Prestamo pre = item.getPrestamo();
@@ -4938,10 +4833,10 @@ public class Servicios_Sincronizado {
 
                         }
 
-                        for (MSolicitudAutorizar.SolicitudGrupal item : mSolicitud.getSolicitudesGrupales()){
-                            String sql = "SELECT * FROM "+TBL_SOLICITUDES_AUTO + " WHERE id_originacion = ?";
+                        for (MSolicitudAutorizar.SolicitudGrupal item : mSolicitud.getSolicitudesGrupales()) {
+                            String sql = "SELECT * FROM " + TBL_SOLICITUDES_AUTO + " WHERE id_originacion = ?";
                             Cursor row = db.rawQuery(sql, new String[]{String.valueOf(item.getPrestamoGpo().getSolicitudId())});
-                            if (row.getCount() == 0){
+                            if (row.getCount() == 0) {
 
                                 HashMap<Integer, String> params = new HashMap<>();
                                 params.put(0, "2");                                      //TIPO SOLICITUD
@@ -4963,14 +4858,14 @@ public class Servicios_Sincronizado {
                                 params.put(4, item.getPrestamoGpo().getFechaDesembolso());
                                 params.put(5, Miscellaneous.DiaSemana(item.getPrestamoGpo().getFechaDesembolso()));
                                 params.put(6, item.getPrestamoGpo().getHoraVisita());
-                                params.put(7,"0");
+                                params.put(7, "0");
                                 params.put(8, "");
                                 params.put(9, "0");
                                 params.put(10, "");
 
                                 Long id_credito = dBhelper.saveDatosCreditoGpoRen(db, params, 2);
 
-                                for (MSolicitudAutorizar.Integrantes inte : item.getIntegrantes()){
+                                for (MSolicitudAutorizar.Integrantes inte : item.getIntegrantes()) {
 
                                     int tipo = 3;
                                     long id = 0;
@@ -5069,14 +4964,14 @@ public class Servicios_Sincronizado {
                                     params.put(24, String.valueOf(inte.getNegocio().getMontoMaximo()));      //MONTO MAXIMO
                                     params.put(25, Miscellaneous.GetMediosPagoSoli(ctx, inte.getNegocio().getMediosPagosIds()));                          //MEDIOS PAGO
                                     params.put(26, Miscellaneous.validStr(inte.getNegocio().getOtroMedioPago()));                          //OTRO MEDIO DE PAGO
-                                    int numOper = 30 /item.getPrestamoGpo().getPeriodicida();
+                                    int numOper = 30 / item.getPrestamoGpo().getPeriodicida();
                                     params.put(27, String.valueOf(numOper));                          //NUM OPERACIONES MENSUALES
                                     params.put(28, String.valueOf(Miscellaneous.validInt(inte.getNegocio().getNumOperacionesMensualesEfectivo())));                          //NUM OPERACIONES MENSUALES EFECTIVO
-                                    params.put(29,"");                          //FOTO FACHADA
+                                    params.put(29, "");                          //FOTO FACHADA
                                     params.put(30, Miscellaneous.validStr(inte.getNegocio().getReferencia()));                          //REFERENCIA DOMICILIARIA
-                                    params.put(31,"0");                         //ESTATUS RECHAZO
-                                    params.put(32,"");                          //COMENTARIO RECHAZADO
-                                    params.put(33,"1");                         //ESTATUS COMPLETADO
+                                    params.put(31, "0");                         //ESTATUS RECHAZO
+                                    params.put(32, "");                          //COMENTARIO RECHAZADO
+                                    params.put(33, "1");                         //ESTATUS COMPLETADO
 
                                     dBhelper.saveDatosNegocioGpo(db, params, tipo);
 
@@ -5119,13 +5014,13 @@ public class Servicios_Sincronizado {
                                     params.put(4, inte.getCliente().getEstadoCuenta());                                        //ESTADO CUENTA
                                     params.put(5, String.valueOf(inte.getEstatusIntegrante()));                                //ESTATUS INTEGRANTE
                                     params.put(6, String.valueOf(inte.getMonto()));                                            //MONTO SOLICITADO
-                                    params.put(7, (inte.getCasaReunion())?"1":"2");                                            //CASA REUNION
+                                    params.put(7, (inte.getCasaReunion()) ? "1" : "2");                                            //CASA REUNION
                                     params.put(8, "");                                                                         //FIRMA
                                     params.put(9, "0");                                                                        //ESTATUS COMPLETADO
                                     params.put(10, "");                                                                        //MONTO AUTORIZADO
                                     dBhelper.saveDatosOtrosGpoAuto(db, params);
 
-                                    if (inte.getCasaReunion()){
+                                    if (inte.getCasaReunion()) {
                                         //Inserta registro de croquis
                                         params = new HashMap<>();
                                         params.put(0, String.valueOf(id));                      //ID SOLICITUD
@@ -5141,9 +5036,9 @@ public class Servicios_Sincronizado {
 
                                     params = new HashMap<>();
                                     params.put(0, String.valueOf(id));                                       //ID INTEGRANTE
-                                    params.put(1, (inte.getPoliticas().getPropietario())?"1":"2");           //PROPIETARIO REAL
-                                    params.put(2, (inte.getPoliticas().getProveedorRecursos())?"1":"2");     //PROVEEDOR RECURSOS
-                                    params.put(3, (inte.getPoliticas().getPoliticamenteExpuesto())?"1":"2"); //PERSONA POLITICA
+                                    params.put(1, (inte.getPoliticas().getPropietario()) ? "1" : "2");           //PROPIETARIO REAL
+                                    params.put(2, (inte.getPoliticas().getProveedorRecursos()) ? "1" : "2");     //PROVEEDOR RECURSOS
+                                    params.put(3, (inte.getPoliticas().getPoliticamenteExpuesto()) ? "1" : "2"); //PERSONA POLITICA
                                     params.put(4, "1");                     //ESTATUS COMPLETADO
 
                                     dBhelper.savePoliticasIntegrante(db, params, tipo);
@@ -5161,27 +5056,26 @@ public class Servicios_Sincronizado {
 
             @Override
             public void onFailure(Call<MSolicitudAutorizar> call, Throwable t) {
-                Log.e("Autorizada", t.getMessage()+" Solicitud");
+                Log.e("Autorizada", t.getMessage() + " Solicitud");
             }
         });
     }
 
-    public void SendCancelGestiones(Context ctx, boolean showDG){
+    public void SendCancelGestiones(Context ctx, boolean showDG) {
         final AlertDialog loading = Popups.showLoadingDialog(ctx, R.string.please_wait, R.string.loading_info);
         loading.setCancelable(false);
         if (showDG)
             loading.show();
 
-        final DBhelper dBhelper = new DBhelper(ctx);
+        final DBhelper dBhelper = DBhelper.getInstance(ctx);
         final SQLiteDatabase db = dBhelper.getWritableDatabase();
-
 
 
         Cursor row = dBhelper.getRecords(TBL_CANCELACIONES, " WHERE estatus = ''", "", null);
 
-        if (row.getCount() > 0){
+        if (row.getCount() > 0) {
             row.moveToFirst();
-            for (int i = 0; i < row.getCount(); i++){
+            for (int i = 0; i < row.getCount(); i++) {
                 new GuardarCancelGestiones().execute(ctx, row.getString(3), row.getString(4), row.getString(1), row.getString(5), row.getString(0));
                 row.moveToNext();
             }
@@ -5195,18 +5089,18 @@ public class Servicios_Sincronizado {
     }
 
     //Envia las reimpresiones realizadas
-    public void SendReimpresionesVi (Context ctx, boolean showDG){
+    public void SendReimpresionesVi(Context ctx, boolean showDG) {
 
         final AlertDialog loading = Popups.showLoadingDialog(ctx, R.string.please_wait, R.string.loading_info);
         loading.setCancelable(false);
 
         //if ((!((Activity) ctx).isFinishing())) {
-            if (showDG)
-                loading.show();
+        if (showDG)
+            loading.show();
         //}
 
-        SessionManager session = new SessionManager(ctx);
-        final DBhelper dBhelper = new DBhelper(ctx);
+        SessionManager session = SessionManager.getInstance(ctx);
+        final DBhelper dBhelper = DBhelper.getInstance(ctx);
         final SQLiteDatabase db = dBhelper.getWritableDatabase();
 
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -5217,25 +5111,24 @@ public class Servicios_Sincronizado {
 
         row = db.rawQuery(sql, new String[]{"0"});
 
-        if (row.getCount() > 0){
+        if (row.getCount() > 0) {
             row.moveToFirst();
-            for(int i = 0; i < row.getCount(); i++){
+            for (int i = 0; i < row.getCount(); i++) {
                 List<MSendImpresion> _impresiones = new ArrayList<>();
                 MSendImpresion item = new MSendImpresion();
 
-                String external_id =  "";
+                String external_id = "";
                 String fInicio = "";
                 Cursor row_gestion;
                 Log.e("NumPresTamoGestion", row.getString(1));
-                if (row.getInt(13) == 1){
+                if (row.getInt(13) == 1) {
                     String[] str = row.getString(1).split("-");
-                    Log.e("iDGestion", str[2]+"   "+row.getString(14));
+                    Log.e("iDGestion", str[2] + "   " + row.getString(14));
                     if (row.getString(14).equals("VIGENTE"))
                         row_gestion = dBhelper.customSelect(TBL_RESPUESTAS_IND_T, "fecha_inicio", " WHERE _id = ?", "", new String[]{str[2]});
                     else
                         row_gestion = dBhelper.customSelect(TBL_RESPUESTAS_IND_V_T, "fecha_inicio", " WHERE _id = ?", "", new String[]{str[2]});
-                }
-                else{
+                } else {
                     String[] str = row.getString(1).split("-");
                     Log.e("iDGestion", str[1]);
                     if (row.getString(14).equals("VIGENTE"))
@@ -5243,7 +5136,7 @@ public class Servicios_Sincronizado {
                     else
                         row_gestion = dBhelper.customSelect(TBL_RESPUESTAS_INTEGRANTE_T, "fecha_inicio", " WHERE _id = ?", "", new String[]{str[1]});
                 }
-                Log.e("RowReimp", row_gestion.getCount()+" Reimpresion");
+                Log.e("RowReimp", row_gestion.getCount() + " Reimpresion");
                 row_gestion.moveToFirst();
                 fInicio = row_gestion.getString(0);
 
@@ -5252,9 +5145,9 @@ public class Servicios_Sincronizado {
                 try {
                     Date inicioGes = sdf.parse(fInicio);
                     cal.setTime(inicioGes);
-                    String weekOfYear = (cal.get(Calendar.WEEK_OF_YEAR) < 10)?"0"+cal.get(Calendar.WEEK_OF_YEAR):String.valueOf(cal.get(Calendar.WEEK_OF_YEAR));
+                    String weekOfYear = (cal.get(Calendar.WEEK_OF_YEAR) < 10) ? "0" + cal.get(Calendar.WEEK_OF_YEAR) : String.valueOf(cal.get(Calendar.WEEK_OF_YEAR));
                     String nomenclatura = Miscellaneous.GetNomenclatura(row.getInt(13), row.getString(12));
-                    external_id = cal.get(Calendar.YEAR)+weekOfYear+row.getString(6)+row.getString(11)+nomenclatura;
+                    external_id = cal.get(Calendar.YEAR) + weekOfYear + row.getString(6) + row.getString(11) + nomenclatura;
                 } catch (ParseException e) {
                     e.printStackTrace();
                 }
@@ -5263,7 +5156,7 @@ public class Servicios_Sincronizado {
                     item.setAsesorid(row.getString(6));
                     item.setExternalId(external_id);
                     item.setFolio(row.getString(3));
-                    item.setTipo("R"+row.getString(2));
+                    item.setTipo("R" + row.getString(2));
                     item.setMontoRealizado(row.getDouble(4));
                     item.setSendedAt(Miscellaneous.ObtenerFecha(TIMESTAMP));
                     item.setGeneratedAt(row.getString(8));
@@ -5289,24 +5182,24 @@ public class Servicios_Sincronizado {
         }
 
         //if ((!((Activity) ctx).isFinishing())) {
-            if (showDG)
-                loading.dismiss();
+        if (showDG)
+            loading.dismiss();
         //}
     }
 
     public void SendTracker(Context ctx, boolean showDG) {
 
-        SessionManager session = new SessionManager(ctx);
-        final DBhelper dBhelper = new DBhelper(ctx);
+        SessionManager session = SessionManager.getInstance(ctx);
+        final DBhelper dBhelper = DBhelper.getInstance(ctx);
         final SQLiteDatabase db = dBhelper.getWritableDatabase();
 
         Cursor row;
 
         row = dBhelper.getRecords(TBL_TRACKER_ASESOR_T, " WHERE asesor_id = ? AND estatus = ?", "", new String[]{session.getUser().get(0), "0"});
 
-        if (row.getCount() > 0){
+        if (row.getCount() > 0) {
             row.moveToFirst();
-            for (int i = 0; i < row.getCount(); i++){
+            for (int i = 0; i < row.getCount(); i++) {
                 MTracker item = new MTracker();
 
                 item.setDeviceId(row.getInt(0));
@@ -5326,31 +5219,31 @@ public class Servicios_Sincronizado {
 
     }
 
-    public void CancelGestiones(final Context ctx, final boolean showDG){
+    public void CancelGestiones(final Context ctx, final boolean showDG) {
         final AlertDialog loading = Popups.showLoadingDialog(ctx, R.string.please_wait, R.string.loading_info);
         loading.setCancelable(false);
 
         if (showDG)
             loading.show();
 
-        SessionManager session = new SessionManager(ctx);
-        final DBhelper dBhelper = new DBhelper(ctx);
+        SessionManager session = SessionManager.getInstance(ctx);
+        final DBhelper dBhelper = DBhelper.getInstance(ctx);
         final SQLiteDatabase db = dBhelper.getWritableDatabase();
 
-        ManagerInterface api = new RetrofitClient().generalRF(CONTROLLER_MOVIL, ctx).create(ManagerInterface.class);
+        ManagerInterface api = RetrofitClient.generalRF(CONTROLLER_MOVIL, ctx).create(ManagerInterface.class);
 
-        Call<MGestionCancelada> call = api.getGestionesCanceladas(session.getUser().get(9),"Bearer "+ session.getUser().get(7));
+        Call<MGestionCancelada> call = api.getGestionesCanceladas(session.getUser().get(9), "Bearer " + session.getUser().get(7));
         call.enqueue(new Callback<MGestionCancelada>() {
             @Override
             public void onResponse(Call<MGestionCancelada> call, Response<MGestionCancelada> response) {
-                Log.e("CodeCancel","asd "+response.code());
+                Log.e("CodeCancel", "asd " + response.code());
                 MGestionCancelada data = response.body();
-                switch (response.code()){
+                switch (response.code()) {
                     case 200:
-                        if (data.getData().size() > 0){
+                        if (data.getData().size() > 0) {
                             List<MRespuestaSolicitud> items = data.getData();
                             Log.e("Size", items.get(0).getEstatus());
-                            for(int i = 0; i < items.size(); i++) {
+                            for (int i = 0; i < items.size(); i++) {
                                 MRespuestaSolicitud item = items.get(i);
 
                                 Cursor row_cancel = dBhelper.getRecords(TBL_CANCELACIONES, " WHERE fecha_aplicacion <> '' AND id_solicitud = ?", "", new String[]{String.valueOf(item.getId())});
@@ -5484,94 +5377,27 @@ public class Servicios_Sincronizado {
         });
     }
 
-    public void ActualiziaAmortizIndVi(Context ctx, String idPrestamo, String pagoRealizado){
-        DBhelper dBhelper = new DBhelper(ctx);
+    public void ActualiziaAmortizIndVi(Context ctx, String idPrestamo, String pagoRealizado) {
+        DBhelper dBhelper = DBhelper.getInstance(ctx);
         SQLiteDatabase db = dBhelper.getWritableDatabase();
         SimpleDateFormat sdf = new SimpleDateFormat(FORMAT_DATE_GNRAL);
 
-            Log.e("amortizaciones", "Actualiza");
-            String sqlAmortiz = "SELECT _id, total, total_pagado, pagado, fecha, numero FROM " + TBL_AMORTIZACIONES_T + " WHERE id_prestamo = ? AND CAST(total_pagado AS DOUBLE) > 0 ORDER BY numero DESC";
-            Cursor row_amortiz = db.rawQuery(sqlAmortiz, new String[]{idPrestamo});
-            if (row_amortiz.getCount() > 0){
-                row_amortiz.moveToFirst();
-                Double abono = 0.0;
-                if (!pagoRealizado.trim().isEmpty())
-                    abono = Double.parseDouble(pagoRealizado);
-
-                for (int i = 0; i < row_amortiz.getCount(); i++){
-
-                    Double pendiente = row_amortiz.getDouble(2);
-
-                    Double res = abono - pendiente;
-
-                    if (res >= 0){
-                        ContentValues cv_amortiz = new ContentValues();
-                        cv_amortiz.put("total_pagado", "0");
-                        cv_amortiz.put("pagado", "PENDIENTE");
-                        cv_amortiz.put("dias_atraso", 0);
-                        db.update(TBL_AMORTIZACIONES_T, cv_amortiz, "id_prestamo = ? AND numero = ?", new String[]{idPrestamo, row_amortiz.getString(5)});
-
-                        abono = res;
-                    }
-                    else{
-                        ContentValues cv_amortiz = new ContentValues();
-                        cv_amortiz.put("total_pagado", abono);
-                        cv_amortiz.put("pagado", "PARCIAL");
-
-                        cv_amortiz.put("dias_atraso", Miscellaneous.GetDiasAtraso(row_amortiz.getString(4)));
-                        db.update(TBL_AMORTIZACIONES_T, cv_amortiz, "id_prestamo = ? AND numero = ?", new String[]{idPrestamo, row_amortiz.getString(5)});
-
-                        break;
-                    }
-
-                    row_amortiz.moveToNext();
-                }
-
-            }
-            row_amortiz.close();
-
-            sqlAmortiz = "SELECT SUM(a.total_pagado) AS suma_pagos, p.monto_total FROM " + TBL_AMORTIZACIONES_T + " AS a INNER JOIN "+TBL_PRESTAMOS_IND_T+" AS p ON p.id_prestamo = a.id_prestamo WHERE a.id_prestamo = ?";
-            row_amortiz = db.rawQuery(sqlAmortiz, new String[]{idPrestamo});
-
-            if (row_amortiz.getCount() > 0){
-                row_amortiz.moveToFirst();
-                if (row_amortiz.getDouble(0) >= row_amortiz.getDouble(1)){
-                    ContentValues c = new ContentValues();
-                    c.put("pagada", 1);
-                    db.update(TBL_PRESTAMOS_IND_T, c, "id_prestamo = ?", new String[]{idPrestamo});
-                }
-                else{
-                    ContentValues c = new ContentValues();
-                    c.put("pagada", 0);
-                    db.update(TBL_PRESTAMOS_IND_T, c, "id_prestamo = ?", new String[]{idPrestamo});
-                }
-
-            }
-            row_amortiz.close();
-
-    }
-
-    public void ActualiziaAmortizGpoVi(Context ctx, String idPrestamo, String pagoRealizado){
-        DBhelper dBhelper = new DBhelper(ctx);
-        SQLiteDatabase db = dBhelper.getWritableDatabase();
-
-        Log.e("Comienza", "Actualiza amortizaciones gpo");
+        Log.e("amortizaciones", "Actualiza");
         String sqlAmortiz = "SELECT _id, total, total_pagado, pagado, fecha, numero FROM " + TBL_AMORTIZACIONES_T + " WHERE id_prestamo = ? AND CAST(total_pagado AS DOUBLE) > 0 ORDER BY numero DESC";
         Cursor row_amortiz = db.rawQuery(sqlAmortiz, new String[]{idPrestamo});
-        Log.e("AmortiGPo", row_amortiz.getCount()+ " total");
-        if (row_amortiz.getCount() > 0){
+        if (row_amortiz.getCount() > 0) {
             row_amortiz.moveToFirst();
             Double abono = 0.0;
             if (!pagoRealizado.trim().isEmpty())
                 abono = Double.parseDouble(pagoRealizado);
 
-            for (int i = 0; i < row_amortiz.getCount(); i++){
+            for (int i = 0; i < row_amortiz.getCount(); i++) {
 
                 Double pendiente = row_amortiz.getDouble(2);
 
                 Double res = abono - pendiente;
 
-                if (res >= 0){
+                if (res >= 0) {
                     ContentValues cv_amortiz = new ContentValues();
                     cv_amortiz.put("total_pagado", "0");
                     cv_amortiz.put("pagado", "PENDIENTE");
@@ -5579,8 +5405,72 @@ public class Servicios_Sincronizado {
                     db.update(TBL_AMORTIZACIONES_T, cv_amortiz, "id_prestamo = ? AND numero = ?", new String[]{idPrestamo, row_amortiz.getString(5)});
 
                     abono = res;
+                } else {
+                    ContentValues cv_amortiz = new ContentValues();
+                    cv_amortiz.put("total_pagado", abono);
+                    cv_amortiz.put("pagado", "PARCIAL");
+
+                    cv_amortiz.put("dias_atraso", Miscellaneous.GetDiasAtraso(row_amortiz.getString(4)));
+                    db.update(TBL_AMORTIZACIONES_T, cv_amortiz, "id_prestamo = ? AND numero = ?", new String[]{idPrestamo, row_amortiz.getString(5)});
+
+                    break;
                 }
-                else{
+
+                row_amortiz.moveToNext();
+            }
+
+        }
+        row_amortiz.close();
+
+        sqlAmortiz = "SELECT SUM(a.total_pagado) AS suma_pagos, p.monto_total FROM " + TBL_AMORTIZACIONES_T + " AS a INNER JOIN " + TBL_PRESTAMOS_IND_T + " AS p ON p.id_prestamo = a.id_prestamo WHERE a.id_prestamo = ?";
+        row_amortiz = db.rawQuery(sqlAmortiz, new String[]{idPrestamo});
+
+        if (row_amortiz.getCount() > 0) {
+            row_amortiz.moveToFirst();
+            if (row_amortiz.getDouble(0) >= row_amortiz.getDouble(1)) {
+                ContentValues c = new ContentValues();
+                c.put("pagada", 1);
+                db.update(TBL_PRESTAMOS_IND_T, c, "id_prestamo = ?", new String[]{idPrestamo});
+            } else {
+                ContentValues c = new ContentValues();
+                c.put("pagada", 0);
+                db.update(TBL_PRESTAMOS_IND_T, c, "id_prestamo = ?", new String[]{idPrestamo});
+            }
+
+        }
+        row_amortiz.close();
+
+    }
+
+    public void ActualiziaAmortizGpoVi(Context ctx, String idPrestamo, String pagoRealizado) {
+        DBhelper dBhelper = DBhelper.getInstance(ctx);
+        SQLiteDatabase db = dBhelper.getWritableDatabase();
+
+        Log.e("Comienza", "Actualiza amortizaciones gpo");
+        String sqlAmortiz = "SELECT _id, total, total_pagado, pagado, fecha, numero FROM " + TBL_AMORTIZACIONES_T + " WHERE id_prestamo = ? AND CAST(total_pagado AS DOUBLE) > 0 ORDER BY numero DESC";
+        Cursor row_amortiz = db.rawQuery(sqlAmortiz, new String[]{idPrestamo});
+        Log.e("AmortiGPo", row_amortiz.getCount() + " total");
+        if (row_amortiz.getCount() > 0) {
+            row_amortiz.moveToFirst();
+            Double abono = 0.0;
+            if (!pagoRealizado.trim().isEmpty())
+                abono = Double.parseDouble(pagoRealizado);
+
+            for (int i = 0; i < row_amortiz.getCount(); i++) {
+
+                Double pendiente = row_amortiz.getDouble(2);
+
+                Double res = abono - pendiente;
+
+                if (res >= 0) {
+                    ContentValues cv_amortiz = new ContentValues();
+                    cv_amortiz.put("total_pagado", "0");
+                    cv_amortiz.put("pagado", "PENDIENTE");
+                    cv_amortiz.put("dias_atraso", 0);
+                    db.update(TBL_AMORTIZACIONES_T, cv_amortiz, "id_prestamo = ? AND numero = ?", new String[]{idPrestamo, row_amortiz.getString(5)});
+
+                    abono = res;
+                } else {
                     ContentValues cv_amortiz = new ContentValues();
                     cv_amortiz.put("total_pagado", abono);
                     cv_amortiz.put("pagado", "PARCIAL");
@@ -5625,17 +5515,16 @@ public class Servicios_Sincronizado {
         }
         row_amortiz.close();
 
-        sqlAmortiz = "SELECT SUM(a.total_pagado) AS suma_pagos, p.monto_total FROM " + TBL_AMORTIZACIONES_T + " AS a INNER JOIN "+TBL_PRESTAMOS_GPO_T+" AS p ON p.id_prestamo = a.id_prestamo WHERE a.id_prestamo = ?";
+        sqlAmortiz = "SELECT SUM(a.total_pagado) AS suma_pagos, p.monto_total FROM " + TBL_AMORTIZACIONES_T + " AS a INNER JOIN " + TBL_PRESTAMOS_GPO_T + " AS p ON p.id_prestamo = a.id_prestamo WHERE a.id_prestamo = ?";
         row_amortiz = db.rawQuery(sqlAmortiz, new String[]{idPrestamo});
 
-        if (row_amortiz.getCount() > 0){
+        if (row_amortiz.getCount() > 0) {
             row_amortiz.moveToFirst();
-            if (row_amortiz.getDouble(0) >= row_amortiz.getDouble(1)){
+            if (row_amortiz.getDouble(0) >= row_amortiz.getDouble(1)) {
                 ContentValues c = new ContentValues();
                 c.put("pagada", 1);
                 db.update(TBL_PRESTAMOS_GPO_T, c, "id_prestamo = ?", new String[]{idPrestamo});
-            }
-            else{
+            } else {
                 ContentValues c = new ContentValues();
                 c.put("pagada", 0);
                 db.update(TBL_PRESTAMOS_GPO_T, c, "id_prestamo = ?", new String[]{idPrestamo});
@@ -5645,26 +5534,26 @@ public class Servicios_Sincronizado {
         row_amortiz.close();
     }
 
-    public void ActualiziaAmortizIndVe(Context ctx, String idPrestamo, String pagoRealizado){
-        DBhelper dBhelper = new DBhelper(ctx);
+    public void ActualiziaAmortizIndVe(Context ctx, String idPrestamo, String pagoRealizado) {
+        DBhelper dBhelper = DBhelper.getInstance(ctx);
         SQLiteDatabase db = dBhelper.getWritableDatabase();
 
         String sqlAmortiz = "SELECT _id, total, total_pagado, pagado, fecha, numero FROM " + TBL_AMORTIZACIONES_T + " WHERE id_prestamo = ? AND CAST(total_pagado AS DOUBLE) > 0 ORDER BY numero DESC";
         Cursor row_amortiz = db.rawQuery(sqlAmortiz, new String[]{idPrestamo});
-        if (row_amortiz.getCount() > 0){
+        if (row_amortiz.getCount() > 0) {
             row_amortiz.moveToFirst();
 
             Double abono = 0.0;
             if (!pagoRealizado.trim().isEmpty())
                 abono = Double.parseDouble(pagoRealizado);
 
-            for (int i = 0; i < row_amortiz.getCount(); i++){
+            for (int i = 0; i < row_amortiz.getCount(); i++) {
 
                 Double pendiente = row_amortiz.getDouble(2);
 
                 Double res = abono - pendiente;
 
-                if (res >= 0){
+                if (res >= 0) {
                     ContentValues cv_amortiz = new ContentValues();
                     cv_amortiz.put("total_pagado", "0");
                     cv_amortiz.put("pagado", "PENDIENTE");
@@ -5672,8 +5561,7 @@ public class Servicios_Sincronizado {
                     db.update(TBL_AMORTIZACIONES_T, cv_amortiz, "id_prestamo = ? AND numero = ?", new String[]{idPrestamo, row_amortiz.getString(5)});
 
                     abono = res;
-                }
-                else{
+                } else {
                     ContentValues cv_amortiz = new ContentValues();
                     cv_amortiz.put("total_pagado", abono);
                     cv_amortiz.put("pagado", "PARCIAL");
@@ -5689,17 +5577,16 @@ public class Servicios_Sincronizado {
         }
         row_amortiz.close();
 
-        sqlAmortiz = "SELECT SUM(a.total_pagado) AS suma_pagos, p.monto_total FROM " + TBL_AMORTIZACIONES_T + " AS a INNER JOIN "+TBL_PRESTAMOS_IND_T+" AS p ON p.id_prestamo = a.id_prestamo WHERE a.id_prestamo = ?";
+        sqlAmortiz = "SELECT SUM(a.total_pagado) AS suma_pagos, p.monto_total FROM " + TBL_AMORTIZACIONES_T + " AS a INNER JOIN " + TBL_PRESTAMOS_IND_T + " AS p ON p.id_prestamo = a.id_prestamo WHERE a.id_prestamo = ?";
         row_amortiz = db.rawQuery(sqlAmortiz, new String[]{idPrestamo});
 
-        if (row_amortiz.getCount() > 0){
+        if (row_amortiz.getCount() > 0) {
             row_amortiz.moveToFirst();
-            if (row_amortiz.getDouble(0) >= row_amortiz.getDouble(1)){
+            if (row_amortiz.getDouble(0) >= row_amortiz.getDouble(1)) {
                 ContentValues c = new ContentValues();
                 c.put("pagada", 1);
                 db.update(TBL_PRESTAMOS_IND_T, c, "id_prestamo = ?", new String[]{idPrestamo});
-            }
-            else{
+            } else {
                 ContentValues c = new ContentValues();
                 c.put("pagada", 0);
                 db.update(TBL_PRESTAMOS_IND_T, c, "id_prestamo = ?", new String[]{idPrestamo});
@@ -5709,26 +5596,26 @@ public class Servicios_Sincronizado {
         row_amortiz.close();
     }
 
-    public void ActualiziaAmortizIntVe(Context ctx, String idPrestamo, String pagoRealizado){
-        DBhelper dBhelper = new DBhelper(ctx);
+    public void ActualiziaAmortizIntVe(Context ctx, String idPrestamo, String pagoRealizado) {
+        DBhelper dBhelper = DBhelper.getInstance(ctx);
         SQLiteDatabase db = dBhelper.getWritableDatabase();
 
         String sqlAmortiz = "SELECT _id, total, total_pagado, pagado, fecha, numero FROM " + TBL_AMORTIZACIONES_T + " WHERE id_prestamo = ? AND CAST(total_pagado AS DOUBLE) > 0 ORDER BY numero DESC";
         Cursor row_amortiz = db.rawQuery(sqlAmortiz, new String[]{idPrestamo});
-        if (row_amortiz.getCount() > 0){
+        if (row_amortiz.getCount() > 0) {
             row_amortiz.moveToFirst();
 
             Double abono = 0.0;
             if (!pagoRealizado.trim().isEmpty())
                 abono = Double.parseDouble(pagoRealizado);
 
-            for (int i = 0; i < row_amortiz.getCount(); i++){
+            for (int i = 0; i < row_amortiz.getCount(); i++) {
 
                 Double pendiente = row_amortiz.getDouble(2);
 
                 Double res = abono - pendiente;
 
-                if (res >= 0){
+                if (res >= 0) {
                     ContentValues cv_amortiz = new ContentValues();
                     cv_amortiz.put("total_pagado", "0");
                     cv_amortiz.put("pagado", "PENDIENTE");
@@ -5736,8 +5623,7 @@ public class Servicios_Sincronizado {
                     db.update(TBL_AMORTIZACIONES_T, cv_amortiz, "id_prestamo = ? AND numero = ?", new String[]{idPrestamo, row_amortiz.getString(5)});
 
                     abono = res;
-                }
-                else{
+                } else {
                     ContentValues cv_amortiz = new ContentValues();
                     cv_amortiz.put("total_pagado", abono);
                     cv_amortiz.put("pagado", "PARCIAL");
@@ -5754,17 +5640,16 @@ public class Servicios_Sincronizado {
         }
         row_amortiz.close();
 
-        sqlAmortiz = "SELECT SUM(a.total_pagado) AS suma_pagos, p.monto_total FROM " + TBL_AMORTIZACIONES_T + " AS a INNER JOIN "+TBL_PRESTAMOS_GPO_T+" AS p ON p.id_prestamo = a.id_prestamo WHERE a.id_prestamo = ?";
+        sqlAmortiz = "SELECT SUM(a.total_pagado) AS suma_pagos, p.monto_total FROM " + TBL_AMORTIZACIONES_T + " AS a INNER JOIN " + TBL_PRESTAMOS_GPO_T + " AS p ON p.id_prestamo = a.id_prestamo WHERE a.id_prestamo = ?";
         row_amortiz = db.rawQuery(sqlAmortiz, new String[]{idPrestamo});
 
-        if (row_amortiz.getCount() > 0){
+        if (row_amortiz.getCount() > 0) {
             row_amortiz.moveToFirst();
-            if (row_amortiz.getDouble(0) >= row_amortiz.getDouble(1)){
+            if (row_amortiz.getDouble(0) >= row_amortiz.getDouble(1)) {
                 ContentValues c = new ContentValues();
                 c.put("pagada", 1);
                 db.update(TBL_PRESTAMOS_GPO_T, c, "id_prestamo = ?", new String[]{idPrestamo});
-            }
-            else{
+            } else {
                 ContentValues c = new ContentValues();
                 c.put("pagada", 0);
                 db.update(TBL_PRESTAMOS_GPO_T, c, "id_prestamo = ?", new String[]{idPrestamo});
@@ -5775,33 +5660,33 @@ public class Servicios_Sincronizado {
     }
 
     //Obtiene los tickets creados
-    public void GetTickets(final Context ctx, final boolean showDG){
+    public void GetTickets(final Context ctx, final boolean showDG) {
         final AlertDialog loading = Popups.showLoadingDialog(ctx, R.string.please_wait, R.string.loading_info);
         loading.setCancelable(false);
 
         //if ((!((Activity) ctx).isFinishing())) {
-            if (showDG)
-                loading.show();
+        if (showDG)
+            loading.show();
         //}
 
-        final DBhelper dBhelper = new DBhelper(ctx);
+        final DBhelper dBhelper = DBhelper.getInstance(ctx);
         final SQLiteDatabase db = dBhelper.getWritableDatabase();
-        SessionManager session = new SessionManager(ctx);
-        ManagerInterface api = new RetrofitClient().generalRF(CONTROLLER_SOPORTE, ctx).create(ManagerInterface.class);
+        SessionManager session = SessionManager.getInstance(ctx);
+        ManagerInterface api = RetrofitClient.generalRF(CONTROLLER_SOPORTE, ctx).create(ManagerInterface.class);
 
-        Call<List<MResTicket>> call = api.getTickets(session.getUser().get(9),"Bearer "+ session.getUser().get(7));
+        Call<List<MResTicket>> call = api.getTickets(session.getUser().get(9), "Bearer " + session.getUser().get(7));
         call.enqueue(new Callback<List<MResTicket>>() {
             @Override
             public void onResponse(Call<List<MResTicket>> call, Response<List<MResTicket>> response) {
-                Log.e("CodeGetTickets"," :"+response.code());
+                Log.e("CodeGetTickets", " :" + response.code());
                 switch (response.code()) {
                     case 200:
                         List<MResTicket> data = response.body();
-                        if (data.size() > 0){
-                            for (MResTicket item : data){
+                        if (data.size() > 0) {
+                            for (MResTicket item : data) {
                                 Cursor row = dBhelper.getRecords(TBL_SOPORTE, " WHERE folio_solicitud = ?", "", new String[]{String.valueOf(item.getId())});
                                 Log.e("RowCheca", String.valueOf(row.getCount()));
-                                if (row.getCount() == 0){
+                                if (row.getCount() == 0) {
                                     //Crea ticket
                                     HashMap<Integer, String> params = new HashMap<>();
                                     params.put(0, String.valueOf(item.getCategoria()));
@@ -5810,14 +5695,12 @@ public class Servicios_Sincronizado {
                                         params.put(4, "0");
                                         params.put(3, "0");
                                         params.put(5, "0");
-                                    }
-                                    else if (item.getClienteId() > 0) {
+                                    } else if (item.getClienteId() > 0) {
                                         params.put(1, "1");
                                         params.put(4, String.valueOf(item.getClienteId()));
                                         params.put(3, "0");
                                         params.put(5, String.valueOf(item.getNoSolicitud()));
-                                    }
-                                    else {
+                                    } else {
                                         params.put(1, "2");
                                         params.put(3, String.valueOf(item.getGrupoId()));
                                         params.put(4, "0");
@@ -5841,8 +5724,7 @@ public class Servicios_Sincronizado {
 
                                     Log.e("Params", params.toString());
                                     dBhelper.saveSoporte(db, params);
-                                }
-                                else{
+                                } else {
                                     //Actualiza ticket
                                     row.moveToFirst();
                                     ContentValues cv = new ContentValues();
@@ -5858,22 +5740,22 @@ public class Servicios_Sincronizado {
                 }
 
                 //if ((!((Activity) ctx).isFinishing())) {
-                    if (showDG)
-                        loading.dismiss();
+                if (showDG)
+                    loading.dismiss();
                 //}
             }
 
             @Override
             public void onFailure(Call<List<MResTicket>> call, Throwable t) {
                 //if ((!((Activity) ctx).isFinishing())) {
-                    if (showDG)
-                        loading.dismiss();
+                if (showDG)
+                    loading.dismiss();
                 //}
             }
         });
     }
 
-    public void GetGestionadas(final Context ctx, final String tipo, final boolean showDG){
+    public void GetGestionadas(final Context ctx, final String tipo, final boolean showDG) {
 
         final AlertDialog loading = Popups.showLoadingDialog(ctx, R.string.please_wait, R.string.loading_info);
         loading.setCancelable(false);
@@ -5883,18 +5765,18 @@ public class Servicios_Sincronizado {
             loading.show();
         //}
 
-        SessionManager session = new SessionManager(ctx);
-        ManagerInterface api = new RetrofitClient().generalRF(CONTROLLER_MOVIL, ctx).create(ManagerInterface.class);
-        Call<List<MRespGestionadas>> call = api.getGestionadas("Bearer "+ session.getUser().get(7));
+        SessionManager session = SessionManager.getInstance(ctx);
+        ManagerInterface api = RetrofitClient.generalRF(CONTROLLER_MOVIL, ctx).create(ManagerInterface.class);
+        Call<List<MRespGestionadas>> call = api.getGestionadas("Bearer " + session.getUser().get(7));
 
         call.enqueue(new Callback<List<MRespGestionadas>>() {
             @Override
             public void onResponse(Call<List<MRespGestionadas>> call, Response<List<MRespGestionadas>> response) {
-                Log.e("CodeGestionadas", "Code: "+response.code());
-                switch (response.code()){
+                Log.e("CodeGestionadas", "Code: " + response.code());
+                switch (response.code()) {
                     case 200:
                         List<MRespGestionadas> gestionadas = response.body();
-                        if (gestionadas.size() > 0){
+                        if (gestionadas.size() > 0) {
                             new GetGestionadas().execute(ctx, tipo, gestionadas);
                         }
                         break;
@@ -5905,20 +5787,19 @@ public class Servicios_Sincronizado {
 
             @Override
             public void onFailure(Call<List<MRespGestionadas>> call, Throwable t) {
-                Log.e("Fail", "Error"+t.getMessage());
+                Log.e("Fail", "Error" + t.getMessage());
                 if (showDG)
                     loading.dismiss();
             }
         });
     }
 
-    //Obtiene los recibos creados
-    public void GetUltimosRecibos(final Context ctx){
-        final SessionManager session = new SessionManager(ctx);
+    public void GetUltimosRecibos(final Context ctx) {
+        final SessionManager session = SessionManager.getInstance(ctx);
         ReciboDao reciboDao = new ReciboDao(ctx);
 
-        ReciboService reciboService = new RetrofitClient().newInstance(ctx).create(ReciboService.class);
-        Call<List<Recibo>> call = reciboService.last(session.getUser().get(9), "Bearer "+ session.getUser().get(7));
+        ReciboService reciboService = RetrofitClient.newInstance(ctx).create(ReciboService.class);
+        Call<List<Recibo>> call = reciboService.last(session.getUser().get(9), "Bearer " + session.getUser().get(7));
 
         call.enqueue(new Callback<List<Recibo>>() {
             @Override
@@ -5926,42 +5807,33 @@ public class Servicios_Sincronizado {
                 switch (response.code()) {
                     case 200:
                         List<Recibo> data = response.body();
-                        for (Recibo item : data){
+                        for (Recibo item : data) {
                             Recibo reciboDb = null;
 
-                            if(item.getFolio() != null)
-                            {
+                            if (item.getFolio() != null) {
                                 String[] folio = item.getFolio().split("-");
                                 item.setFolio(folio[2]);
                             }
 
-                            if(item.getFechaImpresion() != null)
-                            {
+                            if (item.getFechaImpresion() != null) {
                                 item.setFechaImpresion(item.getFechaImpresion().substring(0, 19).replace("T", " "));
                             }
 
-                            if(item.getFechaEnvio() != null)
-                            {
+                            if (item.getFechaEnvio() != null) {
                                 item.setFechaEnvio(item.getFechaEnvio().substring(0, 19).replace("T", " "));
                             }
 
                             item.setEstatus(1);
 
-                            if(item.getGrupoId().equals("1"))
-                            {
+                            if (item.getGrupoId().equals("1")) {
                                 reciboDb = reciboDao.findByGrupoIdAndNumSolicitudAndTipoImpresion(item.getGrupoId(), item.getNumSolicitud(), item.getTipoImpresion());
-                            }
-                            else
-                            {
+                            } else {
                                 reciboDb = reciboDao.findByNombreAndNumSolicitudAndTipoImpresion(item.getNombre(), item.getNumSolicitud(), item.getTipoImpresion());
                             }
 
-                            if(reciboDb == null)
-                            {
+                            if (reciboDb == null) {
                                 reciboDao.store(item);
-                            }
-                            else
-                            {
+                            } else {
                                 reciboDao.update(reciboDb.getId(), item);
                             }
                         }
@@ -5980,46 +5852,42 @@ public class Servicios_Sincronizado {
     }
 
     //Obtiene el ultimo folio cobrado de circulo de credito
-    public void GetUltimosRecibosCC(Context ctx){
-        final SessionManager session = new SessionManager(ctx);
+    public void GetUltimosRecibosCC(Context ctx) {
+        final SessionManager session = SessionManager.getInstance(ctx);
         ReciboCirculoCreditoDao reciboCCDao = new ReciboCirculoCreditoDao(ctx);
         GestionCirculoCreditoDao gestionCCDao = new GestionCirculoCreditoDao(ctx);
 
-        ReciboCirculoCreditoService reciboCCService = new RetrofitClient().newInstance(ctx).create(ReciboCirculoCreditoService.class);
+        ReciboCirculoCreditoService reciboCCService = RetrofitClient.newInstance(ctx).create(ReciboCirculoCreditoService.class);
 
-        Call<List<CirculoCredito>> call = reciboCCService.show("Bearer "+ session.getUser().get(7), Long.parseLong(session.getUser().get(9)));
+        Call<List<CirculoCredito>> call = reciboCCService.show("Bearer " + session.getUser().get(7), Long.parseLong(session.getUser().get(9)));
 
         call.enqueue(new Callback<List<CirculoCredito>>() {
             @Override
             public void onResponse(Call<List<CirculoCredito>> call, Response<List<CirculoCredito>> response) {
-                switch (response.code()){
+                switch (response.code()) {
                     case 200:
                         List<CirculoCredito> items = response.body();
                         Integer index = 0;
 
-                        for(CirculoCredito cc : items)
-                        {
+                        for (CirculoCredito cc : items) {
                             index++;
 
                             String[] folio = null;
                             String folioManual = null;
 
-                            if(cc.getFolio() != null && !cc.getFolio().equals(""))
-                            {
+                            if (cc.getFolio() != null && !cc.getFolio().equals("")) {
                                 folio = cc.getFolio().split("-");
                             }
 
-                            if(cc.getFolioManual() != null && !cc.getFolioManual().equals(""))
-                            {
+                            if (cc.getFolioManual() != null && !cc.getFolioManual().equals("")) {
                                 folioManual = (String) cc.getFolioManual();
                             }
 
                             GestionCirculoCredito gestionCC = gestionCCDao.findByCurp(cc.getCurp());
 
-                            if(gestionCC == null)
-                            {
+                            if (gestionCC == null) {
                                 gestionCC = new GestionCirculoCredito();
-                                gestionCC.setTipoCredito((cc.getProducto().equals("CREDITO INDIVIDUAL"))? 1 : 2);
+                                gestionCC.setTipoCredito((cc.getProducto().equals("CREDITO INDIVIDUAL")) ? 1 : 2);
                                 gestionCC.setNombreUno(cc.getClienteGrupo());
                                 gestionCC.setCurp(cc.getCurp());
                                 gestionCC.setNombreDos(cc.getAvalRepresentante());
@@ -6027,19 +5895,17 @@ public class Servicios_Sincronizado {
                                 gestionCC.setMonto(cc.getMonto());
                                 gestionCC.setMedioPago(Miscellaneous.GetMedioPago(cc.getMedioPagoId()));
 
-                                if(folioManual != null)
-                                {
+                                if (folioManual != null) {
                                     gestionCC.setImprimirRecibo("NO");
                                     gestionCC.setFolio(Integer.parseInt(folioManual));
                                 }
 
-                                if(folio != null)
-                                {
+                                if (folio != null) {
                                     gestionCC.setImprimirRecibo("SI");
                                     gestionCC.setFolio(Integer.parseInt(folio[2]));
                                 }
 
-                                if(folioManual == null && folio == null){
+                                if (folioManual == null && folio == null) {
                                     gestionCC.setImprimirRecibo("NO");
                                     gestionCC.setFolio(0);
                                 }
@@ -6047,32 +5913,27 @@ public class Servicios_Sincronizado {
                                 gestionCC.setEvidencia("");
                                 gestionCC.setTipoImagen("");
                                 gestionCC.setFechaTermino("");
-                                gestionCC.setFechaEnvio(cc.getFechaEnvio().substring(0,19).replace("T", " "));
+                                gestionCC.setFechaEnvio(cc.getFechaEnvio().substring(0, 19).replace("T", " "));
                                 gestionCC.setEstatus(2);
 
                                 Double costoConsulta = Double.parseDouble(gestionCC.getMonto());
 
                                 gestionCC.setCostoConsulta("");
 
-                                if(gestionCC.getIntegrantes() != null && gestionCC.getIntegrantes() > 0 && costoConsulta > 0)
-                                {
-                                    costoConsulta = costoConsulta/gestionCC.getIntegrantes();
+                                if (gestionCC.getIntegrantes() != null && gestionCC.getIntegrantes() > 0 && costoConsulta > 0) {
+                                    costoConsulta = costoConsulta / gestionCC.getIntegrantes();
 
-                                    if(costoConsulta > 20){
+                                    if (costoConsulta > 20) {
                                         gestionCC.setCostoConsulta("22.50");
-                                    }
-                                    else
-                                    {
+                                    } else {
                                         gestionCC.setCostoConsulta("17.50");
                                     }
                                 }
 
-                                if(gestionCC.getIntegrantes() == 0){
-                                    if(costoConsulta > 20){
+                                if (gestionCC.getIntegrantes() == 0) {
+                                    if (costoConsulta > 20) {
                                         gestionCC.setCostoConsulta("22.50");
-                                    }
-                                    else
-                                    {
+                                    } else {
                                         gestionCC.setCostoConsulta("17.50");
                                     }
                                 }
@@ -6082,13 +5943,12 @@ public class Servicios_Sincronizado {
                             }
 
 
-                            if( index == items.size())
-                            {
+                            if (index == items.size()) {
                                 ReciboCirculoCredito reciboCC = reciboCCDao.findByCurpAndTipoImpresion(cc.getCurp(), cc.getTipoImpresion());
 
-                                if(reciboCC == null && folio != null){
+                                if (reciboCC == null && folio != null) {
                                     reciboCC = new ReciboCirculoCredito();
-                                    reciboCC.setTipoCredito((cc.getProducto().equals("CREDITO INDIVIDUAL"))? 1 : 2);
+                                    reciboCC.setTipoCredito((cc.getProducto().equals("CREDITO INDIVIDUAL")) ? 1 : 2);
                                     reciboCC.setNombreUno(cc.getClienteGrupo());
                                     reciboCC.setCurp(cc.getCurp());
                                     reciboCC.setNombreDos(cc.getAvalRepresentante());
@@ -6096,8 +5956,8 @@ public class Servicios_Sincronizado {
                                     reciboCC.setMonto(cc.getMonto());
                                     reciboCC.setTipoImpresion(cc.getTipoImpresion());
                                     reciboCC.setFolio(Integer.parseInt(folio[2]));
-                                    reciboCC.setFechaImpresion(cc.getFechaImpreso().substring(0,19).replace("T", " "));
-                                    reciboCC.setFechaEnvio(cc.getFechaEnvio().substring(0,19).replace("T", " "));
+                                    reciboCC.setFechaImpresion(cc.getFechaImpreso().substring(0, 19).replace("T", " "));
+                                    reciboCC.setFechaEnvio(cc.getFechaEnvio().substring(0, 19).replace("T", " "));
                                     reciboCC.setEstatus(1);
 
                                     reciboCCDao.store(reciboCC);
@@ -6118,26 +5978,26 @@ public class Servicios_Sincronizado {
         });
     }
 
-    public void GetPrestamosToRenovar(final Context ctx){
-        final DBhelper dBhelper = new DBhelper(ctx);
+    public void GetPrestamosToRenovar(final Context ctx) {
+        final DBhelper dBhelper = DBhelper.getInstance(ctx);
         final SQLiteDatabase db = dBhelper.getWritableDatabase();
-        final SessionManager session = new SessionManager(ctx);
-        ManagerInterface api = new RetrofitClient().generalRF(CONTROLLER_MOVIL, ctx).create(ManagerInterface.class);
+        final SessionManager session = SessionManager.getInstance(ctx);
+        ManagerInterface api = RetrofitClient.generalRF(CONTROLLER_MOVIL, ctx).create(ManagerInterface.class);
 
-        Call<List<MPrestamosRenovar>> call = api.getPrestamoToRenovar("Bearer "+ session.getUser().get(7));
+        Call<List<MPrestamosRenovar>> call = api.getPrestamoToRenovar("Bearer " + session.getUser().get(7));
 
         call.enqueue(new Callback<List<MPrestamosRenovar>>() {
             @Override
             public void onResponse(Call<List<MPrestamosRenovar>> call, Response<List<MPrestamosRenovar>> response) {
-                switch (response.code()){
+                switch (response.code()) {
                     case 200:
                         Log.e("AQUI", String.valueOf(response.code()));
                         List<MPrestamosRenovar> prestamos = response.body();
-                        if (prestamos.size() > 0){
-                            for(MPrestamosRenovar item : prestamos){
+                        if (prestamos.size() > 0) {
+                            for (MPrestamosRenovar item : prestamos) {
                                 if (item.getTipoPrestamo().equals("INDIVIDUAL")) {
                                     String sql = "SELECT * FROM " + TBL_PRESTAMOS_TO_RENOVAR + " WHERE asesor_id = ? AND prestamo_id = ? and cliente_id = ?";
-                                    Cursor row = db.rawQuery(sql, new String[]{session.getUser().get(0), String.valueOf(item.getPrestamoId()), String.valueOf(item.getClienteId()) });
+                                    Cursor row = db.rawQuery(sql, new String[]{session.getUser().get(0), String.valueOf(item.getPrestamoId()), String.valueOf(item.getClienteId())});
 
                                     if (row.getCount() == 0) {
                                         HashMap<Integer, String> params = new HashMap<>();
@@ -6156,8 +6016,7 @@ public class Servicios_Sincronizado {
 
                                     }
                                     row.close();
-                                }
-                                else{
+                                } else {
                                     String sql = "SELECT * FROM " + TBL_PRESTAMOS_TO_RENOVAR + " WHERE asesor_id = ? AND grupo_id = ? and tipo_prestamo = 2 AND prestamo_id = ?";
                                     Cursor row = db.rawQuery(sql, new String[]{session.getUser().get(0), String.valueOf(item.getGrupoId()), String.valueOf(item.getPrestamoId())});
 
@@ -6196,25 +6055,25 @@ public class Servicios_Sincronizado {
         });
     }
 
-    public void GetPrestamosToRenovarForce(final Context ctx){
-        final DBhelper dBhelper = new DBhelper(ctx);
+    public void GetPrestamosToRenovarForce(final Context ctx) {
+        final DBhelper dBhelper = DBhelper.getInstance(ctx);
         final SQLiteDatabase db = dBhelper.getWritableDatabase();
-        final SessionManager session = new SessionManager(ctx);
-        ManagerInterface api = new RetrofitClient().generalRF(CONTROLLER_MOVIL, ctx).create(ManagerInterface.class);
+        final SessionManager session = SessionManager.getInstance(ctx);
+        ManagerInterface api = RetrofitClient.generalRF(CONTROLLER_MOVIL, ctx).create(ManagerInterface.class);
 
-        Call<List<MPrestamosRenovar>> call = api.getPrestamoToRenovar("Bearer "+ session.getUser().get(7));
+        Call<List<MPrestamosRenovar>> call = api.getPrestamoToRenovar("Bearer " + session.getUser().get(7));
 
         call.enqueue(new Callback<List<MPrestamosRenovar>>() {
             @Override
             public void onResponse(Call<List<MPrestamosRenovar>> call, Response<List<MPrestamosRenovar>> response) {
-                switch (response.code()){
+                switch (response.code()) {
                     case 200:
                         List<MPrestamosRenovar> prestamos = response.body();
-                        if (prestamos.size() > 0){
-                            for(MPrestamosRenovar item : prestamos){
+                        if (prestamos.size() > 0) {
+                            for (MPrestamosRenovar item : prestamos) {
                                 if (item.getTipoPrestamo().equals("INDIVIDUAL")) {
                                     String sql = "SELECT * FROM " + TBL_PRESTAMOS_TO_RENOVAR + " WHERE asesor_id = ? AND prestamo_id = ? and cliente_id = ?";
-                                    Cursor row = db.rawQuery(sql, new String[]{session.getUser().get(0), String.valueOf(item.getPrestamoId()), String.valueOf(item.getClienteId()) });
+                                    Cursor row = db.rawQuery(sql, new String[]{session.getUser().get(0), String.valueOf(item.getPrestamoId()), String.valueOf(item.getClienteId())});
 
                                     if (row.getCount() == 0) {
                                         HashMap<Integer, String> params = new HashMap<>();
@@ -6233,8 +6092,7 @@ public class Servicios_Sincronizado {
 
                                     }
                                     row.close();
-                                }
-                                else{
+                                } else {
                                     String sql = "SELECT * FROM " + TBL_PRESTAMOS_TO_RENOVAR + " WHERE asesor_id = ? AND grupo_id = ? and tipo_prestamo = 2";
                                     Cursor row = db.rawQuery(sql, new String[]{session.getUser().get(0), String.valueOf(item.getGrupoId())});
 
@@ -6270,8 +6128,8 @@ public class Servicios_Sincronizado {
         });
     }
 
-    private void GetDatosRenovar(Context ctx){
-        final DBhelper dBhelper = new DBhelper(ctx);
+    public void GetDatosRenovar(Context ctx) {
+        final DBhelper dBhelper = DBhelper.getInstance(ctx);
         final SQLiteDatabase db = dBhelper.getWritableDatabase();
         SolicitudRenDao solicitudRenDao = new SolicitudRenDao(ctx);
         PrestamoToRenovarDao prestamoToRenovarDao = new PrestamoToRenovarDao(ctx);
@@ -6305,8 +6163,7 @@ public class Servicios_Sincronizado {
                             Log.e("AQUI ASIGNAR PRESTAMO ID DOS ", solicitudesRen.get(i).getNombre());
 
                             PrestamoToRenovar prestamoToRenovarTemp = prestamoToRenovarDao.findByClienteNombreAndPosition(row.getString(5), i);
-                            if(prestamoToRenovarTemp != null)
-                            {
+                            if (prestamoToRenovarTemp != null) {
                                 solicitudesRen.get(i).setPrestamoId(prestamoToRenovarTemp.getPrestamoId());
                                 solicitudRenDao.updatePrestamo(solicitudesRen.get(i));
                             }
@@ -6325,10 +6182,10 @@ public class Servicios_Sincronizado {
         sql = "SELECT _id, prestamo_id, cliente_id, tipo_prestamo, grupo_id, cliente_nombre, fecha_vencimiento  FROM " + TBL_PRESTAMOS_TO_RENOVAR + " WHERE descargado = ?";
         row = db.rawQuery(sql, new String[]{"0"});
 
-        if (row.getCount() > 0){
+        if (row.getCount() > 0) {
             row.moveToFirst();
 
-            for (int i = 0; i < row.getCount(); i++){
+            for (int i = 0; i < row.getCount(); i++) {
                 if (row.getInt(4) == 1)
                     new RegistrarDatosRenovacion().
                             execute(ctx, row.getString(0), row.getString(1), row.getString(2), row.getString(6));
@@ -6342,18 +6199,18 @@ public class Servicios_Sincronizado {
 
     }
 
-    private void GetDatosRenovarForce(Context ctx){
-        final DBhelper dBhelper = new DBhelper(ctx);
+    private void GetDatosRenovarForce(Context ctx) {
+        final DBhelper dBhelper = DBhelper.getInstance(ctx);
         final SQLiteDatabase db = dBhelper.getWritableDatabase();
 
         //SE GUARDAN LOS QUE YA SE SINCRONIZAR PERO DE FORMA PARCIAL
         String sqlParcial = "SELECT _id, prestamo_id, cliente_id, tipo_prestamo, grupo_id, cliente_nombre, fecha_vencimiento  FROM " + TBL_PRESTAMOS_TO_RENOVAR + " WHERE descargado = ?";
         Cursor rowParcial = db.rawQuery(sqlParcial, new String[]{"1"});
 
-        if (rowParcial.getCount() > 0){
+        if (rowParcial.getCount() > 0) {
             rowParcial.moveToFirst();
             Log.e("AQUI", rowParcial.getString(4));
-            for (int i = 0; i < rowParcial.getCount(); i++){
+            for (int i = 0; i < rowParcial.getCount(); i++) {
                 if (rowParcial.getInt(4) > 1)
                     new RegistrarDatosRenovacionGpoForce().
                             execute(ctx, rowParcial.getString(0), rowParcial.getString(4), rowParcial.getString(5), rowParcial.getString(6));
@@ -6364,7 +6221,7 @@ public class Servicios_Sincronizado {
 
     }
 
-    public void SendConsultaCC(Context ctx, boolean showDG){
+    public void SendConsultaCC(Context ctx, boolean showDG) {
 
         final AlertDialog loading = Popups.showLoadingDialog(ctx, R.string.please_wait, R.string.loading_info);
         loading.setCancelable(false);
@@ -6373,7 +6230,7 @@ public class Servicios_Sincronizado {
         if (showDG)
             loading.show();
         //}
-        final SessionManager session = new SessionManager(ctx);
+        final SessionManager session = SessionManager.getInstance(ctx);
 
         Long suc = 0L;
         Integer usuario = 0;
@@ -6381,143 +6238,143 @@ public class Servicios_Sincronizado {
         try {
             JSONObject jso = session.getSucursales().getJSONObject(0);
             suc = jso.getLong("id");
-            usuario=Integer.parseInt(session.getUser().get(9));
-            token=session.getUser().get(7);
+            usuario = Integer.parseInt(session.getUser().get(9));
+            token = session.getUser().get(7);
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        final DBhelper dBhelper = new DBhelper(ctx);
+        final DBhelper dBhelper = DBhelper.getInstance(ctx);
         final SQLiteDatabase db = dBhelper.getWritableDatabase();
-        String sql = "SELECT * FROM " + TBL_CONSULTA_CC + " WHERE estatus = ? order by _id  " ;
+        String sql = "SELECT * FROM " + TBL_CONSULTA_CC + " WHERE estatus = ? order by _id  ";
         Cursor row = db.rawQuery(sql, new String[]{"0"});
         Integer iTotalRows = row.getCount();
-        SendByOneCirculo( ctx,0,iTotalRows,db,suc,usuario,token );
+        SendByOneCirculo(ctx, 0, iTotalRows, db, suc, usuario, token);
         loading.dismiss();
 
     }
 
-    private void SendByOneCirculo(Context ctx,Integer iOffSet, Integer iTotalRows,SQLiteDatabase db,Long suc,Integer user, String token) {
-       String id ="";
-        if (iOffSet<=iTotalRows){
-        String sql = "SELECT * FROM " + TBL_CONSULTA_CC + " WHERE estatus = ? order by _id  limit 1 ";
-        Cursor row = db.rawQuery(sql, new String[]{"0"});
-        if (row.getCount() > 0){
-            row.moveToFirst();
-            for (int i = 0; i < row.getCount(); i++) {
-                id = row.getString(0);
-                System.out.println("ID: " + id + " OFFSET: " + iOffSet);
-                ConsultaCC cc = new ConsultaCC();
-                cc.setSucursal(suc);
-                cc.setAsesor_id(user);
-                cc.setUsuarioId(user);
-                cc.setOrigen("MOVIL");
-                cc.setApPaterno(row.getString(5));
-                if (!row.getString(6).isEmpty()) cc.setApMaterno(row.getString(6));
-                else cc.setApMaterno(" ");
-                cc.setPrimerNombre(row.getString(3));
-                if (!row.getString(4).isEmpty()) {
-                    cc.setSegundoNombre(row.getString(4));
-                } else {
-                    cc.setSegundoNombre(" ");
-                }
-                cc.setMontoSolicitado(row.getInt(2));
-                cc.setProducto(row.getString(1));
-                cc.setFechaNac(row.getString(7));
-                if (!row.getString(10).isEmpty()) {
-                    cc.setCurp(row.getString(10));
-                }
-                cc.setRfc(row.getString(11));
-                cc.setNacionalidad("MX");
-                ConsultaCC.DomicilioPeticion dom = new ConsultaCC.DomicilioPeticion();
-                dom.setDireccion(row.getString(12));
-                dom.setColoniaPoblacion(row.getString(13));
-                dom.setDelegacionMunicipio(row.getString(14));
-                dom.setCiudad(row.getString(15));
-                dom.setEstado(Miscellaneous.GetCodigoEstado(row.getString(16)));
-                dom.setCP(row.getString(17));
-                cc.setDomPeticion(dom);
-                //Toast.makeText(ctx, "Comienza Consulta", Toast.LENGTH_SHORT).show();
-                ManagerInterface api = new RetrofitClient().generalRF(CONTROLLER_API, ctx).create(ManagerInterface.class);
-                Call<MResConsultaCC> call = api.setConsultaCC("Bearer " + token, cc);
-                String finalId = id;
-                call.enqueue(new Callback<MResConsultaCC>() {
-                    @Override
-                    public void onResponse(Call<MResConsultaCC> call, Response<MResConsultaCC> response) {
-                        MResConsultaCC r = response.body();
-                        ContentValues cv = new ContentValues();
-                        switch (response.code()) {
-                            case 200:
-                                if (r.getOk() != null) {
-                                    int credAbierto = 0;
-                                    int credCerrado = 0;
-                                    float saldVencido = 0;
-                                    float saldActual = 0;
-                                    Double peorPago = 0.0;
-                                    for (MResConsultaCC.Credito item : r.getOk().getRes().getCreditos()) {
-                                        if (!Miscellaneous.validStr(item.getFechaCierreCuenta()).isEmpty()) {
-                                            credCerrado += 1;
-                                        } else {
-                                            credAbierto += 1;
+    private void SendByOneCirculo(Context ctx, Integer iOffSet, Integer iTotalRows, SQLiteDatabase db, Long suc, Integer user, String token) {
+        String id = "";
+        if (iOffSet <= iTotalRows) {
+            String sql = "SELECT * FROM " + TBL_CONSULTA_CC + " WHERE estatus = ? order by _id  limit 1 ";
+            Cursor row = db.rawQuery(sql, new String[]{"0"});
+            if (row.getCount() > 0) {
+                row.moveToFirst();
+                for (int i = 0; i < row.getCount(); i++) {
+                    id = row.getString(0);
+                    System.out.println("ID: " + id + " OFFSET: " + iOffSet);
+                    ConsultaCC cc = new ConsultaCC();
+                    cc.setSucursal(suc);
+                    cc.setAsesor_id(user);
+                    cc.setUsuarioId(user);
+                    cc.setOrigen("MOVIL");
+                    cc.setApPaterno(row.getString(5));
+                    if (!row.getString(6).isEmpty()) cc.setApMaterno(row.getString(6));
+                    else cc.setApMaterno(" ");
+                    cc.setPrimerNombre(row.getString(3));
+                    if (!row.getString(4).isEmpty()) {
+                        cc.setSegundoNombre(row.getString(4));
+                    } else {
+                        cc.setSegundoNombre(" ");
+                    }
+                    cc.setMontoSolicitado(row.getInt(2));
+                    cc.setProducto(row.getString(1));
+                    cc.setFechaNac(row.getString(7));
+                    if (!row.getString(10).isEmpty()) {
+                        cc.setCurp(row.getString(10));
+                    }
+                    cc.setRfc(row.getString(11));
+                    cc.setNacionalidad("MX");
+                    ConsultaCC.DomicilioPeticion dom = new ConsultaCC.DomicilioPeticion();
+                    dom.setDireccion(row.getString(12));
+                    dom.setColoniaPoblacion(row.getString(13));
+                    dom.setDelegacionMunicipio(row.getString(14));
+                    dom.setCiudad(row.getString(15));
+                    dom.setEstado(Miscellaneous.GetCodigoEstado(row.getString(16)));
+                    dom.setCP(row.getString(17));
+                    cc.setDomPeticion(dom);
+                    //Toast.makeText(ctx, "Comienza Consulta", Toast.LENGTH_SHORT).show();
+                    ManagerInterface api = RetrofitClient.generalRF(CONTROLLER_API, ctx).create(ManagerInterface.class);
+                    Call<MResConsultaCC> call = api.setConsultaCC("Bearer " + token, cc);
+                    String finalId = id;
+                    call.enqueue(new Callback<MResConsultaCC>() {
+                        @Override
+                        public void onResponse(Call<MResConsultaCC> call, Response<MResConsultaCC> response) {
+                            MResConsultaCC r = response.body();
+                            ContentValues cv = new ContentValues();
+                            switch (response.code()) {
+                                case 200:
+                                    if (r.getOk() != null) {
+                                        int credAbierto = 0;
+                                        int credCerrado = 0;
+                                        float saldVencido = 0;
+                                        float saldActual = 0;
+                                        Double peorPago = 0.0;
+                                        for (MResConsultaCC.Credito item : r.getOk().getRes().getCreditos()) {
+                                            if (!Miscellaneous.validStr(item.getFechaCierreCuenta()).isEmpty()) {
+                                                credCerrado += 1;
+                                            } else {
+                                                credAbierto += 1;
 
-                                            saldVencido += item.getSaldoVencido();
+                                                saldVencido += item.getSaldoVencido();
 
-                                            saldActual += item.getSaldoActual();
+                                                saldActual += item.getSaldoActual();
 
-                                            if (item.getPeorAtraso() != null) {
-                                                if (item.getPeorAtraso() > peorPago) {
-                                                    peorPago = item.getPeorAtraso();
+                                                if (item.getPeorAtraso() != null) {
+                                                    if (item.getPeorAtraso() > peorPago) {
+                                                        peorPago = item.getPeorAtraso();
+                                                    }
                                                 }
                                             }
                                         }
+
+                                        cv.put("saldo_actual", String.valueOf(saldActual));
+                                        cv.put("saldo_vencido", String.valueOf(saldVencido));
+                                        cv.put("peor_pago", String.valueOf(peorPago));
+                                        cv.put("creditos_abiertos", String.valueOf(credAbierto));
+                                        cv.put("credito_cerrados", String.valueOf(credCerrado));
+                                        cv.put("preautorizacion", String.valueOf(r.getOk().getPreautorizacion()));
+                                        cv.put("estatus", String.valueOf(response.code()));
+
+                                        db.update(TBL_CONSULTA_CC, cv, "_id = ?", new String[]{finalId});
+
                                     }
-
-                                    cv.put("saldo_actual", String.valueOf(saldActual));
-                                    cv.put("saldo_vencido", String.valueOf(saldVencido));
-                                    cv.put("peor_pago", String.valueOf(peorPago));
-                                    cv.put("creditos_abiertos", String.valueOf(credAbierto));
-                                    cv.put("credito_cerrados", String.valueOf(credCerrado));
-                                    cv.put("preautorizacion", String.valueOf(r.getOk().getPreautorizacion()));
-                                    cv.put("estatus", String.valueOf(response.code()));
-
-                                    db.update(TBL_CONSULTA_CC, cv, "_id = ?", new String[]{finalId});
-
-                                }
-                                break;
-                            case 202:
-                                if (r.getOk() != null) {
+                                    break;
+                                case 202:
+                                    if (r.getOk() != null) {
 
 
-                                    cv.put("errores", "" + r.getOk().getErr().getErrores().get(0).getMensaje());
-                                    cv.put("estatus", String.valueOf(response.code()));
-                                    cv.put("fecha_envio", Miscellaneous.ObtenerFecha(TIMESTAMP));
-                                   db.update(TBL_CONSULTA_CC, cv, "_id = ?", new String[]{finalId});
-                                }
-                                break;
+                                        cv.put("errores", "" + r.getOk().getErr().getErrores().get(0).getMensaje());
+                                        cv.put("estatus", String.valueOf(response.code()));
+                                        cv.put("fecha_envio", Miscellaneous.ObtenerFecha(TIMESTAMP));
+                                        db.update(TBL_CONSULTA_CC, cv, "_id = ?", new String[]{finalId});
+                                    }
+                                    break;
+                            }
+                            SendByOneCirculo(ctx, iOffSet + 1, iTotalRows, db, suc, user, token);
+
                         }
-                        SendByOneCirculo(ctx, iOffSet + 1, iTotalRows, db, suc, user, token);
 
-                    }
+                        @Override
+                        public void onFailure(Call<MResConsultaCC> call, Throwable t) {
+                            Log.e("FALLO", " offset: " + iOffSet);
+                            SendByOneCirculo(ctx, iOffSet + 1, iTotalRows, db, suc, user, token);
+                        }
+                    });
 
-                    @Override
-                    public void onFailure(Call<MResConsultaCC> call, Throwable t) {
-                        Log.e("FALLO", " offset: " + iOffSet);
-                        SendByOneCirculo(ctx, iOffSet + 1, iTotalRows, db, suc, user, token);
-                    }
-                });
 
+                }
 
             }
-
-        }
             row.close();
-       //
+            //
         }
 
     }
 
     //============================= TAREAS ASINCRONAS  =============================================
 
-    public class  RegistrarDatosRenovacion extends AsyncTask<Object, Void, String>{
+    public class RegistrarDatosRenovacion extends AsyncTask<Object, Void, String> {
 
         @Override
         protected void onPreExecute() {
@@ -6526,10 +6383,10 @@ public class Servicios_Sincronizado {
 
         @Override
         protected String doInBackground(Object... obj) {
-            final Context ctx = (Context)obj[0];
-            final DBhelper dBhelper = new DBhelper(ctx);
+            final Context ctx = (Context) obj[0];
+            final DBhelper dBhelper = DBhelper.getInstance(ctx);
             final SQLiteDatabase db = dBhelper.getWritableDatabase();
-            final SessionManager session = new SessionManager(ctx);
+            final SessionManager session = SessionManager.getInstance(ctx);
             String _id = (String) obj[1];
             final String prestamoId = (String) obj[2];
             final String clienteId = (String) obj[3];
@@ -6537,17 +6394,17 @@ public class Servicios_Sincronizado {
 
             Log.e("AQUI: ", String.valueOf(prestamoId));
             Log.e("AQUI: ", String.valueOf(clienteId));
-            ManagerInterface api = new RetrofitClient().generalRF(CONTROLLER_MOVIL, ctx).create(ManagerInterface.class);
+            ManagerInterface api = RetrofitClient.generalRF(CONTROLLER_MOVIL, ctx).create(ManagerInterface.class);
 
             Call<MRenovacion> call = api.getPrestamoRenovar(
-                                            prestamoId,
-                                            clienteId,
-                                            "Bearer "+ session.getUser().get(7));
+                    prestamoId,
+                    clienteId,
+                    "Bearer " + session.getUser().get(7));
 
             call.enqueue(new Callback<MRenovacion>() {
                 @Override
                 public void onResponse(Call<MRenovacion> call, Response<MRenovacion> response) {
-                    switch (response.code()){
+                    switch (response.code()) {
                         case 200:
                             MRenovacion item = response.body();
 
@@ -6581,19 +6438,19 @@ public class Servicios_Sincronizado {
                             long id_direccion_aval = 0;
                             long id_direccion_ref = 0;
 
-                            String nombre = (Miscellaneous.validStr(item.getCliente().getNombre())+" "+
-                                    Miscellaneous.validStr(item.getCliente().getPaterno())+" "+
+                            String nombre = (Miscellaneous.validStr(item.getCliente().getNombre()) + " " +
+                                    Miscellaneous.validStr(item.getCliente().getPaterno()) + " " +
                                     Miscellaneous.validStr(item.getCliente().getMaterno())).trim().toUpperCase();
 
                             HashMap<Integer, String> params = new HashMap<>();
                             params.put(0, ctx.getString(R.string.vol_solicitud));                               //VOL SOLICITUD
-                            params.put(1,session.getUser().get(9));                 //USUARIO ID
-                            params.put(2,"1");                                      //TIPO SOLICITUD
-                            params.put(3,"0");                                      //ID ORIGINACION
+                            params.put(1, session.getUser().get(9));                 //USUARIO ID
+                            params.put(2, "1");                                      //TIPO SOLICITUD
+                            params.put(3, "0");                                      //ID ORIGINACION
                             params.put(4, nombre);                                  //NOMBRE
                             params.put(5, Miscellaneous.ObtenerFecha(TIMESTAMP));   //FECHA INICIO
-                            params.put(6,"");                                       //FECHA TERMINO
-                            params.put(7,"");                                       //FECHA ENVIO
+                            params.put(6, "");                                       //FECHA TERMINO
+                            params.put(7, "");                                       //FECHA ENVIO
                             params.put(8, Miscellaneous.ObtenerFecha(TIMESTAMP));   //FECHA DISPOSITIVO
                             params.put(9, "");                                      //FECHA GUARDADO
                             params.put(10, "0");                                    //ESTATUS
@@ -6603,21 +6460,21 @@ public class Servicios_Sincronizado {
 
                             //Inserta registro de datos del credito
                             params = new HashMap<>();
-                            params.put(0,String.valueOf(id));                                       //ID SOLICITUD
-                            params.put(1,"");                                                       //PLAZO
-                            params.put(2,"");                                                       //PERIODICIDAD
-                            params.put(3,"");                                                       //FECHA DESEMBOLSO
-                            params.put(4,"");                                                       //DIA DESEMBOLSO
-                            params.put(5,"");                                                       //HORA VISITA
-                            params.put(6,"");                                                       //MONTO PRESTAMO
-                            params.put(7,String.valueOf(Miscellaneous.validInt(item.getPrestamo().getNumCiclo())));         //CICLO
+                            params.put(0, String.valueOf(id));                                       //ID SOLICITUD
+                            params.put(1, "");                                                       //PLAZO
+                            params.put(2, "");                                                       //PERIODICIDAD
+                            params.put(3, "");                                                       //FECHA DESEMBOLSO
+                            params.put(4, "");                                                       //DIA DESEMBOLSO
+                            params.put(5, "");                                                       //HORA VISITA
+                            params.put(6, "");                                                       //MONTO PRESTAMO
+                            params.put(7, String.valueOf(Miscellaneous.validInt(item.getPrestamo().getNumCiclo())));         //CICLO
                             params.put(8, String.valueOf(item.getPrestamo().getMonto()));           //CREDITO ANTERIOR
-                            params.put(9,"");                                                       //COMPORTAMIENTO PAGO
-                            params.put(10,String.valueOf(Miscellaneous.validInt(item.getPrestamo().getClienteId())));       //NUM CLIENTE
-                            params.put(11,"");                                                      //OBSERVACIONES
-                            params.put(12,"");                                                      //DESTINO
-                            params.put(13,Miscellaneous.GetRiesgo(Miscellaneous.validInt(item.getPrestamo().getNivelRiesgo())));//CLASIFICACION RIESGO
-                            params.put(14,"0");                                                     //ESTATUS COMPLETO
+                            params.put(9, "");                                                       //COMPORTAMIENTO PAGO
+                            params.put(10, String.valueOf(Miscellaneous.validInt(item.getPrestamo().getClienteId())));       //NUM CLIENTE
+                            params.put(11, "");                                                      //OBSERVACIONES
+                            params.put(12, "");                                                      //DESTINO
+                            params.put(13, Miscellaneous.GetRiesgo(Miscellaneous.validInt(item.getPrestamo().getNivelRiesgo())));//CLASIFICACION RIESGO
+                            params.put(14, "0");                                                     //ESTATUS COMPLETO
 
                             dBhelper.saveDatosCreditoRen(db, params);
 
@@ -6670,7 +6527,7 @@ public class Servicios_Sincronizado {
                             params.put(24, Miscellaneous.validStr(item.getCliente().getTelMensaje())); //TEL MENSAJES
                             params.put(25, Miscellaneous.validStr(item.getCliente().getTelTrabajo())); //TEL TRABAJO
                             if (!Miscellaneous.validStr(item.getCliente().getTiempoVivirSitio()).isEmpty())
-                                    params.put(26, item.getCliente().getTiempoVivirSitio());
+                                params.put(26, item.getCliente().getTiempoVivirSitio());
                             else
                                 params.put(26, "0");                                                //TIEMPO VIVIR SITIO
                             params.put(27, Miscellaneous.validStr(item.getCliente().getDependientesEconomico()));  //DEPENDIENTES
@@ -6697,7 +6554,7 @@ public class Servicios_Sincronizado {
                             params.put(5, Miscellaneous.validStr(item.getConyuge().getNoInterior()));//NO INTERIOR
                             params.put(6, Miscellaneous.validStr(item.getConyuge().getNoManzana()));//MANZANA
                             params.put(7, Miscellaneous.validStr(item.getConyuge().getNoLote()));   //LOTE
-                            params.put(8, (item.getConyuge().getCodigoPostal() == 0)?"":String.valueOf(item.getConyuge().getCodigoPostal())); //CP
+                            params.put(8, (item.getConyuge().getCodigoPostal() == 0) ? "" : String.valueOf(item.getConyuge().getCodigoPostal())); //CP
                             params.put(9, Miscellaneous.GetColonia(ctx, Miscellaneous.validInt(item.getConyuge().getColoniaId()))); //COLONIA
                             params.put(10, Miscellaneous.validStr(item.getConyuge().getCiudad()));  //CIUDAD
                             params.put(11, Miscellaneous.GetLocalidad(ctx, Miscellaneous.validInt(item.getConyuge().getLocalidadId()))); //LOCALIDAD
@@ -6744,7 +6601,7 @@ public class Servicios_Sincronizado {
                             params.put(5, Miscellaneous.validStr(item.getNegocio().getNoInterior())); //NO INTERIOR
                             params.put(6, Miscellaneous.validStr(item.getNegocio().getNoManzana()));  //MANZANA
                             params.put(7, Miscellaneous.validStr(item.getNegocio().getNoLote()));     //LOTE
-                            params.put(8, (item.getNegocio().getCodigoPostal() == 0)?"":String.valueOf(item.getNegocio().getCodigoPostal()));                                                     //CP
+                            params.put(8, (item.getNegocio().getCodigoPostal() == 0) ? "" : String.valueOf(item.getNegocio().getCodigoPostal()));                                                     //CP
                             params.put(9, Miscellaneous.GetColonia(ctx, item.getNegocio().getColoniaId())); //COLONIA
                             params.put(10, item.getNegocio().getCiudad());                           //CIUDAD
                             params.put(11, Miscellaneous.GetLocalidad(ctx, item.getNegocio().getLocalidadId()));  //LOCALIDAD
@@ -6773,15 +6630,15 @@ public class Servicios_Sincronizado {
                             params.put(15, "");      //GASTO OTROS
                             params.put(16, "");   //CAPACIDAD PAGO
                             params.put(17, "");                                  //MEDIO PAGO
-                            params.put(18,"");                                  //OTRO MEDIO PAGO
-                            params.put(19,"");                                  //MONTO MAXIMO
-                            params.put(20,"0");                                 //NUM OPERACION MENSUALES
-                            params.put(21,"0");                                 //NUM OPERACION EFECTIVO
-                            params.put(22,"");                                  //DIAS VENTA
-                            params.put(23,"");                                  //FOTO FACHADA
-                            params.put(24,"");                                  //REF DOMICILIARIA
-                            params.put(25,"0");                                 //ESTATUS COMPLETADO
-                            params.put(26,"");                                  //COMENTARIO RECHAZO
+                            params.put(18, "");                                  //OTRO MEDIO PAGO
+                            params.put(19, "");                                  //MONTO MAXIMO
+                            params.put(20, "0");                                 //NUM OPERACION MENSUALES
+                            params.put(21, "0");                                 //NUM OPERACION EFECTIVO
+                            params.put(22, "");                                  //DIAS VENTA
+                            params.put(23, "");                                  //FOTO FACHADA
+                            params.put(24, "");                                  //REF DOMICILIARIA
+                            params.put(25, "0");                                 //ESTATUS COMPLETADO
+                            params.put(26, "");                                  //COMENTARIO RECHAZO
 
                             dBhelper.saveDatosNegocio(db, params, 2);
 
@@ -6795,7 +6652,7 @@ public class Servicios_Sincronizado {
                             params.put(5, Miscellaneous.validStr(item.getAval().getNoInterior())); //NO INTERIOR
                             params.put(6, Miscellaneous.validStr(item.getAval().getNoManzana()));  //MANZANA
                             params.put(7, Miscellaneous.validStr(item.getAval().getNoLote()));     //LOTE
-                            params.put(8, (item.getAval().getCodigoPostal() == 0)?"":String.valueOf(item.getAval().getCodigoPostal())); //CP
+                            params.put(8, (item.getAval().getCodigoPostal() == 0) ? "" : String.valueOf(item.getAval().getCodigoPostal())); //CP
                             params.put(9, Miscellaneous.GetColonia(ctx, item.getAval().getColoniaId())); //COLONIA
                             params.put(10, Miscellaneous.validStr(item.getAval().getCiudad()));     //CIUDAD
                             params.put(11, Miscellaneous.GetLocalidad(ctx, item.getAval().getLocalidadId())); //LOCALIDAD
@@ -6830,7 +6687,7 @@ public class Servicios_Sincronizado {
                             params.put(21, Miscellaneous.GetParentesco(ctx, Miscellaneous.validInt(item.getAval().getParentescoTitularId()))); //PARENTESCO
                             params.put(22, Miscellaneous.validStr(item.getAval().getCaracteristicasDomicilio()));     //CARACTERISTICAS DOMICILIO
                             params.put(23, String.valueOf(Miscellaneous.validInt(item.getAval().getAntiguedad())));                           //ANTIGUEDAD
-                            params.put(24, (item.getAval().getTieneNegocio() != null && item.getAval().getTieneNegocio())?"1":"0");                               //TIENE NEGOCIO
+                            params.put(24, (item.getAval().getTieneNegocio() != null && item.getAval().getTieneNegocio()) ? "1" : "0");                               //TIENE NEGOCIO
                             params.put(25, Miscellaneous.validStr(item.getAval().getNombreNegocio()));                //NOMBRE NEGOCIO
                             params.put(26, "");                                 //ING MENSUAL
                             params.put(27, "");                                 //ING OTROS
@@ -6870,7 +6727,7 @@ public class Servicios_Sincronizado {
                             params.put(5, Miscellaneous.validStr(item.getReferencia().getNoInterior())); //NO INTERIOR
                             params.put(6, Miscellaneous.validStr(item.getReferencia().getNoManzana()));  //MANZANA
                             params.put(7, Miscellaneous.validStr(item.getReferencia().getNoLote()));     //LOTE
-                            params.put(8, (item.getReferencia().getCodigoPostal() == 0)?"":String.valueOf(item.getReferencia().getCodigoPostal()));                                                     //CP
+                            params.put(8, (item.getReferencia().getCodigoPostal() == 0) ? "" : String.valueOf(item.getReferencia().getCodigoPostal()));                                                     //CP
                             params.put(9, Miscellaneous.GetColonia(ctx, Miscellaneous.validInt(item.getReferencia().getColoniaId()))); //COLONIA
                             params.put(10, Miscellaneous.validStr(item.getReferencia().getCiudad()));    //CIUDAD
                             params.put(11, Miscellaneous.GetLocalidad(ctx, Miscellaneous.validInt(item.getReferencia().getLocalidadId()))); //LOCALIDAD
@@ -6918,7 +6775,7 @@ public class Servicios_Sincronizado {
 
                             //Inseta registro de documentos
                             params = new HashMap<>();
-                            params.put(0,String.valueOf(id));       //ID SOLICITUD
+                            params.put(0, String.valueOf(id));       //ID SOLICITUD
                             params.put(1, "");                      //INE FRONTAL
                             params.put(2, "");                      //INE REVERSO
                             params.put(3, "");                      //CURP
@@ -6959,7 +6816,7 @@ public class Servicios_Sincronizado {
         }
     }
 
-    public class  RegistrarDatosRenovacionGpo extends AsyncTask<Object, Void, String>{
+    public class RegistrarDatosRenovacionGpo extends AsyncTask<Object, Void, String> {
 
         @Override
         protected void onPreExecute() {
@@ -6968,40 +6825,40 @@ public class Servicios_Sincronizado {
 
         @Override
         protected String doInBackground(Object... obj) {
-            final Context ctx = (Context)obj[0];
-            final DBhelper dBhelper = new DBhelper(ctx);
+            final Context ctx = (Context) obj[0];
+            final DBhelper dBhelper = DBhelper.getInstance(ctx);
             final SQLiteDatabase db = dBhelper.getWritableDatabase();
-            final SessionManager session = new SessionManager(ctx);
+            final SessionManager session = SessionManager.getInstance(ctx);
             String _id = (String) obj[1];
             final String grupoId = (String) obj[2];
             final String nombreGpo = (String) obj[3];
             final String fechaVencimiento = (String) obj[4];
 
-            ManagerInterface api = new RetrofitClient().generalRF(CONTROLLER_MOVIL, ctx).create(ManagerInterface.class);
+            ManagerInterface api = RetrofitClient.generalRF(CONTROLLER_MOVIL, ctx).create(ManagerInterface.class);
 
             Log.e("AQUI GRUPO0", grupoId);
 
             Call<MRenovacionGrupal> call = api.getPrestamoRenovarGpo(
                     grupoId,
-                    "Bearer "+ session.getUser().get(7));
+                    "Bearer " + session.getUser().get(7));
 
             call.enqueue(new Callback<MRenovacionGrupal>() {
                 @Override
                 public void onResponse(Call<MRenovacionGrupal> call, Response<MRenovacionGrupal> response) {
-                    switch (response.code()){
+                    switch (response.code()) {
                         case 200:
                             MRenovacionGrupal item = response.body();
                             long id_solicitud;
                             // Crea la solicitud de credito grupal
                             HashMap<Integer, String> params = new HashMap<>();
                             params.put(0, ctx.getString(R.string.vol_solicitud));   //VOL SOLICITUD
-                            params.put(1,session.getUser().get(9));                 //USUARIO ID
-                            params.put(2,"2");                                      //TIPO SOLICITUD
-                            params.put(3,"0");                                      //ID ORIGINACION
+                            params.put(1, session.getUser().get(9));                 //USUARIO ID
+                            params.put(2, "2");                                      //TIPO SOLICITUD
+                            params.put(3, "0");                                      //ID ORIGINACION
                             params.put(4, nombreGpo);                               //NOMBRE
                             params.put(5, Miscellaneous.ObtenerFecha(TIMESTAMP));   //FECHA INICIO
-                            params.put(6,"");                                       //FECHA TERMINO
-                            params.put(7,"");                                       //FECHA ENVIO
+                            params.put(6, "");                                       //FECHA TERMINO
+                            params.put(7, "");                                       //FECHA ENVIO
                             params.put(8, Miscellaneous.ObtenerFecha(TIMESTAMP));   //FECHA DISPOSITIVO
                             params.put(9, "");                                      //FECHA GUARDADO
                             params.put(10, "0");                                    //ESTATUS
@@ -7019,14 +6876,14 @@ public class Servicios_Sincronizado {
                             params.put(4, "");
                             params.put(5, "");
                             params.put(6, "");
-                            params.put(7,"0");
+                            params.put(7, "0");
                             params.put(8, "");
                             params.put(9, String.valueOf(item.getPrestamo().getNumCiclo()));
                             params.put(10, grupoId);
 
                             id_credito = dBhelper.saveDatosCreditoGpoRen(db, params, 1);
 
-                            for (MRenovacionGrupal.Integrante integrante :item.getIntegrantes()){
+                            for (MRenovacionGrupal.Integrante integrante : item.getIntegrantes()) {
                                 MRenovacionGrupal.Cliente cliente = integrante.getCliente();
                                 MRenovacionGrupal.Negocio negocio = integrante.getNegocio();
                                 MRenovacionGrupal.Conyuge conyuge = integrante.getConyuge();
@@ -7254,7 +7111,7 @@ public class Servicios_Sincronizado {
         }
     }
 
-    public class  RegistrarDatosRenovacionGpoForce extends AsyncTask<Object, Void, String>{
+    public class RegistrarDatosRenovacionGpoForce extends AsyncTask<Object, Void, String> {
 
         @Override
         protected void onPreExecute() {
@@ -7263,27 +7120,27 @@ public class Servicios_Sincronizado {
 
         @Override
         protected String doInBackground(Object... obj) {
-            final Context ctx = (Context)obj[0];
-            final DBhelper dBhelper = new DBhelper(ctx);
+            final Context ctx = (Context) obj[0];
+            final DBhelper dBhelper = DBhelper.getInstance(ctx);
             final SQLiteDatabase db = dBhelper.getWritableDatabase();
-            final SessionManager session = new SessionManager(ctx);
+            final SessionManager session = SessionManager.getInstance(ctx);
             String _id = (String) obj[1];
             final String grupoId = (String) obj[2];
             final String nombreGpo = (String) obj[3];
             final String fechaVencimiento = (String) obj[4];
 
-            ManagerInterface api = new RetrofitClient().generalRF(CONTROLLER_MOVIL, ctx).create(ManagerInterface.class);
+            ManagerInterface api = RetrofitClient.generalRF(CONTROLLER_MOVIL, ctx).create(ManagerInterface.class);
 
             Log.e("AQUI GRUPO0", grupoId);
 
             Call<MRenovacionGrupal> call = api.getPrestamoRenovarGpo(
                     grupoId,
-                    "Bearer "+ session.getUser().get(7));
+                    "Bearer " + session.getUser().get(7));
 
             call.enqueue(new Callback<MRenovacionGrupal>() {
                 @Override
                 public void onResponse(Call<MRenovacionGrupal> call, Response<MRenovacionGrupal> response) {
-                    switch (response.code()){
+                    switch (response.code()) {
                         case 200:
                             MRenovacionGrupal item = response.body();
 
@@ -7291,13 +7148,13 @@ public class Servicios_Sincronizado {
 
                             HashMap<Integer, String> params = new HashMap<>();
                             params.put(0, ctx.getString(R.string.vol_solicitud));   //VOL SOLICITUD
-                            params.put(1,session.getUser().get(9));                 //USUARIO ID
-                            params.put(2,"2");                                      //TIPO SOLICITUD
-                            params.put(3,"0");                                      //ID ORIGINACION
+                            params.put(1, session.getUser().get(9));                 //USUARIO ID
+                            params.put(2, "2");                                      //TIPO SOLICITUD
+                            params.put(3, "0");                                      //ID ORIGINACION
                             params.put(4, nombreGpo);                               //NOMBRE
                             params.put(5, Miscellaneous.ObtenerFecha(TIMESTAMP));   //FECHA INICIO
-                            params.put(6,"");                                       //FECHA TERMINO
-                            params.put(7,"");                                       //FECHA ENVIO
+                            params.put(6, "");                                       //FECHA TERMINO
+                            params.put(7, "");                                       //FECHA ENVIO
                             params.put(8, Miscellaneous.ObtenerFecha(TIMESTAMP));   //FECHA DISPOSITIVO
                             params.put(9, "");                                      //FECHA GUARDADO
                             params.put(10, "0");                                    //ESTATUS
@@ -7307,21 +7164,19 @@ public class Servicios_Sincronizado {
 
                             long id_solicitud = 0;
 
-                            if(rowSolicitud.getCount() > 0)
-                            {
+                            if (rowSolicitud.getCount() > 0) {
                                 rowSolicitud.moveToFirst();
                                 id_solicitud = rowSolicitud.getInt(0);
                             }
 
                             rowSolicitud.close();
 
-                            String sqlCredito= "SELECT *  FROM " + TBL_CREDITO_GPO_REN + " WHERE id_solicitud = ?";
+                            String sqlCredito = "SELECT *  FROM " + TBL_CREDITO_GPO_REN + " WHERE id_solicitud = ?";
                             Cursor rowCredito = db.rawQuery(sqlCredito, new String[]{String.valueOf(id_solicitud)});
 
                             long id_credito = 0;
 
-                            if(rowCredito.getCount() > 0)
-                            {
+                            if (rowCredito.getCount() > 0) {
                                 rowCredito.moveToFirst();
                                 id_credito = rowCredito.getInt(0);
                             }
@@ -7330,7 +7185,7 @@ public class Servicios_Sincronizado {
 
                             Log.e("AQUI", String.valueOf(id_credito));
 
-                            for (MRenovacionGrupal.Integrante integrante :item.getIntegrantes()) {
+                            for (MRenovacionGrupal.Integrante integrante : item.getIntegrantes()) {
 
                                 MRenovacionGrupal.Cliente cliente = integrante.getCliente();
                                 MRenovacionGrupal.Negocio negocio = integrante.getNegocio();
@@ -7341,7 +7196,7 @@ public class Servicios_Sincronizado {
                                 String sqlIntegrante = "SELECT *  FROM " + TBL_INTEGRANTES_GPO_REN + " WHERE cliente_id = ? or (trim(nombre) = ? and trim(paterno) = ? and trim(materno) = ?)";
                                 Cursor rowIntegrante = db.rawQuery(sqlIntegrante, new String[]{String.valueOf(integrante.getClienteId()).trim(), Miscellaneous.validStr(cliente.getNombre()).toUpperCase().trim(), Miscellaneous.validStr(cliente.getPaterno()).toUpperCase().trim(), Miscellaneous.validStr(cliente.getMaterno()).toUpperCase().trim()});
 
-                                if (rowIntegrante.getCount() == 0  && id_solicitud > 0 && id_credito > 0) {
+                                if (rowIntegrante.getCount() == 0 && id_solicitud > 0 && id_credito > 0) {
                                     Log.e("AQUI", "store");
                                     long id = 0;
                                     //Inserta registro de integrante
@@ -7532,9 +7387,7 @@ public class Servicios_Sincronizado {
                                     params.put(5, "0");                     //ESTATUS COMPLETADO
 
                                     dBhelper.saveDocumentosIntegrante(db, params, 2);
-                                }
-                                else
-                                {
+                                } else {
                                     Log.e("AQUI", "ignore");
                                 }
 
@@ -7574,17 +7427,17 @@ public class Servicios_Sincronizado {
         }
     }
 
-    public class RegistrarCierreDia extends AsyncTask<Object, Void, String>{
+    public class RegistrarCierreDia extends AsyncTask<Object, Void, String> {
 
         @Override
         protected String doInBackground(Object... params) {
             Context ctx = (Context) params[0];
             final MCierreDia item = (MCierreDia) params[1];
 
-            DBhelper dBhelper = new DBhelper(ctx);
+            DBhelper dBhelper = DBhelper.getInstance(ctx);
             final SQLiteDatabase db = dBhelper.getWritableDatabase();
 
-            SessionManager session = new SessionManager(ctx);
+            SessionManager session = SessionManager.getInstance(ctx);
 
             if (NetworkStatus.haveNetworkConnection(ctx)) {
                 RequestBody numPrestamoBody = RequestBody.create(MultipartBody.FORM, item.getNumPrestamo());
@@ -7597,7 +7450,7 @@ public class Servicios_Sincronizado {
                 RequestBody fechaFinBody = RequestBody.create(MultipartBody.FORM, item.getFechaInicio());
                 RequestBody fechaEnvioBody = RequestBody.create(MultipartBody.FORM, Miscellaneous.ObtenerFecha(TIMESTAMP));
                 MultipartBody.Part envidenciaBody = null;
-                final File image_evidencia = new File(ROOT_PATH + "CierreDia/"+item.getEvidencia());
+                final File image_evidencia = new File(ROOT_PATH + "CierreDia/" + item.getEvidencia());
                 if (!item.getEvidencia().isEmpty() && image_evidencia != null) {
                     RequestBody imageBody =
                             RequestBody.create(
@@ -7606,26 +7459,26 @@ public class Servicios_Sincronizado {
                     envidenciaBody = MultipartBody.Part.createFormData("fotografia", image_evidencia.getName(), imageBody);
                 }
 
-                ManagerInterface api = new RetrofitClient().generalRF(CONTROLLER_MOVIL, ctx).create(ManagerInterface.class);
+                ManagerInterface api = RetrofitClient.generalRF(CONTROLLER_MOVIL, ctx).create(ManagerInterface.class);
 
 
-                Call<MResCierreDia> call = api.saveCierreDia("Bearer "+ session.getUser().get(7),
-                                                                        numPrestamoBody,
-                                                                        claveClienteBody,
-                                                                        serialIdBody,
-                                                                        medioPagoBody,
-                                                                        montoDepositadoBody,
-                                                                        nombreImagenBody,
-                                                                        fechaInicioBody,
-                                                                        fechaFinBody,
-                                                                        fechaEnvioBody,
-                                                                        envidenciaBody);
+                Call<MResCierreDia> call = api.saveCierreDia("Bearer " + session.getUser().get(7),
+                        numPrestamoBody,
+                        claveClienteBody,
+                        serialIdBody,
+                        medioPagoBody,
+                        montoDepositadoBody,
+                        nombreImagenBody,
+                        fechaInicioBody,
+                        fechaFinBody,
+                        fechaEnvioBody,
+                        envidenciaBody);
 
                 call.enqueue(new Callback<MResCierreDia>() {
                     @Override
                     public void onResponse(Call<MResCierreDia> call, Response<MResCierreDia> response) {
                         Log.e("CodeCierre", String.valueOf(response.code()));
-                        switch (response.code()){
+                        switch (response.code()) {
                             case 200:
                                 ContentValues cv = new ContentValues();
                                 cv.put("fecha_envio", Miscellaneous.ObtenerFecha(TIMESTAMP));
@@ -7650,7 +7503,7 @@ public class Servicios_Sincronizado {
         }
     }
 
-    public class RegistrarTracker extends AsyncTask<Object, Void, String>{
+    public class RegistrarTracker extends AsyncTask<Object, Void, String> {
 
         @Override
         protected String doInBackground(Object... params) {
@@ -7658,20 +7511,20 @@ public class Servicios_Sincronizado {
             MTracker tracker = (MTracker) params[1];
             final String id_tracker = (String) params[2];
 
-            DBhelper dBhelper = new DBhelper(ctx);
+            DBhelper dBhelper = DBhelper.getInstance(ctx);
             final SQLiteDatabase db = dBhelper.getWritableDatabase();
-            SessionManager session = new SessionManager(ctx);
+            SessionManager session = SessionManager.getInstance(ctx);
 
-            ManagerInterface api = new RetrofitClient().generalRF(CONTROLLER_MOVIL, ctx).create(ManagerInterface.class);
+            ManagerInterface api = RetrofitClient.generalRF(CONTROLLER_MOVIL, ctx).create(ManagerInterface.class);
 
             Call<MResponseTracker> call = api.guardarTracker(tracker,
-                    "Bearer "+ session.getUser().get(7));
+                    "Bearer " + session.getUser().get(7));
 
             call.enqueue(new Callback<MResponseTracker>() {
                 @Override
                 public void onResponse(Call<MResponseTracker> call, Response<MResponseTracker> response) {
-                    Log.e("ResponceTracke", response.code()+"xxx");
-                    switch (response.code()){
+                    Log.e("ResponceTracke", response.code() + "xxx");
+                    switch (response.code()) {
                         case 200:
                             ContentValues cv = new ContentValues();
                             cv.put("sended_at", Miscellaneous.ObtenerFecha(TIMESTAMP));
@@ -7691,7 +7544,7 @@ public class Servicios_Sincronizado {
         }
     }
 
-    public class GuardarImpresion extends AsyncTask<Object, Void, String>{
+    public class GuardarImpresion extends AsyncTask<Object, Void, String> {
 
         @Override
         protected String doInBackground(final Object... params) {
@@ -7699,20 +7552,20 @@ public class Servicios_Sincronizado {
             List<MSendImpresion> impresion = (List<MSendImpresion>) params[1];
             final String id_impresion = (String) params[2];
             final int tipo_impresion = (int) params[3];
-            DBhelper dBhelper = new DBhelper(ctx);
+            DBhelper dBhelper = DBhelper.getInstance(ctx);
             final SQLiteDatabase db = dBhelper.getWritableDatabase();
-            SessionManager session = new SessionManager(ctx);
+            SessionManager session = SessionManager.getInstance(ctx);
 
-            ManagerInterface api = new RetrofitClient().generalRF(CONTROLLER_API, ctx).create(ManagerInterface.class);
+            ManagerInterface api = RetrofitClient.generalRF(CONTROLLER_API, ctx).create(ManagerInterface.class);
 
 
             Call<List<String>> call = api.guardarImpresiones(impresion,
-                    "Bearer "+ session.getUser().get(7));
+                    "Bearer " + session.getUser().get(7));
 
             call.enqueue(new Callback<List<String>>() {
                 @Override
                 public void onResponse(Call<List<String>> call, Response<List<String>> response) {
-                    Log.e("Response", response.code()+"zzzz");
+                    Log.e("Response", response.code() + "zzzz");
                     List<String> data = response.body();
                     if (response.code() == 200 && data.size() > 0) {
                         ContentValues cv = new ContentValues();
@@ -7733,7 +7586,7 @@ public class Servicios_Sincronizado {
 
                 @Override
                 public void onFailure(Call<List<String>> call, Throwable t) {
-                    Log.e("xxxxxx", t.getMessage()+"  xxxxx");
+                    Log.e("xxxxxx", t.getMessage() + "  xxxxx");
                 }
             });
 
@@ -7741,7 +7594,7 @@ public class Servicios_Sincronizado {
         }
     }
 
-    public class GuardarSoporte extends AsyncTask<Object, Void, String>{
+    public class GuardarSoporte extends AsyncTask<Object, Void, String> {
 
         @Override
         protected String doInBackground(final Object... params) {
@@ -7751,21 +7604,21 @@ public class Servicios_Sincronizado {
             Log.e("Soporte", Miscellaneous.ConvertToJson(soporte));
             final String id_soporte = (String) params[2];
 
-            DBhelper dBhelper = new DBhelper(ctx);
+            DBhelper dBhelper = DBhelper.getInstance(ctx);
             final SQLiteDatabase db = dBhelper.getWritableDatabase();
-            SessionManager session = new SessionManager(ctx);
+            SessionManager session = SessionManager.getInstance(ctx);
 
-            ManagerInterface api = new RetrofitClient().generalRF(CONTROLLER_SOPORTE, ctx).create(ManagerInterface.class);
+            ManagerInterface api = RetrofitClient.generalRF(CONTROLLER_SOPORTE, ctx).create(ManagerInterface.class);
 
 
             Call<MResSoporte> call = api.guardarTicket(soporte,
-                    "Bearer "+ session.getUser().get(7));
+                    "Bearer " + session.getUser().get(7));
 
             call.enqueue(new Callback<MResSoporte>() {
                 @Override
                 public void onResponse(Call<MResSoporte> call, Response<MResSoporte> response) {
-                    Log.e("Soporte", "Code: "+response.code());
-                    switch (response.code()){
+                    Log.e("Soporte", "Code: " + response.code());
+                    switch (response.code()) {
                         case 200:
                             MResSoporte res = response.body();
                             ContentValues cv = new ContentValues();
@@ -7774,7 +7627,7 @@ public class Servicios_Sincronizado {
                             cv.put("estatus_ticket", "ABIERTO");
                             cv.put("estatus_envio", 1);
                             int i = db.update(TBL_SOPORTE, cv, "_id = ?", new String[]{id_soporte});
-                            Log.e("Actualizado", "Vlues: "+i);
+                            Log.e("Actualizado", "Vlues: " + i);
                             break;
                     }
                 }
@@ -7789,7 +7642,7 @@ public class Servicios_Sincronizado {
         }
     }
 
-    public class GuardarCancelGestiones extends AsyncTask<Object, Void, String>{
+    public class GuardarCancelGestiones extends AsyncTask<Object, Void, String> {
 
         @Override
         protected String doInBackground(Object... params) {
@@ -7800,22 +7653,22 @@ public class Servicios_Sincronizado {
             String comentario = (String) params[4];
             final String _id = (String) params[5];
 
-            DBhelper dBhelper = new DBhelper(context);
+            DBhelper dBhelper = DBhelper.getInstance(context);
             final SQLiteDatabase db = dBhelper.getWritableDatabase();
-            SessionManager session = new SessionManager(context);
+            SessionManager session = SessionManager.getInstance(context);
 
             String sql = "";
             if (tipoGestion.equals("1") && tipoPrestamo.equals("VIGENTE"))
                 sql = "SELECT i.fecha_inicio, i.fecha_fin, i.id_prestamo, p.num_solicitud, 'VIGENTE' AS tipo, 1 AS tipo_gestion FROM " + TBL_RESPUESTAS_IND_T + " AS i INNER JOIN " + TBL_PRESTAMOS_IND_T + " AS p ON p.id_prestamo = i.id_prestamo WHERE i._id = ?";
-            else if(tipoGestion.equals("2") && tipoPrestamo.equals("VIGENTE"))
+            else if (tipoGestion.equals("2") && tipoPrestamo.equals("VIGENTE"))
                 sql = "SELECT g.fecha_inicio, g.fecha_fin, g.id_prestamo, p.num_solicitud, 'VIGENTE' AS tipo, 2 AS tipo_gestion FROM " + TBL_RESPUESTAS_GPO_T + " AS g INNER JOIN " + TBL_PRESTAMOS_GPO_T + " AS p ON p.id_prestamo = g.id_prestamo WHERE g._id = ?";
-            else if(tipoGestion.equals("1") && tipoPrestamo.equals("VENCIDA"))
+            else if (tipoGestion.equals("1") && tipoPrestamo.equals("VENCIDA"))
                 sql = "SELECT i.fecha_inicio, i.fecha_fin, i.id_prestamo, p.num_solicitud, 'VENCIDA' AS tipo, 1 AS tipo_gestion FROM " + TBL_RESPUESTAS_IND_V_T + " AS i INNER JOIN " + TBL_PRESTAMOS_IND_T + " AS p ON p.id_prestamo = i.id_prestamo WHERE i._id = ?";
-            else if(tipoGestion.equals("2") && tipoPrestamo.equals("VENCIDA"))
+            else if (tipoGestion.equals("2") && tipoPrestamo.equals("VENCIDA"))
                 sql = "SELECT g.fecha_inicio, g.fecha_fin, g.id_prestamo, p.num_solicitud, 'VENCIDA' AS tipo, 2 AS tipo_gestion FROM " + TBL_RESPUESTAS_INTEGRANTE_T + " AS g INNER JOIN " + TBL_PRESTAMOS_GPO_T + " AS p ON p.id_prestamo = g.id_prestamo WHERE g._id = ?";
             Cursor row = db.rawQuery(sql, new String[]{idRespuesta});
 
-            if (row.getCount() > 0){
+            if (row.getCount() > 0) {
                 row.moveToFirst();
                 try {
 
@@ -7831,9 +7684,9 @@ public class Servicios_Sincronizado {
                     RequestBody comentarioBody = RequestBody.create(MultipartBody.FORM, comentario.trim().toUpperCase());
                     RequestBody fechaSoliBody = RequestBody.create(MultipartBody.FORM, Miscellaneous.ObtenerFecha(TIMESTAMP));
 
-                    ManagerInterface api = new RetrofitClient().generalRF(CONTROLLER_MOVIL, context).create(ManagerInterface.class);
+                    ManagerInterface api = RetrofitClient.generalRF(CONTROLLER_MOVIL, context).create(ManagerInterface.class);
 
-                    Call<MSolicitudCancelacion> call = api.solicitudCancelar("Bearer "+ session.getUser().get(7),
+                    Call<MSolicitudCancelacion> call = api.solicitudCancelar("Bearer " + session.getUser().get(7),
                             idPrestamoBody,
                             numSolicitudBody,
                             respuestaBody,
@@ -7845,7 +7698,7 @@ public class Servicios_Sincronizado {
                         @Override
                         public void onResponse(Call<MSolicitudCancelacion> call, Response<MSolicitudCancelacion> response) {
                             MSolicitudCancelacion resp = response.body();
-                            switch (response.code()){
+                            switch (response.code()) {
                                 case 200:
                                     ContentValues cv = new ContentValues();
                                     cv.put("id_solicitud", resp.getIdCancelacion());
@@ -7862,7 +7715,6 @@ public class Servicios_Sincronizado {
                     });
 
 
-
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -7873,27 +7725,27 @@ public class Servicios_Sincronizado {
         }
     }
 
-    private void GetGeolocalizadas(Context ctx){
-        DBhelper dBhelper= new DBhelper(ctx);
+    private void GetGeolocalizadas(Context ctx) {
+        DBhelper dBhelper = DBhelper.getInstance(ctx);
         SQLiteDatabase db = dBhelper.getWritableDatabase();
         Cursor row;
         //                                    0               1         2           3             4               5               6             7              8                9                   10                                                                0             1         2           3             4               5               6                   7               8                9              10
-        String sql = "SELECT * FROM (SELECT ci.id_cartera, ci.clave, ci.nombre, ci.direccion, ci.colonia, ci.num_solicitud, ci.geo_cliente, ci.geo_aval, ci.geo_negocio, '' AS geolocalizadas, 1 AS tipo_ficha FROM " + TBL_CARTERA_IND_T + " AS ci UNION SELECT cg.id_cartera, cg.clave, cg.nombre, cg.direccion, cg.colonia, cg.num_solicitud,  0 AS geo_cliente, 0 AS geo_aval, 0 AS geo_negocio, geolocalizadas, 2 AS tipo_ficha FROM " + TBL_CARTERA_GPO_T + " AS cg LEFT JOIN "+TBL_PRESTAMOS_GPO_T+" AS pg ON pg.id_grupo = cg.id_cartera LEFT JOIN "+TBL_MIEMBROS_GPO_T+" AS m ON m.id_prestamo = pg.id_prestamo LEFT JOIN "+TBL_GEO_RESPUESTAS_T+" AS gr ON gr.id_integrante = m.id_integrante GROUP BY cg.id_cartera, cg.clave, cg.nombre, cg.direccion, cg.colonia, cg.num_solicitud, cg.asesor_nombre ) AS geo_res";
+        String sql = "SELECT * FROM (SELECT ci.id_cartera, ci.clave, ci.nombre, ci.direccion, ci.colonia, ci.num_solicitud, ci.geo_cliente, ci.geo_aval, ci.geo_negocio, '' AS geolocalizadas, 1 AS tipo_ficha FROM " + TBL_CARTERA_IND_T + " AS ci UNION SELECT cg.id_cartera, cg.clave, cg.nombre, cg.direccion, cg.colonia, cg.num_solicitud,  0 AS geo_cliente, 0 AS geo_aval, 0 AS geo_negocio, geolocalizadas, 2 AS tipo_ficha FROM " + TBL_CARTERA_GPO_T + " AS cg LEFT JOIN " + TBL_PRESTAMOS_GPO_T + " AS pg ON pg.id_grupo = cg.id_cartera LEFT JOIN " + TBL_MIEMBROS_GPO_T + " AS m ON m.id_prestamo = pg.id_prestamo LEFT JOIN " + TBL_GEO_RESPUESTAS_T + " AS gr ON gr.id_integrante = m.id_integrante GROUP BY cg.id_cartera, cg.clave, cg.nombre, cg.direccion, cg.colonia, cg.num_solicitud, cg.asesor_nombre ) AS geo_res";
         row = db.rawQuery(sql, null);
 
-        if (row.getCount() > 0){
+        if (row.getCount() > 0) {
             row.moveToFirst();
-            for (int i = 0; i < row.getCount(); i++){
+            for (int i = 0; i < row.getCount(); i++) {
                 String sql_geo = "";
                 Cursor row_geo;
-                if (row.getInt(10) == 1){ //Lee individuales
-                    if (row.getInt(6) == 1){ //Si ya Geolocalizó el Cliente
+                if (row.getInt(10) == 1) { //Lee individuales
+                    if (row.getInt(6) == 1) { //Si ya Geolocalizó el Cliente
                         sql_geo = "SELECT * FROM " + TBL_GEO_RESPUESTAS_T + " WHERE id_cartera = ? AND tipo_geolocalizacion = ?";
                         row_geo = db.rawQuery(sql_geo, new String[]{row.getString(0), "CLIENTE"});
-                        if (row_geo.getCount() == 0){
+                        if (row_geo.getCount() == 0) {
 
-                            Log.e("xxxx", "Cartera:"+row.getString(0));
-                            Log.e("xxxx","nombre:"+row.getString(2));
+                            Log.e("xxxx", "Cartera:" + row.getString(0));
+                            Log.e("xxxx", "nombre:" + row.getString(2));
 
                             HashMap<Integer, String> params = new HashMap<>();
                             params.put(0, row.getString(0));
@@ -7918,7 +7770,7 @@ public class Servicios_Sincronizado {
                         }
                         row_geo.close();
                     }
-                    if (row.getInt(7) == 1){ //Si ya Geolocalizó el Aval
+                    if (row.getInt(7) == 1) { //Si ya Geolocalizó el Aval
                         sql_geo = "SELECT * FROM " + TBL_GEO_RESPUESTAS_T + " WHERE id_cartera = ? AND tipo_geolocalizacion = ?";
                         row_geo = db.rawQuery(sql_geo, new String[]{row.getString(0), "AVAL"});
                         if (row_geo.getCount() == 0) {
@@ -7946,7 +7798,7 @@ public class Servicios_Sincronizado {
                         row_geo.close();
                     }
 
-                    if (row.getInt(8) == 1){ //Si ya Geolocalizó el Negocio
+                    if (row.getInt(8) == 1) { //Si ya Geolocalizó el Negocio
                         sql_geo = "SELECT * FROM " + TBL_GEO_RESPUESTAS_T + " WHERE id_cartera = ? AND tipo_geolocalizacion = ?";
                         row_geo = db.rawQuery(sql_geo, new String[]{row.getString(0), "NEGOCIO"});
                         if (row_geo.getCount() == 0) {
@@ -7973,19 +7825,18 @@ public class Servicios_Sincronizado {
                         }
                         row_geo.close();
                     }
-                }
-                else{ //Lee grupales
-                    if (row.getString(9).length()>2) {
+                } else { //Lee grupales
+                    if (row.getString(9).length() > 2) {
                         String[] integrantes = row.getString(9).replace("{", "").replace("}", "").split(",");
                         if (integrantes.length > 0) {
                             for (int j = 0; j < integrantes.length; j++) {
                                 sql_geo = "SELECT * FROM " + TBL_GEO_RESPUESTAS_T + " WHERE id_cartera = ? AND id_integrante = ?";
-                                row_geo = db.rawQuery(sql_geo, new String[]{row.getString(0),integrantes[j] });
-                                if (row_geo.getCount() == 0){
+                                row_geo = db.rawQuery(sql_geo, new String[]{row.getString(0), integrantes[j]});
+                                if (row_geo.getCount() == 0) {
                                     Cursor row_integrante;
                                     String sql_integrante = "SELECT * FROM " + TBL_MIEMBROS_GPO_T + " WHERE id_integrante = ?";
                                     row_integrante = db.rawQuery(sql_integrante, new String[]{integrantes[j]});
-                                    Log.e("Id_integrante", "xxx:"+integrantes[j]);
+                                    Log.e("Id_integrante", "xxx:" + integrantes[j]);
                                     if (row_integrante.getCount() > 0) {
                                         row_integrante.moveToFirst();
                                         HashMap<Integer, String> params = new HashMap<>();
@@ -8024,7 +7875,7 @@ public class Servicios_Sincronizado {
         row.close();
     }
 
-    public class GuardarSolicitudInd extends AsyncTask<Object, Void, String>{
+    public class GuardarSolicitudInd extends AsyncTask<Object, Void, String> {
 
         @Override
         protected String doInBackground(final Object... params) {
@@ -8049,14 +7900,15 @@ public class Servicios_Sincronizado {
             String curpAval = (String) params[18];
             String comprobanteAval = (String) params[19];
 
-            SessionManager session = new SessionManager(ctx);
-            DBhelper dBhelper = new DBhelper(ctx);
+            SessionManager session = SessionManager.getInstance(ctx);
+            DBhelper dBhelper = DBhelper.getInstance(ctx);
             final SQLiteDatabase db = dBhelper.getWritableDatabase();
 
 
             MultipartBody.Part fachada_cliente = null;
             File image_fachada_cliente = null;
-            if(fachadaCli != null && !fachadaCli.equals("")) image_fachada_cliente = new File(ROOT_PATH + "Fachada/"+fachadaCli);
+            if (fachadaCli != null && !fachadaCli.equals(""))
+                image_fachada_cliente = new File(ROOT_PATH + "Fachada/" + fachadaCli);
             if (image_fachada_cliente != null) {
                 RequestBody imageBodyFachadaCli =
                         RequestBody.create(
@@ -8066,7 +7918,7 @@ public class Servicios_Sincronizado {
             }
 
             MultipartBody.Part firma_cliente = null;
-            File image_firma_cliente = new File(ROOT_PATH + "Firma/"+firmaCli);
+            File image_firma_cliente = new File(ROOT_PATH + "Firma/" + firmaCli);
             if (image_firma_cliente != null) {
                 RequestBody imageBodyFirmaCli =
                         RequestBody.create(
@@ -8077,7 +7929,8 @@ public class Servicios_Sincronizado {
 
             MultipartBody.Part fachada_negocio = null;
             File image_fachada_negocio = null;
-            if(fachadaNeg != null && !fachadaNeg.equals("")) image_fachada_negocio = new File(ROOT_PATH + "Fachada/"+fachadaNeg);
+            if (fachadaNeg != null && !fachadaNeg.equals(""))
+                image_fachada_negocio = new File(ROOT_PATH + "Fachada/" + fachadaNeg);
             if (image_fachada_negocio != null) {
                 RequestBody imageBodyFachadaNeg =
                         RequestBody.create(
@@ -8088,7 +7941,8 @@ public class Servicios_Sincronizado {
 
             MultipartBody.Part fachada_aval = null;
             File image_fachada_aval = null;
-            if(fachadaAval != null && !fachadaAval.equals("")) image_fachada_aval = new File(ROOT_PATH + "Fachada/"+fachadaAval);
+            if (fachadaAval != null && !fachadaAval.equals(""))
+                image_fachada_aval = new File(ROOT_PATH + "Fachada/" + fachadaAval);
             if (image_fachada_aval != null) {
                 RequestBody imageBodyFachadaAval =
                         RequestBody.create(
@@ -8098,7 +7952,7 @@ public class Servicios_Sincronizado {
             }
 
             MultipartBody.Part firma_aval = null;
-            File image_firma_aval = new File(ROOT_PATH + "Firma/"+firmaAval);
+            File image_firma_aval = new File(ROOT_PATH + "Firma/" + firmaAval);
             if (image_firma_aval != null) {
                 RequestBody imageBodyFirmaAval =
                         RequestBody.create(
@@ -8108,7 +7962,7 @@ public class Servicios_Sincronizado {
             }
 
             MultipartBody.Part foto_ine_frontal = null;
-            File image_ine_frontal = new File(ROOT_PATH + "Documentos/"+identifiFrontal);
+            File image_ine_frontal = new File(ROOT_PATH + "Documentos/" + identifiFrontal);
             if (image_ine_frontal != null) {
                 RequestBody imageBody =
                         RequestBody.create(
@@ -8118,7 +7972,7 @@ public class Servicios_Sincronizado {
             }
 
             MultipartBody.Part foto_ine_reverso = null;
-            File image_ine_reverso = new File(ROOT_PATH + "Documentos/"+identifiReverso);
+            File image_ine_reverso = new File(ROOT_PATH + "Documentos/" + identifiReverso);
             if (image_ine_reverso != null) {
                 RequestBody imageBody =
                         RequestBody.create(
@@ -8128,7 +7982,7 @@ public class Servicios_Sincronizado {
             }
 
             MultipartBody.Part foto_curp = null;
-            File image_curp = new File(ROOT_PATH + "Documentos/"+curp);
+            File image_curp = new File(ROOT_PATH + "Documentos/" + curp);
             if (image_curp != null) {
                 RequestBody imageBody =
                         RequestBody.create(
@@ -8138,7 +7992,7 @@ public class Servicios_Sincronizado {
             }
 
             MultipartBody.Part foto_comprobante = null;
-            File image_comprobante = new File(ROOT_PATH + "Documentos/"+comprobante);
+            File image_comprobante = new File(ROOT_PATH + "Documentos/" + comprobante);
             if (image_comprobante != null) {
                 RequestBody imageBody =
                         RequestBody.create(
@@ -8148,7 +8002,7 @@ public class Servicios_Sincronizado {
             }
 
             MultipartBody.Part firma_asesor = null;
-            File image_firma_asesor = new File(ROOT_PATH + "Firma/"+firmaAsesor);
+            File image_firma_asesor = new File(ROOT_PATH + "Firma/" + firmaAsesor);
             if (image_firma_asesor != null) {
                 RequestBody imageBody =
                         RequestBody.create(
@@ -8159,7 +8013,8 @@ public class Servicios_Sincronizado {
 
             MultipartBody.Part ine_selfie = null;
             File image_ine_selfie = null;
-            if(ineSelfie != null && !ineSelfie.equals("")) image_ine_selfie = new File(ROOT_PATH + "Documentos/"+ineSelfie);
+            if (ineSelfie != null && !ineSelfie.equals(""))
+                image_ine_selfie = new File(ROOT_PATH + "Documentos/" + ineSelfie);
             if (image_ine_selfie != null) {
                 RequestBody imageBody =
                         RequestBody.create(
@@ -8170,7 +8025,8 @@ public class Servicios_Sincronizado {
 
             MultipartBody.Part comprobante_garantia = null;
             File image_comprobante_garantia = null;
-            if(comprobanteGarantia != null && !comprobanteGarantia.equals("")) image_comprobante_garantia = new File(ROOT_PATH + "Documentos/"+comprobanteGarantia);
+            if (comprobanteGarantia != null && !comprobanteGarantia.equals(""))
+                image_comprobante_garantia = new File(ROOT_PATH + "Documentos/" + comprobanteGarantia);
             if (image_comprobante_garantia != null) {
                 RequestBody imageBody =
                         RequestBody.create(
@@ -8181,7 +8037,8 @@ public class Servicios_Sincronizado {
 
             MultipartBody.Part ine_frontal_aval = null;
             File image_ine_frontal_aval = null;
-            if(ineFrontalAval != null && !ineFrontalAval.equals("")) image_ine_frontal_aval = new File(ROOT_PATH + "Documentos/"+ineFrontalAval);
+            if (ineFrontalAval != null && !ineFrontalAval.equals(""))
+                image_ine_frontal_aval = new File(ROOT_PATH + "Documentos/" + ineFrontalAval);
             if (image_ine_frontal_aval != null) {
                 RequestBody imageBody =
                         RequestBody.create(
@@ -8192,7 +8049,8 @@ public class Servicios_Sincronizado {
 
             MultipartBody.Part ine_reverso_aval = null;
             File image_ine_reverso_aval = null;
-            if(ineReversoAval != null && !ineReversoAval.equals("")) image_ine_reverso_aval = new File(ROOT_PATH + "Documentos/"+ineReversoAval);
+            if (ineReversoAval != null && !ineReversoAval.equals(""))
+                image_ine_reverso_aval = new File(ROOT_PATH + "Documentos/" + ineReversoAval);
             if (image_ine_reverso_aval != null) {
                 RequestBody imageBody =
                         RequestBody.create(
@@ -8203,7 +8061,8 @@ public class Servicios_Sincronizado {
 
             MultipartBody.Part curp_aval = null;
             File image_curp_aval = null;
-            if(curpAval != null && !curpAval.equals("")) image_curp_aval = new File(ROOT_PATH + "Documentos/"+curpAval);
+            if (curpAval != null && !curpAval.equals(""))
+                image_curp_aval = new File(ROOT_PATH + "Documentos/" + curpAval);
             if (image_curp_aval != null) {
                 RequestBody imageBody =
                         RequestBody.create(
@@ -8214,7 +8073,8 @@ public class Servicios_Sincronizado {
 
             MultipartBody.Part comprobante_aval = null;
             File image_comprobante_aval = null;
-            if(comprobanteAval != null && !comprobanteAval.equals("")) image_comprobante_aval = new File(ROOT_PATH + "Documentos/"+comprobanteAval);
+            if (comprobanteAval != null && !comprobanteAval.equals(""))
+                image_comprobante_aval = new File(ROOT_PATH + "Documentos/" + comprobanteAval);
             if (image_comprobante_aval != null) {
                 RequestBody imageBody =
                         RequestBody.create(
@@ -8228,9 +8088,9 @@ public class Servicios_Sincronizado {
             RequestBody solicitudIdBody = RequestBody.create(MultipartBody.FORM, String.valueOf(solicitudId));
 
             Log.e("solicitud", solicitud.toString());
-            ManagerInterface api = new RetrofitClient().generalRF(CONTROLLER_SOLICITUDES, ctx).create(ManagerInterface.class);
+            ManagerInterface api = RetrofitClient.generalRF(CONTROLLER_SOLICITUDES, ctx).create(ManagerInterface.class);
 
-            Call<MResSaveSolicitud> call = api.guardarOriginacionInd("Bearer "+ session.getUser().get(7),
+            Call<MResSaveSolicitud> call = api.guardarOriginacionInd("Bearer " + session.getUser().get(7),
                     solicitudBody,
                     fachada_cliente,
                     firma_cliente,
@@ -8249,7 +8109,7 @@ public class Servicios_Sincronizado {
                     ine_reverso_aval,
                     curp_aval,
                     comprobante_aval
-                    );
+            );
 
             ContentValues cv = new ContentValues();
             cv.put("fecha_envio", Miscellaneous.ObtenerFecha(TIMESTAMP));
@@ -8259,32 +8119,32 @@ public class Servicios_Sincronizado {
             call.enqueue(new Callback<MResSaveSolicitud>() {
                 @Override
                 public void onResponse(Call<MResSaveSolicitud> call, Response<MResSaveSolicitud> response) {
-                    Log.e("Respuesta code", response.code()+" codigo");
+                    Log.e("Respuesta code", response.code() + " codigo");
 
-                    switch (response.code()){
+                    switch (response.code()) {
                         case 200:
                             MResSaveSolicitud res = response.body();
 
                             cv.put("estatus", "2");
-                            cv.put("id_originacion",res.getIdSolicitud());
+                            cv.put("id_originacion", res.getIdSolicitud());
                             cv.put("fecha_guardado", Miscellaneous.ObtenerFecha(TIMESTAMP));
                             db.update(TBL_SOLICITUDES, cv, "id_solicitud = ?", new String[]{id});
-                            
-                            cv1.put("id_originacion",res.getIdSolicitud());
-                            db.update(TBL_DATOS_BENEFICIARIO,cv1,"id_solicitud=?",new String[]{id});
-                            
+
+                            cv1.put("id_originacion", res.getIdSolicitud());
+                            db.update(TBL_DATOS_BENEFICIARIO, cv1, "id_solicitud=?", new String[]{id});
+
                             break;
                         default:
                             try {
                                 cv.put("estatus", "1");
                                 db.update(TBL_SOLICITUDES, cv, "id_solicitud = ?", new String[]{id});
-                                
+
                                 Log.e("ERROR " + response.code(), response.errorBody().string());
 
                             } catch (IOException e) {
                                 cv.put("estatus", "1");
                                 db.update(TBL_SOLICITUDES, cv, "id_solicitud = ?", new String[]{id});
-                                
+
                                 e.printStackTrace();
                                 Log.e("AQUI", e.getMessage());
                             }
@@ -8309,7 +8169,7 @@ public class Servicios_Sincronizado {
         }
     }
 
-    public class GuardarRenovacionInd extends AsyncTask<Object, Void, String>{
+    public class GuardarRenovacionInd extends AsyncTask<Object, Void, String> {
 
         @Override
         protected String doInBackground(final Object... params) {
@@ -8334,14 +8194,15 @@ public class Servicios_Sincronizado {
             String curpAval = (String) params[17];
             String comprobanteAval = (String) params[18];
 
-            SessionManager session = new SessionManager(ctx);
-            DBhelper dBhelper = new DBhelper(ctx);
+            SessionManager session = SessionManager.getInstance(ctx);
+            DBhelper dBhelper = DBhelper.getInstance(ctx);
             final SQLiteDatabase db = dBhelper.getWritableDatabase();
 
 
             MultipartBody.Part fachada_cliente = null;
             File image_fachada_cliente = null;
-            if(fachadaCli != null && !fachadaCli.equals("")) image_fachada_cliente = new File(ROOT_PATH + "Fachada/"+fachadaCli);
+            if (fachadaCli != null && !fachadaCli.equals(""))
+                image_fachada_cliente = new File(ROOT_PATH + "Fachada/" + fachadaCli);
             if (image_fachada_cliente != null) {
                 RequestBody imageBodyFachadaCli =
                         RequestBody.create(
@@ -8351,7 +8212,7 @@ public class Servicios_Sincronizado {
             }
 
             MultipartBody.Part firma_cliente = null;
-            File image_firma_cliente = new File(ROOT_PATH + "Firma/"+firmaCli);
+            File image_firma_cliente = new File(ROOT_PATH + "Firma/" + firmaCli);
             if (image_firma_cliente != null) {
                 RequestBody imageBodyFirmaCli =
                         RequestBody.create(
@@ -8362,7 +8223,8 @@ public class Servicios_Sincronizado {
 
             MultipartBody.Part fachada_negocio = null;
             File image_fachada_negocio = null;
-            if(fachadaNeg != null && !fachadaNeg.equals("")) image_fachada_negocio = new File(ROOT_PATH + "Fachada/"+fachadaNeg);
+            if (fachadaNeg != null && !fachadaNeg.equals(""))
+                image_fachada_negocio = new File(ROOT_PATH + "Fachada/" + fachadaNeg);
             if (image_fachada_negocio != null) {
                 RequestBody imageBodyFachadaNeg =
                         RequestBody.create(
@@ -8373,7 +8235,8 @@ public class Servicios_Sincronizado {
 
             MultipartBody.Part fachada_aval = null;
             File image_fachada_aval = null;
-            if(fachadaAval != null && !fachadaAval.equals("")) image_fachada_aval = new File(ROOT_PATH + "Fachada/"+fachadaAval);
+            if (fachadaAval != null && !fachadaAval.equals(""))
+                image_fachada_aval = new File(ROOT_PATH + "Fachada/" + fachadaAval);
             if (image_fachada_aval != null) {
                 RequestBody imageBodyFachadaAval =
                         RequestBody.create(
@@ -8384,7 +8247,7 @@ public class Servicios_Sincronizado {
 
             MultipartBody.Part firma_aval = null;
             File image_firma_aval = null;
-            if(firmaAval != null) image_firma_aval = new File(ROOT_PATH + "Firma/"+firmaAval);
+            if (firmaAval != null) image_firma_aval = new File(ROOT_PATH + "Firma/" + firmaAval);
             if (image_firma_aval != null) {
                 RequestBody imageBodyFirmaAval =
                         RequestBody.create(
@@ -8394,7 +8257,7 @@ public class Servicios_Sincronizado {
             }
 
             MultipartBody.Part foto_ine_frontal = null;
-            File image_ine_frontal = new File(ROOT_PATH + "Documentos/"+identifiFrontal);
+            File image_ine_frontal = new File(ROOT_PATH + "Documentos/" + identifiFrontal);
             if (image_ine_frontal != null) {
                 RequestBody imageBody =
                         RequestBody.create(
@@ -8404,7 +8267,7 @@ public class Servicios_Sincronizado {
             }
 
             MultipartBody.Part foto_ine_reverso = null;
-            File image_ine_reverso = new File(ROOT_PATH + "Documentos/"+identifiReverso);
+            File image_ine_reverso = new File(ROOT_PATH + "Documentos/" + identifiReverso);
             if (image_ine_reverso != null) {
                 RequestBody imageBody =
                         RequestBody.create(
@@ -8424,7 +8287,7 @@ public class Servicios_Sincronizado {
                 foto_curp = MultipartBody.Part.createFormData("curp", image_curp.getName(), imageBody);
             }*/
 
-            File image_comprobante = new File(ROOT_PATH + "Documentos/"+comprobante);
+            File image_comprobante = new File(ROOT_PATH + "Documentos/" + comprobante);
             MultipartBody.Part foto_comprobante = null;
             if (image_comprobante != null) {
                 RequestBody imageBody =
@@ -8436,7 +8299,7 @@ public class Servicios_Sincronizado {
 
             MultipartBody.Part firma_asesor = null;
 
-            File image_firma_asesor = new File(ROOT_PATH + "Firma/"+firmaAsesor);
+            File image_firma_asesor = new File(ROOT_PATH + "Firma/" + firmaAsesor);
             if (image_firma_asesor != null) {
                 RequestBody imageBody =
                         RequestBody.create(
@@ -8447,7 +8310,8 @@ public class Servicios_Sincronizado {
 
             MultipartBody.Part ine_selfie = null;
             File image_ine_selfie = null;
-            if(ineSelfie != null && !ineSelfie.equals("")) image_ine_selfie = new File(ROOT_PATH + "Documentos/"+ineSelfie);
+            if (ineSelfie != null && !ineSelfie.equals(""))
+                image_ine_selfie = new File(ROOT_PATH + "Documentos/" + ineSelfie);
             if (image_ine_selfie != null) {
                 RequestBody imageBody =
                         RequestBody.create(
@@ -8458,7 +8322,8 @@ public class Servicios_Sincronizado {
 
             MultipartBody.Part comprobante_garantia = null;
             File image_comprobante_garantia = null;
-            if(comprobanteGarantia != null && !comprobanteGarantia.equals("")) image_comprobante_garantia = new File(ROOT_PATH + "Documentos/"+comprobanteGarantia);
+            if (comprobanteGarantia != null && !comprobanteGarantia.equals(""))
+                image_comprobante_garantia = new File(ROOT_PATH + "Documentos/" + comprobanteGarantia);
             if (image_comprobante_garantia != null) {
                 RequestBody imageBody =
                         RequestBody.create(
@@ -8469,7 +8334,8 @@ public class Servicios_Sincronizado {
 
             MultipartBody.Part ine_frontal_aval = null;
             File image_ine_frontal_aval = null;
-            if(ineFrontalAval != null && !ineFrontalAval.equals("")) image_ine_frontal_aval = new File(ROOT_PATH + "Documentos/"+ineFrontalAval);
+            if (ineFrontalAval != null && !ineFrontalAval.equals(""))
+                image_ine_frontal_aval = new File(ROOT_PATH + "Documentos/" + ineFrontalAval);
             if (image_ine_frontal_aval != null) {
                 RequestBody imageBody =
                         RequestBody.create(
@@ -8480,7 +8346,8 @@ public class Servicios_Sincronizado {
 
             MultipartBody.Part ine_reverso_aval = null;
             File image_ine_reverso_aval = null;
-            if(ineReversoAval != null && !ineReversoAval.equals("")) image_ine_reverso_aval = new File(ROOT_PATH + "Documentos/"+ineReversoAval);
+            if (ineReversoAval != null && !ineReversoAval.equals(""))
+                image_ine_reverso_aval = new File(ROOT_PATH + "Documentos/" + ineReversoAval);
             if (image_ine_reverso_aval != null) {
                 RequestBody imageBody =
                         RequestBody.create(
@@ -8491,7 +8358,8 @@ public class Servicios_Sincronizado {
 
             MultipartBody.Part curp_aval = null;
             File image_curp_aval = null;
-            if(curpAval != null && !curpAval.equals("")) image_curp_aval = new File(ROOT_PATH + "Documentos/"+curpAval);
+            if (curpAval != null && !curpAval.equals(""))
+                image_curp_aval = new File(ROOT_PATH + "Documentos/" + curpAval);
             if (image_curp_aval != null) {
                 RequestBody imageBody =
                         RequestBody.create(
@@ -8502,7 +8370,8 @@ public class Servicios_Sincronizado {
 
             MultipartBody.Part comprobante_aval = null;
             File image_comprobante_aval = null;
-            if(comprobanteAval != null && !comprobanteAval.equals("")) image_comprobante_aval = new File(ROOT_PATH + "Documentos/"+comprobanteAval);
+            if (comprobanteAval != null && !comprobanteAval.equals(""))
+                image_comprobante_aval = new File(ROOT_PATH + "Documentos/" + comprobanteAval);
             if (image_comprobante_aval != null) {
                 RequestBody imageBody =
                         RequestBody.create(
@@ -8516,11 +8385,11 @@ public class Servicios_Sincronizado {
             RequestBody solicitudIdBody = RequestBody.create(MultipartBody.FORM, String.valueOf(solicitudId));
 
             Log.e("solicitud", solicitud.toString());
-            ManagerInterface api = new RetrofitClient().generalRF(CONTROLLER_SOLICITUDES, ctx).create(ManagerInterface.class);
+            ManagerInterface api = RetrofitClient.generalRF(CONTROLLER_SOLICITUDES, ctx).create(ManagerInterface.class);
 
             MultipartBody.Part partNull = null;
 
-            Call<MResSaveSolicitud> call = api.guardarOriginacionInd("Bearer "+ session.getUser().get(7),
+            Call<MResSaveSolicitud> call = api.guardarOriginacionInd("Bearer " + session.getUser().get(7),
                     solicitudBody,
                     fachada_cliente,
                     firma_cliente,
@@ -8539,7 +8408,7 @@ public class Servicios_Sincronizado {
                     ine_reverso_aval,
                     curp_aval,
                     comprobante_aval
-                );
+            );
 
             ContentValues cv = new ContentValues();
             ContentValues cv1 = new ContentValues();
@@ -8548,18 +8417,18 @@ public class Servicios_Sincronizado {
             call.enqueue(new Callback<MResSaveSolicitud>() {
                 @Override
                 public void onResponse(Call<MResSaveSolicitud> call, Response<MResSaveSolicitud> response) {
-                    Log.e("Respuesta code", response.code()+" codigo");
+                    Log.e("Respuesta code", response.code() + " codigo");
 
-                    switch (response.code()){
+                    switch (response.code()) {
                         case 200:
                             MResSaveSolicitud res = response.body();
                             cv.put("estatus", "2");
-                            cv.put("id_originacion",res.getIdSolicitud());
+                            cv.put("id_originacion", res.getIdSolicitud());
                             cv.put("fecha_guardado", Miscellaneous.ObtenerFecha(TIMESTAMP));
                             db.update(TBL_SOLICITUDES_REN, cv, "id_solicitud = ?", new String[]{id});
 
-                            cv1.put("id_originacion",res.getIdSolicitud());
-                            db.update(TBL_DATOS_BENEFICIARIO,cv1,"id_solicitud=?",new String[]{id});
+                            cv1.put("id_originacion", res.getIdSolicitud());
+                            db.update(TBL_DATOS_BENEFICIARIO, cv1, "id_solicitud=?", new String[]{id});
                             break;
                         default:
                             try {
@@ -8589,7 +8458,7 @@ public class Servicios_Sincronizado {
         }
     }
 
-    public class GuardarSolicitudGpo extends AsyncTask<Object, Void, String>{
+    public class GuardarSolicitudGpo extends AsyncTask<Object, Void, String> {
 
         @Override
         protected String doInBackground(final Object... params) {
@@ -8620,14 +8489,15 @@ public class Servicios_Sincronizado {
             String sDato19 = (String) params[24];
             String ineSelfie = (String) params[25];
 
-            SessionManager session = new SessionManager(ctx);
-            DBhelper dBhelper = new DBhelper(ctx);
+            SessionManager session = SessionManager.getInstance(ctx);
+            DBhelper dBhelper = DBhelper.getInstance(ctx);
             final SQLiteDatabase db = dBhelper.getWritableDatabase();
 
 
             MultipartBody.Part fachada_cliente = null;
             File image_fachada_cliente = null;
-            if(fachadaCli != null && !fachadaCli.equals("")) image_fachada_cliente = new File(ROOT_PATH + "Fachada/"+fachadaCli);
+            if (fachadaCli != null && !fachadaCli.equals(""))
+                image_fachada_cliente = new File(ROOT_PATH + "Fachada/" + fachadaCli);
             if (image_fachada_cliente != null) {
                 RequestBody imageBodyFachadaCli =
                         RequestBody.create(
@@ -8637,7 +8507,7 @@ public class Servicios_Sincronizado {
             }
 
             MultipartBody.Part firma_cliente = null;
-            File image_firma_cliente = new File(ROOT_PATH + "Firma/"+firmaCli);
+            File image_firma_cliente = new File(ROOT_PATH + "Firma/" + firmaCli);
             if (image_firma_cliente != null) {
                 RequestBody imageBodyFirmaCli =
                         RequestBody.create(
@@ -8648,7 +8518,8 @@ public class Servicios_Sincronizado {
 
             MultipartBody.Part fachada_negocio = null;
             File image_fachada_negocio = null;
-            if(fachadaNeg != null && !fachadaNeg.equals("")) image_fachada_negocio = new File(ROOT_PATH + "Fachada/"+fachadaNeg);
+            if (fachadaNeg != null && !fachadaNeg.equals(""))
+                image_fachada_negocio = new File(ROOT_PATH + "Fachada/" + fachadaNeg);
             if (image_fachada_negocio != null) {
                 RequestBody imageBodyFachadaNeg =
                         RequestBody.create(
@@ -8658,7 +8529,7 @@ public class Servicios_Sincronizado {
             }
 
             MultipartBody.Part foto_ine_frontal = null;
-            File image_ine_frontal = new File(ROOT_PATH + "Documentos/"+identifiFrontal);
+            File image_ine_frontal = new File(ROOT_PATH + "Documentos/" + identifiFrontal);
             if (image_ine_frontal != null) {
                 RequestBody imageBody =
                         RequestBody.create(
@@ -8668,7 +8539,7 @@ public class Servicios_Sincronizado {
             }
 
             MultipartBody.Part foto_ine_reverso = null;
-            File image_ine_reverso = new File(ROOT_PATH + "Documentos/"+identifiReverso);
+            File image_ine_reverso = new File(ROOT_PATH + "Documentos/" + identifiReverso);
             if (image_ine_reverso != null) {
                 RequestBody imageBody =
                         RequestBody.create(
@@ -8678,7 +8549,7 @@ public class Servicios_Sincronizado {
             }
 
             MultipartBody.Part foto_curp = null;
-            File image_curp = new File(ROOT_PATH + "Documentos/"+curp);
+            File image_curp = new File(ROOT_PATH + "Documentos/" + curp);
             if (image_curp != null) {
                 RequestBody imageBody =
                         RequestBody.create(
@@ -8688,7 +8559,7 @@ public class Servicios_Sincronizado {
             }
 
             MultipartBody.Part foto_comprobante = null;
-            File image_comprobante = new File(ROOT_PATH + "Documentos/"+comprobante);
+            File image_comprobante = new File(ROOT_PATH + "Documentos/" + comprobante);
             if (image_comprobante != null) {
                 RequestBody imageBody =
                         RequestBody.create(
@@ -8699,7 +8570,8 @@ public class Servicios_Sincronizado {
 
             MultipartBody.Part ine_selfie = null;
             File image_ine_selfie = null;
-            if(ineSelfie != null && !ineSelfie.equals("")) image_ine_selfie = new File(ROOT_PATH + "Documentos/"+ineSelfie);
+            if (ineSelfie != null && !ineSelfie.equals(""))
+                image_ine_selfie = new File(ROOT_PATH + "Documentos/" + ineSelfie);
             if (image_ine_selfie != null) {
                 RequestBody imageBody =
                         RequestBody.create(
@@ -8725,9 +8597,9 @@ public class Servicios_Sincronizado {
 
             RequestBody solicitudIntegranteIdBody = RequestBody.create(MultipartBody.FORM, id_solicitud_integrante);
 
-            ManagerInterface api = new RetrofitClient().generalRF(CONTROLLER_SOLICITUDES, ctx).create(ManagerInterface.class);
+            ManagerInterface api = RetrofitClient.generalRF(CONTROLLER_SOLICITUDES, ctx).create(ManagerInterface.class);
 
-            Call<MResSaveSolicitud> call = api.guardarOriginacionGpo("Bearer "+ session.getUser().get(7),
+            Call<MResSaveSolicitud> call = api.guardarOriginacionGpo("Bearer " + session.getUser().get(7),
                     solicitudBody,
                     fachada_cliente,
                     firma_cliente,
@@ -8743,9 +8615,9 @@ public class Servicios_Sincronizado {
             call.enqueue(new Callback<MResSaveSolicitud>() {
                 @Override
                 public void onResponse(Call<MResSaveSolicitud> call, Response<MResSaveSolicitud> response) {
-                    Log.e("Respuesta code", response.code()+" codigo");
+                    Log.e("Respuesta code", response.code() + " codigo");
 
-                    switch (response.code()){
+                    switch (response.code()) {
                         case 200:
                             MResSaveSolicitud res = response.body();
                             ContentValues cv = new ContentValues();
@@ -8755,15 +8627,14 @@ public class Servicios_Sincronizado {
 
                             String sql = "SELECT id_solicitud_integrante FROM " + TBL_INTEGRANTES_GPO + " WHERE id_credito = ? AND id_solicitud_integrante = ?";
                             Cursor r = db.rawQuery(sql, new String[]{credito, "0"});
-                            if (r.getCount() == 0){
+                            if (r.getCount() == 0) {
                                 cv = new ContentValues();
                                 cv.put("estatus", "2");
                                 cv.put("fecha_guardado", Miscellaneous.ObtenerFecha(TIMESTAMP));
                                 db.update(TBL_SOLICITUDES, cv, "id_solicitud = ?", new String[]{id_solicitud});
                             }
 
-                            if(iIndex + 1 < iTotal)
-                            {
+                            if (iIndex + 1 < iTotal) {
                                 SendIntegranteOriginacionGpo(ctx, iIndex + 1, iTotal, sDato0, lDato4, sDato6, sDato12, sDato14, sDato15, sDato16, sDato17, sDato19);
                             }
                             break;
@@ -8772,14 +8643,12 @@ public class Servicios_Sincronizado {
                             cv.put("estatus", "1");
                             db.update(TBL_SOLICITUDES, cv, "id_solicitud = ?", new String[]{id_solicitud});
 
-                            if(iIndex + 1 < iTotal)
-                            {
+                            if (iIndex + 1 < iTotal) {
                                 SendIntegranteOriginacionGpo(ctx, iIndex + 1, iTotal, sDato0, lDato4, sDato6, sDato12, sDato14, sDato15, sDato16, sDato17, sDato19);
                             }
                             break;
                         default:
-                            if(iIndex + 1 < iTotal)
-                            {
+                            if (iIndex + 1 < iTotal) {
                                 cv = new ContentValues();
                                 cv.put("estatus", "1");
                                 db.update(TBL_SOLICITUDES, cv, "id_solicitud = ?", new String[]{id_solicitud});
@@ -8793,13 +8662,12 @@ public class Servicios_Sincronizado {
 
                 @Override
                 public void onFailure(Call<MResSaveSolicitud> call, Throwable t) {
-                    Log.e("Error", "failSolicitud"+t.getMessage());
+                    Log.e("Error", "failSolicitud" + t.getMessage());
                     ContentValues cv = new ContentValues();
                     cv.put("estatus", "1");
                     db.update(TBL_SOLICITUDES, cv, "id_solicitud = ?", new String[]{id_solicitud});
 
-                    if(iIndex + 1 < iTotal)
-                    {
+                    if (iIndex + 1 < iTotal) {
                         SendIntegranteOriginacionGpo(ctx, iIndex + 1, iTotal, sDato0, lDato4, sDato6, sDato12, sDato14, sDato15, sDato16, sDato17, sDato19);
                     }
                 }
@@ -8809,7 +8677,7 @@ public class Servicios_Sincronizado {
         }
     }
 
-    public class GuardarRenovacionGpo extends AsyncTask<Object, Void, String>{
+    public class GuardarRenovacionGpo extends AsyncTask<Object, Void, String> {
 
         @Override
         protected String doInBackground(final Object... params) {
@@ -8843,14 +8711,15 @@ public class Servicios_Sincronizado {
             String sDato23 = (String) params[27];
             String ineSelfie = (String) params[28];
 
-            SessionManager session = new SessionManager(ctx);
-            DBhelper dBhelper = new DBhelper(ctx);
+            SessionManager session = SessionManager.getInstance(ctx);
+            DBhelper dBhelper = DBhelper.getInstance(ctx);
             final SQLiteDatabase db = dBhelper.getWritableDatabase();
 
 
             MultipartBody.Part fachada_cliente = null;
             File image_fachada_cliente = null;
-            if(fachadaCli != null && !fachadaCli.equals("")) image_fachada_cliente = new File(ROOT_PATH + "Fachada/"+fachadaCli);
+            if (fachadaCli != null && !fachadaCli.equals(""))
+                image_fachada_cliente = new File(ROOT_PATH + "Fachada/" + fachadaCli);
             if (image_fachada_cliente != null) {
                 RequestBody imageBodyFachadaCli =
                         RequestBody.create(
@@ -8860,7 +8729,7 @@ public class Servicios_Sincronizado {
             }
 
             MultipartBody.Part firma_cliente = null;
-            File image_firma_cliente = new File(ROOT_PATH + "Firma/"+firmaCli);
+            File image_firma_cliente = new File(ROOT_PATH + "Firma/" + firmaCli);
             if (image_firma_cliente != null) {
                 RequestBody imageBodyFirmaCli =
                         RequestBody.create(
@@ -8871,7 +8740,8 @@ public class Servicios_Sincronizado {
 
             MultipartBody.Part fachada_negocio = null;
             File image_fachada_negocio = null;
-            if(fachadaNeg != null && !fachadaNeg.equals("")) image_fachada_negocio = new File(ROOT_PATH + "Fachada/"+fachadaNeg);
+            if (fachadaNeg != null && !fachadaNeg.equals(""))
+                image_fachada_negocio = new File(ROOT_PATH + "Fachada/" + fachadaNeg);
             if (image_fachada_negocio != null) {
                 RequestBody imageBodyFachadaNeg =
                         RequestBody.create(
@@ -8881,7 +8751,7 @@ public class Servicios_Sincronizado {
             }
 
             MultipartBody.Part foto_ine_frontal = null;
-            File image_ine_frontal = new File(ROOT_PATH + "Documentos/"+identifiFrontal);
+            File image_ine_frontal = new File(ROOT_PATH + "Documentos/" + identifiFrontal);
             if (image_ine_frontal != null) {
                 RequestBody imageBody =
                         RequestBody.create(
@@ -8891,7 +8761,7 @@ public class Servicios_Sincronizado {
             }
 
             MultipartBody.Part foto_ine_reverso = null;
-            File image_ine_reverso = new File(ROOT_PATH + "Documentos/"+identifiReverso);
+            File image_ine_reverso = new File(ROOT_PATH + "Documentos/" + identifiReverso);
             if (image_ine_reverso != null) {
                 RequestBody imageBody =
                         RequestBody.create(
@@ -8902,21 +8772,21 @@ public class Servicios_Sincronizado {
 
             MultipartBody.Part foto_curp = null;
             File image_curp = null;
-            if(curp != null && !curp.equals("")) image_curp =  new File(ROOT_PATH + "Documentos/"+curp);
+            if (curp != null && !curp.equals(""))
+                image_curp = new File(ROOT_PATH + "Documentos/" + curp);
             if (image_curp != null) {
                 RequestBody imageBody =
                         RequestBody.create(
                                 MediaType.parse("image/*"), image_curp);
 
                 foto_curp = MultipartBody.Part.createFormData("curp", image_curp.getName(), imageBody);
-            }
-            else{
+            } else {
                 RequestBody attachmentEmpty = RequestBody.create(MediaType.parse("text/plain"), "");
                 foto_curp = MultipartBody.Part.createFormData("curp", "", attachmentEmpty);
             }
 
             MultipartBody.Part foto_comprobante = null;
-            File image_comprobante = new File(ROOT_PATH + "Documentos/"+comprobante);
+            File image_comprobante = new File(ROOT_PATH + "Documentos/" + comprobante);
             if (image_comprobante != null) {
                 RequestBody imageBody =
                         RequestBody.create(
@@ -8927,7 +8797,8 @@ public class Servicios_Sincronizado {
 
             MultipartBody.Part ine_selfie = null;
             File image_ine_selfie = null;
-            if(ineSelfie != null && !ineSelfie.equals("")) image_ine_selfie = new File(ROOT_PATH + "Documentos/"+ineSelfie);
+            if (ineSelfie != null && !ineSelfie.equals(""))
+                image_ine_selfie = new File(ROOT_PATH + "Documentos/" + ineSelfie);
             if (image_ine_selfie != null) {
                 RequestBody imageBody =
                         RequestBody.create(
@@ -8952,9 +8823,9 @@ public class Servicios_Sincronizado {
             RequestBody solicitudIntegranteIdBody = RequestBody.create(MultipartBody.FORM, id_solicitud_integrante);
 
             Log.e("solicitud", solicitud.toString());
-            ManagerInterface api = new RetrofitClient().generalRF(CONTROLLER_SOLICITUDES, ctx).create(ManagerInterface.class);
+            ManagerInterface api = RetrofitClient.generalRF(CONTROLLER_SOLICITUDES, ctx).create(ManagerInterface.class);
 
-            Call<MResSaveSolicitud> call = api.guardarOriginacionGpo("Bearer "+ session.getUser().get(7),
+            Call<MResSaveSolicitud> call = api.guardarOriginacionGpo("Bearer " + session.getUser().get(7),
                     solicitudBody,
                     fachada_cliente,
                     firma_cliente,
@@ -8970,31 +8841,30 @@ public class Servicios_Sincronizado {
             call.enqueue(new Callback<MResSaveSolicitud>() {
                 @Override
                 public void onResponse(Call<MResSaveSolicitud> call, Response<MResSaveSolicitud> response) {
-                    Log.e("Respuesta code", response.code()+" codigo");
+                    Log.e("Respuesta code", response.code() + " codigo");
 
-                    switch (response.code()){
+                    switch (response.code()) {
                         case 200:
                             MResSaveSolicitud res = response.body();
                             ContentValues cv = new ContentValues();
-                            cv.put("id_solicitud_integrante",res.getIdSolicitud());
-                            cv.put("estatus_completado",2);
+                            cv.put("id_solicitud_integrante", res.getIdSolicitud());
+                            cv.put("estatus_completado", 2);
                             db.update(TBL_INTEGRANTES_GPO_REN, cv, "id = ?", new String[]{id});
 
                             ContentValues cv1 = new ContentValues();
-                            cv.put("id_solicitud_integrante",res.getIdSolicitud());
+                            cv.put("id_solicitud_integrante", res.getIdSolicitud());
                             db.update(TBL_DATOS_BENEFICIARIO_GPO, cv1, "id_integrante = ?", new String[]{id});
 
 
                             String sql = "SELECT id_solicitud_integrante FROM " + TBL_INTEGRANTES_GPO_REN + " WHERE id_credito = ? AND id_solicitud_integrante = ?";
                             Cursor r = db.rawQuery(sql, new String[]{credito, "0"});
-                            if (r.getCount() == 0){
+                            if (r.getCount() == 0) {
                                 cv = new ContentValues();
                                 cv.put("estatus", "2");
                                 cv.put("fecha_guardado", Miscellaneous.ObtenerFecha(TIMESTAMP));
                                 db.update(TBL_SOLICITUDES_REN, cv, "id_solicitud = ?", new String[]{id_solicitud});
                             }
-                            if(iIndex + 1 < iTotal)
-                            {
+                            if (iIndex + 1 < iTotal) {
                                 SendIntegranteRenovacionGpo(ctx, iIndex + 1, iTotal, sDato0, lDato4, sDato6, sDato7, sDato12, sDato14, sDato15, sDato16, sDato17, sDato19, sDato21, sDato23);
                             }
                             break;
@@ -9011,8 +8881,7 @@ public class Servicios_Sincronizado {
                                 e.printStackTrace();
                             }
 
-                            if(iIndex + 1 < iTotal)
-                            {
+                            if (iIndex + 1 < iTotal) {
                                 SendIntegranteRenovacionGpo(ctx, iIndex + 1, iTotal, sDato0, lDato4, sDato6, sDato7, sDato12, sDato14, sDato15, sDato16, sDato17, sDato19, sDato21, sDato23);
                             }
                             break;
@@ -9027,8 +8896,7 @@ public class Servicios_Sincronizado {
                     ContentValues cv = new ContentValues();
                     cv.put("estatus", "1");
                     db.update(TBL_SOLICITUDES_REN, cv, "id_solicitud = ?", new String[]{id_solicitud});
-                    if(iIndex + 1 < iTotal)
-                    {
+                    if (iIndex + 1 < iTotal) {
                         SendIntegranteRenovacionGpo(ctx, iIndex + 1, iTotal, sDato0, lDato4, sDato6, sDato7, sDato12, sDato14, sDato15, sDato16, sDato17, sDato19, sDato21, sDato23);
                     }
                 }
@@ -9038,7 +8906,7 @@ public class Servicios_Sincronizado {
         }
     }
 
-    public class SendMontoAutorizado extends AsyncTask<Object, Void, String>{
+    public class SendMontoAutorizado extends AsyncTask<Object, Void, String> {
 
         @Override
         protected String doInBackground(Object... params) {
@@ -9053,37 +8921,36 @@ public class Servicios_Sincronizado {
 
             //Long tipo = (tipoSolicitud.equals("ORIGINACION"))?1L:2L;
 
-            SessionManager session = new SessionManager(ctx);
-            DBhelper dBhelper = new DBhelper(ctx);
+            SessionManager session = SessionManager.getInstance(ctx);
+            DBhelper dBhelper = DBhelper.getInstance(ctx);
             final SQLiteDatabase db = dBhelper.getWritableDatabase();
 
-            ManagerInterface api = new RetrofitClient().generalRF(CONTROLLER_MOVIL, ctx).create(ManagerInterface.class);
+            ManagerInterface api = RetrofitClient.generalRF(CONTROLLER_MOVIL, ctx).create(ManagerInterface.class);
 
             Call<MResponseDefault> call = api.postMontoAutorizado(
-                                                        tipoSolicitud,
-                                                        solicitudId,
-                                                        montoAuto,
-                                             "Bearer "+ session.getUser().get(7));
+                    tipoSolicitud,
+                    solicitudId,
+                    montoAuto,
+                    "Bearer " + session.getUser().get(7));
 
             call.enqueue(new Callback<MResponseDefault>() {
                 @Override
                 public void onResponse(Call<MResponseDefault> call, Response<MResponseDefault> response) {
-                    Log.e("CodeMontoAuto", "Code: "+response.code());
-                    switch (response.code()){
+                    Log.e("CodeMontoAuto", "Code: " + response.code());
+                    switch (response.code()) {
                         case 200:
                             ContentValues cv = new ContentValues();
                             if (tipoSolicitud == 1) {
                                 cv.put("estatus", 2);
                                 cv.put("fecha_envio", Miscellaneous.ObtenerFecha(TIMESTAMP));
                                 db.update(TBL_SOLICITUDES_AUTO, cv, "id_solicitud = ?", new String[]{id});
-                            }
-                            else{
+                            } else {
                                 cv.put("estatus_completado", 2);
                                 db.update(TBL_INTEGRANTES_GPO_AUTO, cv, "id = ?", new String[]{id});
 
                                 String sql = "SELECT * FROM " + TBL_INTEGRANTES_GPO_AUTO + " WHERE id_credito = ? AND estatus_completado = ?";
                                 Cursor r = db.rawQuery(sql, new String[]{String.valueOf(creditoId), "1"});
-                                if (r.getCount() == 0){
+                                if (r.getCount() == 0) {
                                     cv = new ContentValues();
                                     cv.put("estatus", "2");
                                     cv.put("fecha_envio", Miscellaneous.ObtenerFecha(TIMESTAMP));
@@ -9096,7 +8963,7 @@ public class Servicios_Sincronizado {
 
                 @Override
                 public void onFailure(Call<MResponseDefault> call, Throwable t) {
-                    Log.e("CodeMontoAuto", "Fail: "+t.getMessage());
+                    Log.e("CodeMontoAuto", "Fail: " + t.getMessage());
                 }
             });
 
@@ -9104,27 +8971,29 @@ public class Servicios_Sincronizado {
         }
     }
 
-    public class GuardarAgf extends AsyncTask<Object, Void, String>{
+    public class GuardarAgf extends AsyncTask<Object, Void, String> {
+
+        public void doInProcess(Context ctx, Gestion gestion, Recibo recibo) {
+            this.doInBackground(ctx, gestion, recibo);
+        }
 
         @Override
         protected String doInBackground(final Object... params) {
-            Context ctx     = (Context) params[0];
+            Context ctx = (Context) params[0];
             Gestion gestion = (Gestion) params[1];
-            Recibo recibo   = (Recibo) params[2];
+            Recibo recibo = (Recibo) params[2];
 
             GestionDao gestionDao = new GestionDao(ctx);
             ReciboDao reciboDao = new ReciboDao(ctx);
 
-            SessionManager session = new SessionManager(ctx);
-            ApoyoGastosFunerariosService agfService = new RetrofitClient().newInstance(ctx).create(ApoyoGastosFunerariosService.class);
+            SessionManager session = SessionManager.getInstance(ctx);
+            ApoyoGastosFunerariosService agfService = RetrofitClient.newInstance(ctx).create(ApoyoGastosFunerariosService.class);
 
             MultipartBody.Part foto = null;
 
-            if(gestion.getEstatus() != null && !gestion.getEvidencia().isEmpty() && gestion.getEvidencia() != null)
-            {
-                File image_foto = new File(ROOT_PATH + "Evidencia/"+ gestion.getEvidencia());
-                if (image_foto != null)
-                {
+            if (gestion.getEstatus() != null && !gestion.getEvidencia().isEmpty() && gestion.getEvidencia() != null) {
+                File image_foto = new File(ROOT_PATH + "Evidencia/" + gestion.getEvidencia());
+                if (image_foto != null) {
                     RequestBody imageEvidencia = RequestBody.create(MediaType.parse("image/*"), image_foto);
                     foto = MultipartBody.Part.createFormData("foto", image_foto.getName(), imageEvidencia);
                 }
@@ -9135,7 +9004,7 @@ public class Servicios_Sincronizado {
             RequestBody nombreBody = RequestBody.create(MultipartBody.FORM, gestion.getNombre());
             RequestBody medioPagoIdBody = RequestBody.create(MultipartBody.FORM, String.valueOf(Miscellaneous.GetMedioPagoId(gestion.getMedioPago())));
             RequestBody evidenciaBody = RequestBody.create(MultipartBody.FORM, gestion.getEvidencia());
-            RequestBody tipoImagenBody = RequestBody.create(MultipartBody.FORM, (gestion.getTipoImagen().equals("GALERIA")?"2":"1"));
+            RequestBody tipoImagenBody = RequestBody.create(MultipartBody.FORM, (gestion.getTipoImagen().equals("GALERIA") ? "2" : "1"));
             RequestBody folioManualBody = RequestBody.create(MultipartBody.FORM, gestion.getFolioManual());
             RequestBody clienteIdBody = RequestBody.create(MultipartBody.FORM, gestion.getClienteId());
             RequestBody tipoBody = RequestBody.create(MultipartBody.FORM, gestion.getTipo());
@@ -9148,7 +9017,7 @@ public class Servicios_Sincronizado {
             tipoImpresionBody = RequestBody.create(MultipartBody.FORM, "");
             fechaImpresoBody = RequestBody.create(MultipartBody.FORM, "");
 
-            if (Miscellaneous.GetMedioPagoId(gestion.getMedioPago()) == 6 &&  (gestion.getFolioManual().isEmpty() || gestion.getFolioManual() == null) && recibo.getTipoImpresion() != null) {
+            if (Miscellaneous.GetMedioPagoId(gestion.getMedioPago()) == 6 && (gestion.getFolioManual().isEmpty() || gestion.getFolioManual() == null) && recibo.getTipoImpresion() != null) {
                 folioBody = RequestBody.create(MultipartBody.FORM, "AGF-" + session.getUser().get(0) + "-" + recibo.getFolio());
                 tipoImpresionBody = RequestBody.create(MultipartBody.FORM, recibo.getTipoImpresion());
                 fechaImpresoBody = RequestBody.create(MultipartBody.FORM, recibo.getFechaImpresion());
@@ -9158,12 +9027,9 @@ public class Servicios_Sincronizado {
 
             RequestBody fechaEnvioBody;
 
-            if(recibo.getFechaEnvio() != null && !recibo.getFechaEnvio().trim().equals(""))
-            {
+            if (recibo.getFechaEnvio() != null && !recibo.getFechaEnvio().trim().equals("")) {
                 fechaEnvioBody = RequestBody.create(MultipartBody.FORM, recibo.getFechaEnvio());
-            }
-            else
-            {
+            } else {
                 fechaEnvioBody = RequestBody.create(MultipartBody.FORM, Miscellaneous.ObtenerFecha(TIMESTAMP));
             }
 
@@ -9172,49 +9038,44 @@ public class Servicios_Sincronizado {
             RequestBody totalIntegrantesManual = RequestBody.create(MultipartBody.FORM, String.valueOf(gestion.getTotalIntegrantesManual()));
 
             Call<ApoyoGastosFunerariosResponse> call = agfService.store(
-                "Bearer " + session.getUser().get(7),
-                grupoIdBody,
-                numSolicitudBody,
-                nombreBody,
-                medioPagoIdBody,
-                evidenciaBody,
-                tipoImagenBody,
-                folioBody,
-                tipoImpresionBody,
-                montoBody,
-                fechaImpresoBody,
-                fechaEnvioBody,
-                folioManualBody,
-                clienteIdBody,
-                tipoBody,
-                fechaTerminoBody,
-                foto,
-                plazoBody,
-                totalIntegrantes,
-                totalIntegrantesManual
+                    "Bearer " + session.getUser().get(7),
+                    grupoIdBody,
+                    numSolicitudBody,
+                    nombreBody,
+                    medioPagoIdBody,
+                    evidenciaBody,
+                    tipoImagenBody,
+                    folioBody,
+                    tipoImpresionBody,
+                    montoBody,
+                    fechaImpresoBody,
+                    fechaEnvioBody,
+                    folioManualBody,
+                    clienteIdBody,
+                    tipoBody,
+                    fechaTerminoBody,
+                    foto,
+                    plazoBody,
+                    totalIntegrantes,
+                    totalIntegrantesManual
             );
 
             call.enqueue(new Callback<ApoyoGastosFunerariosResponse>() {
                 @Override
                 public void onResponse(Call<ApoyoGastosFunerariosResponse> call, Response<ApoyoGastosFunerariosResponse> response) {
-                    switch (response.code()){
+                    switch (response.code()) {
                         case 200:
-                            if(gestion.getEstatus() == 0)
-                            {
-                                if(recibo.getId() != null)
-                                {
-                                    if(recibo.getFechaEnvio() == null || recibo.getFechaEnvio().trim().equals(""))
-                                    {
+                            if (gestion.getEstatus() == 0) {
+                                if (recibo.getId() != null) {
+                                    if (recibo.getFechaEnvio() == null || recibo.getFechaEnvio().trim().equals("")) {
                                         recibo.setFechaEnvio(Miscellaneous.ObtenerFecha(TIMESTAMP));
                                     }
 
                                     reciboDao.update(recibo.getId(), recibo);
                                 }
-                            }
-                            else{
-                                if(recibo.getId() != null) {
-                                    if(recibo.getFechaEnvio() == null || recibo.getFechaEnvio().trim().equals(""))
-                                    {
+                            } else {
+                                if (recibo.getId() != null) {
+                                    if (recibo.getFechaEnvio() == null || recibo.getFechaEnvio().trim().equals("")) {
                                         recibo.setFechaEnvio(Miscellaneous.ObtenerFecha(TIMESTAMP));
                                     }
 
@@ -9224,14 +9085,11 @@ public class Servicios_Sincronizado {
 
                                 gestion.setEstatus(2);
 
-                                if(gestion.getFechaEnvio() == null || gestion.getFechaEnvio().trim().equals(""))
-                                {
+                                if (gestion.getFechaEnvio() == null || gestion.getFechaEnvio().trim().equals("")) {
                                     //gestion.setFechaEnvio(Miscellaneous.ObtenerFecha(TIMESTAMP));
-                                    if(recibo.getFechaEnvio() != null)
-                                    {
+                                    if (recibo.getFechaEnvio() != null) {
                                         gestion.setFechaEnvio(recibo.getFechaEnvio());
-                                    }
-                                    else {
+                                    } else {
                                         gestion.setFechaEnvio(Miscellaneous.ObtenerFecha(TIMESTAMP));
                                     }
                                 }
@@ -9245,6 +9103,7 @@ public class Servicios_Sincronizado {
                             break;
                     }
                 }
+
                 @Override
                 public void onFailure(Call<ApoyoGastosFunerariosResponse> call, Throwable t) {
                     Log.e("Error", "failAGF" + t.getMessage());
@@ -9255,34 +9114,35 @@ public class Servicios_Sincronizado {
         }
     }
 
-    public class GuardarCC extends AsyncTask<Object, Void, String>{
+    public class GuardarCC extends AsyncTask<Object, Void, String> {
+
+        public void doInProcess(Context context, GestionCirculoCredito gestionCirculoCredito, ReciboCirculoCredito reciboCirculoCredito) {
+            doInBackground(context, gestionCirculoCredito, reciboCirculoCredito);
+        }
+
         @Override
         protected String doInBackground(Object... params) {
             Context ctx = (Context) params[0];
-            GestionCirculoCreditoDao gestionCirculoCreditoDao = new GestionCirculoCreditoDao(ctx);
             GestionCirculoCredito gestionCC = (GestionCirculoCredito) params[1];
-            ReciboCirculoCreditoDao reciboCirculoCreditoDao = new ReciboCirculoCreditoDao(ctx);
             ReciboCirculoCredito reciboCC = (ReciboCirculoCredito) params[2];
-            SessionManager session = new SessionManager(ctx);
-            CirculoCreditoService circuloCreditoService = new RetrofitClient().newInstance(ctx).create(CirculoCreditoService.class);
+
+            GestionCirculoCreditoDao gestionCirculoCreditoDao = new GestionCirculoCreditoDao(ctx);
+            ReciboCirculoCreditoDao reciboCirculoCreditoDao = new ReciboCirculoCreditoDao(ctx);
+            SessionManager session = SessionManager.getInstance(ctx);
+            CirculoCreditoService circuloCreditoService = RetrofitClient.newInstance(ctx).create(CirculoCreditoService.class);
 
             MultipartBody.Part foto = null;
 
-            if(gestionCC.getEvidencia() != null && !gestionCC.getEvidencia().equals("")){
+            if (gestionCC.getEvidencia() != null && !gestionCC.getEvidencia().equals("")) {
                 File image_foto = new File(ROOT_PATH + "Evidencia/" + gestionCC.getEvidencia());
-                if (image_foto != null)
-                {
+                if (image_foto != null) {
                     RequestBody imageEvidencia = RequestBody.create(MediaType.parse("image/*"), image_foto);
                     foto = MultipartBody.Part.createFormData("evidencia", image_foto.getName(), imageEvidencia);
                 }
-            }
-            else
-            {
+            } else {
                 MultipartBody.Part.createFormData("evidencia", "");
             }
-            Miscellaneous m = new Miscellaneous();
-
-            RequestBody productoBody = RequestBody.create(MultipartBody.FORM, m.getipoClienteCreditoA(gestionCC.getTipoCredito().toString()));//(gestionCC.getTipoCredito().equals("0"))?"CREDITO INDIVIDUAL":"CREDITO GRUPAL");
+            RequestBody productoBody = RequestBody.create(MultipartBody.FORM, Miscellaneous.getipoClienteCreditoA(gestionCC.getTipoCredito().toString()));//(gestionCC.getTipoCredito().equals("0"))?"CREDITO INDIVIDUAL":"CREDITO GRUPAL");
             RequestBody clienteGpoBody = RequestBody.create(MultipartBody.FORM, gestionCC.getNombreUno());
             RequestBody avalRepresentanteBody = RequestBody.create(MultipartBody.FORM, gestionCC.getNombreDos());
             RequestBody curpBody = RequestBody.create(MultipartBody.FORM, gestionCC.getCurp());
@@ -9290,28 +9150,24 @@ public class Servicios_Sincronizado {
             RequestBody montoBody = RequestBody.create(MultipartBody.FORM, gestionCC.getMonto());
             RequestBody medioPagoIdBody = RequestBody.create(MultipartBody.FORM, String.valueOf(Miscellaneous.GetMedioPagoId(gestionCC.getMedioPago())));
             RequestBody nombreImagenBody = RequestBody.create(MultipartBody.FORM, gestionCC.getEvidencia());
-            RequestBody tipoImagenBody = RequestBody.create(MultipartBody.FORM, (gestionCC.getTipoImagen().equals("FOTOGRAFIA")?"1":"2"));
+            RequestBody tipoImagenBody = RequestBody.create(MultipartBody.FORM, (gestionCC.getTipoImagen().equals("FOTOGRAFIA") ? "1" : "2"));
             RequestBody fechaTerminoBody = RequestBody.create(MultipartBody.FORM, gestionCC.getFechaTermino());
             RequestBody impresionBody;
             RequestBody folioBody;
             RequestBody tipoImpresionBody;
             RequestBody fechaImpresoBody;
 
-            if (Miscellaneous.GetMedioPagoId(gestionCC.getMedioPago()) == 6 &&  reciboCC.getId() != null)
-            {
+            if (Miscellaneous.GetMedioPagoId(gestionCC.getMedioPago()) == 6 && reciboCC.getId() != null) {
                 folioBody = RequestBody.create(MultipartBody.FORM, "CC-" + session.getUser().get(0) + "-" + reciboCC.getFolio());
                 tipoImpresionBody = RequestBody.create(MultipartBody.FORM, reciboCC.getTipoImpresion());
                 fechaImpresoBody = RequestBody.create(MultipartBody.FORM, reciboCC.getFechaImpresion());
                 impresionBody = RequestBody.create(MultipartBody.FORM, "true");
-            }
-            else if(Miscellaneous.GetMedioPagoId(gestionCC.getMedioPago()) == 6 &&  reciboCC.getId() == null)
-            {
+            } else if (Miscellaneous.GetMedioPagoId(gestionCC.getMedioPago()) == 6 && reciboCC.getId() == null) {
                 folioBody = RequestBody.create(MultipartBody.FORM, String.valueOf(gestionCC.getFolio()));
                 tipoImpresionBody = RequestBody.create(MultipartBody.FORM, "");
                 fechaImpresoBody = RequestBody.create(MultipartBody.FORM, "");
                 impresionBody = RequestBody.create(MultipartBody.FORM, "false");
-            }
-            else {
+            } else {
                 folioBody = RequestBody.create(MultipartBody.FORM, "");
                 tipoImpresionBody = RequestBody.create(MultipartBody.FORM, "");
                 fechaImpresoBody = RequestBody.create(MultipartBody.FORM, "");
@@ -9321,58 +9177,47 @@ public class Servicios_Sincronizado {
             //RequestBody fechaEnvioBody = RequestBody.create(MultipartBody.FORM, Miscellaneous.ObtenerFecha(TIMESTAMP));
             RequestBody fechaEnvioBody;
 
-            if(reciboCC.getFechaEnvio() != null && !reciboCC.getFechaEnvio().trim().equals(""))
-            {
+            if (reciboCC.getFechaEnvio() != null && !reciboCC.getFechaEnvio().trim().equals("")) {
                 fechaEnvioBody = RequestBody.create(MultipartBody.FORM, reciboCC.getFechaEnvio());
-            }
-            else
-            {
+            } else {
                 fechaEnvioBody = RequestBody.create(MultipartBody.FORM, Miscellaneous.ObtenerFecha(TIMESTAMP));
             }
 
             Call<CirculoCreditoResponse> call = circuloCreditoService.store(
-                "Bearer "+ session.getUser().get(7),
-                productoBody,
-                clienteGpoBody,
-                avalRepresentanteBody,
-                curpBody,
-                integrantesBody,
-                montoBody,
-                medioPagoIdBody,
-                nombreImagenBody,
-                tipoImagenBody,
-                impresionBody,
-                folioBody,
-                tipoImpresionBody,
-                fechaImpresoBody,
-                fechaEnvioBody,
-                fechaTerminoBody,
-                foto
+                    "Bearer " + session.getUser().get(7),
+                    productoBody,
+                    clienteGpoBody,
+                    avalRepresentanteBody,
+                    curpBody,
+                    integrantesBody,
+                    montoBody,
+                    medioPagoIdBody,
+                    nombreImagenBody,
+                    tipoImagenBody,
+                    impresionBody,
+                    folioBody,
+                    tipoImpresionBody,
+                    fechaImpresoBody,
+                    fechaEnvioBody,
+                    fechaTerminoBody,
+                    foto
             );
 
             call.enqueue(new Callback<CirculoCreditoResponse>() {
                 @Override
                 public void onResponse(Call<CirculoCreditoResponse> call, Response<CirculoCreditoResponse> response) {
-                    if(response.code() == 200)
-                    {
-                        if(gestionCC.getEstatus() == 0)
-                        {
-                            if(reciboCC.getId() != null)
-                            {
-                                if(reciboCC.getFechaEnvio() == null || reciboCC.getFechaEnvio().trim().equals(""))
-                                {
+                    if (response.code() == 200) {
+                        if (gestionCC.getEstatus() == 0) {
+                            if (reciboCC.getId() != null) {
+                                if (reciboCC.getFechaEnvio() == null || reciboCC.getFechaEnvio().trim().equals("")) {
                                     reciboCC.setFechaEnvio(Miscellaneous.ObtenerFecha(TIMESTAMP));
                                 }
 
                                 reciboCirculoCreditoDao.update(reciboCC.getId(), reciboCC);
                             }
-                        }
-                        else
-                        {
-                            if(reciboCC.getId() != null)
-                            {
-                                if(reciboCC.getFechaEnvio() == null || reciboCC.getFechaEnvio().trim().equals(""))
-                                {
+                        } else {
+                            if (reciboCC.getId() != null) {
+                                if (reciboCC.getFechaEnvio() == null || reciboCC.getFechaEnvio().trim().equals("")) {
                                     reciboCC.setFechaEnvio(Miscellaneous.ObtenerFecha(TIMESTAMP));
                                 }
 
@@ -9380,17 +9225,14 @@ public class Servicios_Sincronizado {
                                 reciboCirculoCreditoDao.update(reciboCC.getId(), reciboCC);
                             }
 
-                            if(gestionCC.getFechaEnvio() == null || gestionCC.getFechaEnvio().trim().equals(""))
-                            {
+                            if (gestionCC.getFechaEnvio() == null || gestionCC.getFechaEnvio().trim().equals("")) {
                                 gestionCC.setFechaEnvio(Miscellaneous.ObtenerFecha(TIMESTAMP));
                             }
 
                             gestionCC.setEstatus(2);
                             gestionCirculoCreditoDao.update(gestionCC.getId(), gestionCC);
                         }
-                    }
-                    else
-                    {
+                    } else {
                         Log.e("AQUI ", response.message());
                     }
                 }
@@ -9404,7 +9246,7 @@ public class Servicios_Sincronizado {
         }
     }
 
-    public class GetGestionadas extends AsyncTask<Object, Void, Integer>{
+    public class GetGestionadas extends AsyncTask<Object, Void, Integer> {
 
         @Override
         protected void onPreExecute() {
@@ -9413,24 +9255,24 @@ public class Servicios_Sincronizado {
 
         @Override
         protected Integer doInBackground(Object... obj) {
-            Context ctx = (Context)obj[0];
-            final DBhelper dBhelper = new DBhelper(ctx);
+            Context ctx = (Context) obj[0];
+            final DBhelper dBhelper = DBhelper.getInstance(ctx);
             final SQLiteDatabase db = dBhelper.getWritableDatabase();
             final String tipo = (String) obj[1];
             List<MRespGestionadas> gestionadas = (List<MRespGestionadas>) obj[2];
 
-            Log.e("Total", gestionadas.size()+" Total");
+            Log.e("Total", gestionadas.size() + " Total");
 
-            for(MRespGestionadas item : gestionadas){
+            for (MRespGestionadas item : gestionadas) {
                 String sql = "";
                 Cursor row;
                 HashMap<Integer, String> params = new HashMap<>();
-                if (tipo.equals("VIGENTE")){
-                    if (item.getTipoGestion() == 1){
+                if (tipo.equals("VIGENTE")) {
+                    if (item.getTipoGestion() == 1) {
                         sql = "SELECT * FROM " + TBL_RESPUESTAS_IND_T + " WHERE id_prestamo = ? AND fecha_inicio = ? AND fecha_fin = ?";
-                        row = db.rawQuery(sql,new String[]{String.valueOf(item.getPrestamoId()), item.getFechaInicioGestion().substring(0,19).replace("T"," "),item.getFechaFinGestion().substring(0,19).replace("T"," ")});
+                        row = db.rawQuery(sql, new String[]{String.valueOf(item.getPrestamoId()), item.getFechaInicioGestion().substring(0, 19).replace("T", " "), item.getFechaFinGestion().substring(0, 19).replace("T", " ")});
 
-                        if (row.getCount() == 0){
+                        if (row.getCount() == 0) {
                             params.put(0, String.valueOf(item.getPrestamoId())); //ID PRESTAMO
                             params.put(1, String.valueOf(item.getLatitud())); //LATITUD
                             params.put(2, String.valueOf(item.getLongitud())); //LONGITUD
@@ -9450,10 +9292,9 @@ public class Servicios_Sincronizado {
                                 params.put(15, ""); //IMPRIMIR RECIBO
                                 params.put(16, ""); //FOLIO
                                 params.put(25, "0"); //RES IMPRESION
-                            }
-                            else {
+                            } else {
                                 Log.e("FolioXXX", Miscellaneous.validStr(item.getImprimirRecibo()));
-                                params.put(15, Miscellaneous.GetImprimirRecibo(Integer.parseInt(Miscellaneous.validStr(item.getImprimirRecibo()).replace(".0","")))); //IMPRIMIR RECIBO
+                                params.put(15, Miscellaneous.GetImprimirRecibo(Integer.parseInt(Miscellaneous.validStr(item.getImprimirRecibo()).replace(".0", "")))); //IMPRIMIR RECIBO
                                 params.put(16, Miscellaneous.validStr(item.getFolio())); //FOLIO
                                 params.put(25, String.valueOf(item.getResImpresion())); //RES IMPRESION
                             }
@@ -9461,9 +9302,9 @@ public class Servicios_Sincronizado {
                             params.put(18, Miscellaneous.GetTipoImagen(item.getTipoImagen())); //TIPO IMAGEN
                             params.put(19, Miscellaneous.GetConfirmacion(item.getSupervisonGerente())); //GERENTE
                             params.put(20, ""); //FIRMA
-                            params.put(21, item.getFechaInicioGestion().substring(0,19).replace("T"," ")); //FECHA INICIO
-                            params.put(22, item.getFechaFinGestion().substring(0,19).replace("T"," ")); //FECHA FIN
-                            params.put(23, item.getFechaEnvioDispositivo().substring(0,19).replace("T"," ")); //FECHA ENVIO
+                            params.put(21, item.getFechaInicioGestion().substring(0, 19).replace("T", " ")); //FECHA INICIO
+                            params.put(22, item.getFechaFinGestion().substring(0, 19).replace("T", " ")); //FECHA FIN
+                            params.put(23, item.getFechaEnvioDispositivo().substring(0, 19).replace("T", " ")); //FECHA ENVIO
                             params.put(24, "2"); //ESTATUS
                             params.put(26, item.getEstatus().replace("0", "")); //ESTATUS PAGO
                             params.put(27, String.valueOf(item.getSaldoCorte())); //SALDO CORTE
@@ -9474,41 +9315,38 @@ public class Servicios_Sincronizado {
 
                             String sqlAmortiz = "SELECT _id, total, total_pagado, pagado, fecha, numero FROM " + TBL_AMORTIZACIONES_T + " WHERE id_prestamo = ? AND CAST(total AS DOUBLE) > CAST(total_pagado AS DOUBLE) ORDER BY numero ASC";
                             Cursor row_amortiz = db.rawQuery(sqlAmortiz, new String[]{String.valueOf(item.getPrestamoId())});
-                            Log.e("RowAmortiz",String.valueOf(row_amortiz.getCount()));
-                            Log.e("--","------------------------------------------------");
-                            if (row_amortiz.getCount() > 0){
+                            Log.e("RowAmortiz", String.valueOf(row_amortiz.getCount()));
+                            Log.e("--", "------------------------------------------------");
+                            if (row_amortiz.getCount() > 0) {
                                 row_amortiz.moveToFirst();
                                 Log.e("ItemPago", String.valueOf(item.getPagoRealizado()));
                                 Double abono = item.getPagoRealizado();
-                                for (int i = 0; i < row_amortiz.getCount(); i++){
+                                for (int i = 0; i < row_amortiz.getCount(); i++) {
 
                                     Double pendiente = row_amortiz.getDouble(1) - row_amortiz.getDouble(2);
 
-                                    if (abono > pendiente){
+                                    if (abono > pendiente) {
                                         ContentValues cv_amortiz = new ContentValues();
                                         cv_amortiz.put("total_pagado", row_amortiz.getString(1));
                                         cv_amortiz.put("pagado", "PAGADO");
                                         cv_amortiz.put("dias_atraso", Miscellaneous.GetDiasAtraso(row_amortiz.getString(4)));
                                         db.update(TBL_AMORTIZACIONES_T, cv_amortiz, "id_prestamo = ? AND numero = ?", new String[]{String.valueOf(item.getPrestamoId()), row_amortiz.getString(5)});
                                         abono = abono - pendiente;
-                                    }
-                                    else if (abono == pendiente){
+                                    } else if (abono == pendiente) {
                                         ContentValues cv_amortiz = new ContentValues();
                                         cv_amortiz.put("total_pagado", row_amortiz.getString(1));
                                         cv_amortiz.put("pagado", "PAGADO");
                                         cv_amortiz.put("dias_atraso", Miscellaneous.GetDiasAtraso(row_amortiz.getString(4)));
                                         db.update(TBL_AMORTIZACIONES_T, cv_amortiz, "id_prestamo = ? AND numero = ?", new String[]{String.valueOf(item.getPrestamoId()), row_amortiz.getString(5)});
                                         abono = 0.0;
-                                    }
-                                    else if (abono > 0 && abono < pendiente){
+                                    } else if (abono > 0 && abono < pendiente) {
                                         ContentValues cv_amortiz = new ContentValues();
                                         cv_amortiz.put("total_pagado", (row_amortiz.getDouble(2) + abono));
                                         cv_amortiz.put("pagado", "PARCIAL");
                                         abono = 0.0;
                                         cv_amortiz.put("dias_atraso", Miscellaneous.GetDiasAtraso(row_amortiz.getString(4)));
                                         db.update(TBL_AMORTIZACIONES_T, cv_amortiz, "id_prestamo = ? AND numero = ?", new String[]{String.valueOf(item.getPrestamoId()), row_amortiz.getString(5)});
-                                    }
-                                    else
+                                    } else
                                         break;
 
                                     row_amortiz.moveToNext();
@@ -9517,12 +9355,12 @@ public class Servicios_Sincronizado {
                             }
                             row_amortiz.close();
 
-                            sqlAmortiz = "SELECT SUM(a.total_pagado) AS suma_pagos, p.monto_total FROM " + TBL_AMORTIZACIONES_T + " AS a INNER JOIN "+TBL_PRESTAMOS_IND_T+" AS p ON p.id_prestamo = a.id_prestamo WHERE a.id_prestamo = ?";
+                            sqlAmortiz = "SELECT SUM(a.total_pagado) AS suma_pagos, p.monto_total FROM " + TBL_AMORTIZACIONES_T + " AS a INNER JOIN " + TBL_PRESTAMOS_IND_T + " AS p ON p.id_prestamo = a.id_prestamo WHERE a.id_prestamo = ?";
                             row_amortiz = db.rawQuery(sqlAmortiz, new String[]{String.valueOf(item.getPrestamoId())});
 
-                            if (row_amortiz.getCount() > 0){
+                            if (row_amortiz.getCount() > 0) {
                                 row_amortiz.moveToFirst();
-                                if (row_amortiz.getDouble(0) >= row_amortiz.getDouble(1)){
+                                if (row_amortiz.getDouble(0) >= row_amortiz.getDouble(1)) {
                                     ContentValues c = new ContentValues();
                                     c.put("pagada", 1);
                                     db.update(TBL_PRESTAMOS_IND_T, c, "id_prestamo = ?", new String[]{String.valueOf(item.getPrestamoId())});
@@ -9532,12 +9370,11 @@ public class Servicios_Sincronizado {
                             row_amortiz.close();
                         }
                         row.close();
-                    }
-                    else if (item.getTipoGestion() == 2){
+                    } else if (item.getTipoGestion() == 2) {
                         sql = "SELECT * FROM " + TBL_RESPUESTAS_GPO_T + " WHERE id_prestamo = ? AND fecha_inicio = ? AND fecha_fin = ?";
-                        row = db.rawQuery(sql,new String[]{String.valueOf(item.getPrestamoId()), item.getFechaInicioGestion().substring(0,19).replace("T"," "),item.getFechaFinGestion().substring(0,19).replace("T"," ")});
+                        row = db.rawQuery(sql, new String[]{String.valueOf(item.getPrestamoId()), item.getFechaInicioGestion().substring(0, 19).replace("T", " "), item.getFechaFinGestion().substring(0, 19).replace("T", " ")});
 
-                        if (row.getCount() == 0){
+                        if (row.getCount() == 0) {
                             params.put(0, String.valueOf(item.getPrestamoId())); //ID PRESTAMO
                             params.put(1, String.valueOf(item.getLatitud())); //LATITUD
                             params.put(2, String.valueOf(item.getLongitud())); //LONGITUD
@@ -9557,9 +9394,8 @@ public class Servicios_Sincronizado {
                                 params.put(15, ""); //IMPRIMIR RECIBO
                                 params.put(16, ""); //FOLIO
                                 params.put(25, "0"); //RES_IMPRESION
-                            }
-                            else{
-                                params.put(15, Miscellaneous.GetImprimirRecibo(Integer.parseInt(Miscellaneous.validStr(item.getImprimirRecibo()).replace(".0","")))); //IMPRIMIR RECIBO
+                            } else {
+                                params.put(15, Miscellaneous.GetImprimirRecibo(Integer.parseInt(Miscellaneous.validStr(item.getImprimirRecibo()).replace(".0", "")))); //IMPRIMIR RECIBO
                                 params.put(16, Miscellaneous.validStr(item.getFolio())); //FOLIO
                                 params.put(25, String.valueOf(item.getResImpresion())); //RES_IMPRESION
                             }
@@ -9567,9 +9403,9 @@ public class Servicios_Sincronizado {
                             params.put(18, Miscellaneous.GetTipoImagen(item.getTipoImagen())); //TIPO IMAGEN
                             params.put(19, Miscellaneous.GetConfirmacion(item.getSupervisonGerente())); //GERENTE
                             params.put(20, ""); //FIRMA
-                            params.put(21, item.getFechaInicioGestion().substring(0,19).replace("T"," ")); //FECHA INICIO
-                            params.put(22, item.getFechaFinGestion().substring(0,19).replace("T"," ")); //FECHA FIN
-                            params.put(23, item.getFechaEnvioDispositivo().substring(0,19).replace("T"," ")); //FECHA ENVIO
+                            params.put(21, item.getFechaInicioGestion().substring(0, 19).replace("T", " ")); //FECHA INICIO
+                            params.put(22, item.getFechaFinGestion().substring(0, 19).replace("T", " ")); //FECHA FIN
+                            params.put(23, item.getFechaEnvioDispositivo().substring(0, 19).replace("T", " ")); //FECHA ENVIO
                             params.put(24, "2"); //ESTATUS
                             params.put(26, "0"); //ARQUEO CAJA
                             params.put(27, item.getEstatus().replace("0", "")); //ESTATUS PAGO
@@ -9581,31 +9417,29 @@ public class Servicios_Sincronizado {
 
                             String sqlAmortiz = "SELECT _id, total, total_pagado, pagado, fecha, numero FROM " + TBL_AMORTIZACIONES_T + " WHERE id_prestamo = ? AND CAST(total AS DOUBLE) > CAST(total_pagado AS DOUBLE) ORDER BY numero ASC";
                             Cursor row_amortiz = db.rawQuery(sqlAmortiz, new String[]{String.valueOf(item.getPrestamoId())});
-                            if (row_amortiz.getCount() > 0){
+                            if (row_amortiz.getCount() > 0) {
                                 row_amortiz.moveToFirst();
                                 Double abono = item.getPagoRealizado();
 
-                                for (int i = 0; i < row_amortiz.getCount(); i++){
+                                for (int i = 0; i < row_amortiz.getCount(); i++) {
 
                                     Double pendiente = row_amortiz.getDouble(1) - row_amortiz.getDouble(2);
 
-                                    if (abono > pendiente){
+                                    if (abono > pendiente) {
                                         ContentValues cv_amortiz = new ContentValues();
                                         cv_amortiz.put("total_pagado", row_amortiz.getString(1));
                                         cv_amortiz.put("pagado", "PAGADO");
                                         cv_amortiz.put("dias_atraso", Miscellaneous.GetDiasAtraso(row_amortiz.getString(4)));
                                         db.update(TBL_AMORTIZACIONES_T, cv_amortiz, "id_prestamo = ? AND numero = ?", new String[]{String.valueOf(item.getPrestamoId()), row_amortiz.getString(5)});
                                         abono = abono - pendiente;
-                                    }
-                                    else if (abono == pendiente){
+                                    } else if (abono == pendiente) {
                                         ContentValues cv_amortiz = new ContentValues();
                                         cv_amortiz.put("total_pagado", row_amortiz.getString(1));
                                         cv_amortiz.put("pagado", "PAGADO");
                                         cv_amortiz.put("dias_atraso", Miscellaneous.GetDiasAtraso(row_amortiz.getString(4)));
                                         db.update(TBL_AMORTIZACIONES_T, cv_amortiz, "id_prestamo = ? AND numero = ?", new String[]{String.valueOf(item.getPrestamoId()), row_amortiz.getString(5)});
                                         abono = 0.0;
-                                    }
-                                    else if (abono > 0 && abono < pendiente){
+                                    } else if (abono > 0 && abono < pendiente) {
                                         ContentValues cv_amortiz = new ContentValues();
                                         cv_amortiz.put("total_pagado", (row_amortiz.getDouble(2) + abono));
                                         cv_amortiz.put("pagado", "PARCIAL");
@@ -9613,8 +9447,7 @@ public class Servicios_Sincronizado {
                                         cv_amortiz.put("dias_atraso", Miscellaneous.GetDiasAtraso(row_amortiz.getString(4)));
                                         db.update(TBL_AMORTIZACIONES_T, cv_amortiz, "id_prestamo = ? AND numero = ?", new String[]{String.valueOf(item.getPrestamoId()), row_amortiz.getString(5)});
 
-                                    }
-                                    else
+                                    } else
                                         break;
 
                                     row_amortiz.moveToNext();
@@ -9625,13 +9458,12 @@ public class Servicios_Sincronizado {
                         }
                         row.close();
                     }
-                }
-                else if (tipo.equals("VENCIDA")){
-                    if (item.getTipoGestion() == 1){
+                } else if (tipo.equals("VENCIDA")) {
+                    if (item.getTipoGestion() == 1) {
                         sql = "SELECT * FROM " + TBL_RESPUESTAS_IND_V_T + " WHERE id_prestamo = ? AND fecha_inicio = ? AND fecha_fin = ?";
-                        row = db.rawQuery(sql,new String[]{String.valueOf(item.getPrestamoId()), item.getFechaInicioGestion().substring(0,19).replace("T"," "),item.getFechaFinGestion().substring(0,19).replace("T"," ")});
+                        row = db.rawQuery(sql, new String[]{String.valueOf(item.getPrestamoId()), item.getFechaInicioGestion().substring(0, 19).replace("T", " "), item.getFechaFinGestion().substring(0, 19).replace("T", " ")});
 
-                        if (row.getCount() == 0){
+                        if (row.getCount() == 0) {
                             params.put(0, String.valueOf(item.getPrestamoId())); //ID PRESTAMO
                             params.put(1, String.valueOf(item.getLatitud())); //LATITUD
                             params.put(2, String.valueOf(item.getLongitud())); //LONGITUD
@@ -9652,9 +9484,8 @@ public class Servicios_Sincronizado {
                                 params.put(16, ""); //IMPRIMIR RECIBO
                                 params.put(17, ""); //FOLIO
                                 params.put(26, "0"); //RES IMPRESION
-                            }
-                            else{
-                                params.put(16, Miscellaneous.GetImprimirRecibo(Integer.parseInt(Miscellaneous.validStr(item.getImprimirRecibo()).replace(".0","")))); //IMPRIMIR RECIBO
+                            } else {
+                                params.put(16, Miscellaneous.GetImprimirRecibo(Integer.parseInt(Miscellaneous.validStr(item.getImprimirRecibo()).replace(".0", "")))); //IMPRIMIR RECIBO
                                 params.put(17, Miscellaneous.validStr(item.getFolio())); //FOLIO
                                 params.put(26, String.valueOf(item.getResImpresion())); //RES IMPRESION
                             }
@@ -9662,9 +9493,9 @@ public class Servicios_Sincronizado {
                             params.put(19, Miscellaneous.GetTipoImagen(item.getTipoImagen())); //TIPO IMAGEN
                             params.put(20, Miscellaneous.GetConfirmacion(item.getSupervisonGerente())); //GERENTE
                             params.put(21, ""); //FIRMA
-                            params.put(22, item.getFechaInicioGestion().substring(0,19).replace("T"," ")); //FECHA INICIO
-                            params.put(23, item.getFechaFinGestion().substring(0,19).replace("T"," ")); //FECHA FIN
-                            params.put(24, item.getFechaEnvioDispositivo().substring(0,19).replace("T"," ")); //FECHA ENVIO
+                            params.put(22, item.getFechaInicioGestion().substring(0, 19).replace("T", " ")); //FECHA INICIO
+                            params.put(23, item.getFechaFinGestion().substring(0, 19).replace("T", " ")); //FECHA FIN
+                            params.put(24, item.getFechaEnvioDispositivo().substring(0, 19).replace("T", " ")); //FECHA ENVIO
                             params.put(25, "2"); //ESTATUS
                             params.put(27, item.getEstatus().replace("0", "")); //ESTATUS PAGO
                             params.put(28, String.valueOf(item.getSaldoCorte())); //SALDO CORTE
@@ -9676,30 +9507,28 @@ public class Servicios_Sincronizado {
 
                             String sqlAmortiz = "SELECT _id, total, total_pagado, pagado, fecha, numero FROM " + TBL_AMORTIZACIONES_T + " WHERE id_prestamo = ? AND CAST(total AS DOUBLE) > CAST(total_pagado AS DOUBLE) ORDER BY numero ASC";
                             Cursor row_amortiz = db.rawQuery(sqlAmortiz, new String[]{String.valueOf(item.getPrestamoId())});
-                            if (row_amortiz.getCount() > 0){
+                            if (row_amortiz.getCount() > 0) {
                                 row_amortiz.moveToFirst();
                                 Double abono = item.getPagoRealizado();
-                                for (int i = 0; i < row_amortiz.getCount(); i++){
+                                for (int i = 0; i < row_amortiz.getCount(); i++) {
 
                                     Double pendiente = row_amortiz.getDouble(1) - row_amortiz.getDouble(2);
 
-                                    if (abono > pendiente){
+                                    if (abono > pendiente) {
                                         ContentValues cv_amortiz = new ContentValues();
                                         cv_amortiz.put("total_pagado", row_amortiz.getString(1));
                                         cv_amortiz.put("pagado", "PAGADO");
                                         cv_amortiz.put("dias_atraso", Miscellaneous.GetDiasAtraso(row_amortiz.getString(4)));
                                         db.update(TBL_AMORTIZACIONES_T, cv_amortiz, "id_prestamo = ? AND numero = ?", new String[]{String.valueOf(item.getPrestamoId()), row_amortiz.getString(5)});
                                         abono = abono - pendiente;
-                                    }
-                                    else if (abono == pendiente){
+                                    } else if (abono == pendiente) {
                                         ContentValues cv_amortiz = new ContentValues();
                                         cv_amortiz.put("total_pagado", row_amortiz.getString(1));
                                         cv_amortiz.put("pagado", "PAGADO");
                                         cv_amortiz.put("dias_atraso", Miscellaneous.GetDiasAtraso(row_amortiz.getString(4)));
                                         db.update(TBL_AMORTIZACIONES_T, cv_amortiz, "id_prestamo = ? AND numero = ?", new String[]{String.valueOf(item.getPrestamoId()), row_amortiz.getString(5)});
                                         abono = 0.0;
-                                    }
-                                    else if (abono > 0 && abono < pendiente){
+                                    } else if (abono > 0 && abono < pendiente) {
                                         ContentValues cv_amortiz = new ContentValues();
                                         cv_amortiz.put("total_pagado", abono);
                                         cv_amortiz.put("pagado", "PARCIAL");
@@ -9707,8 +9536,7 @@ public class Servicios_Sincronizado {
                                         cv_amortiz.put("dias_atraso", Miscellaneous.GetDiasAtraso(row_amortiz.getString(4)));
                                         db.update(TBL_AMORTIZACIONES_T, cv_amortiz, "id_prestamo = ? AND numero = ?", new String[]{String.valueOf(item.getPrestamoId()), row_amortiz.getString(5)});
 
-                                    }
-                                    else
+                                    } else
                                         break;
 
                                     row_amortiz.moveToNext();
@@ -9719,12 +9547,11 @@ public class Servicios_Sincronizado {
 
                         }
                         row.close();
-                    }
-                    else if (item.getTipoGestion() == 2){
+                    } else if (item.getTipoGestion() == 2) {
 
                         sql = "SELECT * FROM " + TBL_RESPUESTAS_INTEGRANTE_T + " WHERE id_prestamo = ? AND fecha_inicio = ? AND fecha_fin = ?";
 
-                        row = db.rawQuery(sql,new String[]{String.valueOf(item.getPrestamoId()), item.getFechaInicioGestion().substring(0,19).replace("T"," "),item.getFechaFinGestion().substring(0,19).replace("T"," ")});
+                        row = db.rawQuery(sql, new String[]{String.valueOf(item.getPrestamoId()), item.getFechaInicioGestion().substring(0, 19).replace("T", " "), item.getFechaFinGestion().substring(0, 19).replace("T", " ")});
 
                         if (row.getCount() == 0) {
                             params.put(0, String.valueOf(item.getPrestamoId())); //ID PRESTAMO
@@ -9744,13 +9571,12 @@ public class Servicios_Sincronizado {
                             params.put(14, Miscellaneous.validStr(item.getFechaPago())); //FECHA PAGO
                             params.put(15, Miscellaneous.GetConfirmacion(item.getPagaraRequerido())); //PAGARA REQUERIDO
                             params.put(16, String.valueOf(item.getPagoRealizado())); //PAGO REALIZADO
-                            if (item.getMedioPago() != 6){
+                            if (item.getMedioPago() != 6) {
                                 params.put(17, ""); //IMPRIMIR RECIBO
                                 params.put(18, ""); //FOLIO
                                 params.put(27, "0"); //RES IMPRESION
-                            }
-                            else{
-                                params.put(17, Miscellaneous.GetImprimirRecibo(Integer.parseInt(Miscellaneous.validStr(item.getImprimirRecibo()).replace(".0","")))); //IMPRIMIR RECIBO
+                            } else {
+                                params.put(17, Miscellaneous.GetImprimirRecibo(Integer.parseInt(Miscellaneous.validStr(item.getImprimirRecibo()).replace(".0", "")))); //IMPRIMIR RECIBO
                                 params.put(18, Miscellaneous.validStr(item.getFolio())); //FOLIO
                                 params.put(27, String.valueOf(item.getResImpresion())); //RES IMPRESION
                             }
@@ -9758,9 +9584,9 @@ public class Servicios_Sincronizado {
                             params.put(20, Miscellaneous.GetTipoImagen(item.getTipoImagen())); //TIPO IMAGEN
                             params.put(21, Miscellaneous.GetConfirmacion(item.getSupervisonGerente())); //GERENTE
                             params.put(22, ""); //FIRMA
-                            params.put(23, item.getFechaInicioGestion().substring(0,19).replace("T"," ")); //FECHA INICIO
-                            params.put(24, item.getFechaFinGestion().substring(0,19).replace("T"," ")); //FECHA FIN
-                            params.put(25, item.getFechaEnvioDispositivo().substring(0,19).replace("T"," ")); //FECHA ENVIO
+                            params.put(23, item.getFechaInicioGestion().substring(0, 19).replace("T", " ")); //FECHA INICIO
+                            params.put(24, item.getFechaFinGestion().substring(0, 19).replace("T", " ")); //FECHA FIN
+                            params.put(25, item.getFechaEnvioDispositivo().substring(0, 19).replace("T", " ")); //FECHA ENVIO
                             params.put(26, "2"); //ESTATUS
                             params.put(28, item.getEstatus().replace("0", "")); //ESTATUS PAGO
                             params.put(29, String.valueOf(item.getSaldoCorte())); //SALDO CORTE
@@ -9772,38 +9598,35 @@ public class Servicios_Sincronizado {
 
                             String sqlAmortiz = "SELECT _id, total, total_pagado, pagado, fecha, numero FROM " + TBL_AMORTIZACIONES_T + " WHERE id_prestamo = ? AND CAST(total AS DOUBLE) > CAST(total_pagado AS DOUBLE) ORDER BY numero ASC";
                             Cursor row_amortiz = db.rawQuery(sqlAmortiz, new String[]{String.valueOf(item.getPrestamoId())});
-                            if (row_amortiz.getCount() > 0){
+                            if (row_amortiz.getCount() > 0) {
                                 row_amortiz.moveToFirst();
                                 Double abono = item.getPagoRealizado();
-                                for (int i = 0; i < row_amortiz.getCount(); i++){
+                                for (int i = 0; i < row_amortiz.getCount(); i++) {
 
                                     Double pendiente = row_amortiz.getDouble(1) - row_amortiz.getDouble(2);
 
-                                    if (abono > pendiente){
+                                    if (abono > pendiente) {
                                         ContentValues cv_amortiz = new ContentValues();
                                         cv_amortiz.put("total_pagado", row_amortiz.getString(1));
                                         cv_amortiz.put("pagado", "PAGADO");
                                         cv_amortiz.put("dias_atraso", Miscellaneous.GetDiasAtraso(row_amortiz.getString(4)));
                                         db.update(TBL_AMORTIZACIONES_T, cv_amortiz, "id_prestamo = ? AND numero = ?", new String[]{String.valueOf(item.getPrestamoId()), row_amortiz.getString(5)});
                                         abono = abono - pendiente;
-                                    }
-                                    else if (abono == pendiente){
+                                    } else if (abono == pendiente) {
                                         ContentValues cv_amortiz = new ContentValues();
                                         cv_amortiz.put("total_pagado", row_amortiz.getString(1));
                                         cv_amortiz.put("pagado", "PAGADO");
                                         cv_amortiz.put("dias_atraso", Miscellaneous.GetDiasAtraso(row_amortiz.getString(4)));
                                         db.update(TBL_AMORTIZACIONES_T, cv_amortiz, "id_prestamo = ? AND numero = ?", new String[]{String.valueOf(item.getPrestamoId()), row_amortiz.getString(5)});
                                         abono = 0.0;
-                                    }
-                                    else if (abono > 0 && abono < pendiente){
+                                    } else if (abono > 0 && abono < pendiente) {
                                         ContentValues cv_amortiz = new ContentValues();
                                         cv_amortiz.put("total_pagado", abono);
                                         cv_amortiz.put("pagado", "PARCIAL");
                                         abono = 0.0;
                                         cv_amortiz.put("dias_atraso", Miscellaneous.GetDiasAtraso(row_amortiz.getString(4)));
                                         db.update(TBL_AMORTIZACIONES_T, cv_amortiz, "id_prestamo = ? AND numero = ?", new String[]{String.valueOf(item.getPrestamoId()), row_amortiz.getString(5)});
-                                    }
-                                    else
+                                    } else
                                         break;
 
                                     row_amortiz.moveToNext();
@@ -9826,7 +9649,7 @@ public class Servicios_Sincronizado {
         }
     }
 
-    public class PostConsulta extends AsyncTask<Object, Void, String>{
+    public class PostConsulta extends AsyncTask<Object, Void, String> {
 
         @Override
         protected String doInBackground(Object... obj) {
@@ -9834,32 +9657,30 @@ public class Servicios_Sincronizado {
             final String id = (String) obj[1];
             final ConsultaCC cc = (ConsultaCC) obj[2];
 
-            Log.e("Comienza", "Obtener la consulta: "+ Miscellaneous.ConvertToJson(cc));
+            Log.e("Comienza", "Obtener la consulta: " + Miscellaneous.ConvertToJson(cc));
 
-            SessionManager session = new SessionManager(ctx);
-            DBhelper dBhelper = new DBhelper(ctx);
+            SessionManager session = SessionManager.getInstance(ctx);
+            DBhelper dBhelper = DBhelper.getInstance(ctx);
             final SQLiteDatabase db = dBhelper.getWritableDatabase();
 
-            ManagerInterface api = new RetrofitClient().generalRF(CONTROLLER_API, ctx).create(ManagerInterface.class);
+            ManagerInterface api = RetrofitClient.generalRF(CONTROLLER_API, ctx).create(ManagerInterface.class);
 
 
-                Call<MResConsultaCC> call = api.setConsultaCC(
-                        "Bearer " + session.getUser().get(7),
-                        cc);
-
-
+            Call<MResConsultaCC> call = api.setConsultaCC(
+                    "Bearer " + session.getUser().get(7),
+                    cc);
 
 
             call.enqueue(new Callback<MResConsultaCC>() {
                 @Override
                 public void onResponse(Call<MResConsultaCC> call, Response<MResConsultaCC> response) {
                     System.out.println(response.body());
-                    Log.e("response",Miscellaneous.ConvertToJson(response.errorBody()));
-                    Log.e("response",Miscellaneous.ConvertToJson(response.body()));
+                    Log.e("response", Miscellaneous.ConvertToJson(response.errorBody()));
+                    Log.e("response", Miscellaneous.ConvertToJson(response.body()));
                     MResConsultaCC r = response.body();
 
                     ContentValues cv = new ContentValues();
-                    switch (response.code()){
+                    switch (response.code()) {
                         case 200:
                             if (r.getOk() != null) {
                                 int credAbierto = 0;
@@ -9869,11 +9690,10 @@ public class Servicios_Sincronizado {
                                 Double peorPago = 0.0;
 
 
-                                for (MResConsultaCC.Credito item : r.getOk().getRes().getCreditos()){
+                                for (MResConsultaCC.Credito item : r.getOk().getRes().getCreditos()) {
                                     if (!Miscellaneous.validStr(item.getFechaCierreCuenta()).isEmpty()) {
                                         credCerrado += 1;
-                                    }
-                                    else {
+                                    } else {
                                         credAbierto += 1;
 
                                         saldVencido += item.getSaldoVencido();
@@ -9903,7 +9723,7 @@ public class Servicios_Sincronizado {
                             if (r.getOk() != null) {
 
                                 System.out.println(Miscellaneous.ConvertToJson(response));
-                                cv.put("errores",""+r.getOk().getErr().getErrores().get(0).getMensaje());
+                                cv.put("errores", "" + r.getOk().getErr().getErrores().get(0).getMensaje());
                                 cv.put("estatus", String.valueOf(response.code()));
                                 cv.put("fecha_envio", Miscellaneous.ObtenerFecha(TIMESTAMP));
                                 db.update(TBL_CONSULTA_CC, cv, "_id = ?", new String[]{id});
@@ -9914,19 +9734,16 @@ public class Servicios_Sincronizado {
 
                 @Override
                 public void onFailure(Call<MResConsultaCC> call, Throwable t) {
-                   Log.e("Fail", "Consulta CC: "+ t.getMessage());
+                    Log.e("Fail", "Consulta CC: " + t.getMessage());
                 }
             });
-
-
-
 
 
             return "";
         }
     }
 
-    public class GuardarVerDom extends AsyncTask<Object, Void, String>{
+    public class GuardarVerDom extends AsyncTask<Object, Void, String> {
         @Override
         protected String doInBackground(final Object... params) {
             Context ctx = (Context) params[0];
@@ -9941,16 +9758,14 @@ public class Servicios_Sincronizado {
             Gson gson = new Gson();
             String gestionJson = gson.toJson(gestion);
 
-            SessionManager session = new SessionManager(ctx);
-            GestionVerificacionDomiciliariaService gestionService = new RetrofitClient().newInstance(ctx).create(GestionVerificacionDomiciliariaService.class);
+            SessionManager session = SessionManager.getInstance(ctx);
+            GestionVerificacionDomiciliariaService gestionService = RetrofitClient.newInstance(ctx).create(GestionVerificacionDomiciliariaService.class);
 
             MultipartBody.Part fotoFachada = null;
 
-            if(!gestion.getFotoFachada().isEmpty() && gestion.getFotoFachada() != null)
-            {
-                File image_foto = new File(ROOT_PATH + "Fachada/"+ gestion.getFotoFachada());
-                if (image_foto != null)
-                {
+            if (!gestion.getFotoFachada().isEmpty() && gestion.getFotoFachada() != null) {
+                File image_foto = new File(ROOT_PATH + "Fachada/" + gestion.getFotoFachada());
+                if (image_foto != null) {
                     RequestBody imageEvidencia = RequestBody.create(MediaType.parse("image/*"), image_foto);
                     fotoFachada = MultipartBody.Part.createFormData("foto_fachada", image_foto.getName(), imageEvidencia);
                 }
@@ -9969,7 +9784,7 @@ public class Servicios_Sincronizado {
             call.enqueue(new Callback<GestionVerificacionDomiciliaria>() {
                 @Override
                 public void onResponse(Call<GestionVerificacionDomiciliaria> call, Response<GestionVerificacionDomiciliaria> response) {
-                    switch (response.code()){
+                    switch (response.code()) {
                         case 200:
                             gestionDao.update(gestion);
                             break;
@@ -9982,6 +9797,7 @@ public class Servicios_Sincronizado {
                             Log.e("ERROR " + response.code(), response.message());
                     }
                 }
+
                 @Override
                 public void onFailure(Call<GestionVerificacionDomiciliaria> call, Throwable t) {
                     Log.e("ERROR ", t.getMessage());
@@ -9996,33 +9812,30 @@ public class Servicios_Sincronizado {
         final AlertDialog loading = Popups.showLoadingDialog(ctx, R.string.please_wait, R.string.loading_info);
         loading.setCancelable(false);
 
-        SessionManager session = new SessionManager(ctx);
+        SessionManager session = SessionManager.getInstance(ctx);
 
         ServicioSincronizadoDao servicioSincronizadoDao = new ServicioSincronizadoDao(ctx);
 
-        ServicioSincronizadoService servicioSincronizadoService = new RetrofitClient().newInstance(ctx).create(ServicioSincronizadoService.class);
+        ServicioSincronizadoService servicioSincronizadoService = RetrofitClient.newInstance(ctx).create(ServicioSincronizadoService.class);
 
-        Call<List<ServicioSincronizado>> call = servicioSincronizadoService.show("Bearer "+ session.getUser().get(7));
+        Call<List<ServicioSincronizado>> call = servicioSincronizadoService.show("Bearer " + session.getUser().get(7));
 
         call.enqueue(new Callback<List<ServicioSincronizado>>() {
             @Override
             public void onResponse(Call<List<ServicioSincronizado>> call, Response<List<ServicioSincronizado>> response) {
-                switch (response.code()){
+                switch (response.code()) {
                     case 200:
                         List<ServicioSincronizado> serviciosSincronizados = response.body();
 
-                        if (serviciosSincronizados != null && serviciosSincronizados.size() > 0){
-                            for (ServicioSincronizado item : serviciosSincronizados){
+                        if (serviciosSincronizados != null && serviciosSincronizados.size() > 0) {
+                            for (ServicioSincronizado item : serviciosSincronizados) {
                                 Log.e("AQUI SS ID", String.valueOf(item.getId()));
 
                                 ServicioSincronizado servicioSincronizado = servicioSincronizadoDao.findById(item.getId());
 
-                                if(servicioSincronizado != null)
-                                {
+                                if (servicioSincronizado != null) {
                                     servicioSincronizadoDao.update(item);
-                                }
-                                else
-                                {
+                                } else {
                                     servicioSincronizadoDao.store(item);
                                 }
                             }
@@ -10038,49 +9851,48 @@ public class Servicios_Sincronizado {
 
             @Override
             public void onFailure(Call<List<ServicioSincronizado>> call, Throwable t) {
-                Log.e("ErrorAgf", "Fail AGG"+t.getMessage());
+                Log.e("ErrorAgf", "Fail AGG" + t.getMessage());
                 loading.dismiss();
                 t.printStackTrace();
             }
         });
     }
 
-
-
-    public void SendOriginacionInd (Context ctx, boolean flag, long id_solicitud){
+    public void SendOriginacionInd(Context ctx, boolean flag, long id_solicitud) {
         final AlertDialog loading = Popups.showLoadingDialog(ctx, R.string.please_wait, R.string.loading_info);
 
         if (flag) loading.show();
 
-        SessionManager session = new SessionManager(ctx);
-        final DBhelper dBhelper = new DBhelper(ctx);
+        SessionManager session = SessionManager.getInstance(ctx);
+        final DBhelper dBhelper = DBhelper.getInstance(ctx);
         final SQLiteDatabase db = dBhelper.getWritableDatabase();
 
         Cursor row = dBhelper.getRecords(TBL_SOLICITUDES, " WHERE id_solicitud = ?", "", new String[]{String.valueOf(id_solicitud)});
 
-        if (row.getCount() > 0){
+        if (row.getCount() > 0) {
             row.moveToFirst();
 
-            Log.e("count solicitudes", row.getCount()+" total");
-            for (int i = 0; i < row.getCount(); i++){
+            Log.e("count solicitudes", row.getCount() + " total");
+            for (int i = 0; i < row.getCount(); i++) {
                 Cursor row_soli = dBhelper.getRecords(TBL_CREDITO_IND, " WHERE id_solicitud = ?", "", new String[]{row.getString(0)});
 
                 row_soli.moveToFirst();
                 JSONObject json_solicitud = new JSONObject();
                 try {
-                    Log.e("Plazo", row_soli.getString(2)+" plazo");
+                    Log.e("Plazo", row_soli.getString(2) + " plazo");
                     json_solicitud.put(K_PLAZO, Miscellaneous.GetPlazo(row_soli.getString(2)));
                     json_solicitud.put(K_PERIODICIDAD, Miscellaneous.GetPeriodicidad(row_soli.getString(3)));
                     json_solicitud.put(K_FECHA_DESEMBOLSO, row_soli.getString(4));
                     json_solicitud.put(K_HORA_VISITA, row_soli.getString(6));
-                    json_solicitud.put(K_MONTO_PRESTAMO, Integer.parseInt(row_soli.getString(7).replace(",","")));
-                    int montoPres = Integer.parseInt(row_soli.getString(7).replace(",",""));
-                    json_solicitud.put(K_MONTO_LETRA, (Miscellaneous.cantidadLetra(row_soli.getString(7).replace(",","")).toUpperCase() + " PESOS MEXICANOS").replace("  ", " "));
+                    json_solicitud.put(K_MONTO_PRESTAMO, Integer.parseInt(row_soli.getString(7).replace(",", "")));
+                    int montoPres = Integer.parseInt(row_soli.getString(7).replace(",", ""));
+                    json_solicitud.put(K_MONTO_LETRA, (Miscellaneous.cantidadLetra(row_soli.getString(7).replace(",", "")).toUpperCase() + " PESOS MEXICANOS").replace("  ", " "));
                     json_solicitud.put(K_DESTINO_PRESTAMO, row_soli.getString(8));
                     json_solicitud.put(K_CLASIFICACION_RIESGO, row_soli.getString(9));
                     json_solicitud.put(K_TIPO_SOLICITUD, "ORIGINACION");
                     int montoRefinanciar = 0;
-                    if(row_soli.getString(11) != null && !row_soli.getString(11).isEmpty()) montoRefinanciar = Integer.parseInt(row_soli.getString(11).replace(",",""));
+                    if (row_soli.getString(11) != null && !row_soli.getString(11).isEmpty())
+                        montoRefinanciar = Integer.parseInt(row_soli.getString(11).replace(",", ""));
                     json_solicitud.put(K_MONTO_REFINANCIAR, montoRefinanciar);
                     row_soli.close();//Cierra datos de credito
                     json_solicitud.put(K_FECHA_INICIO, row.getString(6));
@@ -10108,7 +9920,7 @@ public class Servicios_Sincronizado {
                     String estadoCivil = row_soli.getString(17);
                     json_solicitante.put(K_ESTADO_CIVIL, row_soli.getString(17));
                     if (row_soli.getString(17).equals("CASADO(A)"))
-                        json_solicitante.put(K_BIENES, (row_soli.getInt(18) == 1)?"MANCOMUNADOS":"SEPARADOS");
+                        json_solicitante.put(K_BIENES, (row_soli.getInt(18) == 1) ? "MANCOMUNADOS" : "SEPARADOS");
                     json_solicitante.put(K_TIPO_VIVIENDA, row_soli.getString(19));
                     if (row_soli.getString(19).equals("CASA FAMILIAR"))
                         json_solicitante.put(K_PARENTESCO, row_soli.getString(20));
@@ -10127,7 +9939,7 @@ public class Servicios_Sincronizado {
                     json_solicitante.put(K_COLONIA, row_dir.getString(10));
                     json_solicitante.put(K_CIUDAD, row_dir.getString(11));
                     json_solicitante.put(K_LOCALIDAD, row_dir.getString(12));
-                    json_solicitante.put(K_MUNICIPIO,row_dir.getString(13));
+                    json_solicitante.put(K_MUNICIPIO, row_dir.getString(13));
                     json_solicitante.put(K_ESTADO, row_dir.getString(14));
                     json_solicitante.put(K_LOCATED_AT, row_dir.getString(15));
                     row_dir.close();
@@ -10171,19 +9983,19 @@ public class Servicios_Sincronizado {
                         row_dir = dBhelper.getRecords(TBL_DIRECCIONES, " WHERE id_direccion = ? AND tipo_direccion = ?", "", new String[]{row_soli.getString(7), "CONYUGE"});
                         row_dir.moveToFirst();
                         json_conyuge.put(K_CALLE, row_dir.getString(4));
-                        json_conyuge.put(K_NO_EXTERIOR,row_dir.getString(5));
+                        json_conyuge.put(K_NO_EXTERIOR, row_dir.getString(5));
                         json_conyuge.put(K_NO_INTERIOR, row_dir.getString(6));
                         json_conyuge.put(K_NO_LOTE, row_dir.getString(7));
                         json_conyuge.put(K_NO_MANZANA, row_dir.getString(8));
                         json_conyuge.put(K_CODIGO_POSTAL, row_dir.getInt(9));
                         json_conyuge.put(K_COLONIA, row_dir.getString(10));
                         json_conyuge.put(K_CIUDAD, row_dir.getString(11));
-                        json_conyuge.put(K_LOCALIDAD,row_dir.getString(12));
-                        json_conyuge.put(K_MUNICIPIO,row_dir.getString(13));
+                        json_conyuge.put(K_LOCALIDAD, row_dir.getString(12));
+                        json_conyuge.put(K_MUNICIPIO, row_dir.getString(13));
                         json_conyuge.put(K_ESTADO, row_dir.getString(14));
                         row_dir.close();
-                        json_conyuge.put(K_INGRESO_MENSUAL, Double.parseDouble(row_soli.getString(8).replace(",","")));
-                        json_conyuge.put(K_GASTO_MENSUAL, Double.parseDouble(row_soli.getString(9).replace(",","")));
+                        json_conyuge.put(K_INGRESO_MENSUAL, Double.parseDouble(row_soli.getString(8).replace(",", "")));
+                        json_conyuge.put(K_GASTO_MENSUAL, Double.parseDouble(row_soli.getString(9).replace(",", "")));
                         json_conyuge.put(K_TEL_CASA, row_soli.getString(10));
                         json_conyuge.put(K_TEL_CELULAR, row_soli.getString(11));
 
@@ -10194,21 +10006,20 @@ public class Servicios_Sincronizado {
                     }
 
                     Log.e("Solicituf", json_solicitud.toString());
-                    if (montoPres >= 30000){
+                    if (montoPres >= 30000) {
                         row_soli = dBhelper.getRecords(TBL_ECONOMICOS_IND, " WHERE id_solicitud = ?", "", new String[]{row.getString(0)});
                         row_soli.moveToFirst();
                         JSONObject json_economicos = new JSONObject();
                         json_economicos.put(K_PROPIEDADES, row_soli.getString(2));
                         json_economicos.put(K_VALOR_APROXIMADO, row_soli.getString(3));
                         json_economicos.put(K_UBICACION, row_soli.getString(4));
-                        json_economicos.put(K_INGRESO, row_soli.getString(5).replace(",",""));
+                        json_economicos.put(K_INGRESO, row_soli.getString(5).replace(",", ""));
 
                         json_solicitud.put(K_SOLICITANTE_DATOS_ECONOMICOS, json_economicos);
                         row_soli.close(); //Cierra datos economicos
 
                         Log.e("economicos", json_economicos.toString());
                     }
-
 
 
                     row_soli = dBhelper.getRecords(TBL_NEGOCIO_IND, " WHERE id_solicitud = ?", "", new String[]{row.getString(0)});
@@ -10240,46 +10051,45 @@ public class Servicios_Sincronizado {
                     if (row_soli.getString(6).contains("OTRO"))
                         json_negocio.put(K_OTRO_DESTINO_CREDITO, row_soli.getString(7));
                     json_negocio.put(K_ANTIGUEDAD, row_soli.getString(8));
-                    json_negocio.put(K_INGRESO_MENSUAL, row_soli.getString(9).replace(",",""));
-                    json_negocio.put(K_INGRESOS_OTROS, row_soli.getString(10).replace(",",""));
-                    json_negocio.put(K_GASTO_MENSUAL, row_soli.getString(11).replace(",",""));
-                    json_negocio.put(K_GASTO_AGUA, row_soli.getString(12).replace(",",""));
-                    json_negocio.put(K_GASTO_LUZ, row_soli.getString(13).replace(",",""));
-                    json_negocio.put(K_GASTO_TELEFONO, row_soli.getString(14).replace(",",""));
-                    json_negocio.put(K_GASTO_RENTA, row_soli.getString(15).replace(",",""));
-                    json_negocio.put(K_GASTO_OTROS, row_soli.getString(16).replace(",",""));
+                    json_negocio.put(K_INGRESO_MENSUAL, row_soli.getString(9).replace(",", ""));
+                    json_negocio.put(K_INGRESOS_OTROS, row_soli.getString(10).replace(",", ""));
+                    json_negocio.put(K_GASTO_MENSUAL, row_soli.getString(11).replace(",", ""));
+                    json_negocio.put(K_GASTO_AGUA, row_soli.getString(12).replace(",", ""));
+                    json_negocio.put(K_GASTO_LUZ, row_soli.getString(13).replace(",", ""));
+                    json_negocio.put(K_GASTO_TELEFONO, row_soli.getString(14).replace(",", ""));
+                    json_negocio.put(K_GASTO_RENTA, row_soli.getString(15).replace(",", ""));
+                    json_negocio.put(K_GASTO_OTROS, row_soli.getString(16).replace(",", ""));
                     //json_negocio.put(K_CAPACIDAD_PAGO, row_soli.getString(17).replace(",",""));//se intercambia con monto maximo
-                    json_negocio.put(K_CAPACIDAD_PAGO, row_soli.getString(20).replace(",",""));
+                    json_negocio.put(K_CAPACIDAD_PAGO, row_soli.getString(20).replace(",", ""));
                     String aux = "";
-                    if (!row_soli.getString(18).trim().isEmpty()){
+                    if (!row_soli.getString(18).trim().isEmpty()) {
                         String[] medios = row_soli.getString(18).split(",");
 
-                        if (medios.length > 0){
-                            for (int m = 0; m < medios.length; m++){
+                        if (medios.length > 0) {
+                            for (int m = 0; m < medios.length; m++) {
                                 if (m == 0)
-                                    aux = "'"+medios[m].trim()+"'";
+                                    aux = "'" + medios[m].trim() + "'";
                                 else
-                                    aux += ","+"'"+medios[m].trim()+"'";
+                                    aux += "," + "'" + medios[m].trim() + "'";
                             }
                         }
                     }
 
-                    String sql = "SELECT * FROM " + TBL_MEDIOS_PAGO_ORI + " WHERE nombre IN ("+aux+")";
-                    Cursor row_medio_pago  = db.rawQuery(sql, null);
-                    if (row_medio_pago.getCount() > 0){
+                    String sql = "SELECT * FROM " + TBL_MEDIOS_PAGO_ORI + " WHERE nombre IN (" + aux + ")";
+                    Cursor row_medio_pago = db.rawQuery(sql, null);
+                    if (row_medio_pago.getCount() > 0) {
                         row_medio_pago.moveToFirst();
                         String medios_pagos_ids = "";
-                        for(int k = 0; k < row_medio_pago.getCount(); k++){
+                        for (int k = 0; k < row_medio_pago.getCount(); k++) {
                             if (k == 0)
                                 medios_pagos_ids = row_medio_pago.getString(1).trim();
                             else
-                                medios_pagos_ids += ","+row_medio_pago.getString(1).trim();
+                                medios_pagos_ids += "," + row_medio_pago.getString(1).trim();
 
                             row_medio_pago.moveToNext();
                         }
                         json_negocio.put(K_MEDIOS_PAGOS, medios_pagos_ids);
-                    }
-                    else{
+                    } else {
                         json_negocio.put(K_MEDIOS_PAGOS, "");
                     }
                     row_medio_pago.close();
@@ -10288,7 +10098,7 @@ public class Servicios_Sincronizado {
                         json_negocio.put(K_OTRO_MEDIOS_PAGOS, row_soli.getString(19));
 
                     //json_negocio.put(K_MONTO_MAXIMO, row_soli.getString(20).replace(",",""));//se intercambia con capacidad de pago
-                    json_negocio.put(K_MONTO_MAXIMO, row_soli.getString(17).replace(",",""));
+                    json_negocio.put(K_MONTO_MAXIMO, row_soli.getString(17).replace(",", ""));
 
                     json_negocio.put(K_NUM_OPERACIONES_MENSUAL, row_soli.getInt(21));
 
@@ -10316,7 +10126,7 @@ public class Servicios_Sincronizado {
                     json_aval.put(K_GENERO, row_soli.getInt(7));
                     json_aval.put(K_ESTADO_NACIMIENTO, row_soli.getString(8));
                     json_aval.put(K_RFC, row_soli.getString(9));
-                    json_aval.put(K_CURP, row_soli.getString(10)+row_soli.getString(11));
+                    json_aval.put(K_CURP, row_soli.getString(10) + row_soli.getString(11));
                     json_aval.put(K_PARENTESCO_SOLICITANTE, row_soli.getString(12));
                     json_aval.put(K_IDENTIFICACION_TIPO, row_soli.getString(13));
                     json_aval.put(K_NO_IDENTIFICACION, row_soli.getString(14));
@@ -10334,15 +10144,15 @@ public class Servicios_Sincronizado {
                     json_aval.put(K_NO_MANZANA, row_dir.getString(8));
                     json_aval.put(K_CODIGO_POSTAL, row_dir.getInt(9));
                     json_aval.put(K_COLONIA, row_dir.getString(10));
-                    json_aval.put(K_CIUDAD,row_dir.getString(11));
+                    json_aval.put(K_CIUDAD, row_dir.getString(11));
                     json_aval.put(K_LOCALIDAD, row_dir.getString(12));
-                    json_aval.put(K_MUNICIPIO,row_dir.getString(13));
+                    json_aval.put(K_MUNICIPIO, row_dir.getString(13));
                     json_aval.put(K_ESTADO, row_dir.getString(14));
                     json_aval.put(K_LOCATED_AT, row_dir.getString(15));
                     row_dir.close();
 
                     json_aval.put(K_TIPO_VIVIENDA, row_soli.getString(20));
-                    if (row_soli.getString(20).equals("CASA FAMILIAR") || row_soli.getString(20).equals("CASA RENTADA")){
+                    if (row_soli.getString(20).equals("CASA FAMILIAR") || row_soli.getString(20).equals("CASA RENTADA")) {
                         json_aval.put(K_NOMBRE_TITULAR, row_soli.getString(21));
                         json_aval.put(K_PARENTESCO_TITULAR, row_soli.getString(22));
                     }
@@ -10352,49 +10162,48 @@ public class Servicios_Sincronizado {
                         json_aval.put(K_NOMBRE_NEGOCIO, row_soli.getString(26).trim().toUpperCase());
                         json_aval.put(K_ANTIGUEDAD, row_soli.getInt(24));
                     }
-                    json_aval.put(K_INGRESO_MENSUAL, Double.parseDouble(row_soli.getString(27).replace(",","")));
-                    json_aval.put(K_INGRESOS_OTROS, Double.parseDouble(row_soli.getString(28).replace(",","")));
-                    json_aval.put(K_GASTO_MENSUAL, Double.parseDouble(row_soli.getString(29).replace(",","")));
-                    json_aval.put(K_GASTO_AGUA, Double.parseDouble(row_soli.getString(30).replace(",","")));
-                    json_aval.put(K_GASTO_LUZ, Double.parseDouble(row_soli.getString(31).replace(",","")));
-                    json_aval.put(K_GASTO_TELEFONO, Double.parseDouble(row_soli.getString(32).replace(",","")));
-                    json_aval.put(K_GASTO_RENTA, Double.parseDouble(row_soli.getString(33).replace(",","")));
-                    json_aval.put(K_GASTO_OTROS, Double.parseDouble(row_soli.getString(34).replace(",","")));
+                    json_aval.put(K_INGRESO_MENSUAL, Double.parseDouble(row_soli.getString(27).replace(",", "")));
+                    json_aval.put(K_INGRESOS_OTROS, Double.parseDouble(row_soli.getString(28).replace(",", "")));
+                    json_aval.put(K_GASTO_MENSUAL, Double.parseDouble(row_soli.getString(29).replace(",", "")));
+                    json_aval.put(K_GASTO_AGUA, Double.parseDouble(row_soli.getString(30).replace(",", "")));
+                    json_aval.put(K_GASTO_LUZ, Double.parseDouble(row_soli.getString(31).replace(",", "")));
+                    json_aval.put(K_GASTO_TELEFONO, Double.parseDouble(row_soli.getString(32).replace(",", "")));
+                    json_aval.put(K_GASTO_RENTA, Double.parseDouble(row_soli.getString(33).replace(",", "")));
+                    json_aval.put(K_GASTO_OTROS, Double.parseDouble(row_soli.getString(34).replace(",", "")));
                     //json_aval.put(K_MONTO_MAXIMO, Double.parseDouble(row_soli.getString(38).replace(",","")));//se intercambiar con capacidad de pago
                     //json_aval.put(K_CAPACIDAD_PAGO, Double.parseDouble(row_soli.getString(35).replace(",","")));//se intercambia con monto maximo
-                    json_aval.put(K_MONTO_MAXIMO, Double.parseDouble(row_soli.getString(35).replace(",","")));
-                    json_aval.put(K_CAPACIDAD_PAGO, Double.parseDouble(row_soli.getString(38).replace(",","")));
+                    json_aval.put(K_MONTO_MAXIMO, Double.parseDouble(row_soli.getString(35).replace(",", "")));
+                    json_aval.put(K_CAPACIDAD_PAGO, Double.parseDouble(row_soli.getString(38).replace(",", "")));
 
                     aux = "";
-                    if (!row_soli.getString(36).trim().isEmpty()){
+                    if (!row_soli.getString(36).trim().isEmpty()) {
                         String[] medios = row_soli.getString(36).split(",");
 
-                        if (medios.length > 0){
-                            for (int m = 0; m < medios.length; m++){
+                        if (medios.length > 0) {
+                            for (int m = 0; m < medios.length; m++) {
                                 if (m == 0)
-                                    aux = "'"+medios[m].trim()+"'";
+                                    aux = "'" + medios[m].trim() + "'";
                                 else
-                                    aux += ","+"'"+medios[m].trim()+"'";
+                                    aux += "," + "'" + medios[m].trim() + "'";
                             }
                         }
                     }
 
-                    sql = "SELECT * FROM " + TBL_MEDIOS_PAGO_ORI + " WHERE nombre IN ("+aux+")";
-                    row_medio_pago  = db.rawQuery(sql, null);
-                    if (row_medio_pago.getCount() > 0){
+                    sql = "SELECT * FROM " + TBL_MEDIOS_PAGO_ORI + " WHERE nombre IN (" + aux + ")";
+                    row_medio_pago = db.rawQuery(sql, null);
+                    if (row_medio_pago.getCount() > 0) {
                         row_medio_pago.moveToFirst();
                         String medios_pagos_ids = "";
-                        for(int k = 0; k < row_medio_pago.getCount(); k++){
+                        for (int k = 0; k < row_medio_pago.getCount(); k++) {
                             if (k == 0)
                                 medios_pagos_ids = row_medio_pago.getString(1).trim();
                             else
-                                medios_pagos_ids += ","+row_medio_pago.getString(1).trim();
+                                medios_pagos_ids += "," + row_medio_pago.getString(1).trim();
 
                             row_medio_pago.moveToNext();
                         }
                         json_aval.put(K_MEDIOS_PAGOS, medios_pagos_ids);
-                    }
-                    else{
+                    } else {
                         json_aval.put(K_MEDIOS_PAGOS, "");
                     }
                     row_medio_pago.close();
@@ -10442,9 +10251,9 @@ public class Servicios_Sincronizado {
                     json_referencia.put(K_NO_MANZANA, row_dir.getString(8));
                     json_referencia.put(K_CODIGO_POSTAL, row_dir.getInt(9));
                     json_referencia.put(K_COLONIA, row_dir.getString(10));
-                    json_referencia.put(K_CIUDAD,row_dir.getString(11));
+                    json_referencia.put(K_CIUDAD, row_dir.getString(11));
                     json_referencia.put(K_LOCALIDAD, row_dir.getString(12));
-                    json_referencia.put(K_MUNICIPIO,row_dir.getString(13));
+                    json_referencia.put(K_MUNICIPIO, row_dir.getString(13));
                     json_referencia.put(K_ESTADO, row_dir.getString(14));
                     row_dir.close();//Cierre de datos de referencia
                     json_referencia.put(K_TEL_CELULAR, row_soli.getString(7));
@@ -10494,68 +10303,50 @@ public class Servicios_Sincronizado {
                     String firmaAsesor = row_soli.getString(7);
 
                     String identificacionSelfie = "";
-                    if(row_soli.getString(9) != null)
-                    {
+                    if (row_soli.getString(9) != null) {
                         json_documentos.put(K_IDENTIFICACION_SELFIE, row_soli.getString(9));
                         identificacionSelfie = row_soli.getString(9);
-                    }
-                    else
-                    {
+                    } else {
                         json_documentos.put(K_IDENTIFICACION_SELFIE, "");
                     }
 
                     String comprobanteGarantia = "";
-                    if(row_soli.getString(10) != null)
-                    {
+                    if (row_soli.getString(10) != null) {
                         json_documentos.put(K_COMPROBANTE_GARANTIA, row_soli.getString(10));
                         comprobanteGarantia = row_soli.getString(10);
-                    }
-                    else
-                    {
+                    } else {
                         json_documentos.put(K_COMPROBANTE_GARANTIA, "");
                     }
 
                     String identificacionFrontalAval = "";
-                    if(row_soli.getString(11) != null)
-                    {
+                    if (row_soli.getString(11) != null) {
                         json_documentos.put(K_IDENTIFICACION_FRONTAL_AVAL, row_soli.getString(11));
                         identificacionFrontalAval = row_soli.getString(11);
-                    }
-                    else
-                    {
+                    } else {
                         json_documentos.put(K_IDENTIFICACION_FRONTAL_AVAL, "");
                     }
 
                     String identificacionReversoAval = "";
-                    if(row_soli.getString(12) != null)
-                    {
+                    if (row_soli.getString(12) != null) {
                         json_documentos.put(K_IDENTIFICACION_REVERSO_AVAL, row_soli.getString(12));
                         identificacionReversoAval = row_soli.getString(12);
-                    }
-                    else
-                    {
+                    } else {
                         json_documentos.put(K_IDENTIFICACION_REVERSO_AVAL, "");
                     }
 
                     String curpAval = "";
-                    if(row_soli.getString(13) != null)
-                    {
+                    if (row_soli.getString(13) != null) {
                         json_documentos.put(K_CURP_AVAL, row_soli.getString(13));
                         curpAval = row_soli.getString(13);
-                    }
-                    else
-                    {
+                    } else {
                         json_documentos.put(K_CURP_AVAL, "");
                     }
 
                     String comprobanteAval = "";
-                    if(row_soli.getString(14) != null)
-                    {
+                    if (row_soli.getString(14) != null) {
                         json_documentos.put(K_COMPROBANTE_DOMICILIO_AVAL, row_soli.getString(14));
                         comprobanteAval = row_soli.getString(14);
-                    }
-                    else
-                    {
+                    } else {
                         json_documentos.put(K_COMPROBANTE_DOMICILIO_AVAL, "");
                     }
 
@@ -10605,32 +10396,32 @@ public class Servicios_Sincronizado {
 
     }
 
-    public void SendRenovacionInd (Context ctx, boolean flag, long id_solicitud){
+    public void SendRenovacionInd(Context ctx, boolean flag, long id_solicitud) {
         final AlertDialog loading = Popups.showLoadingDialog(ctx, R.string.please_wait, R.string.loading_info);
-        final DBhelper dBhelper = new DBhelper(ctx);
+        final DBhelper dBhelper = DBhelper.getInstance(ctx);
         final SQLiteDatabase db = dBhelper.getWritableDatabase();
 
         if (flag) loading.show();
 
         Cursor row = dBhelper.getRecords(TBL_SOLICITUDES_REN, " WHERE id_solicitud = ?", "", new String[]{String.valueOf(id_solicitud)});
 
-        if (row.getCount() > 0){
+        if (row.getCount() > 0) {
             row.moveToFirst();
 
-            for (int i = 0; i < row.getCount(); i++){
+            for (int i = 0; i < row.getCount(); i++) {
                 Cursor row_soli = dBhelper.getRecords(TBL_CREDITO_IND_REN, " WHERE id_solicitud = ?", "", new String[]{row.getString(0)});
 
                 row_soli.moveToFirst();
                 JSONObject json_solicitud = new JSONObject();
                 try {
-                    Log.e("Plazo", row_soli.getString(2)+" plazo");
+                    Log.e("Plazo", row_soli.getString(2) + " plazo");
                     json_solicitud.put(K_PLAZO, Miscellaneous.GetPlazo(row_soli.getString(2)));
                     json_solicitud.put(K_PERIODICIDAD, Miscellaneous.GetPeriodicidad(row_soli.getString(3)));
                     json_solicitud.put(K_FECHA_DESEMBOLSO, row_soli.getString(4));
                     json_solicitud.put(K_HORA_VISITA, row_soli.getString(6));
-                    json_solicitud.put(K_MONTO_PRESTAMO, Integer.parseInt(row_soli.getString(7).replace(",","")));
-                    int montoPres = Integer.parseInt(row_soli.getString(7).replace(",",""));
-                    json_solicitud.put(K_MONTO_LETRA, (Miscellaneous.cantidadLetra(row_soli.getString(7).replace(",","")).toUpperCase() + " PESOS MEXICANOS").replace("  ", " "));
+                    json_solicitud.put(K_MONTO_PRESTAMO, Integer.parseInt(row_soli.getString(7).replace(",", "")));
+                    int montoPres = Integer.parseInt(row_soli.getString(7).replace(",", ""));
+                    json_solicitud.put(K_MONTO_LETRA, (Miscellaneous.cantidadLetra(row_soli.getString(7).replace(",", "")).toUpperCase() + " PESOS MEXICANOS").replace("  ", " "));
                     json_solicitud.put(K_DESTINO_PRESTAMO, row_soli.getString(13));
                     json_solicitud.put(K_CLASIFICACION_RIESGO, row_soli.getString(14));
                     json_solicitud.put(K_COMPORTAMIENTO_PAGO, row_soli.getString(10));
@@ -10638,7 +10429,8 @@ public class Servicios_Sincronizado {
                     json_solicitud.put(K_TIPO_SOLICITUD, "RENOVACION");
                     json_solicitud.put(K_CLIENTE_ID, row_soli.getLong(11));
                     int montoRefinanciar = 0;
-                    if(row_soli.getString(16) != null && !row_soli.getString(16).isEmpty()) montoRefinanciar = Integer.parseInt(row_soli.getString(16).replace(",",""));
+                    if (row_soli.getString(16) != null && !row_soli.getString(16).isEmpty())
+                        montoRefinanciar = Integer.parseInt(row_soli.getString(16).replace(",", ""));
                     json_solicitud.put(K_MONTO_REFINANCIAR, montoRefinanciar);
 
                     row_soli.close();//Cierra datos de credito
@@ -10666,7 +10458,7 @@ public class Servicios_Sincronizado {
                     String estadoCivil = row_soli.getString(17);
                     json_solicitante.put(K_ESTADO_CIVIL, row_soli.getString(17));
                     if (row_soli.getString(17).equals("CASADO(A)"))
-                        json_solicitante.put(K_BIENES, (row_soli.getInt(18) == 1)?"MANCOMUNADOS":"SEPARADOS");
+                        json_solicitante.put(K_BIENES, (row_soli.getInt(18) == 1) ? "MANCOMUNADOS" : "SEPARADOS");
                     json_solicitante.put(K_TIPO_VIVIENDA, row_soli.getString(19));
                     if (row_soli.getString(19).equals("CASA FAMILIAR"))
                         json_solicitante.put(K_PARENTESCO, row_soli.getString(20));
@@ -10685,7 +10477,7 @@ public class Servicios_Sincronizado {
                     json_solicitante.put(K_COLONIA, row_dir.getString(10));
                     json_solicitante.put(K_CIUDAD, row_dir.getString(11));
                     json_solicitante.put(K_LOCALIDAD, row_dir.getString(12));
-                    json_solicitante.put(K_MUNICIPIO,row_dir.getString(13));
+                    json_solicitante.put(K_MUNICIPIO, row_dir.getString(13));
                     json_solicitante.put(K_ESTADO, row_dir.getString(14));
                     json_solicitante.put(K_LOCATED_AT, row_dir.getString(15));
                     row_dir.close();
@@ -10728,19 +10520,19 @@ public class Servicios_Sincronizado {
                         row_dir = dBhelper.getRecords(TBL_DIRECCIONES_REN, " WHERE id_direccion = ? AND tipo_direccion = ?", "", new String[]{row_soli.getString(7), "CONYUGE"});
                         row_dir.moveToFirst();
                         json_conyuge.put(K_CALLE, row_dir.getString(4));
-                        json_conyuge.put(K_NO_EXTERIOR,row_dir.getString(5));
+                        json_conyuge.put(K_NO_EXTERIOR, row_dir.getString(5));
                         json_conyuge.put(K_NO_INTERIOR, row_dir.getString(6));
                         json_conyuge.put(K_NO_LOTE, row_dir.getString(7));
                         json_conyuge.put(K_NO_MANZANA, row_dir.getString(8));
                         json_conyuge.put(K_CODIGO_POSTAL, row_dir.getInt(9));
                         json_conyuge.put(K_COLONIA, row_dir.getString(10));
                         json_conyuge.put(K_CIUDAD, row_dir.getString(11));
-                        json_conyuge.put(K_LOCALIDAD,row_dir.getString(12));
-                        json_conyuge.put(K_MUNICIPIO,row_dir.getString(13));
+                        json_conyuge.put(K_LOCALIDAD, row_dir.getString(12));
+                        json_conyuge.put(K_MUNICIPIO, row_dir.getString(13));
                         json_conyuge.put(K_ESTADO, row_dir.getString(14));
                         row_dir.close();
-                        json_conyuge.put(K_INGRESO_MENSUAL, Double.parseDouble(row_soli.getString(8).replace(",","")));
-                        json_conyuge.put(K_GASTO_MENSUAL, Double.parseDouble(row_soli.getString(9).replace(",","")));
+                        json_conyuge.put(K_INGRESO_MENSUAL, Double.parseDouble(row_soli.getString(8).replace(",", "")));
+                        json_conyuge.put(K_GASTO_MENSUAL, Double.parseDouble(row_soli.getString(9).replace(",", "")));
                         json_conyuge.put(K_TEL_CASA, row_soli.getString(10));
                         json_conyuge.put(K_TEL_CELULAR, row_soli.getString(11));
 
@@ -10751,14 +10543,14 @@ public class Servicios_Sincronizado {
                     }
 
                     Log.e("Solicitud", json_solicitud.toString());
-                    if (montoPres >= 30000){
+                    if (montoPres >= 30000) {
                         row_soli = dBhelper.getRecords(TBL_ECONOMICOS_IND_REN, " WHERE id_solicitud = ?", "", new String[]{row.getString(0)});
                         row_soli.moveToFirst();
                         JSONObject json_economicos = new JSONObject();
                         json_economicos.put(K_PROPIEDADES, row_soli.getString(2));
                         json_economicos.put(K_VALOR_APROXIMADO, row_soli.getString(3));
                         json_economicos.put(K_UBICACION, row_soli.getString(4));
-                        json_economicos.put(K_INGRESO, row_soli.getString(5).replace(",",""));
+                        json_economicos.put(K_INGRESO, row_soli.getString(5).replace(",", ""));
 
                         json_solicitud.put(K_SOLICITANTE_DATOS_ECONOMICOS, json_economicos);
                         row_soli.close(); //Cierra datos economicos
@@ -10795,46 +10587,45 @@ public class Servicios_Sincronizado {
                     if (row_soli.getString(6).contains("OTRO"))
                         json_negocio.put(K_OTRO_DESTINO_CREDITO, row_soli.getString(7));
                     json_negocio.put(K_ANTIGUEDAD, row_soli.getString(8));
-                    json_negocio.put(K_INGRESO_MENSUAL, row_soli.getString(9).replace(",",""));
-                    json_negocio.put(K_INGRESOS_OTROS, row_soli.getString(10).replace(",",""));
-                    json_negocio.put(K_GASTO_MENSUAL, row_soli.getString(11).replace(",",""));
-                    json_negocio.put(K_GASTO_AGUA, row_soli.getString(12).replace(",",""));
-                    json_negocio.put(K_GASTO_LUZ, row_soli.getString(13).replace(",",""));
-                    json_negocio.put(K_GASTO_TELEFONO, row_soli.getString(14).replace(",",""));
-                    json_negocio.put(K_GASTO_RENTA, row_soli.getString(15).replace(",",""));
-                    json_negocio.put(K_GASTO_OTROS, row_soli.getString(16).replace(",",""));
+                    json_negocio.put(K_INGRESO_MENSUAL, row_soli.getString(9).replace(",", ""));
+                    json_negocio.put(K_INGRESOS_OTROS, row_soli.getString(10).replace(",", ""));
+                    json_negocio.put(K_GASTO_MENSUAL, row_soli.getString(11).replace(",", ""));
+                    json_negocio.put(K_GASTO_AGUA, row_soli.getString(12).replace(",", ""));
+                    json_negocio.put(K_GASTO_LUZ, row_soli.getString(13).replace(",", ""));
+                    json_negocio.put(K_GASTO_TELEFONO, row_soli.getString(14).replace(",", ""));
+                    json_negocio.put(K_GASTO_RENTA, row_soli.getString(15).replace(",", ""));
+                    json_negocio.put(K_GASTO_OTROS, row_soli.getString(16).replace(",", ""));
                     //json_negocio.put(K_CAPACIDAD_PAGO, row_soli.getString(17).replace(",",""));//se intercambio con monto maximo
-                    json_negocio.put(K_MONTO_MAXIMO, row_soli.getString(17).replace(",",""));
+                    json_negocio.put(K_MONTO_MAXIMO, row_soli.getString(17).replace(",", ""));
                     String aux = "";
-                    if (!row_soli.getString(18).trim().isEmpty()){
+                    if (!row_soli.getString(18).trim().isEmpty()) {
                         String[] medios = row_soli.getString(18).split(",");
 
-                        if (medios.length > 0){
-                            for (int m = 0; m < medios.length; m++){
+                        if (medios.length > 0) {
+                            for (int m = 0; m < medios.length; m++) {
                                 if (m == 0)
-                                    aux = "'"+medios[m].trim()+"'";
+                                    aux = "'" + medios[m].trim() + "'";
                                 else
-                                    aux += ","+"'"+medios[m].trim()+"'";
+                                    aux += "," + "'" + medios[m].trim() + "'";
                             }
                         }
                     }
 
-                    String sql = "SELECT * FROM " + TBL_MEDIOS_PAGO_ORI + " WHERE nombre IN ("+aux+")";
-                    Cursor row_medio_pago  = db.rawQuery(sql, null);
-                    if (row_medio_pago.getCount() > 0){
+                    String sql = "SELECT * FROM " + TBL_MEDIOS_PAGO_ORI + " WHERE nombre IN (" + aux + ")";
+                    Cursor row_medio_pago = db.rawQuery(sql, null);
+                    if (row_medio_pago.getCount() > 0) {
                         row_medio_pago.moveToFirst();
                         String medios_pagos_ids = "";
-                        for(int k = 0; k < row_medio_pago.getCount(); k++){
+                        for (int k = 0; k < row_medio_pago.getCount(); k++) {
                             if (k == 0)
                                 medios_pagos_ids = row_medio_pago.getString(1).trim();
                             else
-                                medios_pagos_ids += ","+row_medio_pago.getString(1).trim();
+                                medios_pagos_ids += "," + row_medio_pago.getString(1).trim();
 
                             row_medio_pago.moveToNext();
                         }
                         json_negocio.put(K_MEDIOS_PAGOS, medios_pagos_ids);
-                    }
-                    else{
+                    } else {
                         json_negocio.put(K_MEDIOS_PAGOS, "");
                     }
                     row_medio_pago.close();
@@ -10843,7 +10634,7 @@ public class Servicios_Sincronizado {
                         json_negocio.put(K_OTRO_MEDIOS_PAGOS, row_soli.getString(19));
 
                     //json_negocio.put(K_MONTO_MAXIMO, row_soli.getString(20).replace(",",""));//se intercambia con capacidad de pago
-                    json_negocio.put(K_CAPACIDAD_PAGO, row_soli.getString(20).replace(",",""));//se intercambia con capacidad de pago
+                    json_negocio.put(K_CAPACIDAD_PAGO, row_soli.getString(20).replace(",", ""));//se intercambia con capacidad de pago
 
                     json_negocio.put(K_NUM_OPERACIONES_MENSUAL, row_soli.getInt(21));
 
@@ -10871,7 +10662,7 @@ public class Servicios_Sincronizado {
                     json_aval.put(K_GENERO, row_soli.getInt(7));
                     json_aval.put(K_ESTADO_NACIMIENTO, row_soli.getString(8));
                     json_aval.put(K_RFC, row_soli.getString(9));
-                    json_aval.put(K_CURP, row_soli.getString(10)+row_soli.getString(11));
+                    json_aval.put(K_CURP, row_soli.getString(10) + row_soli.getString(11));
                     json_aval.put(K_PARENTESCO_SOLICITANTE, row_soli.getString(12));
                     json_aval.put(K_IDENTIFICACION_TIPO, row_soli.getString(13));
                     json_aval.put(K_NO_IDENTIFICACION, row_soli.getString(14));
@@ -10889,15 +10680,15 @@ public class Servicios_Sincronizado {
                     json_aval.put(K_NO_MANZANA, row_dir.getString(8));
                     json_aval.put(K_CODIGO_POSTAL, row_dir.getInt(9));
                     json_aval.put(K_COLONIA, row_dir.getString(10));
-                    json_aval.put(K_CIUDAD,row_dir.getString(11));
+                    json_aval.put(K_CIUDAD, row_dir.getString(11));
                     json_aval.put(K_LOCALIDAD, row_dir.getString(12));
-                    json_aval.put(K_MUNICIPIO,row_dir.getString(13));
+                    json_aval.put(K_MUNICIPIO, row_dir.getString(13));
                     json_aval.put(K_ESTADO, row_dir.getString(14));
                     json_aval.put(K_LOCATED_AT, row_dir.getString(15));
                     row_dir.close();
 
                     json_aval.put(K_TIPO_VIVIENDA, row_soli.getString(20));
-                    if (row_soli.getString(20).equals("CASA FAMILIAR") || row_soli.getString(20).equals("CASA RENTADA")){
+                    if (row_soli.getString(20).equals("CASA FAMILIAR") || row_soli.getString(20).equals("CASA RENTADA")) {
                         json_aval.put(K_NOMBRE_TITULAR, row_soli.getString(21));
                         json_aval.put(K_PARENTESCO_TITULAR, row_soli.getString(22));
                     }
@@ -10907,49 +10698,48 @@ public class Servicios_Sincronizado {
                         json_aval.put(K_NOMBRE_NEGOCIO, row_soli.getString(26).trim().toUpperCase());
                         json_aval.put(K_ANTIGUEDAD, row_soli.getInt(24));
                     }
-                    json_aval.put(K_INGRESO_MENSUAL, Double.parseDouble(row_soli.getString(27).replace(",","")));
-                    json_aval.put(K_INGRESOS_OTROS, Double.parseDouble(row_soli.getString(28).replace(",","")));
-                    json_aval.put(K_GASTO_MENSUAL, Double.parseDouble(row_soli.getString(29).replace(",","")));
-                    json_aval.put(K_GASTO_AGUA, Double.parseDouble(row_soli.getString(30).replace(",","")));
-                    json_aval.put(K_GASTO_LUZ, Double.parseDouble(row_soli.getString(31).replace(",","")));
-                    json_aval.put(K_GASTO_TELEFONO, Double.parseDouble(row_soli.getString(32).replace(",","")));
-                    json_aval.put(K_GASTO_RENTA, Double.parseDouble(row_soli.getString(33).replace(",","")));
-                    json_aval.put(K_GASTO_OTROS, Double.parseDouble(row_soli.getString(34).replace(",","")));
+                    json_aval.put(K_INGRESO_MENSUAL, Double.parseDouble(row_soli.getString(27).replace(",", "")));
+                    json_aval.put(K_INGRESOS_OTROS, Double.parseDouble(row_soli.getString(28).replace(",", "")));
+                    json_aval.put(K_GASTO_MENSUAL, Double.parseDouble(row_soli.getString(29).replace(",", "")));
+                    json_aval.put(K_GASTO_AGUA, Double.parseDouble(row_soli.getString(30).replace(",", "")));
+                    json_aval.put(K_GASTO_LUZ, Double.parseDouble(row_soli.getString(31).replace(",", "")));
+                    json_aval.put(K_GASTO_TELEFONO, Double.parseDouble(row_soli.getString(32).replace(",", "")));
+                    json_aval.put(K_GASTO_RENTA, Double.parseDouble(row_soli.getString(33).replace(",", "")));
+                    json_aval.put(K_GASTO_OTROS, Double.parseDouble(row_soli.getString(34).replace(",", "")));
                     //json_aval.put(K_MONTO_MAXIMO, Double.parseDouble(row_soli.getString(38).replace(",","")));//se intercambia con capacidad de pago
-                    json_aval.put(K_CAPACIDAD_PAGO, Double.parseDouble(row_soli.getString(38).replace(",","")));
+                    json_aval.put(K_CAPACIDAD_PAGO, Double.parseDouble(row_soli.getString(38).replace(",", "")));
                     //json_aval.put(K_CAPACIDAD_PAGO, Double.parseDouble(row_soli.getString(35).replace(",","")));//se intercambia con monto maximo
-                    json_aval.put(K_MONTO_MAXIMO, Double.parseDouble(row_soli.getString(35).replace(",","")));
+                    json_aval.put(K_MONTO_MAXIMO, Double.parseDouble(row_soli.getString(35).replace(",", "")));
 
                     aux = "";
-                    if (!row_soli.getString(36).trim().isEmpty()){
+                    if (!row_soli.getString(36).trim().isEmpty()) {
                         String[] medios = row_soli.getString(36).split(",");
 
-                        if (medios.length > 0){
-                            for (int m = 0; m < medios.length; m++){
+                        if (medios.length > 0) {
+                            for (int m = 0; m < medios.length; m++) {
                                 if (m == 0)
-                                    aux = "'"+medios[m].trim()+"'";
+                                    aux = "'" + medios[m].trim() + "'";
                                 else
-                                    aux += ","+"'"+medios[m].trim()+"'";
+                                    aux += "," + "'" + medios[m].trim() + "'";
                             }
                         }
                     }
 
-                    sql = "SELECT * FROM " + TBL_MEDIOS_PAGO_ORI + " WHERE nombre IN ("+aux+")";
-                    row_medio_pago  = db.rawQuery(sql, null);
-                    if (row_medio_pago.getCount() > 0){
+                    sql = "SELECT * FROM " + TBL_MEDIOS_PAGO_ORI + " WHERE nombre IN (" + aux + ")";
+                    row_medio_pago = db.rawQuery(sql, null);
+                    if (row_medio_pago.getCount() > 0) {
                         row_medio_pago.moveToFirst();
                         String medios_pagos_ids = "";
-                        for(int k = 0; k < row_medio_pago.getCount(); k++){
+                        for (int k = 0; k < row_medio_pago.getCount(); k++) {
                             if (k == 0)
                                 medios_pagos_ids = row_medio_pago.getString(1).trim();
                             else
-                                medios_pagos_ids += ","+row_medio_pago.getString(1).trim();
+                                medios_pagos_ids += "," + row_medio_pago.getString(1).trim();
 
                             row_medio_pago.moveToNext();
                         }
                         json_aval.put(K_MEDIOS_PAGOS, medios_pagos_ids);
-                    }
-                    else{
+                    } else {
                         json_aval.put(K_MEDIOS_PAGOS, "");
                     }
                     row_medio_pago.close();
@@ -10997,9 +10787,9 @@ public class Servicios_Sincronizado {
                     json_referencia.put(K_NO_MANZANA, row_dir.getString(8));
                     json_referencia.put(K_CODIGO_POSTAL, row_dir.getInt(9));
                     json_referencia.put(K_COLONIA, row_dir.getString(10));
-                    json_referencia.put(K_CIUDAD,row_dir.getString(11));
+                    json_referencia.put(K_CIUDAD, row_dir.getString(11));
                     json_referencia.put(K_LOCALIDAD, row_dir.getString(12));
-                    json_referencia.put(K_MUNICIPIO,row_dir.getString(13));
+                    json_referencia.put(K_MUNICIPIO, row_dir.getString(13));
                     json_referencia.put(K_ESTADO, row_dir.getString(14));
                     row_dir.close();//Cierre de datos de referencia
                     json_referencia.put(K_TEL_CELULAR, row_soli.getString(7));
@@ -11047,68 +10837,50 @@ public class Servicios_Sincronizado {
                     json_documentos.put(K_FIRMA_ASESOR, row_soli.getString(7));
                     String firmaAsesor = row_soli.getString(7);
                     String identificacionSelfie = "";
-                    if(row_soli.getString(9) != null)
-                    {
+                    if (row_soli.getString(9) != null) {
                         json_documentos.put(K_IDENTIFICACION_SELFIE, row_soli.getString(9));
                         identificacionSelfie = row_soli.getString(9);
-                    }
-                    else
-                    {
+                    } else {
                         json_documentos.put(K_IDENTIFICACION_SELFIE, "");
                     }
 
                     String comprobanteGarantia = "";
-                    if(row_soli.getString(10) != null)
-                    {
+                    if (row_soli.getString(10) != null) {
                         json_documentos.put(K_COMPROBANTE_GARANTIA, row_soli.getString(10));
                         comprobanteGarantia = row_soli.getString(10);
-                    }
-                    else
-                    {
+                    } else {
                         json_documentos.put(K_COMPROBANTE_GARANTIA, "");
                     }
 
                     String identificacionFrontalAval = "";
-                    if(row_soli.getString(11) != null)
-                    {
+                    if (row_soli.getString(11) != null) {
                         json_documentos.put(K_IDENTIFICACION_FRONTAL_AVAL, row_soli.getString(11));
                         identificacionFrontalAval = row_soli.getString(11);
-                    }
-                    else
-                    {
+                    } else {
                         json_documentos.put(K_IDENTIFICACION_FRONTAL_AVAL, "");
                     }
 
                     String identificacionReversoAval = "";
-                    if(row_soli.getString(12) != null)
-                    {
+                    if (row_soli.getString(12) != null) {
                         json_documentos.put(K_IDENTIFICACION_REVERSO_AVAL, row_soli.getString(12));
                         identificacionReversoAval = row_soli.getString(12);
-                    }
-                    else
-                    {
+                    } else {
                         json_documentos.put(K_IDENTIFICACION_REVERSO_AVAL, "");
                     }
 
                     String curpAval = "";
-                    if(row_soli.getString(13) != null)
-                    {
+                    if (row_soli.getString(13) != null) {
                         json_documentos.put(K_CURP_AVAL, row_soli.getString(13));
                         curpAval = row_soli.getString(13);
-                    }
-                    else
-                    {
+                    } else {
                         json_documentos.put(K_CURP_AVAL, "");
                     }
 
                     String comprobanteAval = "";
-                    if(row_soli.getString(14) != null)
-                    {
+                    if (row_soli.getString(14) != null) {
                         json_documentos.put(K_COMPROBANTE_DOMICILIO_AVAL, row_soli.getString(14));
                         comprobanteAval = row_soli.getString(14);
-                    }
-                    else
-                    {
+                    } else {
                         json_documentos.put(K_COMPROBANTE_DOMICILIO_AVAL, "");
                     }
 
@@ -11117,9 +10889,9 @@ public class Servicios_Sincronizado {
                     row_soli.close(); //Cierre de datos de documentos
 
                     Log.e("documentos", json_documentos.toString());
-                    Log.e("-----","--------------------------------------------------------");
-                    Log.e("Renovacion",json_solicitud.toString());
-                    Log.e("-----","--------------------------------------------------------");
+                    Log.e("-----", "--------------------------------------------------------");
+                    Log.e("Renovacion", json_solicitud.toString());
+                    Log.e("-----", "--------------------------------------------------------");
                     new GuardarRenovacionInd().execute(
                             ctx,
                             json_solicitud,
@@ -11161,24 +10933,22 @@ public class Servicios_Sincronizado {
         row.close();
     }
 
-
-    public void SendOriginacionGpo (Context ctx, boolean flag, long id_solicitud){
+    public void SendOriginacionGpo(Context ctx, boolean flag, long id_solicitud) {
         final AlertDialog loading = Popups.showLoadingDialog(ctx, R.string.please_wait, R.string.loading_info);
 
         if (flag) loading.show();
 
-        final DBhelper dBhelper = new DBhelper(ctx);
+        final DBhelper dBhelper = DBhelper.getInstance(ctx);
         final SQLiteDatabase db = dBhelper.getWritableDatabase();
 
-        String sql = "SELECT s.*, c.* FROM " + TBL_SOLICITUDES + " AS s INNER JOIN " +TBL_CREDITO_GPO + " AS c ON s.id_solicitud = c.id_solicitud WHERE s.id_solicitud = ?";
+        String sql = "SELECT s.*, c.* FROM " + TBL_SOLICITUDES + " AS s INNER JOIN " + TBL_CREDITO_GPO + " AS c ON s.id_solicitud = c.id_solicitud WHERE s.id_solicitud = ?";
         Cursor row = db.rawQuery(sql, new String[]{String.valueOf(id_solicitud)});
         //Cursor row = dBhelper.getRecords(TBL_SOLICITUDES, " WHERE tipo_solicitud = 2", "", null);
 
-        if (row.getCount() > 0){
+        if (row.getCount() > 0) {
             row.moveToFirst();
 
-            for(int i = 0; i < row.getCount(); i++)
-            {
+            for (int i = 0; i < row.getCount(); i++) {
                 SendIntegranteOriginacionGpo(
                         ctx,
                         0,
@@ -11197,23 +10967,23 @@ public class Servicios_Sincronizado {
                 row.moveToNext();
             }
 
-            Log.e("count solicitudes", row.getCount()+" total");
+            Log.e("count solicitudes", row.getCount() + " total");
         }
 
         row.close();
     }
 
-    public void SendRenovacionGpo(Context ctx, boolean flag, long id_solicitud){
+    public void SendRenovacionGpo(Context ctx, boolean flag, long id_solicitud) {
         final AlertDialog loading = Popups.showLoadingDialog(ctx, R.string.please_wait, R.string.loading_info);
 
         if (flag)
             loading.show();
-        SessionManager session = new SessionManager(ctx);
-        final DBhelper dBhelper = new DBhelper(ctx);
+        SessionManager session = SessionManager.getInstance(ctx);
+        final DBhelper dBhelper = DBhelper.getInstance(ctx);
         final SQLiteDatabase db = dBhelper.getWritableDatabase();
 
         String sql = "" +
-            "SELECT " +
+                "SELECT " +
                 "s.id_solicitud, " +
                 "s.vol_solicitud, " +
                 "s.usuario_id, " +
@@ -11228,16 +10998,15 @@ public class Servicios_Sincronizado {
                 "s.estatus, " +
                 "c.* " +
                 "FROM " + TBL_SOLICITUDES_REN + " AS s " +
-                "INNER JOIN " +TBL_CREDITO_GPO_REN + " AS c ON s.id_solicitud = c.id_solicitud " +
+                "INNER JOIN " + TBL_CREDITO_GPO_REN + " AS c ON s.id_solicitud = c.id_solicitud " +
                 "WHERE s.id_solicitud = ?";
         Cursor row = db.rawQuery(sql, new String[]{String.valueOf(id_solicitud)});
         //Cursor row = dBhelper.getRecords(TBL_SOLICITUDES, " WHERE tipo_solicitud = 2", "", null);
 
-        if (row.getCount() > 0){
+        if (row.getCount() > 0) {
             row.moveToFirst();
 
-            for(int i = 0; i < row.getCount(); i++)
-            {
+            for (int i = 0; i < row.getCount(); i++) {
                 SendIntegranteRenovacionGpo(
                         ctx,
                         0,
@@ -11259,7 +11028,7 @@ public class Servicios_Sincronizado {
                 row.moveToNext();
             }
 
-            Log.e("count solicitudes", row.getCount()+" total");
+            Log.e("count solicitudes", row.getCount() + " total");
         }
 
         row.close();

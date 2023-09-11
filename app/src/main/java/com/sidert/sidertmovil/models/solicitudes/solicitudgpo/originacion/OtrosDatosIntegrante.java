@@ -35,6 +35,7 @@ public class OtrosDatosIntegrante  extends BaseModel implements Serializable, IF
     protected static final String COL_TIENE_FIRMA          = "tiene_firma";
     protected static final String COL_NOMBRE_QUIEN_FIRMA   = "nombre_quien_firma";
     protected static final String COL_MONTO_REFINANCIAR    = "monto_refinanciar";
+    protected static final String COL_ID_CAMPANA           = "id_campana";
 
     @SerializedName(COL_ID_OTRO)
     @Expose
@@ -103,6 +104,12 @@ public class OtrosDatosIntegrante  extends BaseModel implements Serializable, IF
     @SerializedName(COL_MONTO_REFINANCIAR)
     @Expose
     private String montoRefinanciar;
+
+    @SerializedName(COL_ID_CAMPANA)
+    @Expose
+    private Integer id_campana;
+
+
 
     public Integer getIdOtro() {
         return idOtro;
@@ -240,6 +247,14 @@ public class OtrosDatosIntegrante  extends BaseModel implements Serializable, IF
         this.montoRefinanciar = montoRefinanciar;
     }
 
+    public Integer getId_campana() {
+        return id_campana;
+    }
+
+    public void setId_campana(Integer id_campana) {
+        this.id_campana = id_campana;
+    }
+
     public MultipartBody.Part getFirmaMBPart() {
         MultipartBody.Part firma_cliente = null;
         File image_firma_cliente = null;
@@ -254,6 +269,11 @@ public class OtrosDatosIntegrante  extends BaseModel implements Serializable, IF
 
         return firma_cliente;
     }
+
+
+
+
+
 
     @Override
     public void fill(Cursor row) {
@@ -276,6 +296,7 @@ public class OtrosDatosIntegrante  extends BaseModel implements Serializable, IF
         tieneFirma          = getString(COL_TIENE_FIRMA);
         nombreQuienFirma    = getString(COL_NOMBRE_QUIEN_FIRMA);
         montoRefinanciar    = getString(COL_MONTO_REFINANCIAR);
+        id_campana          = getInt(COL_ID_CAMPANA);
     }
 }
 

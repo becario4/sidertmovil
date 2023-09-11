@@ -78,7 +78,7 @@ public class DocumentOpenedFragment extends Fragment {
 
 
         //Code...
-        SessionManager sen  = new SessionManager(ctx);
+        SessionManager sen  = SessionManager.getInstance(ctx);
         try {
             tipoUsuario = tipoRol.getTipoRolA(sen);
         } catch (JSONException e) {

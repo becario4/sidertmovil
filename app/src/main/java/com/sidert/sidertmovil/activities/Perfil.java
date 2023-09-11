@@ -44,7 +44,7 @@ public class Perfil extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_perfil);
         ctx             = getApplicationContext();
-        session         = new SessionManager(ctx);
+        session         = SessionManager.getInstance(ctx);
         TBmain          = findViewById(R.id.TBmain);
         fabPicture      = findViewById(R.id.fabPicture);
         civAvatar       = findViewById(R.id.civAvatar);
@@ -96,13 +96,11 @@ public class Perfil extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                finish();
-                break;
-            case R.id.save:
-                Toast.makeText(ctx,"Error, Estamos trabajando",Toast.LENGTH_SHORT).show();
-                break;
+        int itemId = item.getItemId();
+        if (itemId == android.R.id.home) {
+            finish();
+        } else if (itemId == R.id.save) {
+            Toast.makeText(ctx, "Error, Estamos trabajando", Toast.LENGTH_SHORT).show();
         }
         return super.onOptionsItemSelected(item);
     }

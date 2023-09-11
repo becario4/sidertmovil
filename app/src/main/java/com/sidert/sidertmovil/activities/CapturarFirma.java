@@ -198,30 +198,25 @@ public class CapturarFirma extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:/**Selecciono Retroceso del Toolbar <- */
-                if (flag){
-                    dlg_confirm_exit();
-                }
-                else
-                    finish();
-                break;
-            case R.id.save:/**Guarda la firma obteniendo la firma en byteArray para retornarlo*/
-                Bitmap signatureBitmap = mSignaturePad.getSignatureBitmap();
-
-                ByteArrayOutputStream stream = new ByteArrayOutputStream();
-                signatureBitmap.compress(Bitmap.CompressFormat.JPEG,50,stream);
-                byte[] byteArray = stream.toByteArray();
-
-                Intent res = new Intent();
-                res.putExtra(Constants.FIRMA_IMAGE, byteArray);
-                setResult(RESULT_OK,res);
+        int itemId = item.getItemId();
+        if (itemId == android.R.id.home) {/**Selecciono Retroceso del Toolbar <- */
+            if (flag) {
+                dlg_confirm_exit();
+            } else
                 finish();
-                break;
-            case R.id.clear:/**Limpia el canvas para poder seguir dibujando*/
-                mSignaturePad.clear();
-                break;
+        } else if (itemId == R.id.save) {/**Guarda la firma obteniendo la firma en byteArray para retornarlo*/
+            Bitmap signatureBitmap = mSignaturePad.getSignatureBitmap();
 
+            ByteArrayOutputStream stream = new ByteArrayOutputStream();
+            signatureBitmap.compress(Bitmap.CompressFormat.JPEG, 50, stream);
+            byte[] byteArray = stream.toByteArray();
+
+            Intent res = new Intent();
+            res.putExtra(Constants.FIRMA_IMAGE, byteArray);
+            setResult(RESULT_OK, res);
+            finish();
+        } else if (itemId == R.id.clear) {/**Limpia el canvas para poder seguir dibujando*/
+            mSignaturePad.clear();
         }
         return super.onOptionsItemSelected(item);
     }

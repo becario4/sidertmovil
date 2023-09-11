@@ -1,15 +1,19 @@
 package com.sidert.sidertmovil.models.solicitudes.solicitudind.originacion;
 
 import static com.sidert.sidertmovil.utils.Constants.TBL_CLIENTE_IND;
+import static com.sidert.sidertmovil.utils.Constants.TBL_CREDITO_IND_REN;
 import static com.sidert.sidertmovil.utils.Constants.TBL_DATOS_BENEFICIARIO;
 import static com.sidert.sidertmovil.utils.Constants.TBL_PRESTAMOS_IND_T;
 import static com.sidert.sidertmovil.utils.Constants.TBL_SOLICITUDES;
+import static com.sidert.sidertmovil.utils.Constants.TBL_SOLICITUDES_REN;
 import static com.sidert.sidertmovil.utils.Constants.TBL_TRACKER_ASESOR_T;
 
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
+
+import androidx.core.content.ContextCompat;
 
 import com.sidert.sidertmovil.database.DBhelper;
 import com.sidert.sidertmovil.database.SidertTables;
@@ -33,7 +37,7 @@ public class BeneficiarioDao  extends BaseDao {
 
     public static int obtenerSerieAsesor(Context ctx){
 
-        dBhelper1 = new DBhelper(ctx);
+        dBhelper1 = DBhelper.getInstance(ctx);
         db1 = dBhelper1.getWritableDatabase();
 
         int serie_id = 0;
@@ -51,7 +55,7 @@ public class BeneficiarioDao  extends BaseDao {
     }
 
     public static int obtenerClienteInd(int id_solicitud,Context ctx){
-        dBhelper1 = new DBhelper(ctx);
+        dBhelper1 = DBhelper.getInstance(ctx);
         db1 = dBhelper1.getWritableDatabase();
         int id_cliente = 0;
 
@@ -67,9 +71,27 @@ public class BeneficiarioDao  extends BaseDao {
         return id_cliente;
     }
 
+    public static int obtenerClienteIndRen(int id_solicitud, Context ctx){
+        dBhelper1 = DBhelper.getInstance(ctx);
+        db1 = dBhelper1.getWritableDatabase();
+
+        int id_cliente = 0;
+
+        String sql = " SELECT num_cliente FROM " + TBL_CREDITO_IND_REN + " WHERE id_solicitud = ? ";
+
+        Cursor row = db1.rawQuery(sql, new String[]{String.valueOf(id_solicitud)});
+
+        if(row != null && row.getCount()>0){
+            row.moveToFirst();
+            id_cliente = row.getInt(0);
+            row.close();
+        }
+        return  id_cliente;
+    }
+
 
     public static boolean validarBeneficiarioInd(int id_solicitud,Context ctx){
-        dBhelper1 = new DBhelper(ctx);
+        dBhelper1 = DBhelper.getInstance(ctx);
         db1 = dBhelper1.getWritableDatabase();
         boolean estatus = false;
         int dato = 0;
@@ -87,11 +109,12 @@ public class BeneficiarioDao  extends BaseDao {
         if(dato >= 1){
             estatus = true;
         }
+
         return estatus;
     }
 
     public static int obtenerIdOriginacion(int id_solicitud, Context ctx){
-        dBhelper1 = new DBhelper(ctx);
+        dBhelper1 = DBhelper.getInstance(ctx);
         db1 = dBhelper1.getWritableDatabase();
 
         int id_originacion = 0;
@@ -108,8 +131,27 @@ public class BeneficiarioDao  extends BaseDao {
         return id_originacion;
     }
 
+    public static int obtenerIdOriginacionRen(int id_solicitud, Context ctx){
+        dBhelper1 = DBhelper.getInstance(ctx);
+        db1 = dBhelper1.getWritableDatabase();
+
+        int id_originacion = 0;
+
+        String sql = " SELECT id_originacion  from " + TBL_SOLICITUDES_REN + " WHERE id_solicitud = ? ";
+
+        Cursor row = db1.rawQuery(sql, new String[]{String.valueOf(id_solicitud)});
+
+
+        if(row.getCount()>0){
+            row.moveToFirst();
+            id_originacion = row.getInt(0);
+            row.close();
+        }
+        return id_originacion;
+    }
+
     public Beneficiario getBeneficiario(int id_solicitud, int id_originacion, Context ctx){
-        dBhelper1 = new DBhelper(ctx);
+        dBhelper1 = DBhelper.getInstance(ctx);
         db1 = dBhelper1.getWritableDatabase();
 
         Beneficiario beneficiario = null;

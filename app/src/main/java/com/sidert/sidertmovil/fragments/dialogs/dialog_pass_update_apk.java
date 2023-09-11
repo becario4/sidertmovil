@@ -42,7 +42,7 @@ public class dialog_pass_update_apk extends DialogFragment {
 
         ctx = getContext();
 
-        session = new SessionManager(ctx);
+        session = SessionManager.getInstance(ctx);
 
         etKeyMaster = v.findViewById(R.id.etKeyMaster);
         btnAceptar = v.findViewById(R.id.btnAceptar);

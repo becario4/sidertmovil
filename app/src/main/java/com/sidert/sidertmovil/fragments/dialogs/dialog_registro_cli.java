@@ -72,9 +72,9 @@ public class dialog_registro_cli extends DialogFragment {
 
         ctx         = getContext();
 
-        session     = new SessionManager(ctx);
+        session     = SessionManager.getInstance(ctx);
         validator   = new Validator();
-        dBhelper    = new DBhelper(ctx);
+        dBhelper    = DBhelper.getInstance(ctx);
         db          = dBhelper.getWritableDatabase();
 
         boostrap    = (SolicitudCreditoInd) getActivity();

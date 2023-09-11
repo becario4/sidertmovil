@@ -108,10 +108,10 @@ public class ReporteInicioSesion extends AppCompatActivity {
         setContentView(R.layout.activity_reporte_inicio_sesion);
         ctx = this;
 
-        dBhelper = new DBhelper(ctx);
+        dBhelper = DBhelper.getInstance(ctx);
         db = dBhelper.getWritableDatabase();
 
-        session = new SessionManager(ctx);
+        session = SessionManager.getInstance(ctx);
 
         tbMain = findViewById(R.id.tbMain);
 
@@ -152,7 +152,7 @@ public class ReporteInicioSesion extends AppCompatActivity {
         loading.show();
 
         /**se prepara la interfaz para realizar la peticion*/
-        ManagerInterface api = new RetrofitClient().generalRF(CONTROLLER_API, ctx).create(ManagerInterface.class);
+        ManagerInterface api = RetrofitClient.generalRF(CONTROLLER_API, ctx).create(ManagerInterface.class);
 
         /**se prepara el servicio con los parametros*/
         Call<List<MSucursal>> call = api.getMisSucursales(Integer.parseInt(session.getUser().get(9)));
@@ -233,7 +233,7 @@ public class ReporteInicioSesion extends AppCompatActivity {
             loading.show();
 
             /**prepara la interfaz para realizar peticiones */
-            ManagerInterface api = new RetrofitClient().generalRF(CONTROLLER_API, ctx).create(ManagerInterface.class);
+            ManagerInterface api = RetrofitClient.generalRF(CONTROLLER_API, ctx).create(ManagerInterface.class);
 
             /**prepara la peticion con los parametros necesarios*/
             Call<List<MLogLogin>> call = api.getLogAsesores(params.get("fecha_inicio"),
@@ -1053,17 +1053,15 @@ public class ReporteInicioSesion extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:/**menu de retroceso toolbar <-*/
-                /**borra el contenido de las tablas sucursales y reporte de sesiones para no guardar esa informacion*/
-                db.delete(TBL_SUCURSALES, "", null);
-                db.delete(TBL_REPORTE_SESIONES,"", null);
-                finish();
-                break;
-            case R.id.nvFiltro:/**menu para mostrar filtros */
-                ShowFiltros();
-                //Toast.makeText(ctx, "Filtro", Toast.LENGTH_SHORT).show();
-                break;
+        int itemId = item.getItemId();
+        if (itemId == android.R.id.home) {/**menu de retroceso toolbar <-*/
+            /**borra el contenido de las tablas sucursales y reporte de sesiones para no guardar esa informacion*/
+            db.delete(TBL_SUCURSALES, "", null);
+            db.delete(TBL_REPORTE_SESIONES, "", null);
+            finish();
+        } else if (itemId == R.id.nvFiltro) {/**menu para mostrar filtros */
+            ShowFiltros();
+            //Toast.makeText(ctx, "Filtro", Toast.LENGTH_SHORT).show();
         }
         return super.onOptionsItemSelected(item);
     }

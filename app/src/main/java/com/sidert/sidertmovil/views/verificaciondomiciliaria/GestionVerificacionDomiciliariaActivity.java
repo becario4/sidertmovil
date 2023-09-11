@@ -70,7 +70,6 @@ public class GestionVerificacionDomiciliariaActivity extends AppCompatActivity {
     private Context ctx;
     Toolbar tbMain;
     private SessionManager session;
-    Miscellaneous misc;
     private LocationManager locationManager;
     private MyCurrentListener locationListener;
 
@@ -119,8 +118,7 @@ public class GestionVerificacionDomiciliariaActivity extends AppCompatActivity {
         setContentView(R.layout.view_gestion_verificacion_domiciliaria);
 
         ctx = this;
-        misc = new Miscellaneous();
-        session = new SessionManager(ctx);
+        session = SessionManager.getInstance(ctx);
         tbMain = findViewById(R.id.tbMain);
 
         gestionDao = new GestionVerificacionDomiciliariaDao(ctx);
@@ -190,7 +188,7 @@ public class GestionVerificacionDomiciliariaActivity extends AppCompatActivity {
         if(gestion == null) {
             gestion = new GestionVerificacionDomiciliaria();
             gestion.setVerificacionDomiciliariaId(verificacion.getVerificacionDomiciliariaId());
-            gestion.setFechaInicio(misc.ObtenerFecha("timestamp"));
+            gestion.setFechaInicio(Miscellaneous.ObtenerFecha("timestamp"));
         }
 
         setSupportActionBar(tbMain);
@@ -235,7 +233,7 @@ public class GestionVerificacionDomiciliariaActivity extends AppCompatActivity {
                     }
 
                     gestion.setVerificacionDomiciliariaId(verificacion.getVerificacionDomiciliariaId());
-                    gestion.setFechaInicio(misc.ObtenerFecha("timestamp"));
+                    gestion.setFechaInicio(Miscellaneous.ObtenerFecha("timestamp"));
                 }
 
             });
@@ -287,7 +285,7 @@ public class GestionVerificacionDomiciliariaActivity extends AppCompatActivity {
         }
         else
         {
-            gestion.setFechaInicio(misc.ObtenerFecha("timestamp"));
+            gestion.setFechaInicio(Miscellaneous.ObtenerFecha("timestamp"));
 
         }
     }
@@ -341,7 +339,7 @@ public class GestionVerificacionDomiciliariaActivity extends AppCompatActivity {
         if (!gestion.getFotoFachada().isEmpty()){
             File fachadaFile = new File(Constants.ROOT_PATH + "Fachada/"+ gestion.getFotoFachada());
             Uri uriFachada = Uri.fromFile(fachadaFile);
-            byteFotoFachada = misc.getBytesUri(ctx, uriFachada,0);
+            byteFotoFachada = Miscellaneous.getBytesUri(ctx, uriFachada,0);
             Glide.with(ctx).load(uriFachada).into(ivFotoFachada);
             ibFotoFachada.setVisibility(View.GONE);
             ivFotoFachada.setVisibility(View.VISIBLE);
@@ -479,7 +477,7 @@ public class GestionVerificacionDomiciliariaActivity extends AppCompatActivity {
 
         if(((RadioButton) rgCoincideDomicilio.getChildAt(0)).isChecked()) gestion.setDomicilioCoincide(1);
         if(((RadioButton) rgCoincideDomicilio.getChildAt(1)).isChecked()) gestion.setDomicilioCoincide(0);
-        gestion.setComentario(misc.GetStr(etComentario));
+        gestion.setComentario(Miscellaneous.GetStr(etComentario));
 
         if(gestion.getLatitud() == null || gestion.getLatitud().equals(""))
         {
@@ -527,9 +525,9 @@ public class GestionVerificacionDomiciliariaActivity extends AppCompatActivity {
             gestion.setUsuarioId(Long.parseLong(session.getUser().get(9)));
             gestion.setUsuarioNombre(session.getUser().get(1) + " " + session.getUser().get(2) + " " + session.getUser().get(3));
             gestion.setUsuarioNombre(gestion.getUsuarioNombre().trim());
-            gestion.setFechaFin(misc.ObtenerFecha("timestamp"));
-            gestion.setFechaEnvio(misc.ObtenerFecha("timestamp"));
-            gestion.setCreatedAt(misc.ObtenerFecha("timestamp"));
+            gestion.setFechaFin(Miscellaneous.ObtenerFecha("timestamp"));
+            gestion.setFechaEnvio(Miscellaneous.ObtenerFecha("timestamp"));
+            gestion.setCreatedAt(Miscellaneous.ObtenerFecha("timestamp"));
             gestion.setEstatus(1);//DISPONIBLE PARA ENVIO
 
             if(gestion.getId() == null || gestion.getId() == 0) gestionDao.store(gestion);
@@ -556,7 +554,7 @@ public class GestionVerificacionDomiciliariaActivity extends AppCompatActivity {
                         Glide.with(ctx).load(byteFotoFachada).centerCrop().into(ivFotoFachada);
 
                         try {
-                            gestion.setFotoFachada(misc.save(byteFotoFachada, 1));
+                            gestion.setFotoFachada(Miscellaneous.save(byteFotoFachada, 1));
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
@@ -577,13 +575,11 @@ public class GestionVerificacionDomiciliariaActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                finish();
-                break;
-            case R.id.save:
-                Guardar();
-                break;
+        int itemId = item.getItemId();
+        if (itemId == android.R.id.home) {
+            finish();
+        } else if (itemId == R.id.save) {
+            Guardar();
         }
         return super.onOptionsItemSelected(item);
     }

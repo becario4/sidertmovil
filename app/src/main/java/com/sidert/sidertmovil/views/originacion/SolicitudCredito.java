@@ -1,6 +1,7 @@
 package com.sidert.sidertmovil.views.originacion;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -130,9 +131,9 @@ public class SolicitudCredito extends AppCompatActivity {
         context = this;
 
         tbMain       = findViewById(R.id.TBmain);
-        session      = new SessionManager(ctx);
+        session      = SessionManager.getInstance(ctx);
 
-        dBhelper = new DBhelper(ctx);
+        dBhelper = DBhelper.getInstance(ctx);
         db = dBhelper.getWritableDatabase();
 
         rvOriginacion = findViewById(R.id.rvOriginacion);
@@ -495,15 +496,20 @@ public class SolicitudCredito extends AppCompatActivity {
     @SuppressLint("ClickableViewAccessibility")
     private void Filtros () {
         int view = 0;
-        int sizeH = 0;
+
+        int sizeH = 900;
+        Activity activity = this;
+        if (activity != null) {
+            View decorateView = activity.getWindow().getDecorView();
+            sizeH = (int) (decorateView.getHeight() / 2.0);
+        }
+
 
         switch (seccion) {
             case 2:
-                sizeH = 600;
                 view = R.layout.sheet_dialog_filtros_proceso_ori;
                 break;
             case 3:
-                sizeH = 600;
                 view = R.layout.sheet_dialog_filtros_completados_ori;
                 break;
         }
@@ -520,139 +526,128 @@ public class SolicitudCredito extends AppCompatActivity {
                         HashMap<String, String> filtros = new HashMap<>();
                         InputMethodManager imm = (InputMethodManager) ctx.getSystemService(Context.INPUT_METHOD_SERVICE);
 
-                        switch (view.getId()) {
-                            case R.id.btnFiltrar:
-                                switch (seccion) {
-                                    case 2:
-                                        if (!aetNombre.getText().toString().trim().isEmpty()){
-                                            filtros.put("nombre_originacion_pro", aetNombre.getText().toString().trim());
-                                            cont_proceso += 1;
-                                        }
-                                        else filtros.put("nombre_originacion_pro","");
+                        int id = view.getId();
+                        if (id == R.id.btnFiltrar) {
+                            switch (seccion) {
+                                case 2:
+                                    if (!aetNombre.getText().toString().trim().isEmpty()) {
+                                        filtros.put("nombre_originacion_pro", aetNombre.getText().toString().trim());
+                                        cont_proceso += 1;
+                                    } else filtros.put("nombre_originacion_pro", "");
 
-                                        if (cbInd.isChecked() && cbGpo.isChecked()){
-                                            filtros.put("tipo_originacion_ind_pro","1");
-                                            filtros.put("tipo_originacion_gpo_pro","1");
-                                            cont_proceso += 2;
-                                        }
-                                        else if (cbInd.isChecked()){
-                                            filtros.put("tipo_originacion_ind_pro","1");
-                                            filtros.put("tipo_originacion_gpo_pro","0");
-                                            cont_proceso += 1;
-                                        }
-                                        else if (cbGpo.isChecked()){
-                                            filtros.put("tipo_originacion_ind_pro","0");
-                                            filtros.put("tipo_originacion_gpo_pro","1");
-                                            cont_proceso += 1;
-                                        }else {
-                                            filtros.put("tipo_originacion_ind_pro","0");
-                                            filtros.put("tipo_originacion_gpo_pro","0");
-                                        }
+                                    if (cbInd.isChecked() && cbGpo.isChecked()) {
+                                        filtros.put("tipo_originacion_ind_pro", "1");
+                                        filtros.put("tipo_originacion_gpo_pro", "1");
+                                        cont_proceso += 2;
+                                    } else if (cbInd.isChecked()) {
+                                        filtros.put("tipo_originacion_ind_pro", "1");
+                                        filtros.put("tipo_originacion_gpo_pro", "0");
+                                        cont_proceso += 1;
+                                    } else if (cbGpo.isChecked()) {
+                                        filtros.put("tipo_originacion_ind_pro", "0");
+                                        filtros.put("tipo_originacion_gpo_pro", "1");
+                                        cont_proceso += 1;
+                                    } else {
+                                        filtros.put("tipo_originacion_ind_pro", "0");
+                                        filtros.put("tipo_originacion_gpo_pro", "0");
+                                    }
 
-                                        if (cbMenor45.isChecked()){
-                                            filtros.put("menor45_originacion_pro","1");
-                                            cont_proceso += 1;
-                                        }
-                                        else  filtros.put("menor45_originacion_pro","0");
+                                    if (cbMenor45.isChecked()) {
+                                        filtros.put("menor45_originacion_pro", "1");
+                                        cont_proceso += 1;
+                                    } else filtros.put("menor45_originacion_pro", "0");
 
-                                        filtros.put("contador_originacion_pro", String.valueOf(cont_proceso));
-                                        session.setFiltrosEnProcesoOri(filtros);
+                                    filtros.put("contador_originacion_pro", String.valueOf(cont_proceso));
+                                    session.setFiltrosEnProcesoOri(filtros);
 
-                                        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                                    imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
 
-                                        getEnProceso();
+                                    getEnProceso();
 
-                                        break;
-                                    case 3:
-                                        if (!aetNombre.getText().toString().trim().isEmpty()){
-                                            filtros.put("nombre_originacion_comp", aetNombre.getText().toString().trim());
-                                            cont_completados += 1;
-                                        }
-                                        else filtros.put("nombre_originacion_comp","");
+                                    break;
+                                case 3:
+                                    if (!aetNombre.getText().toString().trim().isEmpty()) {
+                                        filtros.put("nombre_originacion_comp", aetNombre.getText().toString().trim());
+                                        cont_completados += 1;
+                                    } else filtros.put("nombre_originacion_comp", "");
 
-                                        if (cbInd.isChecked() && cbGpo.isChecked()){
-                                            filtros.put("tipo_originacion_ind_comp","1");
-                                            filtros.put("tipo_originacion_gpo_comp","1");
-                                            cont_completados += 2;
-                                        }
-                                        else if (cbInd.isChecked()){
-                                            filtros.put("tipo_originacion_ind_comp","1");
-                                            filtros.put("tipo_originacion_gpo_comp","0");
-                                            cont_completados += 1;
-                                        }
-                                        else if (cbGpo.isChecked()){
-                                            filtros.put("tipo_originacion_ind_comp","0");
-                                            filtros.put("tipo_originacion_gpo_comp","1");
-                                            cont_completados += 1;
-                                        }else {
-                                            filtros.put("tipo_originacion_ind_comp","0");
-                                            filtros.put("tipo_originacion_gpo_comp","0");
-                                        }
+                                    if (cbInd.isChecked() && cbGpo.isChecked()) {
+                                        filtros.put("tipo_originacion_ind_comp", "1");
+                                        filtros.put("tipo_originacion_gpo_comp", "1");
+                                        cont_completados += 2;
+                                    } else if (cbInd.isChecked()) {
+                                        filtros.put("tipo_originacion_ind_comp", "1");
+                                        filtros.put("tipo_originacion_gpo_comp", "0");
+                                        cont_completados += 1;
+                                    } else if (cbGpo.isChecked()) {
+                                        filtros.put("tipo_originacion_ind_comp", "0");
+                                        filtros.put("tipo_originacion_gpo_comp", "1");
+                                        cont_completados += 1;
+                                    } else {
+                                        filtros.put("tipo_originacion_ind_comp", "0");
+                                        filtros.put("tipo_originacion_gpo_comp", "0");
+                                    }
 
-                                        if (cbMenor45.isChecked()){
-                                            filtros.put("menor45_originacion_comp","1");
-                                            cont_completados += 1;
-                                        }
-                                        else  filtros.put("menor45_originacion_comp","0");
+                                    if (cbMenor45.isChecked()) {
+                                        filtros.put("menor45_originacion_comp", "1");
+                                        cont_completados += 1;
+                                    } else filtros.put("menor45_originacion_comp", "0");
 
-                                        filtros.put("contador_originacion_comp", String.valueOf(cont_completados));
-                                        session.setFiltrosCompletadosOri(filtros);
+                                    filtros.put("contador_originacion_comp", String.valueOf(cont_completados));
+                                    session.setFiltrosCompletadosOri(filtros);
 
-                                        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                                    imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
 
-                                        getCompletados();
+                                    getCompletados();
 
-                                        break;
-                                }
-                                dialog.dismiss();
+                                    break;
+                            }
+                            dialog.dismiss();
+                        } else if (id == R.id.btnBorrar) {
+                            switch (seccion) {
+                                case 2:
+                                    cbInd.setChecked(false);
+                                    cbGpo.setChecked(false);
+                                    cbMenor45.setChecked(false);
+                                    aetNombre.setText("");
+                                    aetNombre.setAdapter(adapterNombre);
 
-                                break;
-                            case R.id.btnBorrar:
-                                switch (seccion) {
-                                    case 2:
-                                        cbInd.setChecked(false);
-                                        cbGpo.setChecked(false);
-                                        cbMenor45.setChecked(false);
-                                        aetNombre.setText("");
-                                        aetNombre.setAdapter(adapterNombre);
+                                    cont_proceso = 0;
+                                    filtros = new HashMap<>();
+                                    filtros.put("nombre_originacion_pro", "");
+                                    filtros.put("tipo_originacion_ind_pro", "0");
+                                    filtros.put("tipo_originacion_gpo_pro", "0");
+                                    filtros.put("menor45_originacion_pro", "0");
+                                    filtros.put("contador_originacion_pro", "0");
+                                    session.setFiltrosEnProcesoOri(filtros);
 
-                                        cont_proceso = 0;
-                                        filtros = new HashMap<>();
-                                        filtros.put("nombre_originacion_pro","");
-                                        filtros.put("tipo_originacion_ind_pro","0");
-                                        filtros.put("tipo_originacion_gpo_pro","0");
-                                        filtros.put("menor45_originacion_pro", "0");
-                                        filtros.put("contador_originacion_pro", "0");
-                                        session.setFiltrosEnProcesoOri(filtros);
+                                    imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
 
-                                        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                                    getEnProceso();
 
-                                        getEnProceso();
+                                    break;
+                                case 3:
+                                    cbInd.setChecked(false);
+                                    cbGpo.setChecked(false);
+                                    cbMenor45.setChecked(false);
+                                    aetNombre.setText("");
+                                    aetNombre.setAdapter(adapterNombre);
 
-                                        break;
-                                    case 3:
-                                        cbInd.setChecked(false);
-                                        cbGpo.setChecked(false);
-                                        cbMenor45.setChecked(false);
-                                        aetNombre.setText("");
-                                        aetNombre.setAdapter(adapterNombre);
+                                    cont_completados = 0;
+                                    filtros = new HashMap<>();
+                                    filtros.put("nombre_originacion_comp", "");
+                                    filtros.put("tipo_originacion_ind_comp", "0");
+                                    filtros.put("tipo_originacion_gpo_comp", "0");
+                                    filtros.put("menor45_originacion_comp", "0");
+                                    filtros.put("contador_originacion_comp", "0");
+                                    session.setFiltrosCompletadosOri(filtros);
 
-                                        cont_completados = 0;
-                                        filtros = new HashMap<>();
-                                        filtros.put("nombre_originacion_comp","");
-                                        filtros.put("tipo_originacion_ind_comp","0");
-                                        filtros.put("tipo_originacion_gpo_comp","0");
-                                        filtros.put("menor45_originacion_comp", "0");
-                                        filtros.put("contador_originacion_comp", "0");
-                                        session.setFiltrosCompletadosOri(filtros);
+                                    imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
 
-                                        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                                    getCompletados();
 
-                                        getCompletados();
-
-                                        break;
-                                }
-                                break;
+                                    break;
+                            }
                         }
 
                         setupBadge();
@@ -772,17 +767,14 @@ public class SolicitudCredito extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                finish();
-                break;
-            case R.id.nvFiltro:
-                Filtros();
-                break;
-            case R.id.nvInfo:
-                Intent intentResumen = new Intent(ctx, ResumenActivity.class);
-                startActivity(intentResumen);
-                break;
+        int itemId = item.getItemId();
+        if (itemId == android.R.id.home) {
+            finish();
+        } else if (itemId == R.id.nvFiltro) {
+            Filtros();
+        } else if (itemId == R.id.nvInfo) {
+            Intent intentResumen = new Intent(ctx, ResumenActivity.class);
+            startActivity(intentResumen);
         }
         return super.onOptionsItemSelected(item);
     }

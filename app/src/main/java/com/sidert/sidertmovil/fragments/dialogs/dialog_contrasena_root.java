@@ -3,8 +3,10 @@ package com.sidert.sidertmovil.fragments.dialogs;
 import android.content.Context;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -43,7 +45,7 @@ public class dialog_contrasena_root extends DialogFragment {
 
         ctx = getContext();
 
-        session = new SessionManager(ctx);
+        session = SessionManager.getInstance(ctx);
 
         etKeyMaster = v.findViewById(R.id.etKeyMaster);
         btnAceptar = v.findViewById(R.id.btnAceptar);
@@ -76,12 +78,11 @@ public class dialog_contrasena_root extends DialogFragment {
     private View.OnClickListener btnAceptar_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
-            if (etKeyMaster.getText().toString().trim().equals("Qvv123")){
+            if (etKeyMaster.getText().toString().trim().equals("Qvv123")) {
                 Login loginActivity = (Login) getActivity();
                 loginActivity.SetPass(true);
                 dismiss();
-            }
-            else
+            } else
                 Toast.makeText(ctx, "Contraseña Incorrecta", Toast.LENGTH_SHORT).show();
         }
     };
@@ -91,15 +92,14 @@ public class dialog_contrasena_root extends DialogFragment {
         public void onClick(View view) {
             Validator validator = new Validator();
             if (!validator.validate(etKeyMaster, new String[]{validator.REQUIRED}) &&
-                !validator.validate(etDominio, new String[]{validator.REQUIRED}) &&
-                !validator.validate(etPuerto, new String[]{validator.REQUIRED})){
-                if(etKeyMaster.getText().toString().trim().equals("Qvv123")){
-                    session.setDominio("http://"+etDominio.getText().toString().trim()+":", etPuerto.getText().toString().trim());
+                    !validator.validate(etDominio, new String[]{validator.REQUIRED}) &&
+                    !validator.validate(etPuerto, new String[]{validator.REQUIRED})) {
+                if (etKeyMaster.getText().toString().trim().equals("Qvv123")) {
+                    session.setDominio("http://" + etDominio.getText().toString().trim() + ":" + etPuerto.getText().toString().trim());
                     Login loginActivity = (Login) getActivity();
                     loginActivity.SetPass(false);
                     dismiss();
-                }
-                else{
+                } else {
                     etKeyMaster.setError("La Clave es incorrecta");
                 }
             }

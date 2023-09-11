@@ -39,10 +39,8 @@ public class adapter_dispositivos extends RecyclerView.Adapter<adapter_dispositi
 
         @Override
         public void onClick(View view) {
-            switch (view.getId()){
-                case R.id.item_dispositivo:
-                    miListenerClick.clickItem(view, getAdapterPosition());
-                    break;
+            if (view.getId() == R.id.item_dispositivo) {
+                miListenerClick.clickItem(view, getAdapterPosition());
             }
         }
 

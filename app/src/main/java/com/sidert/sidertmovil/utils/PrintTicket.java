@@ -41,18 +41,19 @@ public class PrintTicket {
     private DBhelper dBhelper;
     private SQLiteDatabase db;
     private SessionManager session;
-    public void WriteTicket (Context ctx, MImpresion ticket) {
+
+    public void WriteTicket(Context ctx, MImpresion ticket) {
         posPtr = new ESCPOSPrinter();
         date = df.format(Calendar.getInstance().getTime());
-        this.dBhelper = new DBhelper(ctx);
+        this.dBhelper = DBhelper.getInstance(ctx);
         db = dBhelper.getWritableDatabase();
-        session = new SessionManager(ctx);
+        session = SessionManager.getInstance(ctx);
         HeadTicket(ctx, ticket);
         BodyTicket(ticket);
         FooterTicket(ctx, ticket);
     }
 
-    private void HeadTicket (Context ctx, MImpresion ticket){
+    private void HeadTicket(Context ctx, MImpresion ticket) {
         try {
             Bitmap bm;
             if (ticket.getTipoPrestamo().contains("VENCIDA"))
@@ -60,24 +61,23 @@ public class PrintTicket {
             else
                 bm = BitmapFactory.decodeResource(ctx.getResources(), R.drawable.logo_impresion);
             posPtr.printBitmap(bm, LKPrint.LK_ALIGNMENT_CENTER);
-            if (ticket.getResultPrint() == 0){
+            if (ticket.getResultPrint() == 0) {
                 posPtr.printNormal(ESC + "|cA" + ESC + "|bC" + ESC + "|1C" + "Original");
-            }else{
+            } else {
                 posPtr.printNormal(ESC + "|cA" + ESC + "|bC" + ESC + "|1C" + "Copia");
             }
             dobleEspacio();
-            posPtr.printNormal(ESC + "|lA" + ESC + "|bC" + ESC + "|1C" + "Fecha y hora:"+date);
+            posPtr.printNormal(ESC + "|lA" + ESC + "|bC" + ESC + "|1C" + "Fecha y hora:" + date);
             dobleEspacio();
 
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    private void BodyTicket (MImpresion data){
+    private void BodyTicket(MImpresion data) {
         try {
             if (data.getTipoPrestamo().contains("VENCIDA")) {
                 linea = line("Empresa:", "SERVICIOS INTEGRALES PARA EL DESARROLLO RURAL DEL TROPICO SA DE CV SOFOM ENR.(SIDERT)");
@@ -119,9 +119,8 @@ public class PrintTicket {
                     posPtr.printNormal(ESC + "|lA" + ESC + "|bC" + ESC + "|1C" + linea + LF);
                     //------------------------------------------------
                 }
-            }
-            else{
-                if (data.getTipoGestion().equals("INDIVIDUAL")){//individual vencida
+            } else {
+                if (data.getTipoGestion().equals("INDIVIDUAL")) {//individual vencida
                     nombreCampo = "Numero De Prestamo: ";
                     linea = line(nombreCampo, data.getNumeroPrestamo().trim());
                     posPtr.printNormal(ESC + "|lA" + ESC + "|bC" + ESC + "|1C" + linea + LF);
@@ -134,8 +133,7 @@ public class PrintTicket {
                     nombreCampo = "Monto pago realizado: ";
                     linea = line(nombreCampo, money(String.valueOf(data.getMonto())).trim());
                     posPtr.printNormal(ESC + "|lA" + ESC + "|bC" + ESC + "|1C" + linea + LF);
-                }
-                else{ //Grupal vencida
+                } else { //Grupal vencida
                     nombreCampo = "Numero De Prestamo: ";
                     linea = line(nombreCampo, data.getNumeroPrestamo().trim());
                     posPtr.printNormal(ESC + "|lA" + ESC + "|bC" + ESC + "|1C" + linea + LF);
@@ -160,33 +158,30 @@ public class PrintTicket {
         }
     }
 
-    private void FooterTicket(Context ctx, MImpresion data){
+    private void FooterTicket(Context ctx, MImpresion data) {
         try {
             dobleEspacio();
 
-            if (data.getTipoPrestamo().equals("VIGENTE") || data.getTipoPrestamo().equals("COBRANZA")){
-                if (data.getResultPrint()== 0){
+            if (data.getTipoPrestamo().equals("VIGENTE") || data.getTipoPrestamo().equals("COBRANZA")) {
+                if (data.getResultPrint() == 0) {
                     posPtr.printNormal(ESC + "|lA" + ESC + "|bC" + ESC + "|1C" + "Firma Asesor:");
                     dobleEspacio();
                     posPtr.printNormal(ESC + "|lA" + ESC + "|bC" + ESC + "|1C" + "________________________________");
                     posPtr.printNormal(ESC + "|lA" + ESC + "|bC" + ESC + "|1C" + replaceStr(data.getNombreAsesor().trim()));
-                }
-                else{
-                    String titleSignature = (data.getTipoGestion().equals("GRUPAL"))?"Firma Tesorero(a):":"Firma Cliente:";
+                } else {
+                    String titleSignature = (data.getTipoGestion().equals("GRUPAL")) ? "Firma Tesorero(a):" : "Firma Cliente:";
                     posPtr.printNormal(ESC + "|lA" + ESC + "|bC" + ESC + "|1C" + titleSignature);
                     dobleEspacio();
                     posPtr.printNormal(ESC + "|lA" + ESC + "|bC" + ESC + "|1C" + "________________________________");
                     posPtr.printNormal(ESC + "|lA" + ESC + "|bC" + ESC + "|1C" + replaceStr(data.getNombreFirma().trim()));
                 }
-            }
-            else{
-                if (data.getResultPrint() == 0){
+            } else {
+                if (data.getResultPrint() == 0) {
                     posPtr.printNormal(ESC + "|lA" + ESC + "|bC" + ESC + "|1C" + "Firma Gestor:");
                     dobleEspacio();
                     posPtr.printNormal(ESC + "|lA" + ESC + "|bC" + ESC + "|1C" + "________________________________");
                     posPtr.printNormal(ESC + "|lA" + ESC + "|bC" + ESC + "|1C" + replaceStr(data.getNombreAsesor().trim()));
-                }
-                else{
+                } else {
                     posPtr.printNormal(ESC + "|lA" + ESC + "|bC" + ESC + "|1C" + "Firma Cliente:");
                     dobleEspacio();
                     posPtr.printNormal(ESC + "|lA" + ESC + "|bC" + ESC + "|1C" + "________________________________");
@@ -194,14 +189,14 @@ public class PrintTicket {
                 }
             }
 
-            if (data.getTipoPrestamo().equals("VIGENTE") || data.getTipoPrestamo().equals("COBRANZA")){
+            if (data.getTipoPrestamo().equals("VIGENTE") || data.getTipoPrestamo().equals("COBRANZA")) {
                 Cursor row;
 
                 row = dBhelper.getRecords(TBL_IMPRESIONES_VIGENTE_T, "", " ORDER BY folio ASC", null);
 
-                if (row.getCount() == 0){
+                if (row.getCount() == 0) {
                     HashMap<Integer, String> params = new HashMap<>();
-                    params.put(0, data.getNumeroPrestamo()+"-"+data.getIdGestion());
+                    params.put(0, data.getNumeroPrestamo() + "-" + data.getIdGestion());
                     params.put(1, data.getAsesorId());
                     params.put(2, "1");
                     params.put(3, "O");
@@ -215,17 +210,16 @@ public class PrintTicket {
 
                     dBhelper.saveImpresiones(db, params);
 
-                    linea = line("Folio: ", "RC"+data.getAsesorId()+"-"+1);
+                    linea = line("Folio: ", "RC" + data.getAsesorId() + "-" + 1);
 
                     SendMess(ctx, data.getIdPrestamo(), data.getTelefono(), data.getNombre(), data.getMonto(), date, "1");
-                }
-                else{
+                } else {
                     row.moveToLast();
-                    Log.e("num_prestamo_id_gestion", row.getString(4)+"  "+row.getString(1)+" = "+data.getNumeroPrestamo()+"-"+data.getIdGestion());
-                    if (row.getString(1).equals(data.getNumeroPrestamo()+"-"+data.getIdGestion()) &&
-                    row.getString(4).equals("O")){
+                    Log.e("num_prestamo_id_gestion", row.getString(4) + "  " + row.getString(1) + " = " + data.getNumeroPrestamo() + "-" + data.getIdGestion());
+                    if (row.getString(1).equals(data.getNumeroPrestamo() + "-" + data.getIdGestion()) &&
+                            row.getString(4).equals("O")) {
                         HashMap<Integer, String> params = new HashMap<>();
-                        params.put(0, data.getNumeroPrestamo()+"-"+data.getIdGestion());
+                        params.put(0, data.getNumeroPrestamo() + "-" + data.getIdGestion());
                         params.put(1, data.getAsesorId());
                         params.put(2, row.getString(3));
                         params.put(3, "C");
@@ -239,15 +233,14 @@ public class PrintTicket {
 
                         dBhelper.saveImpresiones(db, params);
 
-                        linea = line("Folio: ", "RC"+data.getAsesorId()+"-"+row.getString(3));
-                    }
-                    else {
+                        linea = line("Folio: ", "RC" + data.getAsesorId() + "-" + row.getString(3));
+                    } else {
                         String sql = "SELECT folio FROM " + TBL_IMPRESIONES_VIGENTE_T + " WHERE num_prestamo_id_gestion = ? AND tipo_impresion = ? ";
-                        Cursor row_folio = db.rawQuery(sql, new String[]{data.getNumeroPrestamo()+"-"+data.getIdGestion(), "O"});
+                        Cursor row_folio = db.rawQuery(sql, new String[]{data.getNumeroPrestamo() + "-" + data.getIdGestion(), "O"});
                         if (row_folio.getCount() > 0) {
                             row_folio.moveToFirst();
                             HashMap<Integer, String> params = new HashMap<>();
-                            params.put(0, data.getNumeroPrestamo()+"-"+data.getIdGestion());
+                            params.put(0, data.getNumeroPrestamo() + "-" + data.getIdGestion());
                             params.put(1, data.getAsesorId());
                             params.put(2, row_folio.getString(0));
                             params.put(3, "O");
@@ -260,15 +253,14 @@ public class PrintTicket {
                             params.put(10, data.getTelefono());
 
                             dBhelper.saveImpresiones(db, params);
-                            linea = line("Folio: ", "RC"+data.getAsesorId()+"-"+row_folio.getString(0));
+                            linea = line("Folio: ", "RC" + data.getAsesorId() + "-" + row_folio.getString(0));
 
                             SendMess(ctx, data.getIdPrestamo(), data.getTelefono(), data.getNombre(), data.getMonto(), date, row_folio.getString(0));
-                        }
-                        else{
+                        } else {
                             HashMap<Integer, String> params = new HashMap<>();
-                            params.put(0, data.getNumeroPrestamo()+"-"+data.getIdGestion());
+                            params.put(0, data.getNumeroPrestamo() + "-" + data.getIdGestion());
                             params.put(1, data.getAsesorId());
-                            params.put(2, String.valueOf(row.getInt(3)+1));
+                            params.put(2, String.valueOf(row.getInt(3) + 1));
                             params.put(3, "O");
                             params.put(4, data.getMonto());
                             params.put(5, data.getClaveCliente());
@@ -279,24 +271,23 @@ public class PrintTicket {
                             params.put(10, data.getTelefono());
 
                             dBhelper.saveImpresiones(db, params);
-                            linea = line("Folio: ", "RC"+data.getAsesorId()+"-"+(row.getInt(3)+1));
+                            linea = line("Folio: ", "RC" + data.getAsesorId() + "-" + (row.getInt(3) + 1));
 
-                            SendMess(ctx, data.getIdPrestamo(), data.getTelefono(), data.getNombre(), data.getMonto(), date, String.valueOf((row.getInt(3)+1)));
+                            SendMess(ctx, data.getIdPrestamo(), data.getTelefono(), data.getNombre(), data.getMonto(), date, String.valueOf((row.getInt(3) + 1)));
                         }
                     }
                 }
                 row.close();
-            }
-            else if (data.getTipoPrestamo().equals("VENCIDA")){
+            } else if (data.getTipoPrestamo().equals("VENCIDA")) {
                 //-----------------------------------------------------------------------------------------------------------------
                 Cursor row;
 
                 row = dBhelper.getRecords(TBL_IMPRESIONES_VENCIDA_T, "", " ORDER BY folio ASC", null);
 
-                if (row.getCount() == 0){
+                if (row.getCount() == 0) {
 
                     HashMap<Integer, String> params = new HashMap<>();
-                    params.put(0, data.getNumeroPrestamo()+"-"+data.getIdGestion());
+                    params.put(0, data.getNumeroPrestamo() + "-" + data.getIdGestion());
                     params.put(1, data.getAsesorId());
                     params.put(2, "1");
                     params.put(3, "O");
@@ -310,7 +301,7 @@ public class PrintTicket {
 
                     dBhelper.saveImpresionesVencida(db, params);
 
-                    linea = line("Folio: ", "CV"+data.getAsesorId()+"-"+1);
+                    linea = line("Folio: ", "CV" + data.getAsesorId() + "-" + 1);
 
                     HashMap<Integer, String> paramsCD = new HashMap<>();
                     paramsCD.put(0, session.getUser().get(0));
@@ -331,14 +322,13 @@ public class PrintTicket {
 
                     dBhelper.saveCierreDia(db, paramsCD);
 
-                }
-                else{
+                } else {
                     row.moveToLast();
-                    Log.e("num_prestamo_id_gesVE", row.getString(4)+"  "+row.getString(1)+" = "+data.getNumeroPrestamo()+"-"+data.getIdGestion());
-                    if (row.getString(1).equals(data.getNumeroPrestamo()+"-"+data.getIdGestion()) &&
-                            row.getString(4).equals("O")){
+                    Log.e("num_prestamo_id_gesVE", row.getString(4) + "  " + row.getString(1) + " = " + data.getNumeroPrestamo() + "-" + data.getIdGestion());
+                    if (row.getString(1).equals(data.getNumeroPrestamo() + "-" + data.getIdGestion()) &&
+                            row.getString(4).equals("O")) {
                         HashMap<Integer, String> params = new HashMap<>();
-                        params.put(0, data.getNumeroPrestamo()+"-"+data.getIdGestion());
+                        params.put(0, data.getNumeroPrestamo() + "-" + data.getIdGestion());
                         params.put(1, data.getAsesorId());
                         params.put(2, row.getString(3));
                         params.put(3, "C");
@@ -352,15 +342,14 @@ public class PrintTicket {
 
                         dBhelper.saveImpresionesVencida(db, params);
 
-                        linea = line("Folio: ", "CV"+data.getAsesorId()+"-"+row.getString(3));
-                    }
-                    else {
+                        linea = line("Folio: ", "CV" + data.getAsesorId() + "-" + row.getString(3));
+                    } else {
                         String sql = "SELECT folio FROM " + TBL_IMPRESIONES_VENCIDA_T + " WHERE num_prestamo_id_gestion = ? AND tipo_impresion = ? ";
-                        Cursor row_folio = db.rawQuery(sql, new String[]{data.getNumeroPrestamo()+"-"+data.getIdGestion(), "O"});
-                        if (row_folio.getCount() > 0){
+                        Cursor row_folio = db.rawQuery(sql, new String[]{data.getNumeroPrestamo() + "-" + data.getIdGestion(), "O"});
+                        if (row_folio.getCount() > 0) {
                             row_folio.moveToFirst();
                             HashMap<Integer, String> params = new HashMap<>();
-                            params.put(0, data.getNumeroPrestamo()+"-"+data.getIdGestion());
+                            params.put(0, data.getNumeroPrestamo() + "-" + data.getIdGestion());
                             params.put(1, data.getAsesorId());
                             params.put(2, row_folio.getString(0));
                             params.put(3, "C");
@@ -374,9 +363,8 @@ public class PrintTicket {
 
                             dBhelper.saveImpresionesVencida(db, params);
 
-                            linea = line("Folio: ", "CV"+data.getAsesorId()+"-"+row_folio.getString(0));
-                        }
-                        else {
+                            linea = line("Folio: ", "CV" + data.getAsesorId() + "-" + row_folio.getString(0));
+                        } else {
                             HashMap<Integer, String> params = new HashMap<>();
                             params.put(0, data.getNumeroPrestamo() + "-" + data.getIdGestion());
                             params.put(1, data.getAsesorId());
@@ -429,7 +417,7 @@ public class PrintTicket {
                 URL url = null;
                 try {
                     //url = new  URL("http://sidert.ddns.net:83"+WebServicesRoutes.CONTROLLER_MOVIL+"pagos/"+AES.encrypt(data.getIdPrestamo()));
-                    url = new  URL(session.getDominio().get(0)+session.getDominio().get(1)+WebServicesRoutes.CONTROLLER_MOVIL+"pagos/"+AES.encrypt(data.getIdPrestamo()));
+                    url = new URL(session.getDominio() + WebServicesRoutes.CONTROLLER_MOVIL + "pagos/" + AES.encrypt(data.getIdPrestamo()));
                 } catch (MalformedURLException e) {
                     e.printStackTrace();
                 }
@@ -438,7 +426,7 @@ public class PrintTicket {
 
                 posPtr.printNormal(ESC + "|lA" + ESC + "|bC" + ESC + "|1C" + "Escanea el codigo para ver tu   ");
                 posPtr.printNormal(ESC + "|lA" + ESC + "|bC" + ESC + "|1C" + "historial de pagos o ingresa al ");
-                posPtr.printNormal(ESC + "|lA" + ESC + "|bC" + ESC + "|1C" + "siguiente link: "+url.toString());
+                posPtr.printNormal(ESC + "|lA" + ESC + "|bC" + ESC + "|1C" + "siguiente link: " + url.toString());
 
                 dobleEspacio();
             }
@@ -457,24 +445,24 @@ public class PrintTicket {
 
     }
 
-    private void SendMess(Context ctx, final String prestamoId, final String phone, final String nombre, final String monto, final String fecha, final String folio){
+    private void SendMess(Context ctx, final String prestamoId, final String phone, final String nombre, final String monto, final String fecha, final String folio) {
         URL url = null;
         try {
-            url = new  URL(session.getDominio().get(0)+session.getDominio().get(1)+WebServicesRoutes.CONTROLLER_MOVIL+"pagos/"+AES.encrypt(prestamoId));
+            url = new URL(session.getDominio() + WebServicesRoutes.CONTROLLER_MOVIL + "pagos/" + AES.encrypt(prestamoId));
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
 
         String clienteGpo = nombre;
         if (nombre.length() > 17)
-            clienteGpo = nombre.substring(0,15);
+            clienteGpo = nombre.substring(0, 15);
 
         Log.e("Comienza SMS", "Prepara SMS");
         String numeroCelular = phone; /**Coloca el numero celular del cliente y en caso que el asesor que esta imprimiendo sea el ASESOR de pruebas manda SMS al numero de SOPORTE*/
 
         if (session.getUser().get(9).equals("134")) /**USUARIO_ID del usuario ASESOR de pruebas*/
             numeroCelular = "2292641103"; //Telefono para cuando se quieren hacer pruebas
-        String mess = clienteGpo + " pago por $"+monto+" pesos. Folio "+folio+".\n Valida tus pagos: "+url.toString();
+        String mess = clienteGpo + " pago por $" + monto + " pesos. Folio " + folio + ".\n Valida tus pagos: " + url.toString();
         Log.e("Mensaje", mess);
         Miscellaneous.SendMess(numeroCelular, mess);
 
@@ -487,26 +475,26 @@ public class PrintTicket {
         return currency;
     }
 
-    private String line(String left, String rigth){
+    private String line(String left, String rigth) {
         int nCaracteres = left.length() + rigth.length();
         String result = left;
-        if(nCaracteres <= 32){
-            nCaracteres = 32-nCaracteres;
-            for(int i = 0; i < nCaracteres; i++){
+        if (nCaracteres <= 32) {
+            nCaracteres = 32 - nCaracteres;
+            for (int i = 0; i < nCaracteres; i++) {
                 result += " ";
             }
             result = result + rigth;
-        }else{
+        } else {
             String[] partes = rigth.split(" ");
             nCaracteres = result.length();
-            for(int i = 0; i < partes.length; i++){
+            for (int i = 0; i < partes.length; i++) {
                 nCaracteres = nCaracteres + partes[i].length();
-                if(nCaracteres < 32){
+                if (nCaracteres < 32) {
                     result += partes[i] + " ";
                     nCaracteres++;
-                }else{
+                } else {
                     nCaracteres = nCaracteres - partes[i].length();
-                    for(; nCaracteres < 32; nCaracteres++){
+                    for (; nCaracteres < 32; nCaracteres++) {
                         result += " ";
                     }
                     result += partes[i] + " ";
@@ -516,21 +504,21 @@ public class PrintTicket {
         return result;
     }
 
-    private void dobleEspacio(){
+    private void dobleEspacio() {
         try {
-            posPtr.printNormal(""+LF + LF);
+            posPtr.printNormal("" + LF + LF);
 
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
     }
 
-    private String replaceStr (String str){
+    private String replaceStr(String str) {
         String[] value = {"Á", "É", "Í", "Ó", "Ú", "á", "é", "í", "ó", "ú", "Ñ", "ñ"};
-        String[] valueReplace = {"A", "E", "I", "O", "U", "a", "e", "i", "o", "u","N", "n"};
+        String[] valueReplace = {"A", "E", "I", "O", "U", "a", "e", "i", "o", "u", "N", "n"};
 
-        for (int i = 0; i < 12; i++){
-            str = str.replace(value[i],valueReplace[i]);
+        for (int i = 0; i < 12; i++) {
+            str = str.replace(value[i], valueReplace[i]);
         }
         return str;
     }

@@ -4,13 +4,19 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.widget.Toast;
 
 import com.sidert.sidertmovil.database.DBhelper;
+import com.sidert.sidertmovil.models.MResSaveSolicitud;
 import com.sidert.sidertmovil.utils.Miscellaneous;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.sidert.sidertmovil.utils.Constants.TBL_DATOS_BENEFICIARIO;
+import static com.sidert.sidertmovil.utils.Constants.TBL_DATOS_CREDITO_CAMPANA;
+import static com.sidert.sidertmovil.utils.Constants.TBL_DATOS_CREDITO_CAMPANA_GPO;
+import static com.sidert.sidertmovil.utils.Constants.TBL_DATOS_CREDITO_CAMPANA_GPO_REN;
 import static com.sidert.sidertmovil.utils.Constants.TBL_SOLICITUDES;
 import static com.sidert.sidertmovil.utils.Constants.TIMESTAMP;
 
@@ -19,7 +25,7 @@ public class SolicitudDao {
     final SQLiteDatabase db;
 
     public SolicitudDao(Context ctx){
-        this.dbHelper = new DBhelper(ctx);
+        this.dbHelper = DBhelper.getInstance(ctx);
         this.db = dbHelper.getWritableDatabase();
     }
 
@@ -193,9 +199,12 @@ public class SolicitudDao {
     {
         ContentValues cv = new ContentValues();
 
+
         if(solicitud.getIdOriginacion() > 0) {
             cv.put("id_originacion", String.valueOf(solicitud.getIdOriginacion()));
+
             db.update(TBL_SOLICITUDES, cv, "id_solicitud = ?", new String[]{String.valueOf(solicitud.getIdSolicitud())});
+
         }
     }
 
@@ -206,21 +215,50 @@ public class SolicitudDao {
         cv.put("estatus", solicitud.getEstatus());
         if(solicitud.getIdOriginacion() > 0) cv.put("id_originacion", String.valueOf(solicitud.getIdOriginacion()));
         cv.put("fecha_termino", solicitud.getFechaTermino());
+        db.update(TBL_SOLICITUDES, cv, "id_solicitud = ?", new String[]{String.valueOf(solicitud.getIdSolicitud())});
         //cv.put("fecha_envio", solicitud.getFechaEnvio());
         //cv.put("fecha_guardado", solicitud.getFechaGuardado());
-
-        db.update(TBL_SOLICITUDES, cv, "id_solicitud = ?", new String[]{String.valueOf(solicitud.getIdSolicitud())});
     }
 
-    public void solicitudEnviada(Solicitud solicitud)
+    public void solicitudEnviada(Solicitud solicitud, MResSaveSolicitud dato)
     {
         ContentValues cv = new ContentValues();
+        ContentValues mn = new ContentValues();
 
         cv.put("estatus", solicitud.getEstatus());
         if(solicitud.getIdOriginacion() > 0) cv.put("id_originacion", String.valueOf(solicitud.getIdOriginacion()));
         cv.put("fecha_guardado", Miscellaneous.ObtenerFecha(TIMESTAMP));
+        mn.put("id_originacion", String.valueOf(solicitud.getIdOriginacion()));
+
+        updateIdCliente(dato,solicitud);
 
         db.update(TBL_SOLICITUDES, cv, "id_solicitud = ?", new String[]{String.valueOf(solicitud.getIdSolicitud())});
+        db.update(TBL_DATOS_BENEFICIARIO,mn,"id_solicitud = ?",new String[]{String.valueOf(solicitud.getIdSolicitud())});
+        db.update(TBL_DATOS_CREDITO_CAMPANA,mn,"id_solicitud = ?", new String[]{String.valueOf(solicitud.getIdSolicitud())});
+        db.update(TBL_DATOS_CREDITO_CAMPANA_GPO_REN,mn,"id_solicitud = ?", new String[]{String.valueOf(solicitud.getIdSolicitud())});
+    }
+
+    public void updateIdCliente(MResSaveSolicitud id_cliente, Solicitud solicitud){
+
+        ContentValues cv = new ContentValues();
+
+        if(solicitud.getIdSolicitud()>0){
+            cv.put("id_cliente",String.valueOf(id_cliente.getId_cliente()));
+            db.update(TBL_DATOS_BENEFICIARIO,cv,"id_solicitud = ?", new String[]{String.valueOf(solicitud.getIdSolicitud())});
+        }
+
+    }
+
+    public void solicitudEnviadaInd(Solicitud solicitud){
+        ContentValues cv = new ContentValues();
+        cv.put("id_originacion",String.valueOf(solicitud.getIdOriginacion()));
+        db.update(TBL_DATOS_CREDITO_CAMPANA, cv,"id_solicitud = ?", new String[]{String.valueOf(solicitud.getIdSolicitud())});
+    }
+
+    public void solicitudEnviadaGpo(Solicitud solicitud){
+        ContentValues cv = new ContentValues();
+        cv.put("id_originacion",String.valueOf(solicitud.getIdOriginacion()));
+        db.update(TBL_DATOS_CREDITO_CAMPANA_GPO,cv, "id_solicitud = ?", new String[]{String.valueOf(solicitud.getIdSolicitud())});
     }
 
     public void setCompletado(Solicitud solicitud)

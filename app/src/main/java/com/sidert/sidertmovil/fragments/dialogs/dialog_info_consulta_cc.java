@@ -6,8 +6,10 @@ import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
+
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -70,18 +72,18 @@ public class dialog_info_consulta_cc extends DialogFragment {
 
         ctx = getContext();
 
-        session = new SessionManager(ctx);
+        session = SessionManager.getInstance(ctx);
 
-        tvSaldoActual       = v.findViewById(R.id.tvSaldoActual);
-        tvSaldoVencido      = v.findViewById(R.id.tvSaldoVencido);
-        tvMontoPagar        = v.findViewById(R.id.tvMontoPagar);
-        tvPeorPago          = v.findViewById(R.id.tvPeorPago);
-        tvCreditosAbiertos  = v.findViewById(R.id.tvCreditosAbiertos);
-        tvCreditosCerrados  = v.findViewById(R.id.tvCreditosCerrados);
-        tvMontoSolicitado   = v.findViewById(R.id.tvMontoSoli);
-        etMontoAutorizado   = v.findViewById(R.id.etMontoAutorizado);
+        tvSaldoActual = v.findViewById(R.id.tvSaldoActual);
+        tvSaldoVencido = v.findViewById(R.id.tvSaldoVencido);
+        tvMontoPagar = v.findViewById(R.id.tvMontoPagar);
+        tvPeorPago = v.findViewById(R.id.tvPeorPago);
+        tvCreditosAbiertos = v.findViewById(R.id.tvCreditosAbiertos);
+        tvCreditosCerrados = v.findViewById(R.id.tvCreditosCerrados);
+        tvMontoSolicitado = v.findViewById(R.id.tvMontoSoli);
+        etMontoAutorizado = v.findViewById(R.id.etMontoAutorizado);
 
-        btnDescargarPdf     = v.findViewById(R.id.btnDescargarPdf);
+        btnDescargarPdf = v.findViewById(R.id.btnDescargarPdf);
 
         filePdf = getArguments().getString("file_pdf");
 
@@ -96,7 +98,7 @@ public class dialog_info_consulta_cc extends DialogFragment {
 
 
         int i = 1;
-        for (MRespuestaCC.Credito credito : respuesta.getCreditos()){
+        for (MRespuestaCC.Credito credito : respuesta.getCreditos()) {
             if (!Miscellaneous.validStr(credito.getFechaCierreCuenta()).isEmpty())
                 credCerrado += 1;
             else
@@ -104,7 +106,7 @@ public class dialog_info_consulta_cc extends DialogFragment {
 
             saldVencido += credito.getSaldoVencido();
 
-            saldActual +=  credito.getSaldoActual();
+            saldActual += credito.getSaldoActual();
 
             montoPagar += Miscellaneous.validDbl(credito.getMontoPagar());
 
@@ -130,7 +132,7 @@ public class dialog_info_consulta_cc extends DialogFragment {
 
         if (!Miscellaneous.validStr(filePdf).isEmpty())
             btnDescargarPdf.setOnClickListener(btnDescargarPdf_OnClick);
-        else{
+        else {
             btnDescargarPdf.setVisibility(View.GONE);
         }
 
@@ -142,7 +144,7 @@ public class dialog_info_consulta_cc extends DialogFragment {
         super.onActivityCreated(savedInstanceState);
 
         etMontoAutorizado.addTextChangedListener(new TextWatcher() {
-            private final String PATTERN_MONTO_CREDITO  = "[1-9][0-9][0-9][0][0][0]|[1-9][0-9][0][0][0]|[1-9][0][0][0]";
+            private final String PATTERN_MONTO_CREDITO = "[1-9][0-9][0-9][0][0][0]|[1-9][0-9][0][0][0]|[1-9][0][0][0]";
             private Pattern pattern;
             private Matcher matcher;
 
@@ -153,8 +155,7 @@ public class dialog_info_consulta_cc extends DialogFragment {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if (s.toString().contains(String.valueOf(df.getDecimalFormatSymbols().getDecimalSeparator())))
-                {
+                if (s.toString().contains(String.valueOf(df.getDecimalFormatSymbols().getDecimalSeparator()))) {
                     hasFractionalPart = true;
                 } else {
                     hasFractionalPart = false;
@@ -190,10 +191,10 @@ public class dialog_info_consulta_cc extends DialogFragment {
                     // do nothing?
                 }
 
-                if (s.length()> 0){
+                if (s.length() > 0) {
                     pattern = Pattern.compile(PATTERN_MONTO_CREDITO);
-                    matcher = pattern.matcher(s.toString().replace(",",""));
-                    if(!matcher.matches()) {
+                    matcher = pattern.matcher(s.toString().replace(",", ""));
+                    if (!matcher.matches()) {
                         etMontoAutorizado.setError("La cantidad no corresponde a un monto de crédito válido");
                     }
                 }
@@ -206,12 +207,12 @@ public class dialog_info_consulta_cc extends DialogFragment {
     private View.OnClickListener btnDescargarPdf_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
-            Log.e("URL", session.getDominio().get(0)+session.getDominio().get(1)+"/api/"+filePdf.replace("\\","/"));
-            if (NetworkStatus.haveWifi(ctx)){
+            Log.e("URL", session.getDominio() + "/api/" + filePdf.replace("\\", "/"));
+            if (NetworkStatus.haveWifi(ctx)) {
                 try {
 
 
-                    URL url = new URL(session.getDominio().get(0)+session.getDominio().get(1)+"/api/"+filePdf.replace("\\","/"));
+                    URL url = new URL(session.getDominio() + "/api/" + filePdf.replace("\\", "/"));
 
                     startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url.toString())));
 
@@ -220,8 +221,7 @@ public class dialog_info_consulta_cc extends DialogFragment {
                 }
                 Log.v("PdfManager", "Check: ");
 
-            }
-            else{
+            } else {
                 Toast.makeText(ctx, "Solo con WIFI podrá descargar el PDF", Toast.LENGTH_SHORT).show();
             }
         }

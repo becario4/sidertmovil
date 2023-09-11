@@ -74,8 +74,8 @@ public class autorizaciones_cc_fragment extends Fragment {
 
         loading.show();
 
-        final SessionManager session = new SessionManager(ctx);
-        ManagerInterface api = new RetrofitClient().generalRF(CONTROLLER_API, ctx).create(ManagerInterface.class);
+        final SessionManager session = SessionManager.getInstance(ctx);
+        ManagerInterface api = RetrofitClient.generalRF(CONTROLLER_API, ctx).create(ManagerInterface.class);
 
         Call<List<MAutorizarCC>> call = api.getAutorizarCC(
                 "Bearer "+ session.getUser().get(7),

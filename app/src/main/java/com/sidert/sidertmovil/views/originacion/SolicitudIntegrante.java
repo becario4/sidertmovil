@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.location.LocationManager;
 /*import android.support.design.widget.FloatingActionButton;
@@ -354,7 +355,7 @@ public class SolicitudIntegrante extends AppCompatActivity {
         setContentView(R.layout.activity_solicitud_integrante);
 
         ctx = this;
-        dBhelper = new DBhelper(ctx);
+        dBhelper = DBhelper.getInstance(ctx);
         db = dBhelper.getWritableDatabase();
 
         Toolbar TBmain = findViewById(R.id.TBmain);
@@ -603,21 +604,21 @@ public class SolicitudIntegrante extends AppCompatActivity {
         btnContinuar0 = findViewById(R.id.btnContinuar0);
         btnContinuar1 = findViewById(R.id.btnContinuar1);
         btnContinuar2 = findViewById(R.id.btnContinuar2);
-        btnContinuar3 = findViewById(R.id.btnContinuar3);
-        btnContinuar4 = findViewById(R.id.btnContinuar4);
+        btnContinuar3 = findViewById(R.id.btnContinuarDatosEconomicosInd);
+        btnContinuar4 = findViewById(R.id.btnContinuarDatosNegocioInd);
         btnContinuar7 = findViewById(R.id.btnContinuar7);
         btnContinuar8 = findViewById(R.id.btnContinuar8);
         btnContinuar8.hide();
-        btnContinuar5 = findViewById(R.id.btnContinuar5);
+        btnContinuar5 = findViewById(R.id.btnContinuarDatosAvalInd);
 
         btnRegresar1 = findViewById(R.id.btnRegresar1);
         btnRegresar2 = findViewById(R.id.btnRegresar2);
-        btnRegresar3 = findViewById(R.id.btnRegresar3);
-        btnRegresar4 = findViewById(R.id.btnRegresar4);
-        btnRegresar5 = findViewById(R.id.btnRegresar5);
+        btnRegresar3 = findViewById(R.id.btnRegresarDatosEconomicosInd);
+        btnRegresar4 = findViewById(R.id.btnRegresarDatosNegocioInd);
+        btnRegresar5 = findViewById(R.id.btnRegresarDatosAvalInd);
         btnRegresar7 = findViewById(R.id.btnRegresar7);
         btnRegresar8 = findViewById(R.id.btnRegresar8);
-        btnRegresar6 = findViewById(R.id.btnRegresar6);
+        btnRegresar6 = findViewById(R.id.btnRegresarDatosRefSolInd);
 
         mapCli.onCreate(savedInstanceState);
         mapNeg.onCreate(savedInstanceState);
@@ -1726,43 +1727,41 @@ public class SolicitudIntegrante extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
+        int itemId = item.getItemId();
+        if (itemId == android.R.id.home) {
+            finish();
+        } else if (itemId == R.id.save) {
+            final AlertDialog loading = Popups.showLoadingDialog(ctx, R.string.please_wait, R.string.loading_info);
+            loading.show();
+
+
+            if (!validator.validate(etCredAutorizado, new String[]{validator.REQUIRED, validator.MONEY, validator.CREDITO})) {
+
+                ContentValues cv = new ContentValues();
+                cv.put("estatus_completado", 1);
+                cv.put("monto_autorizado", etCredAutorizado.getText().toString().trim().replace(",", ""));
+                db.update(TBL_OTROS_DATOS_INTEGRANTE_AUTO, cv, "id_integrante = ?", new String[]{String.valueOf(id_integrante)});
+
+                loading.dismiss();
+                //Toast.makeText(ctx, "termina guardado", Toast.LENGTH_SHORT).show();
+
                 finish();
-                break;
-            case R.id.save:
-                final AlertDialog loading = Popups.showLoadingDialog(ctx, R.string.please_wait, R.string.loading_info);
-                loading.show();
 
+            } else {
+                loading.dismiss();
+                final AlertDialog solicitud;
+                solicitud = Popups.showDialogMessage(this, warning,
+                        "Faltan colocar el monto autorizado", R.string.accept, new Popups.DialogMessage() {
+                            @Override
+                            public void OnClickListener(AlertDialog dialog) {
+                                dialog.dismiss();
+                            }
+                        });
+                solicitud.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+                solicitud.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                solicitud.show();
 
-                if (!validator.validate(etCredAutorizado, new String[]{validator.REQUIRED, validator.MONEY, validator.CREDITO})){
-
-                    ContentValues cv = new ContentValues();
-                    cv.put("estatus_completado", 1);
-                    cv.put("monto_autorizado", etCredAutorizado.getText().toString().trim().replace(",",""));
-                    db.update(TBL_OTROS_DATOS_INTEGRANTE_AUTO, cv, "id_integrante = ?", new String[]{String.valueOf(id_integrante)});
-
-                    loading.dismiss();
-                    //Toast.makeText(ctx, "termina guardado", Toast.LENGTH_SHORT).show();
-
-                    finish();
-
-                }
-                else {
-                    loading.dismiss();
-                    final AlertDialog solicitud;
-                    solicitud = Popups.showDialogMessage(this, warning,
-                            "Faltan colocar el monto autorizado", R.string.accept, new Popups.DialogMessage() {
-                                @Override
-                                public void OnClickListener(AlertDialog dialog) {
-                                    dialog.dismiss();
-                                }
-                            });
-                    solicitud.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
-                    solicitud.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
-                    solicitud.show();
-
-                }
+            }
                 /*boolean datos_personales = saveDatosIntegrante();
                 boolean datos_telefonicos = saveDatosTelefonicos();
                 boolean datos_domiclio = saveDatosDomicilio();
@@ -1803,8 +1802,6 @@ public class SolicitudIntegrante extends AppCompatActivity {
                     solicitud.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
                     solicitud.show();
                 }*/
-
-                break;
         }
         return super.onOptionsItemSelected(item);
     }

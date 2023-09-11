@@ -1,16 +1,10 @@
 package com.sidert.sidertmovil.views.apoyogastosfunerarios;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-/*import android.support.design.widget.FloatingActionButton;
-import androidx.appcompat.app.AppCompatActivity;*/
 import android.os.Bundle;
-/*import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
-import androidx.appcompat.widget.Toolbar;*/
-import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -21,22 +15,14 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.CheckBox;
-import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.orhanobut.dialogplus.DialogPlus;
 import com.orhanobut.dialogplus.OnClickListener;
 import com.orhanobut.dialogplus.ViewHolder;
 import com.sidert.sidertmovil.R;
-import com.sidert.sidertmovil.activities.GenerarCurp;
 import com.sidert.sidertmovil.models.apoyogastosfunerarios.Gestion;
 import com.sidert.sidertmovil.models.apoyogastosfunerarios.GestionDao;
 import com.sidert.sidertmovil.models.apoyogastosfunerarios.Prestamo;
@@ -51,19 +37,18 @@ import org.json.JSONObject;
 import java.util.HashMap;
 import java.util.List;
 
-import static com.sidert.sidertmovil.utils.Constants.TIPO;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 public class ApoyoGastosFunerariosActivity extends AppCompatActivity {
     private Context ctx;
-
     private RecyclerView rvClientes;
-
     private RadioButton rbPrestamos;
     private RadioButton rbRecibos;
     private RadioButton rbGestiones;
-
     private SessionManager session;
-
     private Toolbar tbMain;
 
     //Prestamos
@@ -103,7 +88,7 @@ public class ApoyoGastosFunerariosActivity extends AppCompatActivity {
         ctx = this;
 
         tbMain       = findViewById(R.id.TBmain);
-        session      = new SessionManager(ctx);
+        session      = SessionManager.getInstance(ctx);
         rbPrestamos  = findViewById(R.id.rbPrestamos);
         rbRecibos    = findViewById(R.id.rbRecibos);
         rbGestiones  = findViewById(R.id.rbGestiones);
@@ -343,19 +328,22 @@ public class ApoyoGastosFunerariosActivity extends AppCompatActivity {
     @SuppressLint("ClickableViewAccessibility")
     private void Filtros (){
         int view = 0;
-        int sizeH = 0;
+
+        int sizeH = 900;
+        Activity activity = this;
+        if (activity != null) {
+            View decorateView = activity.getWindow().getDecorView();
+            sizeH = (int) (decorateView.getHeight() / 2.0);
+        }
 
         switch (tipoSeccion){
             case 1:
-                sizeH = 600;
                 view = R.layout.sheet_dialog_filtros_prestamos_cc_agf;
                 break;
             case 2:
-                sizeH = 730;
                 view = R.layout.sheet_dialog_filtros_recibos_cc_agf;
                 break;
             case 3:
-                sizeH = 610;
                 view = R.layout.sheet_dialog_filtros_gestiones_cc_agf;
                 break;
         }
@@ -374,202 +362,189 @@ public class ApoyoGastosFunerariosActivity extends AppCompatActivity {
                         HashMap<String, String> filtros = new HashMap<>();
                         InputMethodManager imm          = (InputMethodManager)ctx.getSystemService(Context.INPUT_METHOD_SERVICE);
 
-                        switch (view.getId()) {
-                            case R.id.btnFiltrar:
-                                switch (tipoSeccion){
-                                    case 1:
-                                        if (!aetNombre.getText().toString().trim().isEmpty()){
-                                            filtros.put("nombre_cc_agf",aetNombre.getText().toString().trim());
-                                            cont_filtros += 1;
-                                        }
-                                        else filtros.put("nombre_cc_agf","");
+                        int id = view.getId();
+                        if (id == R.id.btnFiltrar) {
+                            switch (tipoSeccion) {
+                                case 1:
+                                    if (!aetNombre.getText().toString().trim().isEmpty()) {
+                                        filtros.put("nombre_cc_agf", aetNombre.getText().toString().trim());
+                                        cont_filtros += 1;
+                                    } else filtros.put("nombre_cc_agf", "");
 
-                                        if (cbInd.isChecked() && cbGpo.isChecked()){
-                                            filtros.put("tipo_prestamo_ind_cc_agf","1");
-                                            filtros.put("tipo_prestamo_gpo_cc_agf","1");
-                                            cont_filtros += 2;
-                                        }
-                                        else if (cbInd.isChecked()){
-                                            filtros.put("tipo_prestamo_ind_cc_agf","1");
-                                            filtros.put("tipo_prestamo_gpo_cc_agf","0");
-                                            cont_filtros += 1;
-                                        }
-                                        else if (cbGpo.isChecked()){
-                                            filtros.put("tipo_prestamo_ind_cc_agf","0");
-                                            filtros.put("tipo_prestamo_gpo_cc_agf","1");
-                                            cont_filtros += 1;
-                                        }else {
-                                            filtros.put("tipo_prestamo_ind_cc_agf","0");
-                                            filtros.put("tipo_prestamo_gpo_cc_agf","0");
-                                        }
+                                    if (cbInd.isChecked() && cbGpo.isChecked()) {
+                                        filtros.put("tipo_prestamo_ind_cc_agf", "1");
+                                        filtros.put("tipo_prestamo_gpo_cc_agf", "1");
+                                        cont_filtros += 2;
+                                    } else if (cbInd.isChecked()) {
+                                        filtros.put("tipo_prestamo_ind_cc_agf", "1");
+                                        filtros.put("tipo_prestamo_gpo_cc_agf", "0");
+                                        cont_filtros += 1;
+                                    } else if (cbGpo.isChecked()) {
+                                        filtros.put("tipo_prestamo_ind_cc_agf", "0");
+                                        filtros.put("tipo_prestamo_gpo_cc_agf", "1");
+                                        cont_filtros += 1;
+                                    } else {
+                                        filtros.put("tipo_prestamo_ind_cc_agf", "0");
+                                        filtros.put("tipo_prestamo_gpo_cc_agf", "0");
+                                    }
 
-                                        filtros.put("contador_cc_agf", String.valueOf(cont_filtros));
-                                        session.setFiltrosCCAGF(filtros);
+                                    filtros.put("contador_cc_agf", String.valueOf(cont_filtros));
+                                    session.setFiltrosCCAGF(filtros);
 
-                                        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                                    imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
 
-                                        getPrestamos();
+                                    getPrestamos();
 
-                                        break;
-                                    case 2:
-                                        if (!aetNombreRec.getText().toString().trim().isEmpty()){
-                                            filtros.put("nombre_recibo_cc_agf",aetNombreRec.getText().toString().trim());
-                                            cont_filtros_recibo += 1;
-                                        }
-                                        else{
-                                            filtros.put("nombre_recibo_cc_agf","");
-                                        }
+                                    break;
+                                case 2:
+                                    if (!aetNombreRec.getText().toString().trim().isEmpty()) {
+                                        filtros.put("nombre_recibo_cc_agf", aetNombreRec.getText().toString().trim());
+                                        cont_filtros_recibo += 1;
+                                    } else {
+                                        filtros.put("nombre_recibo_cc_agf", "");
+                                    }
 
-                                        if (!aetFolio.getText().toString().trim().isEmpty()){
-                                            filtros.put("folio_recibo_cc_agf",aetFolio.getText().toString().trim());
-                                            cont_filtros_recibo += 1;
-                                        }
-                                        else{
-                                            filtros.put("folio_recibo_cc_agf","");
-                                        }
+                                    if (!aetFolio.getText().toString().trim().isEmpty()) {
+                                        filtros.put("folio_recibo_cc_agf", aetFolio.getText().toString().trim());
+                                        cont_filtros_recibo += 1;
+                                    } else {
+                                        filtros.put("folio_recibo_cc_agf", "");
+                                    }
 
-                                        filtros.put("recibo_agf","0");
-                                        filtros.put("recibo_cc","0");
+                                    filtros.put("recibo_agf", "0");
+                                    filtros.put("recibo_cc", "0");
 
-                                        if (cbEnv.isChecked() && cbPen.isChecked()){
-                                            filtros.put("recibo_enviada_cc_agf","1");
-                                            filtros.put("recibo_pendiente_cc_agf","1");
-                                            cont_filtros_recibo += 2;
-                                        }
-                                        else if (cbEnv.isChecked()){
-                                            filtros.put("recibo_enviada_cc_agf","1");
-                                            filtros.put("recibo_pendiente_cc_agf","0");
-                                            cont_filtros_recibo += 1;
-                                        }
-                                        else if (cbPen.isChecked()){
-                                            filtros.put("recibo_enviada_cc_agf","0");
-                                            filtros.put("recibo_pendiente_cc_agf","1");
-                                            cont_filtros_recibo += 1;
-                                        }else {
-                                            filtros.put("recibo_enviada_cc_agf","0");
-                                            filtros.put("recibo_pendiente_cc_agf","0");
-                                        }
+                                    if (cbEnv.isChecked() && cbPen.isChecked()) {
+                                        filtros.put("recibo_enviada_cc_agf", "1");
+                                        filtros.put("recibo_pendiente_cc_agf", "1");
+                                        cont_filtros_recibo += 2;
+                                    } else if (cbEnv.isChecked()) {
+                                        filtros.put("recibo_enviada_cc_agf", "1");
+                                        filtros.put("recibo_pendiente_cc_agf", "0");
+                                        cont_filtros_recibo += 1;
+                                    } else if (cbPen.isChecked()) {
+                                        filtros.put("recibo_enviada_cc_agf", "0");
+                                        filtros.put("recibo_pendiente_cc_agf", "1");
+                                        cont_filtros_recibo += 1;
+                                    } else {
+                                        filtros.put("recibo_enviada_cc_agf", "0");
+                                        filtros.put("recibo_pendiente_cc_agf", "0");
+                                    }
 
-                                        filtros.put("contador_recibo_cc_agf", String.valueOf(cont_filtros_recibo));
-                                        session.setFiltrosRecibosCCAGF(filtros);
+                                    filtros.put("contador_recibo_cc_agf", String.valueOf(cont_filtros_recibo));
+                                    session.setFiltrosRecibosCCAGF(filtros);
 
-                                        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                                    imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
 
-                                        getRecibos();
+                                    getRecibos();
 
-                                        break;
-                                    case 3:
-                                        if (!aetNombreGes.getText().toString().trim().isEmpty()){
-                                            filtros.put("nombre_gestion_cc_agf",aetNombreGes.getText().toString().trim());
-                                            cont_filtros_ges += 1;
-                                        }
-                                        else{
-                                            filtros.put("nombre_gestion_cc_agf","");
-                                        }
+                                    break;
+                                case 3:
+                                    if (!aetNombreGes.getText().toString().trim().isEmpty()) {
+                                        filtros.put("nombre_gestion_cc_agf", aetNombreGes.getText().toString().trim());
+                                        cont_filtros_ges += 1;
+                                    } else {
+                                        filtros.put("nombre_gestion_cc_agf", "");
+                                    }
 
-                                        filtros.put("gestion_agf","0");
-                                        filtros.put("gestion_cc","0");
+                                    filtros.put("gestion_agf", "0");
+                                    filtros.put("gestion_cc", "0");
 
-                                        if (cbEnvGes.isChecked() && cbPenGes.isChecked()){
-                                            filtros.put("gestion_enviada_cc_agf","1");
-                                            filtros.put("gestion_pendiente_cc_agf","1");
-                                            cont_filtros_ges += 2;
-                                        }
-                                        else if (cbEnvGes.isChecked()){
-                                            filtros.put("gestion_enviada_cc_agf","1");
-                                            filtros.put("gestion_pendiente_cc_agf","0");
-                                            cont_filtros_ges += 1;
-                                        }
-                                        else if (cbPenGes.isChecked()){
-                                            filtros.put("gestion_enviada_cc_agf","0");
-                                            filtros.put("gestion_pendiente_cc_agf","1");
-                                            cont_filtros_ges += 1;
-                                        }else {
-                                            filtros.put("gestion_enviada_cc_agf","0");
-                                            filtros.put("gestion_pendiente_cc_agf","0");
-                                        }
+                                    if (cbEnvGes.isChecked() && cbPenGes.isChecked()) {
+                                        filtros.put("gestion_enviada_cc_agf", "1");
+                                        filtros.put("gestion_pendiente_cc_agf", "1");
+                                        cont_filtros_ges += 2;
+                                    } else if (cbEnvGes.isChecked()) {
+                                        filtros.put("gestion_enviada_cc_agf", "1");
+                                        filtros.put("gestion_pendiente_cc_agf", "0");
+                                        cont_filtros_ges += 1;
+                                    } else if (cbPenGes.isChecked()) {
+                                        filtros.put("gestion_enviada_cc_agf", "0");
+                                        filtros.put("gestion_pendiente_cc_agf", "1");
+                                        cont_filtros_ges += 1;
+                                    } else {
+                                        filtros.put("gestion_enviada_cc_agf", "0");
+                                        filtros.put("gestion_pendiente_cc_agf", "0");
+                                    }
 
-                                        filtros.put("gestion_recibo_cc_agf", String.valueOf(cont_filtros_ges));
-                                        session.setFiltrosGestionesCCAGF(filtros);
+                                    filtros.put("gestion_recibo_cc_agf", String.valueOf(cont_filtros_ges));
+                                    session.setFiltrosGestionesCCAGF(filtros);
 
-                                        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                                    imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
 
-                                        getGestiones();
+                                    getGestiones();
 
-                                        break;
-                                }
+                                    break;
+                            }
 
-                                dialog.dismiss();
+                            dialog.dismiss();
+                        } else if (id == R.id.btnBorrar) {
+                            switch (tipoSeccion) {
+                                case 1:
+                                    cbInd.setChecked(false);
+                                    cbGpo.setChecked(false);
+                                    aetNombre.setText("");
 
-                                break;
-                            case R.id.btnBorrar:
-                                switch (tipoSeccion){
-                                    case 1:
-                                        cbInd.setChecked(false);
-                                        cbGpo.setChecked(false);
-                                        aetNombre.setText("");
+                                    cont_filtros = 0;
+                                    filtros = new HashMap<>();
+                                    filtros.put("nombre_cc_agf", "");
+                                    filtros.put("tipo_prestamo_ind_cc_agf", "0");
+                                    filtros.put("tipo_prestamo_gpo_cc_agf", "0");
+                                    filtros.put("contador_cc_agf", "0");
+                                    session.setFiltrosCCAGF(filtros);
 
-                                        cont_filtros = 0;
-                                        filtros = new HashMap<>();
-                                        filtros.put("nombre_cc_agf","");
-                                        filtros.put("tipo_prestamo_ind_cc_agf","0");
-                                        filtros.put("tipo_prestamo_gpo_cc_agf","0");
-                                        filtros.put("contador_cc_agf", "0");
-                                        session.setFiltrosCCAGF(filtros);
+                                    imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
 
-                                        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                                    getPrestamos();
 
-                                        getPrestamos();
+                                    aetNombre.setAdapter(adapterNombre);
+                                    break;
+                                case 2:
+                                    aetNombreRec.setText("");
+                                    cbEnv.setChecked(false);
+                                    cbPen.setChecked(false);
+                                    aetNombreRec.setAdapter(adapterNombreRec);
+                                    aetFolio.setText("");
 
-                                        aetNombre.setAdapter(adapterNombre);
-                                        break;
-                                    case 2:
-                                        aetNombreRec.setText("");
-                                        cbEnv.setChecked(false);
-                                        cbPen.setChecked(false);
-                                        aetNombreRec.setAdapter(adapterNombreRec);
-                                        aetFolio.setText("");
+                                    cont_filtros_recibo = 0;
+                                    filtros = new HashMap<>();
+                                    filtros.put("nombre_recibo_cc_agf", "");
+                                    filtros.put("folio_recibo_cc_agf", "");
+                                    filtros.put("recibo_agf", "0");
+                                    filtros.put("recibo_cc", "0");
+                                    filtros.put("recibo_enviada_cc_agf", "0");
+                                    filtros.put("recibo_pendiente_cc_agf", "0");
+                                    filtros.put("contador_recibo_cc_agf", "0");
+                                    session.setFiltrosRecibosCCAGF(filtros);
 
-                                        cont_filtros_recibo = 0;
-                                        filtros = new HashMap<>();
-                                        filtros.put("nombre_recibo_cc_agf","");
-                                        filtros.put("folio_recibo_cc_agf","");
-                                        filtros.put("recibo_agf","0");
-                                        filtros.put("recibo_cc","0");
-                                        filtros.put("recibo_enviada_cc_agf","0");
-                                        filtros.put("recibo_pendiente_cc_agf","0");
-                                        filtros.put("contador_recibo_cc_agf", "0");
-                                        session.setFiltrosRecibosCCAGF(filtros);
+                                    imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
 
-                                        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                                    getRecibos();
 
-                                        getRecibos();
+                                    break;
+                                case 3:
+                                    aetNombreGes.setText("");
+                                    cbEnvGes.setChecked(false);
+                                    cbPenGes.setChecked(false);
+                                    aetNombreGes.setAdapter(adapterNombreGes);
 
-                                        break;
-                                    case 3:
-                                        aetNombreGes.setText("");
-                                        cbEnvGes.setChecked(false);
-                                        cbPenGes.setChecked(false);
-                                        aetNombreGes.setAdapter(adapterNombreGes);
+                                    cont_filtros_ges = 0;
+                                    filtros = new HashMap<>();
+                                    filtros.put("nombre_recibo_cc_agf", "");
+                                    filtros.put("folio_recibo_cc_agf", "");
+                                    filtros.put("recibo_agf", "0");
+                                    filtros.put("recibo_cc", "0");
+                                    filtros.put("recibo_enviada_cc_agf", "0");
+                                    filtros.put("recibo_pendiente_cc_agf", "0");
+                                    filtros.put("contador_recibo_cc_agf", "0");
+                                    session.setFiltrosGestionesCCAGF(filtros);
 
-                                        cont_filtros_ges = 0;
-                                        filtros = new HashMap<>();
-                                        filtros.put("nombre_recibo_cc_agf","");
-                                        filtros.put("folio_recibo_cc_agf","");
-                                        filtros.put("recibo_agf","0");
-                                        filtros.put("recibo_cc","0");
-                                        filtros.put("recibo_enviada_cc_agf","0");
-                                        filtros.put("recibo_pendiente_cc_agf","0");
-                                        filtros.put("contador_recibo_cc_agf", "0");
-                                        session.setFiltrosGestionesCCAGF(filtros);
+                                    imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
 
-                                        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                                    getGestiones();
 
-                                        getGestiones();
-
-                                        break;
-                                }
-                                break;
+                                    break;
+                            }
                         }
                         setupBadge();
 
@@ -720,17 +695,14 @@ public class ApoyoGastosFunerariosActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                finish();
-                break;
-            case R.id.nvFiltro:
-                Filtros();
-                break;
-            case R.id.nvInfo:
-                Intent intentResumen = new Intent(ctx, ResumenActivity.class);
-                startActivity(intentResumen);
-                break;
+        int itemId = item.getItemId();
+        if (itemId == android.R.id.home) {
+            finish();
+        } else if (itemId == R.id.nvFiltro) {
+            Filtros();
+        } else if (itemId == R.id.nvInfo) {
+            Intent intentResumen = new Intent(ctx, ResumenActivity.class);
+            startActivity(intentResumen);
         }
         return super.onOptionsItemSelected(item);
     }

@@ -43,12 +43,11 @@ import static com.sidert.sidertmovil.utils.Constants.TIMESTAMP;
 import static com.sidert.sidertmovil.utils.Miscellaneous.SendMess;
 
 public class Prints {
-    public static int PrintTicket(Context ctx, Pos pos, int nPrintWidth, boolean bCutter, boolean bDrawer, boolean bBeeper, int nCount, int nPrintContent, int nCompressMethod, RecibosAgfCC ticket, JSONObject object)
-    {
+    public static int PrintTicket(Context ctx, Pos pos, int nPrintWidth, boolean bCutter, boolean bDrawer, boolean bBeeper, int nCount, int nPrintContent, int nCompressMethod, RecibosAgfCC ticket, JSONObject object) {
         int bPrintResult = -6;
         byte[] status = new byte[1];
-        SessionManager session = new SessionManager(ctx);
-        DBhelper dBhelper = new DBhelper(ctx);
+        SessionManager session = SessionManager.getInstance(ctx);
+        DBhelper dBhelper = DBhelper.getInstance(ctx);
         SQLiteDatabase db = dBhelper.getWritableDatabase();
         Cursor row;
         HashMap<Integer, String> params;
@@ -84,7 +83,6 @@ public class Prints {
                                 } else if (ticket.getTipoRecibo().equals("AGF")) {
                                     pos.POS_TextOut("APOYO PARA GASTOS FUNERARIOS\r\n", 4, 0, 0, 0, 0, 0);
                                 }
-
 
 
                                 if (ticket.getTipoImpresion().equals("O")) {
@@ -139,12 +137,9 @@ public class Prints {
                                 bm = getImageFromAssetsFile(ctx, "linea2.png");
                                 pos.POS_PrintPicture(bm, nPrintWidth, 0, 0);
 
-                                if(ticket.getTipoImpresion().equals("O"))
-                                {
+                                if (ticket.getTipoImpresion().equals("O")) {
                                     pos.POS_TextOut("\r\n" + replaceStr(session.getUser().get(1).trim()) + "\r\n\r\n", 4, 0, 0, 0, 0, 0);
-                                }
-                                else
-                                {
+                                } else {
                                     pos.POS_TextOut("\r\n" + replaceStr(ticket.getNombreFirma().trim()) + "\r\n\r\n", 4, 0, 0, 0, 0, 0);
                                 }
 
@@ -342,7 +337,7 @@ public class Prints {
 
                             }
 
-                        }catch (Exception e){
+                        } catch (Exception e) {
                             Log.e("IMPRESION", e.getMessage());
                         }
                     }
@@ -369,12 +364,12 @@ public class Prints {
 
         return bPrintResult;
     }
-    public static int PrintTicketRyC(Context ctx, Pos pos, int nPrintWidth, boolean bCutter, boolean bDrawer, boolean bBeeper, int nCount, int nPrintContent, int nCompressMethod, MImpresion ticket)
-    {
+
+    public static int PrintTicketRyC(Context ctx, Pos pos, int nPrintWidth, boolean bCutter, boolean bDrawer, boolean bBeeper, int nCount, int nPrintContent, int nCompressMethod, MImpresion ticket) {
         int bPrintResult = -6;
         byte[] status = new byte[1];
-        SessionManager session = new SessionManager(ctx);
-        DBhelper dBhelper = new DBhelper(ctx);
+        SessionManager session =SessionManager.getInstance(ctx);
+        DBhelper dBhelper = DBhelper.getInstance(ctx);
         SQLiteDatabase db = dBhelper.getWritableDatabase();
         Cursor row;
         HashMap<Integer, String> params;
@@ -383,7 +378,7 @@ public class Prints {
         URL url = null;
         try {
             //url = new  URL("http://sidert.ddns.net:83"+WebServicesRoutes.CONTROLLER_MOVIL+"pagos/"+AES.encrypt(data.getIdPrestamo()));
-            url = new  URL(session.getDominio().get(0)+session.getDominio().get(1)+WebServicesRoutes.CONTROLLER_MOVIL+"pagos/"+AES.encrypt(ticket.getIdPrestamo()));
+            url = new URL(session.getDominio() + WebServicesRoutes.CONTROLLER_MOVIL + "pagos/" + AES.encrypt(ticket.getIdPrestamo()));
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
@@ -402,33 +397,27 @@ public class Prints {
 
         if (pos.POS_RTQueryStatus(status, 1, 3000, 2) && ((status[0] & 0x12) == 0x12)) {
             if ((status[0] & 0x08) == 0) {
-                if(pos.POS_QueryStatus(status, 3000, 2)) {
+                if (pos.POS_QueryStatus(status, 3000, 2)) {
                     Bitmap bm = getImageFromAssetsFile(ctx, "logo_impresion.png");
 
-                    for(int i = 0; i < nCount; ++i)
-                    {
-                        if(!pos.GetIO().IsOpened())
+                    for (int i = 0; i < nCount; ++i) {
+                        if (!pos.GetIO().IsOpened())
                             break;
 
-                        if(nPrintContent >= 1)
-                        {
+                        if (nPrintContent >= 1) {
                             //HEADER
                             pos.POS_FeedLine();
                             pos.POS_S_Align(1);
-                            if (ticket.getTipoPrestamo().contains("VENCIDA")){
+                            if (ticket.getTipoPrestamo().contains("VENCIDA")) {
                                 bm = BitmapFactory.decodeResource(ctx.getResources(), R.drawable.logo_cv);
-                            }
-                            else{
+                            } else {
                                 bm = BitmapFactory.decodeResource(ctx.getResources(), R.drawable.logo_impresion);
                             }
 
                             pos.POS_PrintPicture(bm, nPrintWidth, 0, 0);
-                            if (ticket.getResultPrint()==0)
-                            {
+                            if (ticket.getResultPrint() == 0) {
                                 pos.POS_TextOut("\r\nOriginal\r\n", 4, 0, 0, 0, 0, 0);
-                            }
-                            else
-                            {
+                            } else {
                                 pos.POS_TextOut("\r\nCopia\r\n", 4, 0, 0, 0, 0, 0);
                             }
                             pos.POS_S_Align(0);
@@ -446,42 +435,42 @@ public class Prints {
                             }
                             if (ticket.getTipoPrestamo().equals("VIGENTE") || ticket.getTipoPrestamo().equals("COBRANZA")) {
 
-                                if (ticket.getTipoGestion().equals("GRUPAL")){
-                                    pos.POS_TextOut("Numero De Prestamo:     "+ticket.getNumeroPrestamo().trim()+"\r\n", 4, 0, 0, 0, 0, 0);
-                                    pos.POS_TextOut("Clave de Grupo:        "+ticket.getNumeroCliente().trim()+"\r\n", 4, 0, 0, 0, 0, 0);
-                                    pos.POS_TextOut("Nombre del Grupo:  "+ticket.getNombre().trim()+"\r\n", 4, 0, 0, 0, 0, 0);
-                                    pos.POS_TextOut("Monto total del prestamo grupal:" +Miscellaneous.moneyFormat((String.valueOf(ticket.getMontoPrestamo()).trim()))+"\r\n", 4, 0, 0, 0, 0, 0);
+                                if (ticket.getTipoGestion().equals("GRUPAL")) {
+                                    pos.POS_TextOut("Numero De Prestamo:     " + ticket.getNumeroPrestamo().trim() + "\r\n", 4, 0, 0, 0, 0, 0);
+                                    pos.POS_TextOut("Clave de Grupo:        " + ticket.getNumeroCliente().trim() + "\r\n", 4, 0, 0, 0, 0, 0);
+                                    pos.POS_TextOut("Nombre del Grupo:  " + ticket.getNombre().trim() + "\r\n", 4, 0, 0, 0, 0, 0);
+                                    pos.POS_TextOut("Monto total del prestamo grupal:" + Miscellaneous.moneyFormat((String.valueOf(ticket.getMontoPrestamo()).trim())) + "\r\n", 4, 0, 0, 0, 0, 0);
 
-                                }else{
-                                    pos.POS_TextOut("Numero De Prestamo:  "+ticket.getNumeroPrestamo().trim()+"\r\n", 4, 0, 0, 0, 0, 0);
-                                    pos.POS_TextOut("Clave de Cliente:    "+ticket.getNumeroCliente().trim()+"\r\n", 4, 0, 0, 0, 0, 0);
-                                    pos.POS_TextOut("Nombre del Cliente: "+ticket.getNombre().trim()+"\r\n", 4, 0, 0, 0, 0, 0);
-                                    pos.POS_TextOut("Monto del prestamo:   " +Miscellaneous.moneyFormat((String.valueOf(ticket.getMontoPrestamo()).trim()))+"\r\n", 4, 0, 0, 0, 0, 0);
+                                } else {
+                                    pos.POS_TextOut("Numero De Prestamo:  " + ticket.getNumeroPrestamo().trim() + "\r\n", 4, 0, 0, 0, 0, 0);
+                                    pos.POS_TextOut("Clave de Cliente:    " + ticket.getNumeroCliente().trim() + "\r\n", 4, 0, 0, 0, 0, 0);
+                                    pos.POS_TextOut("Nombre del Cliente: " + ticket.getNombre().trim() + "\r\n", 4, 0, 0, 0, 0, 0);
+                                    pos.POS_TextOut("Monto del prestamo:   " + Miscellaneous.moneyFormat((String.valueOf(ticket.getMontoPrestamo()).trim())) + "\r\n", 4, 0, 0, 0, 0, 0);
 
                                 }
-                                pos.POS_TextOut("Monto pago requerido:  "+Miscellaneous.moneyFormat((String.valueOf(ticket.getPagoRequerido()).trim()))+"\r\n", 4, 0, 0, 0, 0, 0);
-                                pos.POS_TextOut("Monto pago realizado:  "+Miscellaneous.moneyFormat((String.valueOf(ticket.getMonto()).trim()))+"\r\n", 4, 0, 0, 0, 0, 0);
+                                pos.POS_TextOut("Monto pago requerido:  " + Miscellaneous.moneyFormat((String.valueOf(ticket.getPagoRequerido()).trim())) + "\r\n", 4, 0, 0, 0, 0, 0);
+                                pos.POS_TextOut("Monto pago realizado:  " + Miscellaneous.moneyFormat((String.valueOf(ticket.getMonto()).trim())) + "\r\n", 4, 0, 0, 0, 0, 0);
                                 if (!ticket.getFechaUltimoPago().isEmpty()) {
-                                    pos.POS_TextOut("Fecha Ultimo Pago:   " +ticket.getFechaUltimoPago()+"\r\n", 4, 0, 0, 0, 0, 0);
-                                    pos.POS_TextOut("Monto Ultimo Pago:   " +Miscellaneous.moneyFormat((String.valueOf(ticket.getMontoUltimoPago()).trim()))+"\r\n", 4, 0, 0, 0, 0, 0);
+                                    pos.POS_TextOut("Fecha Ultimo Pago:   " + ticket.getFechaUltimoPago() + "\r\n", 4, 0, 0, 0, 0, 0);
+                                    pos.POS_TextOut("Monto Ultimo Pago:   " + Miscellaneous.moneyFormat((String.valueOf(ticket.getMontoUltimoPago()).trim())) + "\r\n", 4, 0, 0, 0, 0, 0);
 
                                 }
-                            }else{
+                            } else {
                                 // VENCIDA
                                 // INDIVIDUAL
-                                if (ticket.getTipoGestion().equals("INDIVIDUAL")){
-                                    pos.POS_TextOut("Numero De Prestamo: " +ticket.getNumeroPrestamo().trim()+"\r\n", 4, 0, 0, 0, 0, 0);
-                                    pos.POS_TextOut("Numero de Cliente:  "  +ticket.getNumeroCliente().trim()+"\r\n", 4, 0, 0, 0, 0, 0);
-                                    pos.POS_TextOut("Nombre del Cliente:" +ticket.getNombre().trim()+"\r\n", 4, 0, 0, 0, 0, 0);
-                                    pos.POS_TextOut("Monto pago realizado: " +Miscellaneous.moneyFormat((String.valueOf(ticket.getMonto()).trim()))+"\r\n", 4, 0, 0, 0, 0, 0);
+                                if (ticket.getTipoGestion().equals("INDIVIDUAL")) {
+                                    pos.POS_TextOut("Numero De Prestamo: " + ticket.getNumeroPrestamo().trim() + "\r\n", 4, 0, 0, 0, 0, 0);
+                                    pos.POS_TextOut("Numero de Cliente:  " + ticket.getNumeroCliente().trim() + "\r\n", 4, 0, 0, 0, 0, 0);
+                                    pos.POS_TextOut("Nombre del Cliente:" + ticket.getNombre().trim() + "\r\n", 4, 0, 0, 0, 0, 0);
+                                    pos.POS_TextOut("Monto pago realizado: " + Miscellaneous.moneyFormat((String.valueOf(ticket.getMonto()).trim())) + "\r\n", 4, 0, 0, 0, 0, 0);
 
                                 }// GRUPAL
-                                else{
-                                    pos.POS_TextOut("Numero De Prestamo: " +ticket.getNumeroPrestamo().trim()+"\r\n", 4, 0, 0, 0, 0, 0);
-                                    pos.POS_TextOut("Numero de Cliente: " +ticket.getNumeroCliente().trim()+"\r\n", 4, 0, 0, 0, 0, 0);
-                                    pos.POS_TextOut("Nombre del Grupo: " +ticket.getNombreGrupo().trim()+"\r\n", 4, 0, 0, 0, 0, 0);
-                                    pos.POS_TextOut("Nombre del Integrante:" +replaceStr(ticket.getNombre().trim())+"\r\n", 4, 0, 0, 0, 0, 0);
-                                    pos.POS_TextOut("Monto pago realizado: " +Miscellaneous.moneyFormat(String.valueOf(ticket.getMonto().trim()))+"\r\n", 4, 0, 0, 0, 0, 0);
+                                else {
+                                    pos.POS_TextOut("Numero De Prestamo: " + ticket.getNumeroPrestamo().trim() + "\r\n", 4, 0, 0, 0, 0, 0);
+                                    pos.POS_TextOut("Numero de Cliente: " + ticket.getNumeroCliente().trim() + "\r\n", 4, 0, 0, 0, 0, 0);
+                                    pos.POS_TextOut("Nombre del Grupo: " + ticket.getNombreGrupo().trim() + "\r\n", 4, 0, 0, 0, 0, 0);
+                                    pos.POS_TextOut("Nombre del Integrante:" + replaceStr(ticket.getNombre().trim()) + "\r\n", 4, 0, 0, 0, 0, 0);
+                                    pos.POS_TextOut("Monto pago realizado: " + Miscellaneous.moneyFormat(String.valueOf(ticket.getMonto().trim())) + "\r\n", 4, 0, 0, 0, 0, 0);
 
 
                                 }
@@ -492,54 +481,53 @@ public class Prints {
                             pos.POS_FeedLine();
                             pos.POS_FeedLine();
                             bm = getImageFromAssetsFile(ctx, "line.png");
-                            if (ticket.getTipoPrestamo().equals("VIGENTE") || ticket.getTipoPrestamo().equals("COBRANZA")){
-                                if (ticket.getResultPrint()== 0){
-                                    pos.POS_TextOut("Firma Asesor:"+"\r\n", 4, 0, 0, 0, 0, 0);
+                            if (ticket.getTipoPrestamo().equals("VIGENTE") || ticket.getTipoPrestamo().equals("COBRANZA")) {
+                                if (ticket.getResultPrint() == 0) {
+                                    pos.POS_TextOut("Firma Asesor:" + "\r\n", 4, 0, 0, 0, 0, 0);
                                     pos.POS_FeedLine();
                                     pos.POS_FeedLine();
                                     pos.POS_PrintPicture(bm, nPrintWidth, 0, 0);
-                                    pos.POS_TextOut(replaceStr(ticket.getNombreAsesor().trim())+"\r\n", 4, 0, 0, 0, 0, 0);
+                                    pos.POS_TextOut(replaceStr(ticket.getNombreAsesor().trim()) + "\r\n", 4, 0, 0, 0, 0, 0);
 
-                                }
-                                else{
-                                    if(ticket.getTipoGestion().equals("GRUPAL")){
-                                        pos.POS_TextOut("Firma Tesorero(a):"+"\r\n", 4, 0, 0, 0, 0, 0);
+                                } else {
+                                    if (ticket.getTipoGestion().equals("GRUPAL")) {
+                                        pos.POS_TextOut("Firma Tesorero(a):" + "\r\n", 4, 0, 0, 0, 0, 0);
 
-                                    }else{
-                                        pos.POS_TextOut("Firma Cliente:"+"\r\n", 4, 0, 0, 0, 0, 0);
+                                    } else {
+                                        pos.POS_TextOut("Firma Cliente:" + "\r\n", 4, 0, 0, 0, 0, 0);
                                     }
                                     pos.POS_FeedLine();
                                     pos.POS_FeedLine();
                                     pos.POS_PrintPicture(bm, nPrintWidth, 0, 0);
-                                    pos.POS_TextOut(replaceStr(ticket.getNombreFirma().trim())+"\r\n", 4, 0, 0, 0, 0, 0);
+                                    pos.POS_TextOut(replaceStr(ticket.getNombreFirma().trim()) + "\r\n", 4, 0, 0, 0, 0, 0);
 
                                 }
-                            }else{
-                                if (ticket.getResultPrint() == 0){
-                                    pos.POS_TextOut("Firma Gestor:"+"\r\n", 4, 0, 0, 0, 0, 0);
+                            } else {
+                                if (ticket.getResultPrint() == 0) {
+                                    pos.POS_TextOut("Firma Gestor:" + "\r\n", 4, 0, 0, 0, 0, 0);
                                     pos.POS_FeedLine();
                                     pos.POS_FeedLine();
                                     pos.POS_PrintPicture(bm, nPrintWidth, 0, 0);
-                                    pos.POS_TextOut(replaceStr(ticket.getNombreAsesor().trim())+"\r\n", 4, 0, 0, 0, 0, 0);
+                                    pos.POS_TextOut(replaceStr(ticket.getNombreAsesor().trim()) + "\r\n", 4, 0, 0, 0, 0, 0);
 
-                                }else{
-                                    pos.POS_TextOut("Firma Cliente:"+"\r\n", 4, 0, 0, 0, 0, 0);
+                                } else {
+                                    pos.POS_TextOut("Firma Cliente:" + "\r\n", 4, 0, 0, 0, 0, 0);
                                     pos.POS_FeedLine();
                                     pos.POS_FeedLine();
                                     pos.POS_PrintPicture(bm, nPrintWidth, 0, 0);
-                                    pos.POS_TextOut(replaceStr(ticket.getNombreFirma().trim())+"\r\n", 4, 0, 0, 0, 0, 0);
+                                    pos.POS_TextOut(replaceStr(ticket.getNombreFirma().trim()) + "\r\n", 4, 0, 0, 0, 0, 0);
 
                                 }
                             }
 
-                            if (ticket.getTipoPrestamo().equals("VIGENTE") || ticket.getTipoPrestamo().equals("COBRANZA")){
+                            if (ticket.getTipoPrestamo().equals("VIGENTE") || ticket.getTipoPrestamo().equals("COBRANZA")) {
 
 
                                 row = dBhelper.getRecords(TBL_IMPRESIONES_VIGENTE_T, "", " ORDER BY folio ASC", null);
 
-                                if (row.getCount() == 0){
+                                if (row.getCount() == 0) {
                                     params = new HashMap<>();
-                                    params.put(0, ticket.getNumeroPrestamo()+"-"+ticket.getIdGestion());
+                                    params.put(0, ticket.getNumeroPrestamo() + "-" + ticket.getIdGestion());
                                     params.put(1, ticket.getAsesorId());
                                     params.put(2, "1");
                                     params.put(3, "O");
@@ -551,16 +539,15 @@ public class Prints {
                                     params.put(9, ticket.getNumeroPrestamo());
                                     params.put(10, ticket.getTelefono());
                                     dBhelper.saveImpresiones(db, params);
-                                    pos.POS_TextOut("Folio:             RC"+ticket.getAsesorId()+"-"+1+"\r\n", 4, 0, 0, 0, 0, 0);
-                                    SendMess(ctx, ticket.getIdPrestamo(), ticket.getTelefono(), ticket.getNombre(), ticket.getMonto(),Miscellaneous.ObtenerFecha("timestamp") ,"1",session);
-                                }
-                                else{
+                                    pos.POS_TextOut("Folio:             RC" + ticket.getAsesorId() + "-" + 1 + "\r\n", 4, 0, 0, 0, 0, 0);
+                                    SendMess(ctx, ticket.getIdPrestamo(), ticket.getTelefono(), ticket.getNombre(), ticket.getMonto(), Miscellaneous.ObtenerFecha("timestamp"), "1", session);
+                                } else {
                                     row.moveToLast();
-                                    Log.e("num_prestamo_id_gestion", row.getString(4)+"  "+row.getString(1)+" = "+ticket.getNumeroPrestamo()+"-"+ticket.getIdGestion());
-                                    if (row.getString(1).equals(ticket.getNumeroPrestamo()+"-"+ticket.getIdGestion()) &&
-                                            row.getString(4).equals("O")){
+                                    Log.e("num_prestamo_id_gestion", row.getString(4) + "  " + row.getString(1) + " = " + ticket.getNumeroPrestamo() + "-" + ticket.getIdGestion());
+                                    if (row.getString(1).equals(ticket.getNumeroPrestamo() + "-" + ticket.getIdGestion()) &&
+                                            row.getString(4).equals("O")) {
                                         params = new HashMap<>();
-                                        params.put(0, ticket.getNumeroPrestamo()+"-"+ticket.getIdGestion());
+                                        params.put(0, ticket.getNumeroPrestamo() + "-" + ticket.getIdGestion());
                                         params.put(1, ticket.getAsesorId());
                                         params.put(2, row.getString(3));
                                         params.put(3, "C");
@@ -573,16 +560,15 @@ public class Prints {
                                         params.put(10, ticket.getTelefono());
 
                                         dBhelper.saveImpresiones(db, params);
-                                        pos.POS_TextOut("Folio:             RC"+ticket.getAsesorId()+"-"+row.getString(3)+"\r\n", 4, 0, 0, 0, 0, 0);
+                                        pos.POS_TextOut("Folio:             RC" + ticket.getAsesorId() + "-" + row.getString(3) + "\r\n", 4, 0, 0, 0, 0, 0);
 
-                                    }
-                                    else {
+                                    } else {
                                         String sql = "SELECT folio FROM " + TBL_IMPRESIONES_VIGENTE_T + " WHERE num_prestamo_id_gestion = ? AND tipo_impresion = ? ";
-                                        Cursor row_folio = db.rawQuery(sql, new String[]{ticket.getNumeroPrestamo()+"-"+ticket.getIdGestion(), "O"});
+                                        Cursor row_folio = db.rawQuery(sql, new String[]{ticket.getNumeroPrestamo() + "-" + ticket.getIdGestion(), "O"});
                                         if (row_folio.getCount() > 0) {
                                             row_folio.moveToFirst();
                                             params = new HashMap<>();
-                                            params.put(0, ticket.getNumeroPrestamo()+"-"+ticket.getIdGestion());
+                                            params.put(0, ticket.getNumeroPrestamo() + "-" + ticket.getIdGestion());
                                             params.put(1, ticket.getAsesorId());
                                             params.put(2, row_folio.getString(0));
                                             params.put(3, "O");
@@ -596,15 +582,14 @@ public class Prints {
 
                                             dBhelper.saveImpresiones(db, params);
 
-                                            pos.POS_TextOut("Folio:             RC"+ticket.getAsesorId()+"-"+row_folio.getString(0)+"\r\n", 4, 0, 0, 0, 0, 0);
+                                            pos.POS_TextOut("Folio:             RC" + ticket.getAsesorId() + "-" + row_folio.getString(0) + "\r\n", 4, 0, 0, 0, 0, 0);
 
-                                            SendMess(ctx, ticket.getIdPrestamo(), ticket.getTelefono(), ticket.getNombre(), ticket.getMonto(), Miscellaneous.ObtenerFecha("timestamp"), row_folio.getString(0),session);
-                                        }
-                                        else{
+                                            SendMess(ctx, ticket.getIdPrestamo(), ticket.getTelefono(), ticket.getNombre(), ticket.getMonto(), Miscellaneous.ObtenerFecha("timestamp"), row_folio.getString(0), session);
+                                        } else {
                                             params = new HashMap<>();
-                                            params.put(0, ticket.getNumeroPrestamo()+"-"+ticket.getIdGestion());
+                                            params.put(0, ticket.getNumeroPrestamo() + "-" + ticket.getIdGestion());
                                             params.put(1, ticket.getAsesorId());
-                                            params.put(2, String.valueOf(row.getInt(3)+1));
+                                            params.put(2, String.valueOf(row.getInt(3) + 1));
                                             params.put(3, "O");
                                             params.put(4, ticket.getMonto());
                                             params.put(5, ticket.getClaveCliente());
@@ -616,24 +601,23 @@ public class Prints {
 
                                             dBhelper.saveImpresiones(db, params);
 
-                                            pos.POS_TextOut("Folio:             RC"+ticket.getAsesorId()+"-"+(row.getInt(3)+1)+"\r\n", 4, 0, 0, 0, 0, 0);
+                                            pos.POS_TextOut("Folio:             RC" + ticket.getAsesorId() + "-" + (row.getInt(3) + 1) + "\r\n", 4, 0, 0, 0, 0, 0);
 
-                                            SendMess(ctx, ticket.getIdPrestamo(), ticket.getTelefono(), ticket.getNombre(), ticket.getMonto(), Miscellaneous.ObtenerFecha("timestamp"), String.valueOf((row.getInt(3)+1)),session);
+                                            SendMess(ctx, ticket.getIdPrestamo(), ticket.getTelefono(), ticket.getNombre(), ticket.getMonto(), Miscellaneous.ObtenerFecha("timestamp"), String.valueOf((row.getInt(3) + 1)), session);
                                         }
                                     }
                                 }
                                 row.close();
-                            }
-                            else if (ticket.getTipoPrestamo().equals("VENCIDA")){
+                            } else if (ticket.getTipoPrestamo().equals("VENCIDA")) {
                                 //-----------------------------------------------------------------------------------------------------------------
 
 
                                 row = dBhelper.getRecords(TBL_IMPRESIONES_VENCIDA_T, "", " ORDER BY folio ASC", null);
 
-                                if (row.getCount() == 0){
+                                if (row.getCount() == 0) {
 
                                     params = new HashMap<>();
-                                    params.put(0, ticket.getNumeroPrestamo()+"-"+ticket.getIdGestion());
+                                    params.put(0, ticket.getNumeroPrestamo() + "-" + ticket.getIdGestion());
                                     params.put(1, ticket.getAsesorId());
                                     params.put(2, "1");
                                     params.put(3, "O");
@@ -648,7 +632,7 @@ public class Prints {
                                     dBhelper.saveImpresionesVencida(db, params);
 
 
-                                    pos.POS_TextOut("Folio:             CV"+ticket.getAsesorId()+"-"+1+"\r\n", 4, 0, 0, 0, 0, 0);
+                                    pos.POS_TextOut("Folio:             CV" + ticket.getAsesorId() + "-" + 1 + "\r\n", 4, 0, 0, 0, 0, 0);
 
                                     HashMap<Integer, String> paramsCD = new HashMap<>();
                                     paramsCD.put(0, session.getUser().get(0));
@@ -669,11 +653,10 @@ public class Prints {
 
                                     dBhelper.saveCierreDia(db, paramsCD);
 
-                                }
-                                else{
+                                } else {
                                     row.moveToLast();
-                                    Log.e("num_prestamo_id_gesVE", row.getString(4)+"  "+row.getString(1)+" = "+ticket.getNumeroPrestamo()+"-"+ticket.getIdGestion());
-                                    if (row.getString(1).equals(ticket.getNumeroPrestamo()+"-"+ticket.getIdGestion()) &&
+                                    Log.e("num_prestamo_id_gesVE", row.getString(4) + "  " + row.getString(1) + " = " + ticket.getNumeroPrestamo() + "-" + ticket.getIdGestion());
+                                    if (row.getString(1).equals(ticket.getNumeroPrestamo() + "-" + ticket.getIdGestion()) &&
                                             row.getString(4).equals("O")) {
                                         params = new HashMap<>();
                                         params.put(0, ticket.getNumeroPrestamo() + "-" + ticket.getIdGestion());
@@ -693,14 +676,13 @@ public class Prints {
 
                                         pos.POS_TextOut("Folio:             CV" + ticket.getAsesorId() + "-" + row.getString(3) + "\r\n", 4, 0, 0, 0, 0, 0);
 
-                                    }
-                                    else {
+                                    } else {
                                         String sql = "SELECT folio FROM " + TBL_IMPRESIONES_VENCIDA_T + " WHERE num_prestamo_id_gestion = ? AND tipo_impresion = ? ";
-                                        Cursor row_folio = db.rawQuery(sql, new String[]{ticket.getNumeroPrestamo()+"-"+ticket.getIdGestion(), "O"});
-                                        if (row_folio.getCount() > 0){
+                                        Cursor row_folio = db.rawQuery(sql, new String[]{ticket.getNumeroPrestamo() + "-" + ticket.getIdGestion(), "O"});
+                                        if (row_folio.getCount() > 0) {
                                             row_folio.moveToFirst();
                                             params = new HashMap<>();
-                                            params.put(0, ticket.getNumeroPrestamo()+"-"+ticket.getIdGestion());
+                                            params.put(0, ticket.getNumeroPrestamo() + "-" + ticket.getIdGestion());
                                             params.put(1, ticket.getAsesorId());
                                             params.put(2, row_folio.getString(0));
                                             params.put(3, "C");
@@ -714,10 +696,9 @@ public class Prints {
 
                                             dBhelper.saveImpresionesVencida(db, params);
 
-                                            pos.POS_TextOut("Folio:             CV"+ticket.getAsesorId()+"-"+row_folio.getString(0)+"\r\n", 4, 0, 0, 0, 0, 0);
+                                            pos.POS_TextOut("Folio:             CV" + ticket.getAsesorId() + "-" + row_folio.getString(0) + "\r\n", 4, 0, 0, 0, 0, 0);
 
-                                        }
-                                        else {
+                                        } else {
                                             params = new HashMap<>();
                                             params.put(0, ticket.getNumeroPrestamo() + "-" + ticket.getIdGestion());
                                             params.put(1, ticket.getAsesorId());
@@ -732,7 +713,7 @@ public class Prints {
                                             params.put(10, "");
 
                                             dBhelper.saveImpresionesVencida(db, params);
-                                            pos.POS_TextOut("Folio:             CV"+ ticket.getAsesorId() + "-" + (row.getInt(3) + 1)+"\r\n", 4, 0, 0, 0, 0, 0);
+                                            pos.POS_TextOut("Folio:             CV" + ticket.getAsesorId() + "-" + (row.getInt(3) + 1) + "\r\n", 4, 0, 0, 0, 0, 0);
 
                                             HashMap<Integer, String> paramsCD = new HashMap<>();
                                             paramsCD.put(0, session.getUser().get(0));
@@ -765,16 +746,16 @@ public class Prints {
                                 pos.POS_PrintPicture(bmQR, nPrintWidth, 0, 0);
                                 //   pos.POS_S_SetQRcode (url.toString(), 8, 0, 3);
                                 // pos.POS_DoubleQRCode(url.toString(), 120,3,0, "def", 340, 3, 0, 3);
-                                pos.POS_TextOut("Escanea el codigo para ver tu   "+"\r\n", 4, 0, 0, 0, 0, 0);
-                                pos.POS_TextOut("historial de pagos o ingresa al "+"\r\n", 4, 0, 0, 0, 0, 0);
-                                pos.POS_TextOut( "siguiente link: "+url.toString()+"\r\n", 4, 0, 0, 0, 0, 0);
+                                pos.POS_TextOut("Escanea el codigo para ver tu   " + "\r\n", 4, 0, 0, 0, 0, 0);
+                                pos.POS_TextOut("historial de pagos o ingresa al " + "\r\n", 4, 0, 0, 0, 0, 0);
+                                pos.POS_TextOut("siguiente link: " + url.toString() + "\r\n", 4, 0, 0, 0, 0, 0);
 
                             }
 
 
                             pos.POS_FeedLine();
-                            pos.POS_TextOut(  "En caso de dudas o aclaraciones "+"\r\n", 4, 0, 0, 0, 0, 0);
-                            pos.POS_TextOut( "comuniquese al 800 112 6666"+"\r\n", 4, 0, 0, 0, 0, 0);
+                            pos.POS_TextOut("En caso de dudas o aclaraciones " + "\r\n", 4, 0, 0, 0, 0, 0);
+                            pos.POS_TextOut("comuniquese al 800 112 6666" + "\r\n", 4, 0, 0, 0, 0, 0);
                             pos.POS_FeedLine();
                             pos.POS_FeedLine();
                             pos.POS_FeedLine();
@@ -785,11 +766,11 @@ public class Prints {
 
                     }
 
-                    if(bBeeper)
+                    if (bBeeper)
                         pos.POS_Beep(1, 5);
-                    if(bCutter)
+                    if (bCutter)
                         pos.POS_CutPaper();
-                    if(bDrawer)
+                    if (bDrawer)
                         pos.POS_KickDrawer(0, 100);
 
                     bPrintResult = pos.POS_TicketSucceed(0, 30000);
@@ -805,12 +786,12 @@ public class Prints {
 
         return bPrintResult;
     }
-    public static int PrintTicketRyCReimpresion(Context ctx, Pos pos, int nPrintWidth, boolean bCutter, boolean bDrawer, boolean bBeeper, int nCount, int nPrintContent, int nCompressMethod, MReimpresion ticket)
-    {
+
+    public static int PrintTicketRyCReimpresion(Context ctx, Pos pos, int nPrintWidth, boolean bCutter, boolean bDrawer, boolean bBeeper, int nCount, int nPrintContent, int nCompressMethod, MReimpresion ticket) {
         int bPrintResult = -6;
         byte[] status = new byte[1];
-        SessionManager session = new SessionManager(ctx);
-        DBhelper dBhelper = new DBhelper(ctx);
+        SessionManager session =SessionManager.getInstance(ctx);
+        DBhelper dBhelper = DBhelper.getInstance(ctx);
         SQLiteDatabase db = dBhelper.getWritableDatabase();
         Cursor row;
         HashMap<Integer, String> params;
@@ -819,7 +800,7 @@ public class Prints {
         URL url = null;
         try {
             //url = new  URL("http://sidert.ddns.net:83"+WebServicesRoutes.CONTROLLER_MOVIL+"pagos/"+AES.encrypt(data.getIdPrestamo()));
-            url = new  URL(session.getDominio().get(0)+session.getDominio().get(1)+WebServicesRoutes.CONTROLLER_MOVIL+"pagos/"+AES.encrypt(ticket.getIdPrestamo()));
+            url = new URL(session.getDominio() + WebServicesRoutes.CONTROLLER_MOVIL + "pagos/" + AES.encrypt(ticket.getIdPrestamo()));
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
@@ -838,18 +819,16 @@ public class Prints {
 
         if (pos.POS_RTQueryStatus(status, 1, 3000, 2) && ((status[0] & 0x12) == 0x12)) {
             if ((status[0] & 0x08) == 0) {
-                if(pos.POS_QueryStatus(status, 3000, 2)) {
+                if (pos.POS_QueryStatus(status, 3000, 2)) {
                     Bitmap bm = getImageFromAssetsFile(ctx, "logo_impresion.png");
 
-                    for(int i = 0; i < nCount; ++i)
-                    {
-                        if(!pos.GetIO().IsOpened())
+                    for (int i = 0; i < nCount; ++i) {
+                        if (!pos.GetIO().IsOpened())
                             break;
 
-                        if(nPrintContent >= 1)
-                        {
+                        if (nPrintContent >= 1) {
                             params = new HashMap<>();
-                            params.put(0,ticket.getNumeroPrestamo()+"-"+ticket.getIdGestion());
+                            params.put(0, ticket.getNumeroPrestamo() + "-" + ticket.getIdGestion());
                             params.put(1, ticket.getTipo_impresion());
                             params.put(2, ticket.getFolio());
                             params.put(3, ticket.getMonto());
@@ -868,19 +847,15 @@ public class Prints {
                             //HEADER
                             pos.POS_FeedLine();
                             pos.POS_S_Align(1);
-                            if (ticket.getTipoPrestamo().contains("VENCIDA")){
+                            if (ticket.getTipoPrestamo().contains("VENCIDA")) {
                                 bm = BitmapFactory.decodeResource(ctx.getResources(), R.drawable.logo_cv);
-                            }
-                            else{
+                            } else {
                                 bm = BitmapFactory.decodeResource(ctx.getResources(), R.drawable.logo_impresion);
                             }
                             pos.POS_PrintPicture(bm, nPrintWidth, 0, 0);
-                            if (ticket.getTipo_impresion().equals("O"))
-                            {
+                            if (ticket.getTipo_impresion().equals("O")) {
                                 pos.POS_TextOut("\r\nOriginal\r\n", 4, 0, 0, 0, 0, 0);
-                            }
-                            else
-                            {
+                            } else {
                                 pos.POS_TextOut("\r\nCopia\r\n", 4, 0, 0, 0, 0, 0);
                             }
                             pos.POS_TextOut("\r\nREIMPRESION\r\n", 4, 0, 1, 1, 0, 0x08);
@@ -900,42 +875,42 @@ public class Prints {
                             }
                             if (ticket.getTipoPrestamo().equals("VIGENTE") || ticket.getTipoPrestamo().equals("COBRANZA")) {
 
-                                if (ticket.getTipoGestion().equals("GRUPAL")){
-                                    pos.POS_TextOut("Numero De Prestamo:     "+ticket.getNumeroPrestamo().trim()+"\r\n", 4, 0, 0, 0, 0, 0);
-                                    pos.POS_TextOut("Clave de Grupo:        "+ticket.getNumeroCliente().trim()+"\r\n", 4, 0, 0, 0, 0, 0);
-                                    pos.POS_TextOut("Nombre del Grupo:  "+ticket.getNombre().trim()+"\r\n", 4, 0, 0, 0, 0, 0);
-                                    pos.POS_TextOut("Monto total del prestamo grupal:" +Miscellaneous.moneyFormat((String.valueOf(ticket.getMontoPrestamo()).trim()))+"\r\n", 4, 0, 0, 0, 0, 0);
+                                if (ticket.getTipoGestion().equals("GRUPAL")) {
+                                    pos.POS_TextOut("Numero De Prestamo:     " + ticket.getNumeroPrestamo().trim() + "\r\n", 4, 0, 0, 0, 0, 0);
+                                    pos.POS_TextOut("Clave de Grupo:        " + ticket.getNumeroCliente().trim() + "\r\n", 4, 0, 0, 0, 0, 0);
+                                    pos.POS_TextOut("Nombre del Grupo:  " + ticket.getNombre().trim() + "\r\n", 4, 0, 0, 0, 0, 0);
+                                    pos.POS_TextOut("Monto total del prestamo grupal:" + Miscellaneous.moneyFormat((String.valueOf(ticket.getMontoPrestamo()).trim())) + "\r\n", 4, 0, 0, 0, 0, 0);
 
-                                }else{
-                                    pos.POS_TextOut("Numero De Prestamo:  "+ticket.getNumeroPrestamo().trim()+"\r\n", 4, 0, 0, 0, 0, 0);
-                                    pos.POS_TextOut("Clave de Cliente:    "+ticket.getNumeroCliente().trim()+"\r\n", 4, 0, 0, 0, 0, 0);
-                                    pos.POS_TextOut("Nombre del Cliente: "+ticket.getNombre().trim()+"\r\n", 4, 0, 0, 0, 0, 0);
-                                    pos.POS_TextOut("Monto del prestamo:   " +Miscellaneous.moneyFormat((String.valueOf(ticket.getMontoPrestamo()).trim()))+"\r\n", 4, 0, 0, 0, 0, 0);
+                                } else {
+                                    pos.POS_TextOut("Numero De Prestamo:  " + ticket.getNumeroPrestamo().trim() + "\r\n", 4, 0, 0, 0, 0, 0);
+                                    pos.POS_TextOut("Clave de Cliente:    " + ticket.getNumeroCliente().trim() + "\r\n", 4, 0, 0, 0, 0, 0);
+                                    pos.POS_TextOut("Nombre del Cliente: " + ticket.getNombre().trim() + "\r\n", 4, 0, 0, 0, 0, 0);
+                                    pos.POS_TextOut("Monto del prestamo:   " + Miscellaneous.moneyFormat((String.valueOf(ticket.getMontoPrestamo()).trim())) + "\r\n", 4, 0, 0, 0, 0, 0);
 
                                 }
-                                pos.POS_TextOut("Monto pago requerido:  "+Miscellaneous.moneyFormat((String.valueOf(ticket.getPagoRequerido()).trim()))+"\r\n", 4, 0, 0, 0, 0, 0);
-                                pos.POS_TextOut("Monto pago realizado:  "+Miscellaneous.moneyFormat((String.valueOf(ticket.getMonto()).trim()))+"\r\n", 4, 0, 0, 0, 0, 0);
+                                pos.POS_TextOut("Monto pago requerido:  " + Miscellaneous.moneyFormat((String.valueOf(ticket.getPagoRequerido()).trim())) + "\r\n", 4, 0, 0, 0, 0, 0);
+                                pos.POS_TextOut("Monto pago realizado:  " + Miscellaneous.moneyFormat((String.valueOf(ticket.getMonto()).trim())) + "\r\n", 4, 0, 0, 0, 0, 0);
                                 if (!ticket.getFechaUltimoPago().isEmpty()) {
-                                    pos.POS_TextOut("Fecha Ultimo Pago:   " +ticket.getFechaUltimoPago()+"\r\n", 4, 0, 0, 0, 0, 0);
-                                    pos.POS_TextOut("Monto Ultimo Pago:   " +Miscellaneous.moneyFormat((String.valueOf(ticket.getMontoUltimoPago()).trim()))+"\r\n", 4, 0, 0, 0, 0, 0);
+                                    pos.POS_TextOut("Fecha Ultimo Pago:   " + ticket.getFechaUltimoPago() + "\r\n", 4, 0, 0, 0, 0, 0);
+                                    pos.POS_TextOut("Monto Ultimo Pago:   " + Miscellaneous.moneyFormat((String.valueOf(ticket.getMontoUltimoPago()).trim())) + "\r\n", 4, 0, 0, 0, 0, 0);
 
                                 }
-                            }else{
+                            } else {
                                 // VENCIDA
                                 // INDIVIDUAL
-                                if (ticket.getTipoGestion().equals("INDIVIDUAL")){
-                                    pos.POS_TextOut("Numero De Prestamo: " +ticket.getNumeroPrestamo().trim()+"\r\n", 4, 0, 0, 0, 0, 0);
-                                    pos.POS_TextOut("Numero de Cliente:  "  +ticket.getNumeroCliente().trim()+"\r\n", 4, 0, 0, 0, 0, 0);
-                                    pos.POS_TextOut("Nombre del Cliente:" +ticket.getNombre().trim()+"\r\n", 4, 0, 0, 0, 0, 0);
-                                    pos.POS_TextOut("Monto pago realizado: " +Miscellaneous.moneyFormat((String.valueOf(ticket.getMonto()).trim()))+"\r\n", 4, 0, 0, 0, 0, 0);
+                                if (ticket.getTipoGestion().equals("INDIVIDUAL")) {
+                                    pos.POS_TextOut("Numero De Prestamo: " + ticket.getNumeroPrestamo().trim() + "\r\n", 4, 0, 0, 0, 0, 0);
+                                    pos.POS_TextOut("Numero de Cliente:  " + ticket.getNumeroCliente().trim() + "\r\n", 4, 0, 0, 0, 0, 0);
+                                    pos.POS_TextOut("Nombre del Cliente:" + ticket.getNombre().trim() + "\r\n", 4, 0, 0, 0, 0, 0);
+                                    pos.POS_TextOut("Monto pago realizado: " + Miscellaneous.moneyFormat((String.valueOf(ticket.getMonto()).trim())) + "\r\n", 4, 0, 0, 0, 0, 0);
 
                                 }// GRUPAL
-                                else{
-                                    pos.POS_TextOut("Numero De Prestamo: " +ticket.getNumeroPrestamo().trim()+"\r\n", 4, 0, 0, 0, 0, 0);
-                                    pos.POS_TextOut("Numero de Cliente: " +ticket.getNumeroCliente().trim()+"\r\n", 4, 0, 0, 0, 0, 0);
-                                    pos.POS_TextOut("Nombre del Grupo: " +ticket.getNombreGrupo().trim()+"\r\n", 4, 0, 0, 0, 0, 0);
-                                    pos.POS_TextOut("Nombre del Integrante:" +replaceStr(ticket.getNombre().trim())+"\r\n", 4, 0, 0, 0, 0, 0);
-                                    pos.POS_TextOut("Monto pago realizado: " +Miscellaneous.moneyFormat(String.valueOf(ticket.getMonto().trim()))+"\r\n", 4, 0, 0, 0, 0, 0);
+                                else {
+                                    pos.POS_TextOut("Numero De Prestamo: " + ticket.getNumeroPrestamo().trim() + "\r\n", 4, 0, 0, 0, 0, 0);
+                                    pos.POS_TextOut("Numero de Cliente: " + ticket.getNumeroCliente().trim() + "\r\n", 4, 0, 0, 0, 0, 0);
+                                    pos.POS_TextOut("Nombre del Grupo: " + ticket.getNombreGrupo().trim() + "\r\n", 4, 0, 0, 0, 0, 0);
+                                    pos.POS_TextOut("Nombre del Integrante:" + replaceStr(ticket.getNombre().trim()) + "\r\n", 4, 0, 0, 0, 0, 0);
+                                    pos.POS_TextOut("Monto pago realizado: " + Miscellaneous.moneyFormat(String.valueOf(ticket.getMonto().trim())) + "\r\n", 4, 0, 0, 0, 0, 0);
 
 
                                 }
@@ -946,64 +921,62 @@ public class Prints {
                             pos.POS_FeedLine();
                             pos.POS_FeedLine();
                             bm = getImageFromAssetsFile(ctx, "line.png");
-                            if (ticket.getTipoPrestamo().equals("VIGENTE") || ticket.getTipoPrestamo().equals("COBRANZA")){
-                                if (ticket.getTipo_impresion().equals("O")){
-                                    pos.POS_TextOut("Firma Asesor:"+"\r\n", 4, 0, 0, 0, 0, 0);
+                            if (ticket.getTipoPrestamo().equals("VIGENTE") || ticket.getTipoPrestamo().equals("COBRANZA")) {
+                                if (ticket.getTipo_impresion().equals("O")) {
+                                    pos.POS_TextOut("Firma Asesor:" + "\r\n", 4, 0, 0, 0, 0, 0);
                                     pos.POS_FeedLine();
                                     pos.POS_FeedLine();
                                     pos.POS_PrintPicture(bm, nPrintWidth, 0, 0);
-                                    pos.POS_TextOut(replaceStr(ticket.getNombreAsesor().trim())+"\r\n", 4, 0, 0, 0, 0, 0);
+                                    pos.POS_TextOut(replaceStr(ticket.getNombreAsesor().trim()) + "\r\n", 4, 0, 0, 0, 0, 0);
 
-                                }
-                                else{
-                                    if(ticket.getTipoGestion().equals("GRUPAL")){
-                                        pos.POS_TextOut("Firma Tesorero(a):"+"\r\n", 4, 0, 0, 0, 0, 0);
+                                } else {
+                                    if (ticket.getTipoGestion().equals("GRUPAL")) {
+                                        pos.POS_TextOut("Firma Tesorero(a):" + "\r\n", 4, 0, 0, 0, 0, 0);
 
-                                    }else{
-                                        pos.POS_TextOut("Firma Cliente:"+"\r\n", 4, 0, 0, 0, 0, 0);
+                                    } else {
+                                        pos.POS_TextOut("Firma Cliente:" + "\r\n", 4, 0, 0, 0, 0, 0);
                                     }
                                     pos.POS_FeedLine();
                                     pos.POS_FeedLine();
                                     pos.POS_PrintPicture(bm, nPrintWidth, 0, 0);
-                                    pos.POS_TextOut(replaceStr(ticket.getNombreFirma().trim())+"\r\n", 4, 0, 0, 0, 0, 0);
+                                    pos.POS_TextOut(replaceStr(ticket.getNombreFirma().trim()) + "\r\n", 4, 0, 0, 0, 0, 0);
 
                                 }
-                            }else{
-                                if (ticket.getTipo_impresion().equals("O")){
-                                    pos.POS_TextOut("Firma Gestor:"+"\r\n", 4, 0, 0, 0, 0, 0);
+                            } else {
+                                if (ticket.getTipo_impresion().equals("O")) {
+                                    pos.POS_TextOut("Firma Gestor:" + "\r\n", 4, 0, 0, 0, 0, 0);
                                     pos.POS_FeedLine();
                                     pos.POS_FeedLine();
                                     pos.POS_PrintPicture(bm, nPrintWidth, 0, 0);
-                                    pos.POS_TextOut(replaceStr(ticket.getNombreAsesor().trim())+"\r\n", 4, 0, 0, 0, 0, 0);
+                                    pos.POS_TextOut(replaceStr(ticket.getNombreAsesor().trim()) + "\r\n", 4, 0, 0, 0, 0, 0);
 
-                                }else{
-                                    pos.POS_TextOut("Firma Cliente:"+"\r\n", 4, 0, 0, 0, 0, 0);
+                                } else {
+                                    pos.POS_TextOut("Firma Cliente:" + "\r\n", 4, 0, 0, 0, 0, 0);
                                     pos.POS_FeedLine();
                                     pos.POS_FeedLine();
                                     pos.POS_PrintPicture(bm, nPrintWidth, 0, 0);
-                                    pos.POS_TextOut(replaceStr(ticket.getNombreFirma().trim())+"\r\n", 4, 0, 0, 0, 0, 0);
+                                    pos.POS_TextOut(replaceStr(ticket.getNombreFirma().trim()) + "\r\n", 4, 0, 0, 0, 0, 0);
 
                                 }
                             }
-                            if (ticket.getTipoPrestamo().equals("VIGENTE") || ticket.getTipoPrestamo().equals("COBRANZA"))
-                            {
+                            if (ticket.getTipoPrestamo().equals("VIGENTE") || ticket.getTipoPrestamo().equals("COBRANZA")) {
                                 pos.POS_TextOut("Folio:             RC" + ticket.getAsesorId() + "-" + (ticket.getFolio()) + "\r\n", 4, 0, 0, 0, 0, 0);
-                            }else{
-                                pos.POS_TextOut("Folio:             CV"+ ticket.getAsesorId() + "-" + (ticket.getFolio()) + "\r\n", 4, 0, 0, 0, 0, 0);
+                            } else {
+                                pos.POS_TextOut("Folio:             CV" + ticket.getAsesorId() + "-" + (ticket.getFolio()) + "\r\n", 4, 0, 0, 0, 0, 0);
 
                             }
                             if (ticket.getTipoPrestamo().equals("VIGENTE") || ticket.getTipoPrestamo().equals("COBRANZA")) {
                                 pos.POS_PrintPicture(bmQR, nPrintWidth, 0, 0);
                                 //   pos.POS_S_SetQRcode (url.toString(), 8, 0, 3);
                                 // pos.POS_DoubleQRCode(url.toString(), 120,3,0, "def", 340, 3, 0, 3);
-                                pos.POS_TextOut("Escanea el codigo para ver tu   "+"\r\n", 4, 0, 0, 0, 0, 0);
-                                pos.POS_TextOut("historial de pagos o ingresa al "+"\r\n", 4, 0, 0, 0, 0, 0);
-                                pos.POS_TextOut( "siguiente link: "+url.toString()+"\r\n", 4, 0, 0, 0, 0, 0);
+                                pos.POS_TextOut("Escanea el codigo para ver tu   " + "\r\n", 4, 0, 0, 0, 0, 0);
+                                pos.POS_TextOut("historial de pagos o ingresa al " + "\r\n", 4, 0, 0, 0, 0, 0);
+                                pos.POS_TextOut("siguiente link: " + url.toString() + "\r\n", 4, 0, 0, 0, 0, 0);
 
                             }
                             pos.POS_FeedLine();
-                            pos.POS_TextOut(  "En caso de dudas o aclaraciones "+"\r\n", 4, 0, 0, 0, 0, 0);
-                            pos.POS_TextOut( "comuniquese al 800 112 6666"+"\r\n", 4, 0, 0, 0, 0, 0);
+                            pos.POS_TextOut("En caso de dudas o aclaraciones " + "\r\n", 4, 0, 0, 0, 0, 0);
+                            pos.POS_TextOut("comuniquese al 800 112 6666" + "\r\n", 4, 0, 0, 0, 0, 0);
                             pos.POS_FeedLine();
                             pos.POS_FeedLine();
                             pos.POS_FeedLine();
@@ -1014,11 +987,11 @@ public class Prints {
 
                     }
 
-                    if(bBeeper)
+                    if (bBeeper)
                         pos.POS_Beep(1, 5);
-                    if(bCutter)
+                    if (bCutter)
                         pos.POS_CutPaper();
-                    if(bDrawer)
+                    if (bDrawer)
                         pos.POS_KickDrawer(0, 100);
 
                     bPrintResult = pos.POS_TicketSucceed(0, 30000);
@@ -1034,6 +1007,7 @@ public class Prints {
 
         return bPrintResult;
     }
+
     public static int PrintTicket(Context ctx, Page page, int nPrintWidth, int nPrintHeight) {
         int bPrintResult = 1;
 
@@ -1181,12 +1155,13 @@ public class Prints {
         // to the ImageView, ImageButton or what ever
         return resizedBitmap;
     }
-    private static String replaceStr (String str){
-        String[] value = {"Á", "É", "Í", "Ó", "Ú", "á", "é", "í", "ó", "ú", "Ñ", "ñ"};
-        String[] valueReplace = {"A", "E", "I", "O", "U", "a", "e", "i", "o", "u","N", "n"};
 
-        for (int i = 0; i < 12; i++){
-            str = str.replace(value[i],valueReplace[i]);
+    private static String replaceStr(String str) {
+        String[] value = {"Á", "É", "Í", "Ó", "Ú", "á", "é", "í", "ó", "ú", "Ñ", "ñ"};
+        String[] valueReplace = {"A", "E", "I", "O", "U", "a", "e", "i", "o", "u", "N", "n"};
+
+        for (int i = 0; i < 12; i++) {
+            str = str.replace(value[i], valueReplace[i]);
         }
         return str;
     }

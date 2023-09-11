@@ -18,7 +18,7 @@ public class AmortizacionDao {
     final SQLiteDatabase db;
 
     public AmortizacionDao(Context ctx){
-        this.dbHelper = new DBhelper(ctx);
+        this.dbHelper = DBhelper.getInstance(ctx);
         this.db = dbHelper.getWritableDatabase();
     }
 

@@ -1,5 +1,6 @@
 package com.sidert.sidertmovil.fragments;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -111,9 +112,9 @@ public class mesa_ayuda_fragment extends Fragment {
         ctx = getContext();
         parent  = (Home) getActivity();
 
-        session = new SessionManager(ctx);
+        session = SessionManager.getInstance(ctx);
 
-        dBhelper = new DBhelper(ctx);
+        dBhelper = DBhelper.getInstance(ctx);
         db = dBhelper.getWritableDatabase();
 
         rvTickets = v.findViewById(R.id.rvTickets);
@@ -204,6 +205,14 @@ public class mesa_ayuda_fragment extends Fragment {
     };
 
     private void Filtros (){
+
+        int sizeH = 900;
+        Activity activity = this.getActivity();
+        if (activity != null) {
+            View decorateView = activity.getWindow().getDecorView();
+            sizeH = (int) (decorateView.getHeight() / 2.0);
+        }
+
         DialogPlus filtros_dg = DialogPlus.newDialog(parent)
                 .setContentHolder(new ViewHolder(R.layout.sheet_dialog_filtros_tickets))
                 .setGravity(Gravity.TOP)
@@ -214,87 +223,76 @@ public class mesa_ayuda_fragment extends Fragment {
                         String where = "";
 
                         InputMethodManager imm = (InputMethodManager) parent.getSystemService(Context.INPUT_METHOD_SERVICE);
-                        switch (view.getId()) {
-                            case R.id.btnFiltrar:
-                                if (!tvFecha.getText().toString().trim().isEmpty()){
-                                    fecha = tvFecha.getText().toString().trim();
-                                    where = " AND fecha_solicitud LIKE '%"+fecha+"%'";
-                                }
-                                else
-                                    fecha = "";
-
-                                if (!tvEstatus.getText().toString().trim().isEmpty()){
-                                    estatus = tvEstatus.getText().toString().trim();
-                                    where = " AND estatus_ticket LIKE '%"+estatus+"%'";
-                                }
-                                else
-                                    estatus = "";
-
-                                if (!tvCategoria.getText().toString().trim().isEmpty()){
-                                    categoria = tvCategoria.getText().toString().trim();
-                                    String sql = "SELECT ticket_id FROM " + TICKETS + " WHERE nombre = ?";
-                                    Cursor row = db.rawQuery(sql, new String[]{categoria});
-                                    row.moveToFirst();
-                                    where = " AND estatus_ticket = " + row.getInt(0) + "";
-                                    row.close();
-                                }
-                                else
-                                    categoria = "";
-
-                                if (cbEnviados.isChecked() && cbPendientes.isChecked()){
-                                    enviados = true;
-                                    pendientes = true;
-                                    where += " AND estatus_envio IN (1, 2)";
-                                }
-                                else if (cbEnviados.isChecked()){
-                                    enviados = true;
-                                    pendientes = false;
-                                    where += " AND estatus_envio = 1";
-                                }
-                                else if (cbPendientes.isChecked()){
-                                    enviados = false;
-                                    pendientes = true;
-                                    where += " AND estatus_envio = 0";
-                                }
-                                else{
-                                    enviados = false;
-                                    pendientes = false;
-                                }
-
-                                imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-                                Log.e("where",where);
-                                if (where.length() > 4)
-                                    GetTickets(" WHERE" + where.substring(4));
-                                else
-                                    GetTickets("");
-                                dialog.dismiss();
-
-                                break;
-                            case R.id.btnBorrar:
-                                tvFecha.setText("");
-                                tvEstatus.setText("");
-                                tvCategoria.setText("");
-                                cbEnviados.setChecked(false);
-                                cbPendientes.setChecked(false);
+                        int id = view.getId();
+                        if (id == R.id.btnFiltrar) {
+                            if (!tvFecha.getText().toString().trim().isEmpty()) {
+                                fecha = tvFecha.getText().toString().trim();
+                                where = " AND fecha_solicitud LIKE '%" + fecha + "%'";
+                            } else
                                 fecha = "";
+
+                            if (!tvEstatus.getText().toString().trim().isEmpty()) {
+                                estatus = tvEstatus.getText().toString().trim();
+                                where = " AND estatus_ticket LIKE '%" + estatus + "%'";
+                            } else
                                 estatus = "";
+
+                            if (!tvCategoria.getText().toString().trim().isEmpty()) {
+                                categoria = tvCategoria.getText().toString().trim();
+                                String sql = "SELECT ticket_id FROM " + TICKETS + " WHERE nombre = ?";
+                                Cursor row = db.rawQuery(sql, new String[]{categoria});
+                                row.moveToFirst();
+                                where = " AND estatus_ticket = " + row.getInt(0) + "";
+                                row.close();
+                            } else
                                 categoria = "";
+
+                            if (cbEnviados.isChecked() && cbPendientes.isChecked()) {
+                                enviados = true;
+                                pendientes = true;
+                                where += " AND estatus_envio IN (1, 2)";
+                            } else if (cbEnviados.isChecked()) {
+                                enviados = true;
+                                pendientes = false;
+                                where += " AND estatus_envio = 1";
+                            } else if (cbPendientes.isChecked()) {
+                                enviados = false;
+                                pendientes = true;
+                                where += " AND estatus_envio = 0";
+                            } else {
                                 enviados = false;
                                 pendientes = false;
+                            }
 
-
-
-                                imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                            Log.e("where", where);
+                            if (where.length() > 4)
+                                GetTickets(" WHERE" + where.substring(4));
+                            else
                                 GetTickets("");
-                                //dialog.dismiss();
+                            dialog.dismiss();
+                        } else if (id == R.id.btnBorrar) {
+                            tvFecha.setText("");
+                            tvEstatus.setText("");
+                            tvCategoria.setText("");
+                            cbEnviados.setChecked(false);
+                            cbPendientes.setChecked(false);
+                            fecha = "";
+                            estatus = "";
+                            categoria = "";
+                            enviados = false;
+                            pendientes = false;
 
-                                break;
+
+                            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                            GetTickets("");
+                            //dialog.dismiss();
                         }
                         //setupBadge();
 
                     }
                 })
-                .setExpanded(true, 900)
+                .setExpanded(true, sizeH)
                 .create();
 
         tvFecha = filtros_dg.getHolderView().findViewById(R.id.tvFecha);
@@ -386,13 +384,11 @@ public class mesa_ayuda_fragment extends Fragment {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.nvFiltro:
-                Filtros();
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
+        if (item.getItemId() == R.id.nvFiltro) {
+            Filtros();
+            return true;
         }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override

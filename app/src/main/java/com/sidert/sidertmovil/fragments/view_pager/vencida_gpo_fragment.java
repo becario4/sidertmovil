@@ -47,7 +47,7 @@ public class vencida_gpo_fragment extends Fragment {
         View v = inflater.inflate(R.layout.fragment_vencida_gpo, container, false);
 
         ctx = getContext();
-        dBhelper = new DBhelper(ctx);
+        dBhelper = DBhelper.getInstance(ctx);
 
         parent                = (VencidaGrupal) getActivity();
         assert parent != null;

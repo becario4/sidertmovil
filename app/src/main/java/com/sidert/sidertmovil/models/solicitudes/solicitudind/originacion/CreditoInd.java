@@ -23,6 +23,7 @@ public class CreditoInd extends BaseModel implements Serializable, IFillModel {
     protected static final String COL_CLASIFICACION_RIESGO = "clasificacion_riesgo";
     protected static final String COL_ESTATUS_COMPLETADO   = "estatus_completado";
     protected static final String COL_MONTO_REFINANCIAR    = "monto_refinanciar";
+    protected static final String COL_ID_CAMPANA           = "id_campana";
 
     @SerializedName(COL_ID_CREDITO)
     @Expose
@@ -71,6 +72,11 @@ public class CreditoInd extends BaseModel implements Serializable, IFillModel {
     @SerializedName(COL_MONTO_REFINANCIAR)
     @Expose
     private String montoRefinanciar;
+
+    @SerializedName(COL_ID_CAMPANA)
+    @Expose
+    private Integer id_campana;
+
 
     public Integer getIdCredito() {
         return idCredito;
@@ -210,6 +216,15 @@ public class CreditoInd extends BaseModel implements Serializable, IFillModel {
         return no_periodicidad;
     }
 
+
+    public Integer getId_campana() {
+        return id_campana;
+    }
+
+    public void setId_campana(Integer id_campana) {
+        this.id_campana = id_campana;
+    }
+
     @Override
     public void fill(Cursor row) {
         this.row = row;
@@ -226,5 +241,6 @@ public class CreditoInd extends BaseModel implements Serializable, IFillModel {
         clasificacionRiesgo = getString(COL_CLASIFICACION_RIESGO);
         estatusCompletado   = getInt(COL_ESTATUS_COMPLETADO);
         montoRefinanciar    = getString(COL_MONTO_REFINANCIAR);
+        id_campana          = getInt(COL_ID_CAMPANA);
     }
 }

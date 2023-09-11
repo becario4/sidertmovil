@@ -42,7 +42,7 @@ public class adapter_prestamos extends RecyclerView.Adapter<adapter_prestamos.Vi
         this.ctx = ctx;
         this.data = data;
         this.evento = evento;
-        this.session = new SessionManager(ctx);
+        this.session = SessionManager.getInstance(ctx);
     }
 
     @NonNull
@@ -184,22 +184,21 @@ public class adapter_prestamos extends RecyclerView.Adapter<adapter_prestamos.Vi
                             popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                                 @Override
                                 public boolean onMenuItemClick(MenuItem item) {
-                                    switch (item.getItemId()) {
-                                        case R.id.nvExpedientes:
-                                            evento.ExpedientesClick(item_prestamo);
-                                            return true;
-                                        case R.id.nvRecuperacion:
-                                            evento.PrestamoClick(item_prestamo);
-                                            return true;
-                                        case R.id.nvGestionadas:
-                                            evento.GestionadasClick(item_prestamo);
-                                            return true;
-                                        case R.id.nvCodigoOxxo:
-                                            evento.CodigoOxxoClick(item_prestamo);
-                                            return true;
-                                        default:
-                                            return false;
+                                    int itemId = item.getItemId();
+                                    if (itemId == R.id.nvExpedientes) {
+                                        evento.ExpedientesClick(item_prestamo);
+                                        return true;
+                                    } else if (itemId == R.id.nvRecuperacion) {
+                                        evento.PrestamoClick(item_prestamo);
+                                        return true;
+                                    } else if (itemId == R.id.nvGestionadas) {
+                                        evento.GestionadasClick(item_prestamo);
+                                        return true;
+                                    } else if (itemId == R.id.nvCodigoOxxo) {
+                                        evento.CodigoOxxoClick(item_prestamo);
+                                        return true;
                                     }
+                                    return false;
                                 }
                             });
                             popup.show();

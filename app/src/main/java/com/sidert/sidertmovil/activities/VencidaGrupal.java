@@ -85,9 +85,9 @@ public class VencidaGrupal extends AppCompatActivity {
 
         ctx             = this;
 
-        session = new SessionManager(ctx);
+        session = SessionManager.getInstance(ctx);
 
-        dBhelper        = new DBhelper(ctx);
+        dBhelper        = DBhelper.getInstance(ctx);
         TBmain          = findViewById(R.id.TBmain);
         nvMenu          = findViewById(R.id.nvMenu);
         BottomNavigationViewHelper.disableShiftMode(nvMenu);
@@ -197,16 +197,13 @@ public class VencidaGrupal extends AppCompatActivity {
     private BottomNavigationView.OnNavigationItemSelectedListener nvMenu_onClick = new BottomNavigationView.OnNavigationItemSelectedListener() {
         @Override
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-            switch (item.getItemId()) {
-                case R.id.nvDatos:
-                    setFragment(DETALLE_GPO, null);
-                    break;
-                case R.id.nvGestion:
-                    setFragment(VENCIDA_GPO, null);
-                    break;
-                case R.id.nvReporte:
-                    setFragment(REPORTE_PAGOS_GPO, null);
-                    break;
+            int itemId = item.getItemId();
+            if (itemId == R.id.nvDatos) {
+                setFragment(DETALLE_GPO, null);
+            } else if (itemId == R.id.nvGestion) {
+                setFragment(VENCIDA_GPO, null);
+            } else if (itemId == R.id.nvReporte) {
+                setFragment(REPORTE_PAGOS_GPO, null);
             }
             return true;
         }

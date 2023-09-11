@@ -79,7 +79,7 @@ public class SolicitudTicket extends AppCompatActivity {
 
         ctx = this;
 
-        dBhelper = new DBhelper(ctx);
+        dBhelper = DBhelper.getInstance(ctx);
         db = dBhelper.getWritableDatabase();
 
         tbMain  = findViewById(R.id.tbMain);
@@ -385,13 +385,11 @@ public class SolicitudTicket extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                finish();
-                break;
-            case R.id.enviar:
-                EnviarDatos();
-                break;
+        int itemId = item.getItemId();
+        if (itemId == android.R.id.home) {
+            finish();
+        } else if (itemId == R.id.enviar) {
+            EnviarDatos();
         }
         return super.onOptionsItemSelected(item);
     }

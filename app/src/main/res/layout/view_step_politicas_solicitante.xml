@@ -185,14 +185,14 @@
         android:layout_height="wrap_content">
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/btnRegresar8"
+            android:id="@+id/btnRegresarPoliticiasSolicitantes"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
             android:layout_marginLeft="20dp"
             android:src="@drawable/ic_regresar" />
         <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/btnContinuar8"
+            android:id="@+id/btnContinuarPoliticasSolicitantes"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/ic_continuar"

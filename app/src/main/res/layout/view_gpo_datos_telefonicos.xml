@@ -102,20 +102,22 @@
         android:layout_marginTop="10dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
+
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/btnRegresar1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_regresar"
+            android:layout_alignParentLeft="true"
             android:layout_marginLeft="20dp"
-            android:layout_alignParentLeft="true"/>
+            android:src="@drawable/ic_regresar" />
+
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/btnContinuar1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_continuar"
+            android:layout_alignParentRight="true"
             android:layout_marginRight="20dp"
-            android:layout_alignParentRight="true"/>
+            android:src="@drawable/ic_continuar" />
     </RelativeLayout>
 
 </LinearLayout>

@@ -49,7 +49,7 @@ public class ResumenActivity extends AppCompatActivity {
 
         ctx = this;
 
-        dBhelper    = new DBhelper(ctx);
+        dBhelper    = DBhelper.getInstance(ctx);
         db          = dBhelper.getWritableDatabase();
 
         tbMain  = findViewById(R.id.tbMain);

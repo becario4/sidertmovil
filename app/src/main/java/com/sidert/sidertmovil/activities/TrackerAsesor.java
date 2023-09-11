@@ -78,7 +78,7 @@ public class TrackerAsesor extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tracker_asesor);
         ctx = this;
-        session = new SessionManager(ctx);
+        session = SessionManager.getInstance(ctx);
 
         tbMain       = findViewById(R.id.tbMain);
         spSucursal   = findViewById(R.id.spSucursal);
@@ -134,7 +134,7 @@ public class TrackerAsesor extends AppCompatActivity {
         final AlertDialog loading = Popups.showLoadingDialog(ctx, R.string.please_wait, R.string.loading_info);
         loading.show();
 
-        ManagerInterface api = new RetrofitClient().generalRF(CONTROLLER_MOVIL, ctx).create(ManagerInterface.class);
+        ManagerInterface api = RetrofitClient.generalRF(CONTROLLER_MOVIL, ctx).create(ManagerInterface.class);
 
         Call<List<MSucursales>> call = api.getSucursales(Integer.parseInt(session.getUser().get(9)),
                                                         "Bearer "+ session.getUser().get(7));
@@ -208,7 +208,7 @@ public class TrackerAsesor extends AppCompatActivity {
         final AlertDialog loading = Popups.showLoadingDialog(ctx, R.string.please_wait, R.string.loading_info);
         loading.show();
 
-        ManagerInterface api = new RetrofitClient().generalRF(CONTROLLER_MOVIL, ctx).create(ManagerInterface.class);
+        ManagerInterface api = RetrofitClient.generalRF(CONTROLLER_MOVIL, ctx).create(ManagerInterface.class);
 
         Call<List<MTrackerAsesor>> call = api.getTrackerAsesor(user_id,
                                                                fecha,
@@ -368,49 +368,42 @@ public class TrackerAsesor extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                finish();
-                break;
-            case R.id.buscar:
-                Log.e("Sucursal", ((MSpiner)spSucursal.getSelectedItem()).getId()+"asdasd");
-                if (((MSpiner)spSucursal.getSelectedItem()).getId() > 0){
-                    if (((MSpiner)spAsesor.getSelectedItem()).getId() > 0){
-                        if (!tvFecha.getText().toString().isEmpty()){
-                            if (mMap != null)
-                                mMap.clear();
-                            if (NetworkStatus.haveNetworkConnection(ctx))
-                                GetTracker(((MSpiner)spAsesor.getSelectedItem()).getId(), tvFecha.getText().toString());
-                            else{
-                                final AlertDialog not_network = Popups.showDialogMessage(ctx, Constants.not_network,
-                                        R.string.not_network, R.string.accept, new Popups.DialogMessage() {
-                                            @Override
-                                            public void OnClickListener(AlertDialog dialog) {
-                                                finish();
-                                                dialog.dismiss();
-                                            }
-                                        });
-                                not_network.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
-                                not_network.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
-                                not_network.show();
-                            }
+        int itemId = item.getItemId();
+        if (itemId == android.R.id.home) {
+            finish();
+        } else if (itemId == R.id.buscar) {
+            Log.e("Sucursal", ((MSpiner) spSucursal.getSelectedItem()).getId() + "asdasd");
+            if (((MSpiner) spSucursal.getSelectedItem()).getId() > 0) {
+                if (((MSpiner) spAsesor.getSelectedItem()).getId() > 0) {
+                    if (!tvFecha.getText().toString().isEmpty()) {
+                        if (mMap != null)
+                            mMap.clear();
+                        if (NetworkStatus.haveNetworkConnection(ctx))
+                            GetTracker(((MSpiner) spAsesor.getSelectedItem()).getId(), tvFecha.getText().toString());
+                        else {
+                            final AlertDialog not_network = Popups.showDialogMessage(ctx, Constants.not_network,
+                                    R.string.not_network, R.string.accept, new Popups.DialogMessage() {
+                                        @Override
+                                        public void OnClickListener(AlertDialog dialog) {
+                                            finish();
+                                            dialog.dismiss();
+                                        }
+                                    });
+                            not_network.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+                            not_network.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                            not_network.show();
                         }
-                        else
-                            Toast.makeText(ctx, "Falta seleccionar la fecha", Toast.LENGTH_SHORT).show();
-                    }
-                    else
-                        Toast.makeText(ctx, "Falta seleccionar asesor", Toast.LENGTH_SHORT).show();
-                }
-                else
-                    Toast.makeText(ctx, "Falta seleccionar sucursal", Toast.LENGTH_SHORT).show();
-                break;
-            case R.id.limpiar:
-                spAsesor.setSelection(0);
-                tvFecha.setText("");
-                if (mMap != null)
-                    mMap.clear();
-
-                break;
+                    } else
+                        Toast.makeText(ctx, "Falta seleccionar la fecha", Toast.LENGTH_SHORT).show();
+                } else
+                    Toast.makeText(ctx, "Falta seleccionar asesor", Toast.LENGTH_SHORT).show();
+            } else
+                Toast.makeText(ctx, "Falta seleccionar sucursal", Toast.LENGTH_SHORT).show();
+        } else if (itemId == R.id.limpiar) {
+            spAsesor.setSelection(0);
+            tvFecha.setText("");
+            if (mMap != null)
+                mMap.clear();
         }
         return super.onOptionsItemSelected(item);
     }

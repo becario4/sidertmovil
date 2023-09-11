@@ -90,9 +90,9 @@ public class CodigosOxxo extends AppCompatActivity {
 
         ctx = this;
 
-        session = new SessionManager(ctx);
+        session = SessionManager.getInstance(ctx);
 
-        dBhelper = new DBhelper(ctx);
+        dBhelper = DBhelper.getInstance(ctx);
         db = dBhelper.getWritableDatabase();
 
         tbMain = findViewById(R.id.tbMain);
@@ -149,7 +149,7 @@ public class CodigosOxxo extends AppCompatActivity {
             loading.show();
 
             /**Interfaz para realizar peticiones*/
-            ManagerInterface api = new RetrofitClient().generalRF(CONTROLLER_CODIGOS, ctx).create(ManagerInterface.class);
+            ManagerInterface api = RetrofitClient.generalRF(CONTROLLER_CODIGOS, ctx).create(ManagerInterface.class);
 
             /**Se prepara la peticion colocando los debidos parametros*/
             Call<MResCodigoOxxo> call = api.generarCodigo(session.getUser().get(7),
@@ -275,7 +275,7 @@ public class CodigosOxxo extends AppCompatActivity {
                     /**Evento para compartir la referencia por whatsapp*/
                     if (enabled) {
                         /**Se establece la URL dominio + puerto + controlador + funcion + nombre_archivo.pdf*/
-                        String url = session.getDominio().get(0) + session.getDominio().get(1) +
+                        String url = session.getDominio() +
                                 WebServicesRoutes.CONTROLLER_FICHAS +
                                 WebServicesRoutes.PDF_CODIGOS_OXXO + nombrePDF;
 

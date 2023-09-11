@@ -60,7 +60,7 @@ public class ResumenIntegrantes extends AppCompatActivity {
         tvTotal.setText("Total: $" + dFormat.format(Double.parseDouble(total)));
         String id_prestamo =  getIntent().getStringExtra(ID_PRESTAMO);
         String id_gestion =  getIntent().getStringExtra(ID_GESTION);
-        DBhelper dBhelper = new DBhelper(ctx);
+        DBhelper dBhelper = DBhelper.getInstance(ctx);
 
         Cursor row = dBhelper.getRecords(TBL_MIEMBROS_PAGOS_T, " WHERE id_prestamo = ? AND id_gestion = ?", "", new String[]{id_prestamo, id_gestion});
 

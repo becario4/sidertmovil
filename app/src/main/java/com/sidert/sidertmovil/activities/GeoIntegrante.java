@@ -2,6 +2,7 @@ package com.sidert.sidertmovil.activities;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -54,6 +55,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.sidert.sidertmovil.R;
 import com.sidert.sidertmovil.database.DBhelper;
 import com.sidert.sidertmovil.fragments.geo_tesorera_fragment;
+import com.sidert.sidertmovil.models.ModeloCatalogoGral;
 import com.sidert.sidertmovil.utils.CanvasCustom;
 import com.sidert.sidertmovil.utils.Constants;
 import com.sidert.sidertmovil.utils.Miscellaneous;
@@ -71,15 +73,23 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Objects;
 
+import static com.sidert.sidertmovil.utils.Constants.CARTERAEN;
+import static com.sidert.sidertmovil.utils.Constants.CATALOGO;
 import static com.sidert.sidertmovil.utils.Constants.FORMAT_TIMESTAMP;
 import static com.sidert.sidertmovil.utils.Constants.ID_INTEGRANTE;
+import static com.sidert.sidertmovil.utils.Constants.ITEM;
 import static com.sidert.sidertmovil.utils.Constants.NUM_SOLICITUD;
+import static com.sidert.sidertmovil.utils.Constants.REQUEST_CODE;
+import static com.sidert.sidertmovil.utils.Constants.REQUEST_CODE_CARTERAEN;
 import static com.sidert.sidertmovil.utils.Constants.TBL_GEO_RESPUESTAS_T;
 import static com.sidert.sidertmovil.utils.Constants.TBL_MIEMBROS_GPO_T;
 import static com.sidert.sidertmovil.utils.Constants.TBL_PRESTAMOS_GPO_T;
 import static com.sidert.sidertmovil.utils.Constants.TIMESTAMP;
+import static com.sidert.sidertmovil.utils.Constants.TITULO;
 
-/**Clase para realizar las geolocalizaciones de integrantes*/
+/**
+ * Clase para realizar las geolocalizaciones de integrantes
+ */
 public class GeoIntegrante extends AppCompatActivity {
 
     private Toolbar tbMain;
@@ -88,7 +98,6 @@ public class GeoIntegrante extends AppCompatActivity {
 
     private DBhelper dBhelper;
     private SQLiteDatabase db;
-
     private TextView tvMapa;
     private TextView tvDireccionCap;
     private EditText etNombre;
@@ -98,6 +107,7 @@ public class GeoIntegrante extends AppCompatActivity {
     private EditText etFechaFinalizacion;
     private EditText etFechaEnvio;
     private EditText etDireccionCap;
+    private TextView txtCarteraEnIntegrante;
     private ImageButton ibUbicacion;
     private ImageButton ibCodigoBarras;
     private ImageButton ibFotoFachada;
@@ -126,19 +136,19 @@ public class GeoIntegrante extends AppCompatActivity {
     private String idCartera = "0";
     private String idIntegrante = "0";
     private String numSolicitud;
-   
+
     private String cliente_clv = "0";
     private String direccion = "No se encontró la dirección";
 
     private boolean isSave = false;
-    
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_geo_integrante);
 
         ctx = this;
-        dBhelper = new DBhelper(ctx);
+        dBhelper = DBhelper.getInstance(ctx);
         db = dBhelper.getWritableDatabase();
 
         tbMain = findViewById(R.id.tbMain);
@@ -155,6 +165,8 @@ public class GeoIntegrante extends AppCompatActivity {
 
         etFechaFinalizacion = findViewById(R.id.etFechaFinalizacion);
         etFechaEnvio = findViewById(R.id.etFechaEnvio);
+
+        txtCarteraEnIntegrante = findViewById(R.id.txtCarteraEnIntegrante);
 
         ibUbicacion = findViewById(R.id.ibUbicacion);
         ibCodigoBarras = findViewById(R.id.ibCodigoBarras);
@@ -193,6 +205,7 @@ public class GeoIntegrante extends AppCompatActivity {
         /**EVento de click para Ubicacion GPS, Codigos Barras, Fotografia, Guardar informacion*/
         ibUbicacion.setOnClickListener(ibUbicacion_OnClick);
         ibCodigoBarras.setOnClickListener(ibCodigoBarras_OnClick);
+        txtCarteraEnIntegrante.setOnClickListener(txtCarteraEnIntegrante_OnClick);
         ibFotoFachada.setOnClickListener(ibFotoFachada_OnClick);
         ibGaleriaFachada.setOnClickListener(ibGaleriaFachada_OnClick);
         ivFotoFachada.setOnClickListener(ivFotoFachada_OnClick);
@@ -229,13 +242,12 @@ public class GeoIntegrante extends AppCompatActivity {
                             Objects.requireNonNull(ubicacion_dlg.getWindow()).requestFeature(Window.FEATURE_NO_TITLE);
                             ubicacion_dlg.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
                             ubicacion_dlg.show();
-                        }
-                        else{
+                        } else {
                             final AlertDialog ubicacion_dlg = Popups.showDialogConfirm(ctx, Constants.question,
                                     R.string.ver_en_maps, R.string.ver_maps, new Popups.DialogMessage() {
                                         @Override
                                         public void OnClickListener(AlertDialog dialog) {
-                                            Intent i_maps = new Intent(android.content.Intent.ACTION_VIEW, Uri.parse("geo:"+latLngUbicacion.latitude+","+latLngUbicacion.longitude+"?z=16&q="+latLngUbicacion.latitude+","+latLngUbicacion.longitude+"()"));
+                                            Intent i_maps = new Intent(android.content.Intent.ACTION_VIEW, Uri.parse("geo:" + latLngUbicacion.latitude + "," + latLngUbicacion.longitude + "?z=16&q=" + latLngUbicacion.latitude + "," + latLngUbicacion.longitude + "()"));
                                             i_maps.setClassName("com.google.android.apps.maps", "com.google.android.maps.MapsActivity");
                                             startActivity(i_maps);
                                             dialog.dismiss();
@@ -258,7 +270,9 @@ public class GeoIntegrante extends AppCompatActivity {
         });
     }
 
-    /**Evento para obtener la ubicacion del GPS*/
+    /**
+     * Evento para obtener la ubicacion del GPS
+     */
     private View.OnClickListener ibUbicacion_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -271,7 +285,9 @@ public class GeoIntegrante extends AppCompatActivity {
         }
     };
 
-    /**Evento de lector de codigo de barras*/
+    /**
+     * Evento de lector de codigo de barras
+     */
     private View.OnClickListener ibCodigoBarras_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -280,7 +296,20 @@ public class GeoIntegrante extends AppCompatActivity {
         }
     };
 
-    /**Evento de fotografia para evidencia*/
+    private View.OnClickListener txtCarteraEnIntegrante_OnClick = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            Intent i_carteraEn = new Intent(ctx, Catalogos.class);
+            i_carteraEn.putExtra(TITULO, Miscellaneous.ucFirst(CARTERAEN));
+            i_carteraEn.putExtra(CATALOGO, CARTERAEN);
+            i_carteraEn.putExtra(REQUEST_CODE, REQUEST_CODE_CARTERAEN);
+            startActivityForResult(i_carteraEn, REQUEST_CODE_CARTERAEN);
+        }
+    };
+
+    /**
+     * Evento de fotografia para evidencia
+     */
     private View.OnClickListener ibFotoFachada_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -290,30 +319,24 @@ public class GeoIntegrante extends AppCompatActivity {
         }
     };
 
-    private View.OnClickListener ibGaleriaFachada_OnClick = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            /**Valida si tiene los permisos de escritura y lectura de almacenamiento*/
-            if (ContextCompat.checkSelfPermission(ctx, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
-                    || ContextCompat.checkSelfPermission(ctx,Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED){
-                requestPermissions(new String[] {Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE}, 123);
-            } else {
-                int compress = 10;/**Porcentaje de calidad de imagen de salida*/
-                if( Build.MANUFACTURER.toUpperCase().equals("SAMSUNG"))/**Valida si es de un samsung para subir un poco la calidad*/
-                    compress = 40;
+    private final View.OnClickListener ibGaleriaFachada_OnClick = ignored -> {
+        String model = Build.MANUFACTURER;
+        int compress = 10;
 
-                /**Libreria para recortar imagenes*/
-                CropImage.activity()
-                        .setAutoZoomEnabled(true)
-                        .setMinCropWindowSize(3000,4000)
-                        .setOutputCompressQuality(compress)
-                        .start(GeoIntegrante.this);
-            }
-
+        if (model != null && model.equalsIgnoreCase("SAMSUNG")) {
+            compress = 40;
         }
+
+        CropImage.activity()
+                .setAutoZoomEnabled(true)
+                .setMinCropWindowSize(3000, 4000)
+                .setOutputCompressQuality(compress)
+                .start(this);
     };
 
-    /**En caso de que ya fue capturada la fotografia, puede volver a capturar una nueva foto o poder visualizarla*/
+    /**
+     * En caso de que ya fue capturada la fotografia, puede volver a capturar una nueva foto o poder visualizarla
+     */
     private View.OnClickListener ivFotoFachada_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -333,11 +356,11 @@ public class GeoIntegrante extends AppCompatActivity {
                             @Override
                             public void OnClickListener(AlertDialog dialog) {
                                 int compress = 10;
-                                if( Build.MANUFACTURER.toUpperCase().equals("SAMSUNG"))
+                                if (Build.MANUFACTURER.toUpperCase().equals("SAMSUNG"))
                                     compress = 40;
                                 CropImage.activity()
                                         .setAutoZoomEnabled(true)
-                                        .setMinCropWindowSize(3000,4000)
+                                        .setMinCropWindowSize(3000, 4000)
                                         .setOutputCompressQuality(compress)
                                         .start(GeoIntegrante.this);
                                 dialog.dismiss();
@@ -352,8 +375,7 @@ public class GeoIntegrante extends AppCompatActivity {
                 evidencia_dlg.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
                 evidencia_dlg.show();
 
-            }
-            else {
+            } else {
                 final AlertDialog fachada_dlg = Popups.showDialogConfirm(ctx, Constants.question,
                         R.string.ver_fotografia, R.string.ver_imagen, new Popups.DialogMessage() {
                             @Override
@@ -377,7 +399,9 @@ public class GeoIntegrante extends AppCompatActivity {
         }
     };
 
-    /**Evento para validar los campos para poder guardar*/
+    /**
+     * Evento para validar los campos para poder guardar
+     */
     private View.OnClickListener btnGuardar_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -386,7 +410,7 @@ public class GeoIntegrante extends AppCompatActivity {
     };
 
     //===================== Listener GPS  =======================================================
-    private void ObtenerUbicacion (){
+    private void ObtenerUbicacion() {
         pbLoading.setVisibility(View.VISIBLE);
         ibUbicacion.setEnabled(false);
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
@@ -396,18 +420,17 @@ public class GeoIntegrante extends AppCompatActivity {
             public void onComplete(String latitud, String longitud) {
 
                 ibUbicacion.setEnabled(true);
-                if (!latitud.isEmpty() && !longitud.isEmpty()){
+                if (!latitud.isEmpty() && !longitud.isEmpty()) {
                     mapUbicacion.setVisibility(View.VISIBLE);
                     ColocarUbicacionGestion(Double.parseDouble(latitud), Double.parseDouble(longitud));
-                }
-                else{
+                } else {
                     pbLoading.setVisibility(View.GONE);
                     Toast.makeText(ctx, getResources().getString(R.string.no_ubicacion), Toast.LENGTH_SHORT).show();
                 }
                 myHandler.removeCallbacksAndMessages(null);
 
                 flagUbicacion = true;
-                if (flagUbicacion){
+                if (flagUbicacion) {
                     CancelUbicacion();
                 }
             }
@@ -419,12 +442,11 @@ public class GeoIntegrante extends AppCompatActivity {
 
         if (NetworkStatus.haveNetworkConnection(ctx)) {
             provider = LocationManager.NETWORK_PROVIDER;
-        }
-        else {
+        } else {
             provider = LocationManager.GPS_PROVIDER;
         }
 
-        locationManager.requestSingleUpdate(provider, locationListener,null);
+        locationManager.requestSingleUpdate(provider, locationListener, null);
 
         myHandler.postDelayed(new Runnable() {
             public void run() {
@@ -441,7 +463,7 @@ public class GeoIntegrante extends AppCompatActivity {
         }, 60000);
     }
 
-    private void ColocarUbicacionGestion (final double lat, final double lon){
+    private void ColocarUbicacionGestion(final double lat, final double lon) {
         mapUbicacion.onResume();
         try {
             MapsInitializer.initialize(ctx);
@@ -463,13 +485,13 @@ public class GeoIntegrante extends AppCompatActivity {
                 mMap.getUiSettings().setAllGesturesEnabled(false);
                 mMap.getUiSettings().setMapToolbarEnabled(false);
 
-                addMarker(lat,lon);
+                addMarker(lat, lon);
 
             }
         });
     }
 
-    private void addMarker (double lat, double lng){
+    private void addMarker(double lat, double lng) {
         if (flag_edit)
             etDireccionCap.setText(Miscellaneous.ObtenerDireccion(ctx, lat, lng));
         else
@@ -477,9 +499,9 @@ public class GeoIntegrante extends AppCompatActivity {
         etDireccionCap.setVisibility(View.VISIBLE);
         tvDireccionCap.setVisibility(View.VISIBLE);
         tvDireccionCap.setTextColor(getResources().getColor(R.color.black));
-        LatLng coordenadas = new LatLng(lat,lng);
+        LatLng coordenadas = new LatLng(lat, lng);
         latLngUbicacion = coordenadas;
-        CameraUpdate ubication = CameraUpdateFactory.newLatLngZoom(coordenadas,17);
+        CameraUpdate ubication = CameraUpdateFactory.newLatLngZoom(coordenadas, 17);
 
         mMap.clear();
         mMap.addMarker(new MarkerOptions()
@@ -492,7 +514,7 @@ public class GeoIntegrante extends AppCompatActivity {
         ibUbicacion.setVisibility(View.GONE);
     }
 
-    private void CancelUbicacion (){
+    private void CancelUbicacion() {
         if (flagUbicacion)
             locationManager.removeUpdates(locationListener);
     }
@@ -501,18 +523,36 @@ public class GeoIntegrante extends AppCompatActivity {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        switch (requestCode){
+        switch (requestCode) {
             case Constants.REQUEST_CODE_CODEBARS:
-                if (resultCode == RESULT_OK){
-                    if (data != null){
+                if (resultCode == RESULT_OK) {
+                    if (data != null) {
                         etCodigoBarras.setVisibility(View.VISIBLE);
                         etCodigoBarras.setText(data.getStringExtra(Constants.CODEBARS));
                     }
                 }
                 break;
+
+
+            case REQUEST_CODE_CARTERAEN:
+                if (resultCode == REQUEST_CODE_CARTERAEN) {
+                    if (data != null) {
+                        Integer id_carteraEn = 0;
+                        ContentValues cv = new ContentValues();
+                        txtCarteraEnIntegrante.setError(null);
+                        txtCarteraEnIntegrante.setText(((ModeloCatalogoGral) data.getSerializableExtra(ITEM)).getNombre());
+                        id_carteraEn = Miscellaneous.selectCampana(ctx, Miscellaneous.GetStr(txtCarteraEnIntegrante));
+
+                    }
+                } else {
+                    txtCarteraEnIntegrante.setText(" ");
+                    Toast.makeText(ctx, "ESTE CAMPO ES REQUERIDO", Toast.LENGTH_SHORT).show();
+                }
+                break;
+
             case Constants.REQUEST_CODE_CAMARA_FACHADA:
-                if (resultCode == Activity.RESULT_OK){
-                    if (data != null){
+                if (resultCode == Activity.RESULT_OK) {
+                    if (data != null) {
                         ibFotoFachada.setVisibility(View.GONE);
                         ibGaleriaFachada.setVisibility(View.GONE);
                         ivFotoFachada.setVisibility(View.VISIBLE);
@@ -522,7 +562,7 @@ public class GeoIntegrante extends AppCompatActivity {
                 }
                 break;
             case CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE:/**Recibe el archivo a adjuntar*/
-                if (data != null){/**Valida que se esté recibiendo el archivo*/
+                if (data != null) {/**Valida que se esté recibiendo el archivo*/
                     try {
                         Log.e("AQUI", "CROP IMAGE");
                         CropImage.ActivityResult result = CropImage.getActivityResult(data);
@@ -560,7 +600,7 @@ public class GeoIntegrante extends AppCompatActivity {
                         /**Coloca la imagen en el contededor del imageView*/
                         Glide.with(ctx).load(baos.toByteArray()).centerCrop().into(ivFotoFachada);
 
-                    }catch (Exception e){
+                    } catch (Exception e) {
                         /**En caso de que haya adjuntado un archivo  con diferente formato al JPEG*/
                         AlertDialog success = Popups.showDialogMessage(ctx, "", R.string.error_image, R.string.accept, dialog -> dialog.dismiss());
                         success.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
@@ -573,11 +613,11 @@ public class GeoIntegrante extends AppCompatActivity {
         }
     }
 
-    private void SendMessError (String mess){
+    private void SendMessError(String mess) {
         Toast.makeText(ctx, mess, Toast.LENGTH_SHORT).show();
     }
 
-    public void GuardarGeo () {
+    public void GuardarGeo() {
         try {
             HashMap<Integer, String> params = new HashMap<>();
             params.put(0, idCartera);
@@ -587,8 +627,8 @@ public class GeoIntegrante extends AppCompatActivity {
             params.put(4, idIntegrante);
             params.put(5, etNombre.getText().toString().trim().toUpperCase());
             params.put(6, etDireccion.getText().toString().trim().toUpperCase());
-            params.put(7, ((isUbicacion)?"0":String.valueOf(latLngUbicacion.latitude)));
-            params.put(8, ((isUbicacion)?"0":String.valueOf(latLngUbicacion.longitude)));
+            params.put(7, ((isUbicacion) ? "0" : String.valueOf(latLngUbicacion.latitude)));
+            params.put(8, ((isUbicacion) ? "0" : String.valueOf(latLngUbicacion.longitude)));
             params.put(9, etDireccionCap.getText().toString().trim().toUpperCase());
             params.put(10, etCodigoBarras.getText().toString().trim());
             params.put(11, Miscellaneous.save(byteFotoFachada, 1));
@@ -597,13 +637,14 @@ public class GeoIntegrante extends AppCompatActivity {
             params.put(14, "");
             params.put(15, "0");
             params.put(16, cliente_clv);
+            params.put(17, String.valueOf(Miscellaneous.selectCarteraEn(ctx, Miscellaneous.GetStr(txtCarteraEnIntegrante))));
 
             if (isSave)
                 dBhelper.saveGeoRespuestas(db, params);
             else
                 Toast.makeText(ctx, "No hay Integrante registrado, no se puede guardar la geolocalización", Toast.LENGTH_SHORT).show();
         } catch (IOException e) {
-            Log.e("Error", e.getMessage()+" ....");
+            Log.e("Error", e.getMessage() + " ....");
             e.printStackTrace();
         }
 
@@ -614,14 +655,14 @@ public class GeoIntegrante extends AppCompatActivity {
 
     }
 
-    private void initComponents (){
+    private void initComponents() {
         Cursor row;
 
         String sql = "SELECT p.id_grupo, m.id_integrante, COALESCE(m.nombre, ''), COALESCE(m.direccion, ''), m.clave FROM " + TBL_MIEMBROS_GPO_T + " AS m LEFT JOIN " + TBL_PRESTAMOS_GPO_T + " AS p ON p.id_prestamo = m.id_prestamo WHERE m.tipo_integrante = 'INTEGRANTE' AND m.id_integrante = ? AND p.num_solicitud = ?";
 
         row = db.rawQuery(sql, new String[]{idIntegrante, numSolicitud});
 
-        if (row.getCount() > 0){
+        if (row.getCount() > 0) {
             row.moveToFirst();
             isSave = true;
             idCartera = row.getString(0);
@@ -631,7 +672,7 @@ public class GeoIntegrante extends AppCompatActivity {
         }
         row.close();
 
-        sql = "SELECT * FROM " + TBL_GEO_RESPUESTAS_T +" WHERE id_cartera = ? AND id_integrante = ? AND tipo_ficha = 2 AND tipo_geolocalizacion = 'INTEGRANTE'";
+        sql = "SELECT * FROM " + TBL_GEO_RESPUESTAS_T + " WHERE id_cartera = ? AND id_integrante = ? AND tipo_ficha = 2 AND tipo_geolocalizacion = 'INTEGRANTE'";
 
         row = db.rawQuery(sql, new String[]{idCartera, idIntegrante});
         if (row.getCount() > 0) {
@@ -639,7 +680,7 @@ public class GeoIntegrante extends AppCompatActivity {
             row.moveToFirst();
             direccion = row.getString(10);
 
-            if (row.getDouble(8) == 0 && row.getDouble(9) == 0){
+            if (row.getDouble(8) == 0 && row.getDouble(9) == 0) {
                 ibUbicacion.setVisibility(View.GONE);
                 tvMapa.setVisibility(View.GONE);
                 tvDireccionCap.setTextColor(getResources().getColor(R.color.black));
@@ -647,8 +688,7 @@ public class GeoIntegrante extends AppCompatActivity {
                 tvDireccionCap.setVisibility(View.VISIBLE);
                 etDireccionCap.setText(direccion);
                 etDireccionCap.setVisibility(View.VISIBLE);
-            }
-            else {
+            } else {
                 mapUbicacion.setVisibility(View.VISIBLE);
                 ColocarUbicacionGestion(row.getDouble(8), row.getDouble(9));
             }
@@ -659,19 +699,22 @@ public class GeoIntegrante extends AppCompatActivity {
             etCodigoBarras.setText(row.getString(11));
             ibFotoFachada.setVisibility(View.GONE);
             ibGaleriaFachada.setVisibility(View.GONE);
-            File fachadaFile = new File(Constants.ROOT_PATH + "Fachada/"+row.getString(12));
+            File fachadaFile = new File(Constants.ROOT_PATH + "Fachada/" + row.getString(12));
             Uri uriFachada = Uri.fromFile(fachadaFile);
-            byteFotoFachada = Miscellaneous.getBytesUri(ctx, uriFachada,0);
+            byteFotoFachada = Miscellaneous.getBytesUri(ctx, uriFachada, 0);
             Glide.with(ctx).load(uriFachada).into(ivFotoFachada);
             ivFotoFachada.setVisibility(View.VISIBLE);
             etComentario.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked));
             etComentario.setText(row.getString(13));
             etComentario.setEnabled(false);
             etFechaFinalizacion.setText(row.getString(14));
-            etFechaEnvio.setText((!row.getString(15).isEmpty())?row.getString(15):"Pendiente por enviar");
+            etFechaEnvio.setText((!row.getString(15).isEmpty()) ? row.getString(15) : "Pendiente por enviar");
             llFechaFinalizacion.setVisibility(View.VISIBLE);
             llFechaEnvio.setVisibility(View.VISIBLE);
             btnGuardar.setVisibility(View.GONE);
+            txtCarteraEnIntegrante.setText(Miscellaneous.tipoEntregaCartera(ctx, row.getString(18)));
+            txtCarteraEnIntegrante.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked));
+            txtCarteraEnIntegrante.setEnabled(false);
 
         }
 
@@ -679,11 +722,11 @@ public class GeoIntegrante extends AppCompatActivity {
 
     public void ValidarInformacion() {
         /**Valida si se logro obtener la ubicacion o por lo menos se intento obtenerla*/
-        if (latLngUbicacion != null || isUbicacion){
+        if (latLngUbicacion != null || isUbicacion) {
             /**Valida si ya tomo la fotografia*/
-            if (byteFotoFachada != null){
+            if (byteFotoFachada != null) {
                 /**Si agrego el comentario*/
-                if (!etComentario.getText().toString().trim().isEmpty()){
+                if (!etComentario.getText().toString().trim().isEmpty()) {
                     /**Mensaje de confirmacion para reactificar los datos y poder guardar*/
                     final AlertDialog guardar_dlg = Popups.showDialogConfirm(ctx, Constants.question,
                             R.string.guardar_geo, R.string.save, new Popups.DialogMessage() {
@@ -701,14 +744,11 @@ public class GeoIntegrante extends AppCompatActivity {
                     Objects.requireNonNull(guardar_dlg.getWindow()).requestFeature(Window.FEATURE_NO_TITLE);
                     guardar_dlg.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
                     guardar_dlg.show();
-                }
-                else
+                } else
                     SendMessError("Falta capturar el comentario");
-            }
-            else
+            } else
                 SendMessError("Falta Capturar la foto de fachada.");
-        }
-        else
+        } else
             SendMessError("Falta obtener la ubicación actual.");
     }
 
@@ -723,7 +763,9 @@ public class GeoIntegrante extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    /**Funcion de Back del boton de retroceso del dispositivo*/
+    /**
+     * Funcion de Back del boton de retroceso del dispositivo
+     */
     @Override
     public void onBackPressed() {
         setResult(RESULT_OK); /**Se retorna un valor a la vista anterior*/

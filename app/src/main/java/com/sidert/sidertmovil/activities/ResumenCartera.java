@@ -52,9 +52,9 @@ public class ResumenCartera extends AppCompatActivity {
 
         ctx = this;
 
-        session = new SessionManager(ctx);
+        session = SessionManager.getInstance(ctx);
 
-        dBhelper    = new DBhelper(ctx);
+        dBhelper    = DBhelper.getInstance(ctx);
         db          = dBhelper.getWritableDatabase();
 
         tvCartera           = findViewById(R.id.tvCartera);

@@ -35,6 +35,7 @@ public class OtrosDatosIntegranteRen extends BaseModel implements Serializable, 
     protected static final String COL_TIENE_FIRMA          = "tiene_firma";
     protected static final String COL_NOMBRE_QUIEN_FIRMA   = "nombre_quien_firma";
     protected static final String COL_MONTO_REFINANCIAR    = "monto_refinanciar";
+    protected static final String COL_ID_CAMPANA           = "id_campana";
 
     @SerializedName(COL_ID_OTRO)
     @Expose
@@ -103,6 +104,10 @@ public class OtrosDatosIntegranteRen extends BaseModel implements Serializable, 
     @SerializedName(COL_MONTO_REFINANCIAR)
     @Expose
     private String montoRefinanciar;
+
+    @SerializedName(COL_ID_CAMPANA)
+    @Expose
+    private String id_campana;
 
     public Integer getIdOtro() {
         return idOtro;
@@ -255,6 +260,14 @@ public class OtrosDatosIntegranteRen extends BaseModel implements Serializable, 
         return firma_cliente;
     }
 
+    public String getId_campana() {
+        return id_campana;
+    }
+
+    public void setId_campana(String id_campana) {
+        this.id_campana = id_campana;
+    }
+
     @Override
     public void fill(Cursor row) {
         this.row = row;
@@ -276,5 +289,6 @@ public class OtrosDatosIntegranteRen extends BaseModel implements Serializable, 
         tieneFirma          = getString(COL_TIENE_FIRMA);
         nombreQuienFirma    = getString(COL_NOMBRE_QUIEN_FIRMA);
         montoRefinanciar    = getString(COL_MONTO_REFINANCIAR);
+        id_campana          = getString(COL_ID_CAMPANA);
     }
 }

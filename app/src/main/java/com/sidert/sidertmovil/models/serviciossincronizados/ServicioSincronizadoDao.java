@@ -15,7 +15,7 @@ public class ServicioSincronizadoDao {
     final SQLiteDatabase db;
 
     public ServicioSincronizadoDao(Context ctx){
-        this.dbHelper = new DBhelper(ctx);
+        this.dbHelper = DBhelper.getInstance(ctx);
         this.db = dbHelper.getWritableDatabase();
     }
 

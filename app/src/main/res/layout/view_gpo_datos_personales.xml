@@ -1646,19 +1646,21 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
         <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/btnRegresar0"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_regresar"
-            android:layout_marginLeft="20dp"
-            android:layout_alignParentLeft="true"/>
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/btnContinuar0"
+            android:id="@+id/btnContinuarDatosPersonales"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:layout_marginRight="20dp"
             android:src="@drawable/ic_continuar" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/btnRegresarDatosPersonales"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_regresar"
+            android:layout_marginLeft="20dp"
+            android:layout_alignParentLeft="true"/>
+
     </RelativeLayout>
 
 

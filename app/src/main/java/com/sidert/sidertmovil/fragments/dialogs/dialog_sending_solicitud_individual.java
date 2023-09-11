@@ -1,8 +1,10 @@
 package com.sidert.sidertmovil.fragments.dialogs;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -19,6 +21,7 @@ import com.sidert.sidertmovil.database.DBhelper;
 import com.sidert.sidertmovil.models.ApiResponse;
 import com.sidert.sidertmovil.models.MResSaveSolicitud;
 import com.sidert.sidertmovil.models.catalogos.MedioPagoDao;
+import com.sidert.sidertmovil.models.datosCampañas.datoCampana;
 import com.sidert.sidertmovil.models.solicitudes.Solicitud;
 import com.sidert.sidertmovil.models.solicitudes.SolicitudDao;
 import com.sidert.sidertmovil.models.solicitudes.SolicitudRen;
@@ -71,15 +74,19 @@ import com.sidert.sidertmovil.models.solicitudes.solicitudind.renovacion.Referen
 import com.sidert.sidertmovil.models.solicitudes.solicitudind.renovacion.ReferenciaRenDao;
 import com.sidert.sidertmovil.services.beneficiario.BeneficiarioService;
 import com.sidert.sidertmovil.services.solicitud.solicitudind.SolicitudIndService;
+import com.sidert.sidertmovil.utils.ManagerInterface;
 import com.sidert.sidertmovil.utils.Miscellaneous;
 import com.sidert.sidertmovil.utils.RetrofitClient;
 import com.sidert.sidertmovil.utils.SessionManager;
 import com.sidert.sidertmovil.views.originacion.SolicitudCreditoInd;
+import com.sidert.sidertmovil.views.solicitudesautorizadas.SolicitudInd;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import androidx.annotation.Nullable;
@@ -93,6 +100,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
+
 import static com.sidert.sidertmovil.utils.Constants.*;
 import static com.sidert.sidertmovil.utils.Constants.K_ACTIVOS_OBSERVABLES;
 import static com.sidert.sidertmovil.utils.Constants.K_AVAL_LATITUD;
@@ -116,29 +124,27 @@ public class dialog_sending_solicitud_individual extends DialogFragment {
     TextView tvTitle;
     SessionManager session;
     Beneficiario beneficiario;
+    private int var_temp = 0;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.popup_sending_solicitud_individual, container, false);
 
-        ctx     = getContext();
-        session = new SessionManager(ctx);
+        ctx = getContext();
+        session = SessionManager.getInstance(ctx);
 
-        ivClose   = v.findViewById(R.id.ivClose);
+        ivClose = v.findViewById(R.id.ivClose);
         pbSending = v.findViewById(R.id.pbSending);
         tvCliente = v.findViewById(R.id.tvCliente);
-        tvError   = v.findViewById(R.id.tvError);
-        tvTitle   = v.findViewById(R.id.tvTitle);
+        tvError = v.findViewById(R.id.tvError);
+        tvTitle = v.findViewById(R.id.tvTitle);
 
         Long idSolicitud = getArguments().getLong(ID_SOLICITUD);
         boolean esRenovacion = getArguments().getBoolean(ES_RENOVACION);
 
-        if(esRenovacion)
-        {
+        if (esRenovacion) {
             SendRenovacion(idSolicitud);
-        }
-        else
-        {
+        } else {
             SendOriginacion(idSolicitud);
 
         }
@@ -146,8 +152,7 @@ public class dialog_sending_solicitud_individual extends DialogFragment {
         return v;
     }
 
-    private void SendRenovacion(long idSolicitud)
-    {
+    private void SendRenovacion(long idSolicitud) {
         SolicitudRenDao solicitudRenDao = new SolicitudRenDao(ctx);
         SolicitudRen solicitudRen = solicitudRenDao.findByIdSolicitud(Integer.parseInt(String.valueOf(idSolicitud)));
 
@@ -190,9 +195,9 @@ public class dialog_sending_solicitud_individual extends DialogFragment {
                 fillSolicitudRenJson(json_solicitud, solicitudRen);
                 fillCreditoRenJson(json_solicitud, creditoIndRen);
                 fillClienteRenJson(json_solicitud, clienteRen, creditoIndRen);
-                if((clienteRen.getEstadoCivil().equals("CASADO(A)") || clienteRen.getEstadoCivil().equals("UNION LIBRE")) && conyugueRen != null)
+                if ((clienteRen.getEstadoCivil().equals("CASADO(A)") || clienteRen.getEstadoCivil().equals("UNION LIBRE")) && conyugueRen != null)
                     fillConyugueRenJson(json_solicitud, conyugueRen);
-                if(Integer.parseInt(creditoIndRen.getMontoPrestamo().replace(",","")) >= 30000)
+                if (Integer.parseInt(creditoIndRen.getMontoPrestamo().replace(",", "")) >= 30000)
                     fillEconomicoRenJson(json_solicitud, economicoRen);
                 fillNegocioRenJson(json_solicitud, negocioRen);
                 fillAvalRenJson(json_solicitud, avalRen);
@@ -201,22 +206,22 @@ public class dialog_sending_solicitud_individual extends DialogFragment {
                 fillDocumentoRenJson(json_solicitud, documentoRen);
                 fillPoliticaPldRenJson(json_solicitud, politicaPldRen);
 
-                MultipartBody.Part fachada_cliente      = clienteRen.getFachadaMBPart();
-                MultipartBody.Part firma_cliente        = clienteRen.getFirmaMBPart();
-                MultipartBody.Part fachada_negocio      = negocioRen.getFachadaMBPart();
-                MultipartBody.Part fachada_aval         = avalRen.getFachadaMBPart();
-                MultipartBody.Part firma_aval           = avalRen.getFirmaMBPart();
-                MultipartBody.Part foto_ine_frontal     = documentoRen.getFotoIneFrontalMBPart();
-                MultipartBody.Part foto_ine_reverso     = documentoRen.getFotoIneReversoMBPart();
-                MultipartBody.Part ine_selfie           = documentoRen.getIneSelfieMBPart();
-                MultipartBody.Part foto_curp            = documentoRen.getCurpMBPart();
-                MultipartBody.Part comprobante          = documentoRen.getComprobanteMBPart();
-                MultipartBody.Part firma_asesor         = documentoRen.getFirmaAsesorMBPart();
+                MultipartBody.Part fachada_cliente = clienteRen.getFachadaMBPart();
+                MultipartBody.Part firma_cliente = clienteRen.getFirmaMBPart();
+                MultipartBody.Part fachada_negocio = negocioRen.getFachadaMBPart();
+                MultipartBody.Part fachada_aval = avalRen.getFachadaMBPart();
+                MultipartBody.Part firma_aval = avalRen.getFirmaMBPart();
+                MultipartBody.Part foto_ine_frontal = documentoRen.getFotoIneFrontalMBPart();
+                MultipartBody.Part foto_ine_reverso = documentoRen.getFotoIneReversoMBPart();
+                MultipartBody.Part ine_selfie = documentoRen.getIneSelfieMBPart();
+                MultipartBody.Part foto_curp = documentoRen.getCurpMBPart();
+                MultipartBody.Part comprobante = documentoRen.getComprobanteMBPart();
+                MultipartBody.Part firma_asesor = documentoRen.getFirmaAsesorMBPart();
                 MultipartBody.Part comprobante_garantia = documentoRen.getComprobanteGarantiaMBPart();
-                MultipartBody.Part ine_frontal_aval     = documentoRen.getIneFrontalAvalMBPart();
-                MultipartBody.Part ine_reverso_aval     = documentoRen.getIneReversoAvalMBPart();
-                MultipartBody.Part curp_aval            = documentoRen.getCurpAvalMBPart();
-                MultipartBody.Part comprobante_aval     = documentoRen.getComprobanteDomicilioAvalMBPart();
+                MultipartBody.Part ine_frontal_aval = documentoRen.getIneFrontalAvalMBPart();
+                MultipartBody.Part ine_reverso_aval = documentoRen.getIneReversoAvalMBPart();
+                MultipartBody.Part curp_aval = documentoRen.getCurpAvalMBPart();
+                MultipartBody.Part comprobante_aval = documentoRen.getComprobanteDomicilioAvalMBPart();
                 RequestBody solicitudBody = RequestBody.create(MultipartBody.FORM, json_solicitud.toString());
                 RequestBody solicitudIdBody = RequestBody.create(MultipartBody.FORM, String.valueOf(solicitudRen.getIdOriginacion()));
 
@@ -255,7 +260,7 @@ public class dialog_sending_solicitud_individual extends DialogFragment {
                 Log.e("curp_aval", documentoRen.getCurpAval());
                 Log.e("comprobante_aval", documentoRen.getComprobanteAval());*/
 
-                SolicitudIndService solicitudIndService = new RetrofitClient().newInstance(ctx).create(SolicitudIndService.class);
+                SolicitudIndService solicitudIndService = RetrofitClient.newInstance(ctx).create(SolicitudIndService.class);
                 Call<MResSaveSolicitud> call = solicitudIndService.saveRenovacion("Bearer " + session.getUser().get(7),
                         solicitudBody,
                         fachada_cliente,
@@ -283,10 +288,13 @@ public class dialog_sending_solicitud_individual extends DialogFragment {
                         switch (response.code()) {
                             case 200:
                                 MResSaveSolicitud res = response.body();
+
                                 solicitudRen.setEstatus(2);
                                 solicitudRen.setIdOriginacion(res.getIdSolicitud());
+                                solicitudRenDao.updateIdClienteRenInd(res, solicitudRen);
                                 solicitudRenDao.solicitudEnviada(solicitudRen);
-                                obtenerDatosBeneficiario(solicitudRen.getIdSolicitud(),solicitudRen.getIdOriginacion());
+                                enviarDatosCampana(solicitudRen.getIdSolicitud());
+                                obtenerDatosBeneficiarioRen(solicitudRen.getIdSolicitud(), solicitudRen.getIdOriginacion());
                                 Toast.makeText(ctx, "¡Solicitud enviada!", Toast.LENGTH_LONG).show();
                                 getActivity().finish();
                                 break;
@@ -303,22 +311,20 @@ public class dialog_sending_solicitud_individual extends DialogFragment {
                     }
 
                     @Override
-                    public void onFailure(Call<MResSaveSolicitud> call, Throwable t){
+                    public void onFailure(Call<MResSaveSolicitud> call, Throwable t) {
                         Log.e("AQUI", "FAILURE");
                         showError(t.getMessage());
                     }
 
                 });
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 Log.e("AQUI", "exception");
                 showError(e.getMessage());
             }
         }
     }
 
-    private void SendOriginacion(long idSolicitud)
-    {
+    private void SendOriginacion(long idSolicitud) {
 
         SolicitudDao solicitudDao = new SolicitudDao(ctx);
         Solicitud solicitud = solicitudDao.findByIdSolicitud(Integer.parseInt(String.valueOf(idSolicitud)));
@@ -354,9 +360,6 @@ public class dialog_sending_solicitud_individual extends DialogFragment {
                 ReferenciaDao referenciaDao = new ReferenciaDao(ctx);
                 Referencia referencia = referenciaDao.findByIdSolicitud(solicitud.getIdSolicitud());
 
-                //BeneficiarioDao beneficiarioDao = new BeneficiarioDao(ctx);
-                //Beneficiario beneficiario = beneficiarioDao.findByIdSolicitud(solicitud.getIdSolicitud());
-
                 CroquisDao croquisDao = new CroquisDao(ctx);
                 Croquis croquis = croquisDao.findByIdSolicitud(solicitud.getIdSolicitud());
 
@@ -365,9 +368,9 @@ public class dialog_sending_solicitud_individual extends DialogFragment {
                 fillSolicitudJson(json_solicitud, solicitud);
                 fillCreditoJson(json_solicitud, creditoInd);
                 fillClienteJson(json_solicitud, cliente);
-                if((cliente.getEstadoCivil().equals("CASADO(A)") || cliente.getEstadoCivil().equals("UNION LIBRE")) && conyugue != null)
+                if ((cliente.getEstadoCivil().equals("CASADO(A)") || cliente.getEstadoCivil().equals("UNION LIBRE")) && conyugue != null)
                     fillConyugueJson(json_solicitud, conyugue);
-                if(Integer.parseInt(creditoInd.getMontoPrestamo().replace(",","")) >= 30000)
+                if (Integer.parseInt(creditoInd.getMontoPrestamo().replace(",", "")) >= 30000)
                     fillEconomicoJson(json_solicitud, economico);
                 fillNegocioJson(json_solicitud, negocio);
                 fillAvalJson(json_solicitud, aval);
@@ -377,50 +380,46 @@ public class dialog_sending_solicitud_individual extends DialogFragment {
                 fillDocumentoJson(json_solicitud, documento);
                 fillPoliticaPldJson(json_solicitud, politicaPld);
 
-                MultipartBody.Part fachada_cliente      = cliente.getFachadaMBPart();
-                MultipartBody.Part firma_cliente        = cliente.getFirmaMBPart();
-                MultipartBody.Part fachada_negocio      = negocio.getFachadaMBPart();
-                MultipartBody.Part fachada_aval         = aval.getFachadaMBPart();
-                MultipartBody.Part firma_aval           = aval.getFirmaMBPart();
-                MultipartBody.Part foto_ine_frontal     = documento.getFotoIneFrontalMBPart();
-                MultipartBody.Part foto_ine_reverso     = documento.getFotoIneReversoMBPart();
-                MultipartBody.Part ine_selfie           = documento.getIneSelfieMBPart();
-                MultipartBody.Part foto_curp            = documento.getCurpMBPart();
-                MultipartBody.Part comprobante          = documento.getComprobanteMBPart();
-                MultipartBody.Part firma_asesor         = documento.getFirmaAsesorMBPart();
+                MultipartBody.Part fachada_cliente = cliente.getFachadaMBPart();
+                MultipartBody.Part firma_cliente = cliente.getFirmaMBPart();
+                MultipartBody.Part fachada_negocio = negocio.getFachadaMBPart();
+                MultipartBody.Part fachada_aval = aval.getFachadaMBPart();
+                MultipartBody.Part firma_aval = aval.getFirmaMBPart();
+                MultipartBody.Part foto_ine_frontal = documento.getFotoIneFrontalMBPart();
+                MultipartBody.Part foto_ine_reverso = documento.getFotoIneReversoMBPart();
+                MultipartBody.Part ine_selfie = documento.getIneSelfieMBPart();
+                MultipartBody.Part foto_curp = documento.getCurpMBPart();
+                MultipartBody.Part comprobante = documento.getComprobanteMBPart();
+                MultipartBody.Part firma_asesor = documento.getFirmaAsesorMBPart();
                 MultipartBody.Part comprobante_garantia = documento.getComprobanteGarantiaMBPart();
-                MultipartBody.Part ine_frontal_aval     = documento.getIneFrontalAvalMBPart();
-                MultipartBody.Part ine_reverso_aval     = documento.getIneReversoAvalMBPart();
-                MultipartBody.Part curp_aval            = documento.getCurpAvalMBPart();
-                MultipartBody.Part comprobante_aval     = documento.getComprobanteDomicilioAvalMBPart();
+                MultipartBody.Part ine_frontal_aval = documento.getIneFrontalAvalMBPart();
+                MultipartBody.Part ine_reverso_aval = documento.getIneReversoAvalMBPart();
+                MultipartBody.Part curp_aval = documento.getCurpAvalMBPart();
+                MultipartBody.Part comprobante_aval = documento.getComprobanteDomicilioAvalMBPart();
 
                 RequestBody solicitudBody = RequestBody.create(MultipartBody.FORM, json_solicitud.toString());
                 RequestBody solicitudIdBody = RequestBody.create(MultipartBody.FORM, String.valueOf(solicitud.getIdOriginacion()));
-
                 /** aqui obtenemos el id_originacion*/
-
-
-
-                SolicitudIndService solicitudIndService = new RetrofitClient().newInstance(ctx).create(SolicitudIndService.class);
+                SolicitudIndService solicitudIndService = RetrofitClient.newInstance(ctx).create(SolicitudIndService.class);
                 Call<MResSaveSolicitud> call = solicitudIndService.saveOriginacion("Bearer " + session.getUser().get(7),
-                    solicitudBody,
-                    fachada_cliente,
-                    firma_cliente,
-                    fachada_negocio,
-                    fachada_aval,
-                    firma_aval,
-                    foto_ine_frontal,
-                    foto_ine_reverso,
-                    foto_curp,
-                    comprobante,
-                    firma_asesor,
-                    solicitudIdBody,
-                    ine_selfie,
-                    comprobante_garantia,
-                    ine_frontal_aval,
-                    ine_reverso_aval,
-                    curp_aval,
-                    comprobante_aval
+                        solicitudBody,
+                        fachada_cliente,
+                        firma_cliente,
+                        fachada_negocio,
+                        fachada_aval,
+                        firma_aval,
+                        foto_ine_frontal,
+                        foto_ine_reverso,
+                        foto_curp,
+                        comprobante,
+                        firma_asesor,
+                        solicitudIdBody,
+                        ine_selfie,
+                        comprobante_garantia,
+                        ine_frontal_aval,
+                        ine_reverso_aval,
+                        curp_aval,
+                        comprobante_aval
                 );
 
                 call.enqueue(new Callback<MResSaveSolicitud>() {
@@ -431,8 +430,10 @@ public class dialog_sending_solicitud_individual extends DialogFragment {
                                 MResSaveSolicitud res = response.body();
                                 solicitud.setEstatus(2);
                                 solicitud.setIdOriginacion(res.getIdSolicitud());
-                                solicitudDao.solicitudEnviada(solicitud);
-                                obtenerDatosBeneficiario(solicitud.getIdSolicitud(),solicitud.getIdOriginacion());
+                                solicitudDao.solicitudEnviada(solicitud, res);
+                                enviarDatosCampana(solicitud.getIdSolicitud());
+                                obtenerDatosBeneficiario(solicitud.getIdSolicitud(), solicitud.getIdOriginacion());
+
                                 Toast.makeText(ctx, "¡Solicitud enviada!", Toast.LENGTH_LONG).show();
                                 getActivity().finish();
                                 break;
@@ -447,25 +448,23 @@ public class dialog_sending_solicitud_individual extends DialogFragment {
                     }
 
                     @Override
-                    public void onFailure(Call<MResSaveSolicitud> call, Throwable t){
+                    public void onFailure(Call<MResSaveSolicitud> call, Throwable t) {
                         showError(t.getMessage());
                     }
 
                 });
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 showError(e.getMessage());
             }
         }
     }
 
-    private void showError(String message)
-    {
+    private void showError(String message) {
         Log.e("AQUI", message);
 
         int limit = message.length();
 
-        if(limit > 1000) limit = 1000;
+        if (limit > 1000) limit = 1000;
 
         tvError.setText(message.substring(0, limit));
         tvError.setVisibility(View.VISIBLE);
@@ -494,19 +493,19 @@ public class dialog_sending_solicitud_individual extends DialogFragment {
         json_solicitud.put(K_PERIODICIDAD, creditoInd.getPeriodicidadAsInt());
         json_solicitud.put(K_FECHA_DESEMBOLSO, creditoInd.getFechaDesembolso());
         json_solicitud.put(K_HORA_VISITA, creditoInd.getHoraVisita());
-        json_solicitud.put(K_MONTO_PRESTAMO, Integer.parseInt(creditoInd.getMontoPrestamo().replace(",","")));
-        json_solicitud.put(K_MONTO_LETRA, (Miscellaneous.cantidadLetra(creditoInd.getMontoPrestamo().replace(",","")).toUpperCase() + " PESOS MEXICANOS").replace("  ", " "));
+        json_solicitud.put(K_MONTO_PRESTAMO, Integer.parseInt(creditoInd.getMontoPrestamo().replace(",", "")));
+        json_solicitud.put(K_MONTO_LETRA, (Miscellaneous.cantidadLetra(creditoInd.getMontoPrestamo().replace(",", "")).toUpperCase() + " PESOS MEXICANOS").replace("  ", " "));
         json_solicitud.put(K_DESTINO_PRESTAMO, creditoInd.getDestino());
         json_solicitud.put(K_CLASIFICACION_RIESGO, creditoInd.getClasificacionRiesgo());
         json_solicitud.put(K_TIPO_SOLICITUD, "ORIGINACION");
-        if(creditoInd.getMontoRefinanciar() != null && !creditoInd.getMontoRefinanciar().isEmpty())
-            Integer.parseInt(creditoInd.getMontoRefinanciar().replace(",",""));
+        json_solicitud.put(K_ID_CAMPANA, creditoInd.getId_campana());
+        if (creditoInd.getMontoRefinanciar() != null && !creditoInd.getMontoRefinanciar().isEmpty())
+            Integer.parseInt(creditoInd.getMontoRefinanciar().replace(",", ""));
         else
             json_solicitud.put(K_MONTO_REFINANCIAR, 0);
     }
 
-    private void fillClienteJson(JSONObject json_solicitud, Cliente cliente) throws JSONException
-    {
+    private void fillClienteJson(JSONObject json_solicitud, Cliente cliente) throws JSONException {
         DireccionDao direccionDao = new DireccionDao(ctx);
         Direccion direccionCliente = direccionDao.findByIdDireccion(Long.parseLong(cliente.getDireccionId()));
 
@@ -529,12 +528,15 @@ public class dialog_sending_solicitud_individual extends DialogFragment {
 
         json_solicitante.put(K_ESTADO_CIVIL, cliente.getEstadoCivil());
 
-        if(cliente.getEstadoCivil().equals("CASADO(A)")) json_solicitante.put(K_BIENES, (cliente.getBienes() == 1)?"MANCOMUNADOS":"SEPARADOS");
+        if (cliente.getEstadoCivil().equals("CASADO(A)"))
+            json_solicitante.put(K_BIENES, (cliente.getBienes() == 1) ? "MANCOMUNADOS" : "SEPARADOS");
 
         json_solicitante.put(K_TIPO_VIVIENDA, cliente.getTipoVivienda());
 
-        if(cliente.getTipoVivienda().equals("CASA FAMILIAR")) json_solicitante.put(K_PARENTESCO, cliente.getParentesco());
-        else if (cliente.getTipoVivienda().equals("OTRO")) json_solicitante.put(K_OTRO_TIPO_VIVIENDA, cliente.getOtroTipoVivienda());
+        if (cliente.getTipoVivienda().equals("CASA FAMILIAR"))
+            json_solicitante.put(K_PARENTESCO, cliente.getParentesco());
+        else if (cliente.getTipoVivienda().equals("OTRO"))
+            json_solicitante.put(K_OTRO_TIPO_VIVIENDA, cliente.getOtroTipoVivienda());
 
         json_solicitante.put(K_LATITUD, direccionCliente.getLatitud());
         json_solicitante.put(K_LONGITUD, direccionCliente.getLongitud());
@@ -571,8 +573,7 @@ public class dialog_sending_solicitud_individual extends DialogFragment {
         json_solicitud.put(K_SOLICITANTE, json_solicitante);
     }
 
-    private void fillConyugueJson(JSONObject json_solicitud, Conyugue conyugue) throws JSONException
-    {
+    private void fillConyugueJson(JSONObject json_solicitud, Conyugue conyugue) throws JSONException {
         JSONObject json_conyuge = new JSONObject();
 
         DireccionDao direccionConyugueDao = new DireccionDao(ctx);
@@ -596,48 +597,26 @@ public class dialog_sending_solicitud_individual extends DialogFragment {
         json_conyuge.put(K_MUNICIPIO, direccionConyugue.getMunicipio());
         json_conyuge.put(K_ESTADO, direccionConyugue.getEstado());
 
-        json_conyuge.put(K_INGRESO_MENSUAL, Double.parseDouble(conyugue.getIngMensual().replace(",","")));
-        json_conyuge.put(K_GASTO_MENSUAL, Double.parseDouble(conyugue.getGastoMensual().replace(",","")));
+        json_conyuge.put(K_INGRESO_MENSUAL, Double.parseDouble(conyugue.getIngMensual().replace(",", "")));
+        json_conyuge.put(K_GASTO_MENSUAL, Double.parseDouble(conyugue.getGastoMensual().replace(",", "")));
         json_conyuge.put(K_TEL_CASA, conyugue.getTelCasa());
         json_conyuge.put(K_TEL_CELULAR, conyugue.getTelCelular());
 
         json_solicitud.put(K_SOLICITANTE_CONYUGE, json_conyuge);
     }
 
-    private void fillBeneficiario(JSONObject json_solicitud, Beneficiario beneficiario)throws  JSONException{
-
-        JSONObject json_beneficiario = new JSONObject();
-
-        BeneficiarioDao beneDao = new BeneficiarioDao(ctx);
-        beneficiario = beneDao.findByIdSolicitud(beneficiario.getIdSolicitud());
-
-        json_beneficiario.put(K_ID_ORIGINACION, beneficiario.getId_originacion());
-        json_beneficiario.put(K_ID_CLIENTE,beneficiario.getCliente_id());
-        json_beneficiario.put(K_ID_GRUPO,beneficiario.getGrupo_id());
-        json_beneficiario.put(K_NOMBRE_BENEFICIARIO,beneficiario.getNombre());
-        json_beneficiario.put(K_PATERNO_BENEFICIARIO,beneficiario.getPaterno());
-        json_beneficiario.put(K_MATERNO_BENEFICIARIO,beneficiario.getMaterno());
-        json_beneficiario.put(K_PARENTESCO_BENEFICIARIO,beneficiario.getParentesco());
-        json_beneficiario.put(K_SERIE_ID_BENEFICIARIO,beneficiario.getSerieId());
-
-        json_solicitud.put(K_SOLICITANTE_BENEFICIARIO,json_beneficiario);
-
-    }
-
-    private void fillEconomicoJson(JSONObject json_solicitud, Economico economico) throws JSONException
-    {
+    private void fillEconomicoJson(JSONObject json_solicitud, Economico economico) throws JSONException {
         JSONObject json_economicos = new JSONObject();
 
-        json_economicos.put(K_PROPIEDADES,economico.getPropiedades());
+        json_economicos.put(K_PROPIEDADES, economico.getPropiedades());
         json_economicos.put(K_VALOR_APROXIMADO, economico.getValorAproximado());
         json_economicos.put(K_UBICACION, economico.getUbicacion());
-        json_economicos.put(K_INGRESO, economico.getIngreso().replace(",",""));
+        json_economicos.put(K_INGRESO, economico.getIngreso().replace(",", ""));
 
         json_solicitud.put(K_SOLICITANTE_DATOS_ECONOMICOS, json_economicos);
     }
 
-    private void fillNegocioJson(JSONObject json_solicitud, Negocio negocio) throws JSONException
-    {
+    private void fillNegocioJson(JSONObject json_solicitud, Negocio negocio) throws JSONException {
         MedioPagoDao medioPagoDao = new MedioPagoDao(ctx);
         DireccionDao direccionNegocioDao = new DireccionDao(ctx);
         Direccion direccionNegocio = direccionNegocioDao.findByIdDireccion(Long.parseLong(negocio.getDireccionId()));
@@ -665,14 +644,14 @@ public class dialog_sending_solicitud_individual extends DialogFragment {
         if (negocio.getDestinoCredito().contains("OTRO"))
             json_negocio.put(K_OTRO_DESTINO_CREDITO, negocio.getOtroDestino());
         json_negocio.put(K_ANTIGUEDAD, negocio.getAntiguedad());
-        json_negocio.put(K_INGRESO_MENSUAL, negocio.getIngMensual().replace(",",""));
-        json_negocio.put(K_INGRESOS_OTROS, negocio.getIngOtros().replace(",",""));
-        json_negocio.put(K_GASTO_MENSUAL, negocio.getGastoSemanal().replace(",",""));
-        json_negocio.put(K_GASTO_AGUA, negocio.getGastoAgua().replace(",",""));
-        json_negocio.put(K_GASTO_LUZ, negocio.getGastoLuz().replace(",",""));
-        json_negocio.put(K_GASTO_TELEFONO, negocio.getGastoTelefono().replace(",",""));
-        json_negocio.put(K_GASTO_RENTA, negocio.getGastoRenta().replace(",",""));
-        json_negocio.put(K_GASTO_OTROS, negocio.getGastoOtros().replace(",",""));
+        json_negocio.put(K_INGRESO_MENSUAL, negocio.getIngMensual().replace(",", ""));
+        json_negocio.put(K_INGRESOS_OTROS, negocio.getIngOtros().replace(",", ""));
+        json_negocio.put(K_GASTO_MENSUAL, negocio.getGastoSemanal().replace(",", ""));
+        json_negocio.put(K_GASTO_AGUA, negocio.getGastoAgua().replace(",", ""));
+        json_negocio.put(K_GASTO_LUZ, negocio.getGastoLuz().replace(",", ""));
+        json_negocio.put(K_GASTO_TELEFONO, negocio.getGastoTelefono().replace(",", ""));
+        json_negocio.put(K_GASTO_RENTA, negocio.getGastoRenta().replace(",", ""));
+        json_negocio.put(K_GASTO_OTROS, negocio.getGastoOtros().replace(",", ""));
         json_negocio.put(K_CAPACIDAD_PAGO, negocio.getMontoMaximo());
         if (negocio.getMedioPago().contains("OTRO"))
             json_negocio.put(K_OTRO_MEDIOS_PAGOS, negocio.getOtroMedioPago());
@@ -690,8 +669,7 @@ public class dialog_sending_solicitud_individual extends DialogFragment {
         json_solicitud.put(K_SOLICITANTE_NEGOCIO, json_negocio);
     }
 
-    private void fillAvalJson(JSONObject json_solicitud, Aval aval) throws JSONException
-    {
+    private void fillAvalJson(JSONObject json_solicitud, Aval aval) throws JSONException {
         JSONObject json_aval = new JSONObject();
 
         MedioPagoDao medioPagoDao = new MedioPagoDao(ctx);
@@ -730,29 +708,27 @@ public class dialog_sending_solicitud_individual extends DialogFragment {
 
         json_aval.put(K_TIPO_VIVIENDA, aval.getTipoVivienda());
 
-        if (aval.getTipoVivienda().equals("CASA FAMILIAR") || aval.getTipoVivienda().equals("CASA RENTADA"))
-        {
+        if (aval.getTipoVivienda().equals("CASA FAMILIAR") || aval.getTipoVivienda().equals("CASA RENTADA")) {
             json_aval.put(K_NOMBRE_TITULAR, aval.getNombreTitular());
             json_aval.put(K_PARENTESCO_TITULAR, aval.getParentesco());
         }
         json_aval.put(K_CARACTERISTICAS_DOMICILIO, aval.getCaracteristicasDomicilio());
         json_aval.put(K_TIENE_NEGOCIO, aval.getTieneNegocio() == 1);
-        if (aval.getTieneNegocio() == 1)
-        {
+        if (aval.getTieneNegocio() == 1) {
             json_aval.put(K_NOMBRE_NEGOCIO, aval.getNombreNegocio().trim().toUpperCase());
             json_aval.put(K_ANTIGUEDAD, aval.getAntigueda());
         }
 
-        json_aval.put(K_INGRESO_MENSUAL, Double.parseDouble(aval.getIngMensual().replace(",","")));
-        json_aval.put(K_INGRESOS_OTROS, Double.parseDouble(aval.getIngOtros().replace(",","")));
-        json_aval.put(K_GASTO_MENSUAL, Double.parseDouble(aval.getGastoSemanal().replace(",","")));
-        json_aval.put(K_GASTO_AGUA, Double.parseDouble(aval.getGastoAgua().replace(",","")));
-        json_aval.put(K_GASTO_LUZ, Double.parseDouble(aval.getGastoLuz().replace(",","")));
-        json_aval.put(K_GASTO_TELEFONO, Double.parseDouble(aval.getGastoTelefono().replace(",","")));
-        json_aval.put(K_GASTO_RENTA, Double.parseDouble(aval.getGastoRenta().replace(",","")));
-        json_aval.put(K_GASTO_OTROS, Double.parseDouble(aval.getGastoOtros().replace(",","")));
-        json_aval.put(K_MONTO_MAXIMO, Double.parseDouble(aval.getCapacidadPagos().replace(",","")));
-        json_aval.put(K_CAPACIDAD_PAGO, Double.parseDouble(aval.getMontoMaximo().replace(",","")));
+        json_aval.put(K_INGRESO_MENSUAL, Double.parseDouble(aval.getIngMensual().replace(",", "")));
+        json_aval.put(K_INGRESOS_OTROS, Double.parseDouble(aval.getIngOtros().replace(",", "")));
+        json_aval.put(K_GASTO_MENSUAL, Double.parseDouble(aval.getGastoSemanal().replace(",", "")));
+        json_aval.put(K_GASTO_AGUA, Double.parseDouble(aval.getGastoAgua().replace(",", "")));
+        json_aval.put(K_GASTO_LUZ, Double.parseDouble(aval.getGastoLuz().replace(",", "")));
+        json_aval.put(K_GASTO_TELEFONO, Double.parseDouble(aval.getGastoTelefono().replace(",", "")));
+        json_aval.put(K_GASTO_RENTA, Double.parseDouble(aval.getGastoRenta().replace(",", "")));
+        json_aval.put(K_GASTO_OTROS, Double.parseDouble(aval.getGastoOtros().replace(",", "")));
+        json_aval.put(K_MONTO_MAXIMO, Double.parseDouble(aval.getCapacidadPagos().replace(",", "")));
+        json_aval.put(K_CAPACIDAD_PAGO, Double.parseDouble(aval.getMontoMaximo().replace(",", "")));
         json_aval.put(K_MEDIOS_PAGOS, medioPagoDao.findIdsByNombres(aval.getMedioPago()));
         if (aval.getMedioPago().contains("OTRO"))
             json_aval.put(K_OTRO_MEDIOS_PAGOS, aval.getOtroMedioPago());
@@ -773,8 +749,7 @@ public class dialog_sending_solicitud_individual extends DialogFragment {
         json_solicitud.put(K_SOLICITANTE_AVAL, json_aval);
     }
 
-    private void fillReferenciaJson(JSONObject json_solicitud, Referencia referencia) throws  JSONException
-    {
+    private void fillReferenciaJson(JSONObject json_solicitud, Referencia referencia) throws JSONException {
         JSONObject json_referencia = new JSONObject();
 
         DireccionDao direccionDao = new DireccionDao(ctx);
@@ -794,7 +769,7 @@ public class dialog_sending_solicitud_individual extends DialogFragment {
         json_referencia.put(K_COLONIA, direccionReferencia.getColonia());
         json_referencia.put(K_CIUDAD, direccionReferencia.getCiudad());
         json_referencia.put(K_LOCALIDAD, direccionReferencia.getLocalidad());
-        json_referencia.put(K_MUNICIPIO,direccionReferencia.getMunicipio());
+        json_referencia.put(K_MUNICIPIO, direccionReferencia.getMunicipio());
         json_referencia.put(K_ESTADO, direccionReferencia.getEstado());
 
         json_referencia.put(K_TEL_CELULAR, referencia.getTelCelular());
@@ -803,8 +778,7 @@ public class dialog_sending_solicitud_individual extends DialogFragment {
 
     }
 
-    private void fillCroquisJson(JSONObject json_solicitud, Croquis croquis) throws  JSONException
-    {
+    private void fillCroquisJson(JSONObject json_solicitud, Croquis croquis) throws JSONException {
         JSONObject json_croquis = new JSONObject();
 
         json_croquis.put(K_CALLE_ENFRENTE, croquis.getCallePrincipal());
@@ -817,8 +791,7 @@ public class dialog_sending_solicitud_individual extends DialogFragment {
         json_solicitud.put(K_SOLICITANTE_CROQUIS, json_croquis);
     }
 
-    private void fillPoliticaPldJson(JSONObject json_solicitud, PoliticaPld politicaPld) throws  JSONException
-    {
+    private void fillPoliticaPldJson(JSONObject json_solicitud, PoliticaPld politicaPld) throws JSONException {
         JSONObject json_politicas = new JSONObject();
 
         json_politicas.put(K_PROPIETARIO, politicaPld.getPropietarioReal() == 1);
@@ -828,8 +801,7 @@ public class dialog_sending_solicitud_individual extends DialogFragment {
         json_solicitud.put(K_SOLICITANTE_POLITICAS, json_politicas);
     }
 
-    private void fillDocumentoJson(JSONObject json_solicitud, Documento documento) throws  JSONException
-    {
+    private void fillDocumentoJson(JSONObject json_solicitud, Documento documento) throws JSONException {
         JSONObject json_documentos = new JSONObject();
 
         json_documentos.put(K_IDENTIFICACION_FRONTAL, documento.getIneFrontal());
@@ -839,32 +811,32 @@ public class dialog_sending_solicitud_individual extends DialogFragment {
         json_documentos.put(K_CODIGO_BARRAS, documento.getCodigoBarras());
         json_documentos.put(K_FIRMA_ASESOR, documento.getFirmaAsesor());
 
-        if(documento.getIneSelfie() != null)
+        if (documento.getIneSelfie() != null)
             json_documentos.put(K_IDENTIFICACION_SELFIE, documento.getIneSelfie());
         else
             json_documentos.put(K_IDENTIFICACION_SELFIE, "");
 
-        if(documento.getComprobanteGarantia() != null)
+        if (documento.getComprobanteGarantia() != null)
             json_documentos.put(K_COMPROBANTE_GARANTIA, documento.getComprobanteGarantia());
         else
             json_documentos.put(K_COMPROBANTE_GARANTIA, "");
 
-        if(documento.getIneFrontalAval() != null)
+        if (documento.getIneFrontalAval() != null)
             json_documentos.put(K_IDENTIFICACION_FRONTAL_AVAL, documento.getIneFrontalAval());
         else
             json_documentos.put(K_IDENTIFICACION_FRONTAL_AVAL, "");
 
-        if(documento.getIneReversoAval() != null)
+        if (documento.getIneReversoAval() != null)
             json_documentos.put(K_IDENTIFICACION_REVERSO_AVAL, documento.getIneReversoAval());
         else
             json_documentos.put(K_IDENTIFICACION_REVERSO_AVAL, "");
 
-        if(documento.getCurpAval() != null)
+        if (documento.getCurpAval() != null)
             json_documentos.put(K_CURP_AVAL, documento.getCurpAval());
         else
             json_documentos.put(K_CURP_AVAL, "");
 
-        if(documento.getComprobanteAval() != null)
+        if (documento.getComprobanteAval() != null)
             json_documentos.put(K_COMPROBANTE_DOMICILIO_AVAL, documento.getComprobanteAval());
         else
             json_documentos.put(K_COMPROBANTE_DOMICILIO_AVAL, "");
@@ -883,21 +855,21 @@ public class dialog_sending_solicitud_individual extends DialogFragment {
         json_solicitud.put(K_PERIODICIDAD, creditoIndRen.getPeriodicidadAsInt());
         json_solicitud.put(K_FECHA_DESEMBOLSO, creditoIndRen.getFechaDesembolso());
         json_solicitud.put(K_HORA_VISITA, creditoIndRen.getHoraVisita());
-        json_solicitud.put(K_MONTO_PRESTAMO, Integer.parseInt(creditoIndRen.getMontoPrestamo().replace(",","")));
-        json_solicitud.put(K_MONTO_LETRA, (Miscellaneous.cantidadLetra(creditoIndRen.getMontoPrestamo().replace(",","")).toUpperCase() + " PESOS MEXICANOS").replace("  ", " "));
+        json_solicitud.put(K_MONTO_PRESTAMO, Integer.parseInt(creditoIndRen.getMontoPrestamo().replace(",", "")));
+        json_solicitud.put(K_MONTO_LETRA, (Miscellaneous.cantidadLetra(creditoIndRen.getMontoPrestamo().replace(",", "")).toUpperCase() + " PESOS MEXICANOS").replace("  ", " "));
         json_solicitud.put(K_DESTINO_PRESTAMO, creditoIndRen.getDestino());
         json_solicitud.put(K_CLASIFICACION_RIESGO, creditoIndRen.getClasificacionRiesgo());
         json_solicitud.put(K_COMPORTAMIENTO_PAGO, creditoIndRen.getComportamientoPago());
         json_solicitud.put(K_OBSERVACIONES, creditoIndRen.getObservaciones());
         json_solicitud.put(K_TIPO_SOLICITUD, "RENOVACION");
-        if(creditoIndRen.getMontoRefinanciar() != null && !creditoIndRen.getMontoRefinanciar().isEmpty())
-            Integer.parseInt(creditoIndRen.getMontoRefinanciar().replace(",",""));
+        json_solicitud.put(K_ID_CAMPANA, creditoIndRen.getId_campana());
+        if (creditoIndRen.getMontoRefinanciar() != null && !creditoIndRen.getMontoRefinanciar().isEmpty())
+            Integer.parseInt(creditoIndRen.getMontoRefinanciar().replace(",", ""));
         else
             json_solicitud.put(K_MONTO_REFINANCIAR, 0);
     }
 
-    private void fillClienteRenJson(JSONObject json_solicitud, ClienteRen clienteRen, CreditoIndRen creditoRen) throws JSONException
-    {
+    private void fillClienteRenJson(JSONObject json_solicitud, ClienteRen clienteRen, CreditoIndRen creditoRen) throws JSONException {
         DireccionRenDao direccionRenDao = new DireccionRenDao(ctx);
         DireccionRen direccionClienteRen = direccionRenDao.findByIdDireccion(Long.parseLong(clienteRen.getDireccionId()));
 
@@ -920,12 +892,15 @@ public class dialog_sending_solicitud_individual extends DialogFragment {
 
         json_solicitante.put(K_ESTADO_CIVIL, clienteRen.getEstadoCivil());
 
-        if(clienteRen.getEstadoCivil().equals("CASADO(A)")) json_solicitante.put(K_BIENES, (clienteRen.getBienes() == 1)?"MANCOMUNADOS":"SEPARADOS");
+        if (clienteRen.getEstadoCivil().equals("CASADO(A)"))
+            json_solicitante.put(K_BIENES, (clienteRen.getBienes() == 1) ? "MANCOMUNADOS" : "SEPARADOS");
 
         json_solicitante.put(K_TIPO_VIVIENDA, clienteRen.getTipoVivienda());
 
-        if(clienteRen.getTipoVivienda().equals("CASA FAMILIAR")) json_solicitante.put(K_PARENTESCO, clienteRen.getParentesco());
-        else if (clienteRen.getTipoVivienda().equals("OTRO")) json_solicitante.put(K_OTRO_TIPO_VIVIENDA, clienteRen.getOtroTipoVivienda());
+        if (clienteRen.getTipoVivienda().equals("CASA FAMILIAR"))
+            json_solicitante.put(K_PARENTESCO, clienteRen.getParentesco());
+        else if (clienteRen.getTipoVivienda().equals("OTRO"))
+            json_solicitante.put(K_OTRO_TIPO_VIVIENDA, clienteRen.getOtroTipoVivienda());
 
         json_solicitante.put(K_LATITUD, direccionClienteRen.getLatitud());
         json_solicitante.put(K_LONGITUD, direccionClienteRen.getLongitud());
@@ -965,8 +940,7 @@ public class dialog_sending_solicitud_individual extends DialogFragment {
 
     }
 
-    private void fillConyugueRenJson(JSONObject json_solicitud, ConyugueRen conyugueRen) throws JSONException
-    {
+    private void fillConyugueRenJson(JSONObject json_solicitud, ConyugueRen conyugueRen) throws JSONException {
         JSONObject json_conyuge = new JSONObject();
 
         DireccionRenDao direccionConyugueRenDao = new DireccionRenDao(ctx);
@@ -990,28 +964,26 @@ public class dialog_sending_solicitud_individual extends DialogFragment {
         json_conyuge.put(K_MUNICIPIO, direccionConyugueRen.getMunicipio());
         json_conyuge.put(K_ESTADO, direccionConyugueRen.getEstado());
 
-        json_conyuge.put(K_INGRESO_MENSUAL, Double.parseDouble(conyugueRen.getIngMensual().replace(",","")));
-        json_conyuge.put(K_GASTO_MENSUAL, Double.parseDouble(conyugueRen.getGastoMensual().replace(",","")));
+        json_conyuge.put(K_INGRESO_MENSUAL, Double.parseDouble(conyugueRen.getIngMensual().replace(",", "")));
+        json_conyuge.put(K_GASTO_MENSUAL, Double.parseDouble(conyugueRen.getGastoMensual().replace(",", "")));
         json_conyuge.put(K_TEL_CASA, conyugueRen.getTelCasa());
         json_conyuge.put(K_TEL_CELULAR, conyugueRen.getTelCelular());
 
         json_solicitud.put(K_SOLICITANTE_CONYUGE, json_conyuge);
     }
 
-    private void fillEconomicoRenJson(JSONObject json_solicitud, EconomicoRen economicoRen) throws JSONException
-    {
+    private void fillEconomicoRenJson(JSONObject json_solicitud, EconomicoRen economicoRen) throws JSONException {
         JSONObject json_economicos = new JSONObject();
 
         json_economicos.put(K_PROPIEDADES, economicoRen.getPropiedades());
         json_economicos.put(K_VALOR_APROXIMADO, economicoRen.getValorAproximado());
         json_economicos.put(K_UBICACION, economicoRen.getUbicacion());
-        json_economicos.put(K_INGRESO, economicoRen.getIngreso().replace(",",""));
+        json_economicos.put(K_INGRESO, economicoRen.getIngreso().replace(",", ""));
 
         json_solicitud.put(K_SOLICITANTE_DATOS_ECONOMICOS, json_economicos);
     }
 
-    private void fillNegocioRenJson(JSONObject json_solicitud, NegocioRen negocioRen) throws JSONException
-    {
+    private void fillNegocioRenJson(JSONObject json_solicitud, NegocioRen negocioRen) throws JSONException {
         MedioPagoDao medioPagoDao = new MedioPagoDao(ctx);
         DireccionRenDao direccionNegocioRenDao = new DireccionRenDao(ctx);
         DireccionRen direccionNegocioRen = direccionNegocioRenDao.findByIdDireccion(Long.parseLong(negocioRen.getDireccionId()));
@@ -1039,14 +1011,14 @@ public class dialog_sending_solicitud_individual extends DialogFragment {
         if (negocioRen.getDestinoCredito().contains("OTRO"))
             json_negocio.put(K_OTRO_DESTINO_CREDITO, negocioRen.getOtroDestino());
         json_negocio.put(K_ANTIGUEDAD, negocioRen.getAntiguedad());
-        json_negocio.put(K_INGRESO_MENSUAL, negocioRen.getIngMensual().replace(",",""));
-        json_negocio.put(K_INGRESOS_OTROS, negocioRen.getIngOtros().replace(",",""));
-        json_negocio.put(K_GASTO_MENSUAL, negocioRen.getGastoSemanal().replace(",",""));
-        json_negocio.put(K_GASTO_AGUA, negocioRen.getGastoAgua().replace(",",""));
-        json_negocio.put(K_GASTO_LUZ, negocioRen.getGastoLuz().replace(",",""));
-        json_negocio.put(K_GASTO_TELEFONO, negocioRen.getGastoTelefono().replace(",",""));
-        json_negocio.put(K_GASTO_RENTA, negocioRen.getGastoRenta().replace(",",""));
-        json_negocio.put(K_GASTO_OTROS, negocioRen.getGastoOtros().replace(",",""));
+        json_negocio.put(K_INGRESO_MENSUAL, negocioRen.getIngMensual().replace(",", ""));
+        json_negocio.put(K_INGRESOS_OTROS, negocioRen.getIngOtros().replace(",", ""));
+        json_negocio.put(K_GASTO_MENSUAL, negocioRen.getGastoSemanal().replace(",", ""));
+        json_negocio.put(K_GASTO_AGUA, negocioRen.getGastoAgua().replace(",", ""));
+        json_negocio.put(K_GASTO_LUZ, negocioRen.getGastoLuz().replace(",", ""));
+        json_negocio.put(K_GASTO_TELEFONO, negocioRen.getGastoTelefono().replace(",", ""));
+        json_negocio.put(K_GASTO_RENTA, negocioRen.getGastoRenta().replace(",", ""));
+        json_negocio.put(K_GASTO_OTROS, negocioRen.getGastoOtros().replace(",", ""));
         json_negocio.put(K_CAPACIDAD_PAGO, negocioRen.getMontoMaximo());
         if (negocioRen.getMedioPago().contains("OTRO"))
             json_negocio.put(K_OTRO_MEDIOS_PAGOS, negocioRen.getOtroMedioPago());
@@ -1062,8 +1034,7 @@ public class dialog_sending_solicitud_individual extends DialogFragment {
         json_solicitud.put(K_SOLICITANTE_NEGOCIO, json_negocio);
     }
 
-    private void fillAvalRenJson(JSONObject json_solicitud, AvalRen avalRen) throws JSONException
-    {
+    private void fillAvalRenJson(JSONObject json_solicitud, AvalRen avalRen) throws JSONException {
         JSONObject json_aval = new JSONObject();
 
         MedioPagoDao medioPagoDao = new MedioPagoDao(ctx);
@@ -1102,29 +1073,27 @@ public class dialog_sending_solicitud_individual extends DialogFragment {
 
         json_aval.put(K_TIPO_VIVIENDA, avalRen.getTipoVivienda());
 
-        if (avalRen.getTipoVivienda().equals("CASA FAMILIAR") || avalRen.getTipoVivienda().equals("CASA RENTADA"))
-        {
+        if (avalRen.getTipoVivienda().equals("CASA FAMILIAR") || avalRen.getTipoVivienda().equals("CASA RENTADA")) {
             json_aval.put(K_NOMBRE_TITULAR, avalRen.getNombreTitular());
             json_aval.put(K_PARENTESCO_TITULAR, avalRen.getParentesco());
         }
         json_aval.put(K_CARACTERISTICAS_DOMICILIO, avalRen.getCaracteristicasDomicilio());
         json_aval.put(K_TIENE_NEGOCIO, avalRen.getTieneNegocio() == 1);
-        if (avalRen.getTieneNegocio() == 1)
-        {
+        if (avalRen.getTieneNegocio() == 1) {
             json_aval.put(K_NOMBRE_NEGOCIO, avalRen.getNombreNegocio().trim().toUpperCase());
             json_aval.put(K_ANTIGUEDAD, avalRen.getAntigueda());
         }
 
-        json_aval.put(K_INGRESO_MENSUAL, Double.parseDouble(avalRen.getIngMensual().replace(",","")));
-        json_aval.put(K_INGRESOS_OTROS, Double.parseDouble(avalRen.getIngOtros().replace(",","")));
-        json_aval.put(K_GASTO_MENSUAL, Double.parseDouble(avalRen.getGastoSemanal().replace(",","")));
-        json_aval.put(K_GASTO_AGUA, Double.parseDouble(avalRen.getGastoAgua().replace(",","")));
-        json_aval.put(K_GASTO_LUZ, Double.parseDouble(avalRen.getGastoLuz().replace(",","")));
-        json_aval.put(K_GASTO_TELEFONO, Double.parseDouble(avalRen.getGastoTelefono().replace(",","")));
-        json_aval.put(K_GASTO_RENTA, Double.parseDouble(avalRen.getGastoRenta().replace(",","")));
-        json_aval.put(K_GASTO_OTROS, Double.parseDouble(avalRen.getGastoOtros().replace(",","")));
-        json_aval.put(K_MONTO_MAXIMO, Double.parseDouble(avalRen.getCapacidadPagos().replace(",","")));
-        json_aval.put(K_CAPACIDAD_PAGO, Double.parseDouble(avalRen.getMontoMaximo().replace(",","")));
+        json_aval.put(K_INGRESO_MENSUAL, Double.parseDouble(avalRen.getIngMensual().replace(",", "")));
+        json_aval.put(K_INGRESOS_OTROS, Double.parseDouble(avalRen.getIngOtros().replace(",", "")));
+        json_aval.put(K_GASTO_MENSUAL, Double.parseDouble(avalRen.getGastoSemanal().replace(",", "")));
+        json_aval.put(K_GASTO_AGUA, Double.parseDouble(avalRen.getGastoAgua().replace(",", "")));
+        json_aval.put(K_GASTO_LUZ, Double.parseDouble(avalRen.getGastoLuz().replace(",", "")));
+        json_aval.put(K_GASTO_TELEFONO, Double.parseDouble(avalRen.getGastoTelefono().replace(",", "")));
+        json_aval.put(K_GASTO_RENTA, Double.parseDouble(avalRen.getGastoRenta().replace(",", "")));
+        json_aval.put(K_GASTO_OTROS, Double.parseDouble(avalRen.getGastoOtros().replace(",", "")));
+        json_aval.put(K_MONTO_MAXIMO, Double.parseDouble(avalRen.getCapacidadPagos().replace(",", "")));
+        json_aval.put(K_CAPACIDAD_PAGO, Double.parseDouble(avalRen.getMontoMaximo().replace(",", "")));
         json_aval.put(K_MEDIOS_PAGOS, medioPagoDao.findIdsByNombres(avalRen.getMedioPago()));
         if (avalRen.getMedioPago().contains("OTRO"))
             json_aval.put(K_OTRO_MEDIOS_PAGOS, avalRen.getOtroMedioPago());
@@ -1145,8 +1114,7 @@ public class dialog_sending_solicitud_individual extends DialogFragment {
         json_solicitud.put(K_SOLICITANTE_AVAL, json_aval);
     }
 
-    private void fillReferenciaRenJson(JSONObject json_solicitud, ReferenciaRen referenciaRen) throws  JSONException
-    {
+    private void fillReferenciaRenJson(JSONObject json_solicitud, ReferenciaRen referenciaRen) throws JSONException {
         JSONObject json_referencia = new JSONObject();
 
         DireccionRenDao direccionRenDao = new DireccionRenDao(ctx);
@@ -1166,7 +1134,7 @@ public class dialog_sending_solicitud_individual extends DialogFragment {
         json_referencia.put(K_COLONIA, direccionReferenciaRen.getColonia());
         json_referencia.put(K_CIUDAD, direccionReferenciaRen.getCiudad());
         json_referencia.put(K_LOCALIDAD, direccionReferenciaRen.getLocalidad());
-        json_referencia.put(K_MUNICIPIO,direccionReferenciaRen.getMunicipio());
+        json_referencia.put(K_MUNICIPIO, direccionReferenciaRen.getMunicipio());
         json_referencia.put(K_ESTADO, direccionReferenciaRen.getEstado());
 
         json_referencia.put(K_TEL_CELULAR, referenciaRen.getTelCelular());
@@ -1175,8 +1143,7 @@ public class dialog_sending_solicitud_individual extends DialogFragment {
 
     }
 
-    private void fillCroquisRenJson(JSONObject json_solicitud, CroquisRen croquisRen) throws  JSONException
-    {
+    private void fillCroquisRenJson(JSONObject json_solicitud, CroquisRen croquisRen) throws JSONException {
         JSONObject json_croquis = new JSONObject();
 
         json_croquis.put(K_CALLE_ENFRENTE, croquisRen.getCallePrincipal());
@@ -1189,8 +1156,7 @@ public class dialog_sending_solicitud_individual extends DialogFragment {
         json_solicitud.put(K_SOLICITANTE_CROQUIS, json_croquis);
     }
 
-    private void fillPoliticaPldRenJson(JSONObject json_solicitud, PoliticaPldRen politicaPldRen) throws  JSONException
-    {
+    private void fillPoliticaPldRenJson(JSONObject json_solicitud, PoliticaPldRen politicaPldRen) throws JSONException {
         JSONObject json_politicas = new JSONObject();
 
         json_politicas.put(K_PROPIETARIO, politicaPldRen.getPropietarioReal() == 1);
@@ -1200,8 +1166,7 @@ public class dialog_sending_solicitud_individual extends DialogFragment {
         json_solicitud.put(K_SOLICITANTE_POLITICAS, json_politicas);
     }
 
-    private void fillDocumentoRenJson(JSONObject json_solicitud, DocumentoRen documentoRen) throws  JSONException
-    {
+    private void fillDocumentoRenJson(JSONObject json_solicitud, DocumentoRen documentoRen) throws JSONException {
         JSONObject json_documentos = new JSONObject();
 
         json_documentos.put(K_IDENTIFICACION_FRONTAL, documentoRen.getIneFrontal());
@@ -1211,32 +1176,32 @@ public class dialog_sending_solicitud_individual extends DialogFragment {
         json_documentos.put(K_CODIGO_BARRAS, documentoRen.getCodigoBarras());
         json_documentos.put(K_FIRMA_ASESOR, documentoRen.getFirmaAsesor());
 
-        if(documentoRen.getIneSelfie() != null)
+        if (documentoRen.getIneSelfie() != null)
             json_documentos.put(K_IDENTIFICACION_SELFIE, documentoRen.getIneSelfie());
         else
             json_documentos.put(K_IDENTIFICACION_SELFIE, "");
 
-        if(documentoRen.getComprobanteGarantia() != null)
+        if (documentoRen.getComprobanteGarantia() != null)
             json_documentos.put(K_COMPROBANTE_GARANTIA, documentoRen.getComprobanteGarantia());
         else
             json_documentos.put(K_COMPROBANTE_GARANTIA, "");
 
-        if(documentoRen.getIneFrontalAval() != null)
+        if (documentoRen.getIneFrontalAval() != null)
             json_documentos.put(K_IDENTIFICACION_FRONTAL_AVAL, documentoRen.getIneFrontalAval());
         else
             json_documentos.put(K_IDENTIFICACION_FRONTAL_AVAL, "");
 
-        if(documentoRen.getIneReversoAval() != null)
+        if (documentoRen.getIneReversoAval() != null)
             json_documentos.put(K_IDENTIFICACION_REVERSO_AVAL, documentoRen.getIneReversoAval());
         else
             json_documentos.put(K_IDENTIFICACION_REVERSO_AVAL, "");
 
-        if(documentoRen.getCurpAval() != null)
+        if (documentoRen.getCurpAval() != null)
             json_documentos.put(K_CURP_AVAL, documentoRen.getCurpAval());
         else
             json_documentos.put(K_CURP_AVAL, "");
 
-        if(documentoRen.getComprobanteAval() != null)
+        if (documentoRen.getComprobanteAval() != null)
             json_documentos.put(K_COMPROBANTE_DOMICILIO_AVAL, documentoRen.getComprobanteAval());
         else
             json_documentos.put(K_COMPROBANTE_DOMICILIO_AVAL, "");
@@ -1244,14 +1209,14 @@ public class dialog_sending_solicitud_individual extends DialogFragment {
         json_solicitud.put(K_SOLICITANTE_DOCUMENTOS, json_documentos);
     }
 
-    public void obtenerDatosBeneficiario(int id_solicitud,int id_originacion){
-        DBhelper dBhelper = new DBhelper(ctx);
+    public void obtenerDatosBeneficiario(int id_solicitud, int id_originacion) {
+        DBhelper dBhelper = DBhelper.getInstance(ctx);
 
         Beneficiario ben = new Beneficiario();
 
-        Cursor row = dBhelper.getBeneficiarioInd(TBL_DATOS_BENEFICIARIO, id_solicitud, id_originacion);
+        Cursor row = dBhelper.getBeneficiarioIndA(TBL_DATOS_BENEFICIARIO, String.valueOf(id_solicitud));
 
-        if(row.getCount()>0){
+        if (row.getCount() > 0) {
             row.moveToFirst();
 
             ben.setIdSolicitud(row.getInt(1));
@@ -1264,14 +1229,14 @@ public class dialog_sending_solicitud_individual extends DialogFragment {
             ben.setParentesco(row.getString(8));
             ben.setSerieId(row.getInt(9));
             row.close();
-        }else{
+        } else {
             Toast.makeText(ctx, "NO SE ENCONTRARON LOS DATOS", Toast.LENGTH_SHORT).show();
         }
 
-        BeneficiarioService sa = new RetrofitClient().generalRF(CONTROLLER_API, ctx).create(BeneficiarioService.class);
+        BeneficiarioService api = RetrofitClient.generalRF(CONTROLLER_API, ctx).create(BeneficiarioService.class);
 
-        Call<Beneficiario> call = sa.senDataBeneficiario(
-
+        Call<Beneficiario> call = api.senDataBeneficiario(
+                "Bearer " + session.getUser().get(7),
                 ben.getId_originacion(),
                 ben.getCliente_id(),
                 ben.getGrupo_id(),
@@ -1282,11 +1247,10 @@ public class dialog_sending_solicitud_individual extends DialogFragment {
                 ben.getSerieId()
         );
 
-
         call.enqueue(new Callback<Beneficiario>() {
             @Override
             public void onResponse(Call<Beneficiario> call, Response<Beneficiario> response) {
-                switch (response.code()){
+                switch (response.code()) {
                     case 200:
                         Log.e("AQUI:", "REGISTRO COMPLETO");
                         break;
@@ -1301,6 +1265,105 @@ public class dialog_sending_solicitud_individual extends DialogFragment {
 
     }
 
+    public void obtenerDatosBeneficiarioRen(int id_solicitud, int id_originacion) {
+        DBhelper dBhelper = DBhelper.getInstance(ctx);
 
+        Beneficiario ben = new Beneficiario();
+
+        Cursor row = dBhelper.getBeneficiarioIndA(TBL_DATOS_BENEFICIARIO_REN, String.valueOf(id_solicitud));
+
+        if (row.getCount() > 0) {
+            row.moveToFirst();
+
+            ben.setIdSolicitud(row.getInt(1));
+            ben.setId_originacion(id_originacion);
+            ben.setCliente_id(row.getInt(3));
+            ben.setGrupo_id(row.getInt(4));
+            ben.setNombre(row.getString(5));
+            ben.setPaterno(row.getString(6));
+            ben.setMaterno(row.getString(7));
+            ben.setParentesco(row.getString(8));
+            ben.setSerieId(row.getInt(9));
+            row.close();
+        } else {
+            Toast.makeText(ctx, "NO SE ENCONTRARON LOS DATOS", Toast.LENGTH_SHORT).show();
+        }
+
+        BeneficiarioService api = RetrofitClient.generalRF(CONTROLLER_API, ctx).create(BeneficiarioService.class);
+
+        Call<Beneficiario> call = api.senDataBeneficiario(
+                "Bearer " + session.getUser().get(7),
+                ben.getId_originacion(),
+                ben.getCliente_id(),
+                ben.getGrupo_id(),
+                ben.getNombre(),
+                ben.getPaterno(),
+                ben.getMaterno(),
+                ben.getParentesco(),
+                ben.getSerieId()
+        );
+
+        call.enqueue(new Callback<Beneficiario>() {
+            @Override
+            public void onResponse(Call<Beneficiario> call, Response<Beneficiario> response) {
+                switch (response.code()) {
+                    case 200:
+                        Log.e("AQUI:", "REGISTRO COMPLETO");
+                        break;
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Beneficiario> call, Throwable t) {
+                Log.e("AQUI;", " NO SE REGISTRO NADA");
+            }
+        });
+
+    }
+
+    public void enviarDatosCampana(int id_solicitud) {
+        DBhelper dBhelper = DBhelper.getInstance(ctx);
+
+        datoCampana dc = new datoCampana();
+
+        Cursor row = dBhelper.getRecords(TBL_DATOS_CREDITO_CAMPANA, " WHERE id_solicitud = ?", " ", new String[]{String.valueOf(id_solicitud)});
+
+        if (row.getCount() > 0) {
+            row.moveToFirst();
+            dc.setId_originacion(row.getInt(2));
+            dc.setId_campana(row.getInt(3));
+            dc.setTipo_campana(row.getString(4));
+            dc.setNombre_refiero(row.getString(5));
+            row.close();
+        } else {
+            Toast.makeText(ctx, "NO SE ENCONTRARON LOS DATOS", Toast.LENGTH_SHORT).show();
+        }
+
+        ManagerInterface api = RetrofitClient.generalRF(CONTROLLER_API, ctx).create(ManagerInterface.class);
+
+        Call<datoCampana> call = api.saveCreditoCampana(
+                "Bearer " + session.getUser().get(7),
+                Long.valueOf(dc.getId_originacion()),
+                dc.getId_campana(),
+                dc.getTipo_campana(),
+                dc.getNombre_refiero()
+        );
+
+        call.enqueue(new Callback<datoCampana>() {
+            @Override
+            public void onResponse(Call<datoCampana> call, Response<datoCampana> response) {
+                switch (response.code()) {
+                    case 200:
+                        Log.e("AQUI:", "REGISTRO COMPLETO CREDITO CAMPAÑA");
+                        break;
+                }
+            }
+
+            @Override
+            public void onFailure(Call<datoCampana> call, Throwable t) {
+                Log.e("AQUI:", "NO SE REGISTRO LA CAMPAÑA");
+            }
+        });
+    }
 
 }

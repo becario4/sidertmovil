@@ -19,7 +19,7 @@ public class DocumentoClienteDao {
 
     public DocumentoClienteDao(Context ctx)
     {
-        this.dBhelper = new DBhelper(ctx);
+        this.dBhelper = DBhelper.getInstance(ctx);
         this.db = dBhelper.getWritableDatabase();
     }
 

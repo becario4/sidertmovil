@@ -21,16 +21,26 @@ import com.sidert.sidertmovil.models.ModeloEstados;
 import com.sidert.sidertmovil.models.ModeloMunicipio;
 import com.sidert.sidertmovil.models.ModeloOcupaciones;
 import com.sidert.sidertmovil.models.ModeloSectores;
+import com.sidert.sidertmovil.models.catalogos.Campanas;
+import com.sidert.sidertmovil.models.catalogos.CampanasDao;
+import com.sidert.sidertmovil.models.catalogos.Localidad;
+import com.sidert.sidertmovil.models.catalogos.SucursalesLocalidades;
+import com.sidert.sidertmovil.models.catalogos.SucursalesLocalidadesDao;
+import com.sidert.sidertmovil.services.Catalogos.CatalogosCampanas;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
 import static com.sidert.sidertmovil.database.SidertTables.SidertEntry.TABLE_IDENTIFICACIONES;
+import static com.sidert.sidertmovil.utils.Constants.CONTROLLER_CAMAPANAS;
 import static com.sidert.sidertmovil.utils.Constants.CONTROLLER_CATALOGOS;
+import static com.sidert.sidertmovil.utils.Constants.LOCALIDADES;
+import static com.sidert.sidertmovil.utils.Constants.TBL_CATALOGOS_CAMPANAS;
 import static com.sidert.sidertmovil.utils.Constants.TBL_DESTINOS_CREDITO;
 import static com.sidert.sidertmovil.utils.Constants.TBL_ESTADOS_CIVILES;
 import static com.sidert.sidertmovil.utils.Constants.TBL_IDENTIFICACIONES_TIPO;
@@ -39,21 +49,32 @@ import static com.sidert.sidertmovil.utils.Constants.TBL_MEDIOS_PAGO_ORI;
 import static com.sidert.sidertmovil.utils.Constants.TBL_NIVELES_ESTUDIOS;
 import static com.sidert.sidertmovil.utils.Constants.TBL_PARENTESCOS;
 import static com.sidert.sidertmovil.utils.Constants.TBL_PLAZOS_PRESTAMOS;
+import static com.sidert.sidertmovil.utils.Constants.TBL_SUCURSALES_LOCALIDADES;
 import static com.sidert.sidertmovil.utils.Constants.TBL_VIVIENDA_TIPOS;
 import static com.sidert.sidertmovil.utils.Constants.TICKETS;
+import static com.sidert.sidertmovil.utils.Constants.camara;
+import static com.sidert.sidertmovil.utils.Constants.logout;
+import static com.sidert.sidertmovil.utils.Constants.sidert;
+import static com.sidert.sidertmovil.utils.WebServicesRoutes.CONTROLLER_CATALOGOS_CAMP;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class Sincronizar_Catalogos {
 
     private Context ctx;
+
+    private Integer centroCosto = 0;
 
     public void GetEstados(final Context ctx){
 
         final AlertDialog pDialog = Popups.showLoadingDialog(ctx, R.string.please_wait, R.string.loading_info);
         pDialog.setCancelable(false);
         pDialog.show();
-        SessionManager session = new SessionManager(ctx);
+        SessionManager session = SessionManager.getInstance(ctx);
 
-        ManagerInterface api = new RetrofitClient().generalRF(CONTROLLER_CATALOGOS, ctx).create(ManagerInterface.class);
+        ManagerInterface api = RetrofitClient.generalRF(CONTROLLER_CATALOGOS, ctx).create(ManagerInterface.class);
 
         Call<List<ModeloEstados>> call = api.getEstados("Bearer "+ session.getUser().get(7));
 
@@ -82,9 +103,9 @@ public class Sincronizar_Catalogos {
         final AlertDialog pDialog = Popups.showLoadingDialog(ctx, R.string.please_wait, R.string.loading_info);
         pDialog.setCancelable(false);
         pDialog.show();
-        final SessionManager session = new SessionManager(ctx);
+        final SessionManager session = SessionManager.getInstance(ctx);
 
-        ManagerInterface api = new RetrofitClient().generalRF(CONTROLLER_CATALOGOS, ctx).create(ManagerInterface.class);
+        ManagerInterface api = RetrofitClient.generalRF(CONTROLLER_CATALOGOS, ctx).create(ManagerInterface.class);
 
         Call<List<ModeloMunicipio>> call = api.getMunicipios("Bearer "+ session.getUser().get(7));
 
@@ -112,10 +133,10 @@ public class Sincronizar_Catalogos {
 
     public void GetColonias(final Context ctx){
         this.ctx = ctx;
-        SessionManager session = new SessionManager(ctx);
+        SessionManager session = SessionManager.getInstance(ctx);
 
 
-        ManagerInterface api = new RetrofitClient().generalRF(CONTROLLER_CATALOGOS, ctx).create(ManagerInterface.class);
+        ManagerInterface api = RetrofitClient.generalRF(CONTROLLER_CATALOGOS, ctx).create(ManagerInterface.class);
 
         Call<List<ModeloColonia>> call = api.getColonias("Bearer "+ session.getUser().get(7));
 
@@ -145,9 +166,9 @@ public class Sincronizar_Catalogos {
         final AlertDialog pDialog = Popups.showLoadingDialog(ctx, R.string.please_wait, R.string.loading_info);
         pDialog.setCancelable(false);
         pDialog.show();
-        SessionManager session = new SessionManager(ctx);
+        SessionManager session = SessionManager.getInstance(ctx);
 
-        ManagerInterface api = new RetrofitClient().generalRF(CONTROLLER_CATALOGOS, ctx).create(ManagerInterface.class);
+        ManagerInterface api = RetrofitClient.generalRF(CONTROLLER_CATALOGOS, ctx).create(ManagerInterface.class);
 
         Call<List<ModeloSectores>> call = api.getSectores("Bearer "+ session.getUser().get(7));
 
@@ -178,9 +199,9 @@ public class Sincronizar_Catalogos {
         final AlertDialog pDialog = Popups.showLoadingDialog(ctx, R.string.please_wait, R.string.loading_info);
         pDialog.setCancelable(false);
         pDialog.show();
-        SessionManager session = new SessionManager(ctx);
+        SessionManager session = SessionManager.getInstance(ctx);
 
-        ManagerInterface api = new RetrofitClient().generalRF(CONTROLLER_CATALOGOS, ctx).create(ManagerInterface.class);
+        ManagerInterface api = RetrofitClient.generalRF(CONTROLLER_CATALOGOS, ctx).create(ManagerInterface.class);
 
         Call<List<ModeloOcupaciones>> call = api.getOcupaciones("Bearer "+ session.getUser().get(7));
 
@@ -209,9 +230,9 @@ public class Sincronizar_Catalogos {
         final AlertDialog pDialog = Popups.showLoadingDialog(ctx, R.string.please_wait, R.string.loading_info);
         pDialog.setCancelable(false);
         pDialog.show();
-        SessionManager session = new SessionManager(ctx);
+        SessionManager session = SessionManager.getInstance(ctx);
 
-        ManagerInterface api = new RetrofitClient().generalRF(CONTROLLER_CATALOGOS, ctx).create(ManagerInterface.class);
+        ManagerInterface api = RetrofitClient.generalRF(CONTROLLER_CATALOGOS, ctx).create(ManagerInterface.class);
 
         Call<List<MCatalogo>> call = api.getIdentificaciones("Bearer "+ session.getUser().get(7));
 
@@ -240,9 +261,9 @@ public class Sincronizar_Catalogos {
         final AlertDialog pDialog = Popups.showLoadingDialog(ctx, R.string.please_wait, R.string.loading_info);
         pDialog.setCancelable(false);
         pDialog.show();
-        SessionManager session = new SessionManager(ctx);
+        SessionManager session = SessionManager.getInstance(ctx);
 
-        ManagerInterface api = new RetrofitClient().generalRF(CONTROLLER_CATALOGOS, ctx).create(ManagerInterface.class);
+        ManagerInterface api = RetrofitClient.generalRF(CONTROLLER_CATALOGOS, ctx).create(ManagerInterface.class);
 
         Call<List<MCatalogo>> call = api.getViviendaTipos("Bearer "+ session.getUser().get(7));
 
@@ -271,9 +292,9 @@ public class Sincronizar_Catalogos {
         final AlertDialog pDialog = Popups.showLoadingDialog(ctx, R.string.please_wait, R.string.loading_info);
         pDialog.setCancelable(false);
         pDialog.show();
-        SessionManager session = new SessionManager(ctx);
+        SessionManager session = SessionManager.getInstance(ctx);
 
-        ManagerInterface api = new RetrofitClient().generalRF(CONTROLLER_CATALOGOS, ctx).create(ManagerInterface.class);
+        ManagerInterface api = RetrofitClient.generalRF(CONTROLLER_CATALOGOS, ctx).create(ManagerInterface.class);
 
         Call<List<MCatalogo>> call = api.getMediosContacto("Bearer "+ session.getUser().get(7));
 
@@ -302,9 +323,9 @@ public class Sincronizar_Catalogos {
         final AlertDialog pDialog = Popups.showLoadingDialog(ctx, R.string.please_wait, R.string.loading_info);
         pDialog.setCancelable(false);
         pDialog.show();
-        SessionManager session = new SessionManager(ctx);
+        SessionManager session = SessionManager.getInstance(ctx);
 
-        ManagerInterface api = new RetrofitClient().generalRF(CONTROLLER_CATALOGOS, ctx).create(ManagerInterface.class);
+        ManagerInterface api = RetrofitClient.generalRF(CONTROLLER_CATALOGOS, ctx).create(ManagerInterface.class);
 
         Call<List<MCatalogo>> call = api.getDestinosCredito("Bearer "+ session.getUser().get(7));
 
@@ -333,9 +354,9 @@ public class Sincronizar_Catalogos {
         final AlertDialog pDialog = Popups.showLoadingDialog(ctx, R.string.please_wait, R.string.loading_info);
         pDialog.setCancelable(false);
         pDialog.show();
-        SessionManager session = new SessionManager(ctx);
+        SessionManager session = SessionManager.getInstance(ctx);
 
-        ManagerInterface api = new RetrofitClient().generalRF(CONTROLLER_CATALOGOS, ctx).create(ManagerInterface.class);
+        ManagerInterface api = RetrofitClient.generalRF(CONTROLLER_CATALOGOS, ctx).create(ManagerInterface.class);
 
         Call<List<MCatalogo>> call = api.getEstadosCiviles("Bearer "+ session.getUser().get(7));
 
@@ -363,9 +384,9 @@ public class Sincronizar_Catalogos {
         final AlertDialog pDialog = Popups.showLoadingDialog(ctx, R.string.please_wait, R.string.loading_info);
         pDialog.setCancelable(false);
         pDialog.show();
-        SessionManager session = new SessionManager(ctx);
+        SessionManager session = SessionManager.getInstance(ctx);
 
-        ManagerInterface api = new RetrofitClient().generalRF(CONTROLLER_CATALOGOS, ctx).create(ManagerInterface.class);
+        ManagerInterface api = RetrofitClient.generalRF(CONTROLLER_CATALOGOS, ctx).create(ManagerInterface.class);
 
         Call<List<MCatalogo>> call = api.getNivelesEstudios("Bearer "+ session.getUser().get(7));
 
@@ -393,9 +414,9 @@ public class Sincronizar_Catalogos {
         final AlertDialog pDialog = Popups.showLoadingDialog(ctx, R.string.please_wait, R.string.loading_info);
         pDialog.setCancelable(false);
         //pDialog.show();
-        SessionManager session = new SessionManager(ctx);
+        SessionManager session = SessionManager.getInstance(ctx);
 
-        ManagerInterface api = new RetrofitClient().generalRF(CONTROLLER_CATALOGOS, ctx).create(ManagerInterface.class);
+        ManagerInterface api = RetrofitClient.generalRF(CONTROLLER_CATALOGOS, ctx).create(ManagerInterface.class);
 
         Call<List<MCatalogo>> call = api.getMediosPagoOrig("Bearer "+ session.getUser().get(7));
 
@@ -423,9 +444,9 @@ public class Sincronizar_Catalogos {
         final AlertDialog pDialog = Popups.showLoadingDialog(ctx, R.string.please_wait, R.string.loading_info);
         pDialog.setCancelable(false);
         pDialog.show();
-        SessionManager session = new SessionManager(ctx);
+        SessionManager session = SessionManager.getInstance(ctx);
 
-        ManagerInterface api = new RetrofitClient().generalRF(CONTROLLER_CATALOGOS, ctx).create(ManagerInterface.class);
+        ManagerInterface api = RetrofitClient.generalRF(CONTROLLER_CATALOGOS, ctx).create(ManagerInterface.class);
 
         Call<List<MCatalogo>> call = api.getParentesco("Bearer "+ session.getUser().get(7));
 
@@ -451,10 +472,10 @@ public class Sincronizar_Catalogos {
 
     public void GetCategoriasTickets(final Context ctx){
         this.ctx = ctx;
-        SessionManager session = new SessionManager(ctx);
+        SessionManager session = SessionManager.getInstance(ctx);
 
 
-        ManagerInterface api = new RetrofitClient().generalRF(CONTROLLER_CATALOGOS, ctx).create(ManagerInterface.class);
+        ManagerInterface api = RetrofitClient.generalRF(CONTROLLER_CATALOGOS, ctx).create(ManagerInterface.class);
 
         Call<List<MTickets>> call = api.getCategoriasTickets("Bearer "+ session.getUser().get(7),
                                                                 "MOVIL");
@@ -483,10 +504,10 @@ public class Sincronizar_Catalogos {
 
     public void GetPlazosPrestamo(final Context ctx){
         this.ctx = ctx;
-        SessionManager session = new SessionManager(ctx);
+        SessionManager session = SessionManager.getInstance(ctx);
 
 
-        ManagerInterface api = new RetrofitClient().generalRF(CONTROLLER_CATALOGOS, ctx).create(ManagerInterface.class);
+        ManagerInterface api = RetrofitClient.generalRF(CONTROLLER_CATALOGOS, ctx).create(ManagerInterface.class);
 
         Call<List<MPlazos>> call = api.getPlazosPrestamo("Bearer "+ session.getUser().get(7));
 
@@ -502,12 +523,94 @@ public class Sincronizar_Catalogos {
                         break;
                 }
                 //loading.dismiss();
-
             }
             @Override
             public void onFailure(Call<List<MPlazos>> call, Throwable t) {
                 Log.e("FailColonia", t.getMessage());
                 //loading.dismiss();
+            }
+        });
+    }
+
+    public void GetCatalogosCampanas(final Context ctx){
+        this.ctx = ctx;
+
+        ManagerInterface api = RetrofitClient.generalRF(CONTROLLER_CATALOGOS, ctx).create(ManagerInterface.class);
+
+        Call<List<Campanas>> call = api.obtenerCatalogos();
+
+        call.enqueue(new Callback<List<Campanas>>() {
+            @Override
+            public void onResponse(Call<List<Campanas>> call, Response<List<Campanas>> response) {
+                Log.e("CodeCampañas","Code:"+response.code());
+                switch (response.code()){
+                    case 200:
+                        List<Campanas> campanas = response.body();
+                        new RegistrarCampanas()
+                                .execute(campanas,ctx);
+                        break;
+                }
+            }
+            @Override
+            public void onFailure(Call<List<Campanas>> call, Throwable t) {
+                Log.e("FailCampañas",t.getMessage());
+            }
+        });
+    }
+
+    public void GetLocalidades(final Context ctx){
+        this.ctx = ctx;
+        String municipio_id = "15";
+        ManagerInterface api = RetrofitClient.generalRF(CONTROLLER_CATALOGOS,ctx).create(ManagerInterface.class);
+
+        Call<List<Localidad>> call = api.getLocalidad(municipio_id);
+
+        call.enqueue(new Callback<List<Localidad>>() {
+            @Override
+            public void onResponse(Call<List<Localidad>> call, Response<List<Localidad>> response) {
+                Log.e("CodeLocalidad","Code:"+response.code());
+                switch (response.code()){
+                    case 200:
+                        List<Localidad> localidads = response.body();
+                        new RegistrarLocalidades()
+                                .execute(localidads, ctx);
+                        break;
+                }
+            }
+            @Override
+            public void onFailure(Call<List<Localidad>> call, Throwable t) {
+                Log.e("FailIdentificacion", t.getMessage());
+            }
+        });
+    }
+
+    public void GetSucursalLocalidades(final Context ctx){
+        this.ctx = ctx;
+        SucursalesLocalidadesDao sl = new SucursalesLocalidadesDao(ctx);
+
+        ManagerInterface api = RetrofitClient.generalRF(CONTROLLER_CATALOGOS,ctx).create(ManagerInterface.class);
+
+        centroCosto  = sl.obtenerCentroCosto();
+
+        Call<List<SucursalesLocalidades>> call = api.getSucursalLocalidades(centroCosto);
+
+
+        call.enqueue(new Callback<List<SucursalesLocalidades>>() {
+            @Override
+            public void onResponse(Call<List<SucursalesLocalidades>> call, Response<List<SucursalesLocalidades>> response) {
+                Log.e("CodeSucursalesLocalidad","Code:"+response.code());
+                switch (response.code()){
+                    case 200:
+                        List<SucursalesLocalidades> sucursalesLocalidades = response.body();
+                        new RegistrarLocalidades()
+                                .execute(sucursalesLocalidades,ctx);
+
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<SucursalesLocalidades>> call, Throwable t) {
+
             }
         });
     }
@@ -531,7 +634,7 @@ public class Sincronizar_Catalogos {
             List<ModeloColonia> colonias = (List<ModeloColonia>) params[0];
             Context ctx = (Context) params[1];
             if (colonias.size() > 0){
-                DBhelper dBhelper = new DBhelper(ctx);
+                DBhelper dBhelper = DBhelper.getInstance(ctx);
                 SQLiteDatabase db = dBhelper.getWritableDatabase();
                 Cursor row;
                 for (int i = 0; i < colonias.size(); i++){
@@ -586,7 +689,7 @@ public class Sincronizar_Catalogos {
             Log.i("doInBackground" , "Entra en doInBackground");
             List<ModeloEstados> estados = (List<ModeloEstados>) params[0];
             if (estados.size() > 0){
-                DBhelper dBhelper = new DBhelper(ctx);
+                DBhelper dBhelper = DBhelper.getInstance(ctx);
                 SQLiteDatabase db = dBhelper.getWritableDatabase();
                 Cursor row;
                 for (int i = 0; i < estados.size(); i++){
@@ -639,7 +742,7 @@ public class Sincronizar_Catalogos {
             Log.i("doInBackground" , "Entra en doInBackground");
             List<ModeloMunicipio> municipios = (List<ModeloMunicipio>) params[0];
             if (municipios.size() > 0){
-                DBhelper dBhelper = new DBhelper(ctx);
+                DBhelper dBhelper = DBhelper.getInstance(ctx);
                 SQLiteDatabase db = dBhelper.getWritableDatabase();
                 Cursor row;
                 //Log.e("size muni", municipios.size()+"");
@@ -693,7 +796,7 @@ public class Sincronizar_Catalogos {
             Log.i("doInBackground" , "Entra en doInBackground");
             List<ModeloSectores> sectores = (List<ModeloSectores>) params[0];
             if (sectores.size() > 0){
-                DBhelper dBhelper = new DBhelper(ctx);
+                DBhelper dBhelper = DBhelper.getInstance(ctx);
                 SQLiteDatabase db = dBhelper.getWritableDatabase();
                 Cursor row;
                 for (int i = 0; i < sectores.size(); i++){
@@ -745,7 +848,7 @@ public class Sincronizar_Catalogos {
             Log.i("doInBackground" , "Entra en doInBackground");
             List<ModeloOcupaciones> ocupaciones = (List<ModeloOcupaciones>) params[0];
             if (ocupaciones.size() > 0){
-                DBhelper dBhelper = new DBhelper(ctx);
+                DBhelper dBhelper = DBhelper.getInstance(ctx);
                 SQLiteDatabase db = dBhelper.getWritableDatabase();
                 Cursor row;
                 for (int i = 0; i < ocupaciones.size(); i++){
@@ -799,7 +902,7 @@ public class Sincronizar_Catalogos {
             Log.i("doInBackground" , "Entra en doInBackground");
             List<MCatalogo> identificaciones = (List<MCatalogo>) params[0];
             if (identificaciones.size() > 0){
-                DBhelper dBhelper = new DBhelper(ctx);
+                DBhelper dBhelper = DBhelper.getInstance(ctx);
                 SQLiteDatabase db = dBhelper.getWritableDatabase();
                 Cursor row;
                 for (int i = 0; i < identificaciones.size(); i++){
@@ -816,7 +919,7 @@ public class Sincronizar_Catalogos {
                     }
                     row.close();
                 }
-            }
+            };
             return "termina";
         }
 
@@ -851,7 +954,7 @@ public class Sincronizar_Catalogos {
             ctx = (Context) params[1];
 
             if (catalogo.size() > 0){
-                DBhelper dBhelper = new DBhelper(ctx);
+                DBhelper dBhelper = DBhelper.getInstance(ctx);
                 SQLiteDatabase db = dBhelper.getWritableDatabase();
                 Cursor row;
                 for (int i = 0; i < catalogo.size(); i++){
@@ -900,7 +1003,7 @@ public class Sincronizar_Catalogos {
             Log.i("doInBackground" , "Entra en doInBackground");
             List<MTickets> categorias = (List<MTickets>) params[0];
             if (categorias.size() > 0){
-                DBhelper dBhelper = new DBhelper(ctx);
+                DBhelper dBhelper = DBhelper.getInstance(ctx);
                 SQLiteDatabase db = dBhelper.getWritableDatabase();
                 Cursor row;
                 for (MTickets item : categorias){
@@ -959,7 +1062,7 @@ public class Sincronizar_Catalogos {
             Log.i("doInBackground" , "Entra en doInBackground");
             List<MPlazos> plazos = (List<MPlazos>) params[0];
             if (plazos.size() > 0){
-                DBhelper dBhelper = new DBhelper(ctx);
+                DBhelper dBhelper = DBhelper.getInstance(ctx);
                 SQLiteDatabase db = dBhelper.getWritableDatabase();
                 Cursor row;
                 for (MPlazos item : plazos){
@@ -999,5 +1102,110 @@ public class Sincronizar_Catalogos {
         }
 
     }
-}
 
+    public class RegistrarCampanas extends AsyncTask<Object, Void,String>{
+        AlertDialog pDialog;
+
+        @Override
+        protected void onPreExecute(){
+            super.onPreExecute();
+            pDialog = Popups.showLoadingDialog(ctx,R.string.please_wait,R.string.loading_info);
+            pDialog.setCancelable(false);
+            pDialog.show();
+        }
+
+        @Override
+        protected String doInBackground(Object... params){
+            Log.i("doInBackground", "Entra en doInBackground");
+            List<Campanas> campanas = (List<Campanas>) params[0];
+            HashMap<Integer,String> values = new HashMap<>();
+            ContentValues cv = new ContentValues();
+            DBhelper dBhelper = DBhelper.getInstance(ctx);
+            SQLiteDatabase db = dBhelper.getWritableDatabase();
+            Cursor row;
+            if(campanas.size()>0){
+
+                for (int i = 0; i<campanas.size();i++){
+                    String where = " WHERE id_campana = ?";
+                    String order = " ";
+
+                    String[] args = new String[]{String.valueOf(campanas.get(i).getId())};
+                    row = dBhelper.getCatalogosCam(TBL_CATALOGOS_CAMPANAS, where, args);
+
+                    if(row.getCount() == 0){
+                        row.moveToFirst();
+                        values.put(1,String.valueOf(campanas.get(i).getId_campanas()));
+                        values.put(2,campanas.get(i).getTipo_campanas());
+                        values.put(3,String.valueOf(campanas.get(i).getEstatus()));
+                        dBhelper.saveCatalogosCampanas(db,values);
+                    }
+
+                    if(row.getCount()>0){
+                        row.moveToFirst();
+                        cv.put("id_campana",campanas.get(i).getId_campanas());
+                        cv.put("tipo_campana",campanas.get(i).getTipo_campanas());
+                        cv.put("estatus",campanas.get(i).getEstatus());
+                        db.update(TBL_CATALOGOS_CAMPANAS,cv,"id_campana = ?",new String[]{String.valueOf(campanas.get(i).getId_campanas())});
+                    }
+                    row.close();
+                }
+            }
+            return "termino";
+        }
+        @Override
+        protected void onPostExecute(String result){
+            pDialog.dismiss();
+            super.onPostExecute(result);
+        }
+    }
+    /** NO TOCAR NADA EN ESTA PARTE - PORQUE ESTA EN FASE DE PRUEBAS - DEPENDE DE TODAS LAS VENTAS ABIERTAS*/
+    public class RegistrarLocalidades extends AsyncTask<Object,Void, String>{
+        AlertDialog pDialog;
+
+        @Override
+        protected void onPreExecute(){
+            super.onPreExecute();
+            pDialog = Popups.showLoadingDialog(ctx,R.string.please_wait,R.string.loading_info);
+            pDialog.setCancelable(false);
+            pDialog.show();
+        }
+
+        @Override
+        protected String doInBackground(Object... params){
+            Log.i("doInBackground", "Entra en doInBackground");
+            List<SucursalesLocalidades> slm = (List<SucursalesLocalidades>) params[0];
+
+            HashMap<Integer,String> values = new HashMap<>();
+            ContentValues cv = new ContentValues();
+            DBhelper dBhelper = DBhelper.getInstance(ctx);
+            SQLiteDatabase db = dBhelper.getWritableDatabase();
+            Cursor row;
+            if(slm.size()>0){
+                for(int i=0;i<slm.size();i++){
+                    String where = " WHERE id = ?";
+                    String order = " ";
+                    //String[] args = new String[]{String.valueOf(slm.get(i).getId())};
+
+                    //row = dBhelper.getLocalidades(TBL_SUCURSALES_LOCALIDADES,where,args);
+
+                    //if(row.moveToFirst()){
+                        //values.put(1,String.valueOf(slm.get(i).getId()));
+                        //values.put(2,String.valueOf(slm.get(i).getCentroCosto()));
+                        //values.put(3,String.valueOf(slm.get(i).getId_municipio()));
+                        //values.put(4,slm.get(i).getLocalidad());
+                        //values.put(5,slm.get(i).getColonia());
+                        //values.put(6,String.valueOf(slm.get(i).getCodigo_postal()));
+                        dBhelper.saveSucursalLocalidad(db,values);
+                    //}
+
+                }
+            }
+            return "termino";
+        }
+        @Override
+        protected void onPostExecute(String result){
+            pDialog.dismiss();
+            super.onPostExecute(result);
+        }
+    }
+}

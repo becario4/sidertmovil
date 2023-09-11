@@ -1150,20 +1150,23 @@
         android:layout_marginTop="10dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
+
         <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/btnRegresar4"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_regresar"
-            android:layout_marginLeft="20dp"
-            android:layout_alignParentLeft="true"/>
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/btnContinuar4"
+            android:id="@+id/btnContinuarDatosNegocioInd"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/ic_continuar"
             android:layout_marginRight="20dp"
             android:layout_alignParentRight="true"/>
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/btnRegresarDatosNegocioInd"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_regresar"
+            android:layout_marginLeft="20dp"
+            android:layout_alignParentLeft="true"/>
+
     </RelativeLayout>
 
 </LinearLayout>

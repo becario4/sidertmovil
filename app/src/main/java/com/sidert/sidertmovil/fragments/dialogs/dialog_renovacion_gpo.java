@@ -89,13 +89,13 @@ public class dialog_renovacion_gpo extends DialogFragment {
         myCalendar = Calendar.getInstance();
         ctx = getContext();
 
-        dBhelper = new DBhelper(ctx);
+        dBhelper = DBhelper.getInstance(ctx);
         db = dBhelper.getWritableDatabase();
 
         _plazo = getResources().getStringArray(R.array.intervalo);
         _frecuencia = getResources().getStringArray(R.array.lapso_grupal);
 
-        session = new SessionManager(ctx);
+        session = SessionManager.getInstance(ctx);
         boostrap = (RenovacionCreditoGpo) getActivity();
         etNombre = view.findViewById(R.id.etNombreGpo);
         tvPlazo = view.findViewById(R.id.tvPlazo);

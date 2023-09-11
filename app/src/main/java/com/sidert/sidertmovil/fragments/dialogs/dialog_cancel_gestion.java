@@ -82,9 +82,9 @@ public class dialog_cancel_gestion extends DialogFragment {
 
         ctx          = getContext();
 
-        session = new SessionManager(ctx);
+        session = SessionManager.getInstance(ctx);
 
-        dBhelper = new DBhelper(ctx);
+        dBhelper = DBhelper.getInstance(ctx);
         db = dBhelper.getWritableDatabase();
 
         etComentario = v.findViewById(R.id.etComentario);
@@ -177,7 +177,7 @@ public class dialog_cancel_gestion extends DialogFragment {
                 RequestBody comentarioBody = RequestBody.create(MultipartBody.FORM, etComentario.getText().toString().trim().toUpperCase());
                 RequestBody fechaSoliBody = RequestBody.create(MultipartBody.FORM, Miscellaneous.ObtenerFecha(TIMESTAMP));
 
-                ManagerInterface api = new RetrofitClient().generalRF(CONTROLLER_MOVIL, ctx).create(ManagerInterface.class);
+                ManagerInterface api = RetrofitClient.generalRF(CONTROLLER_MOVIL, ctx).create(ManagerInterface.class);
 
                 Call<MSolicitudCancelacion> call = api.solicitudCancelar("Bearer "+ session.getUser().get(7),
                         idPrestamoBody,

@@ -25,16 +25,25 @@ import com.sidert.sidertmovil.R;
 import com.sidert.sidertmovil.adapters.adapter_catalogos;
 import com.sidert.sidertmovil.database.DBhelper;
 import com.sidert.sidertmovil.models.ModeloCatalogoGral;
+import com.sidert.sidertmovil.models.catalogos.Campanas;
 import com.sidert.sidertmovil.utils.Constants;
 
 import java.util.ArrayList;
 
+import static com.sidert.sidertmovil.utils.Constants.CAMPANAS;
+import static com.sidert.sidertmovil.utils.Constants.CARTERAEN;
 import static com.sidert.sidertmovil.utils.Constants.COLONIAS;
 import static com.sidert.sidertmovil.utils.Constants.ESTADOS;
 import static com.sidert.sidertmovil.utils.Constants.ITEM;
 import static com.sidert.sidertmovil.utils.Constants.LOCALIDADES;
 import static com.sidert.sidertmovil.utils.Constants.OCUPACIONES;
 import static com.sidert.sidertmovil.utils.Constants.SECTORES;
+import static com.sidert.sidertmovil.utils.Constants.SUCLOCALIDADES;
+import static com.sidert.sidertmovil.utils.Constants.SUCURSALES;
+import static com.sidert.sidertmovil.utils.Constants.TBL_CATALOGOS_CAMPANAS;
+import static com.sidert.sidertmovil.utils.Constants.TBL_DATOS_ENTREGA_CARTERA;
+import static com.sidert.sidertmovil.utils.Constants.TBL_SUCURSALES_LOCALIDADES;
+import static com.sidert.sidertmovil.utils.Constants.camara;
 
 /**Clase para visualizar catalogos dinamicos se le manda un valor para saber que catalogo mostrar*/
 public class Catalogos extends AppCompatActivity {
@@ -61,7 +70,7 @@ public class Catalogos extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
-        dBhelper = new DBhelper(ctx);
+        dBhelper = DBhelper.getInstance(ctx);
 
         Bundle data = getIntent().getExtras();
         if (data != null){
@@ -84,6 +93,7 @@ public class Catalogos extends AppCompatActivity {
     private void getCatalogo(String value){
         Cursor row;
         ArrayList<ModeloCatalogoGral> catalogo = new ArrayList<>();
+        ArrayList<Campanas> campanas = new ArrayList<>();
         switch (tipo_catalogo){
             case ESTADOS:
                 row = dBhelper.getRecords(ESTADOS,value," ORDER BY estado_nombre ASC", null);
@@ -135,6 +145,7 @@ public class Catalogos extends AppCompatActivity {
                 break;
             case LOCALIDADES:
                 row = dBhelper.getRecords(LOCALIDADES,value," ORDER BY id_municipio ASC", null);
+                //row = dBhelper.getRecords(TBL_SUCURSALES_LOCALIDADES,value," ORDER BY localidad ASC",null);
                 if (row.getCount() > 0){
                     row.moveToFirst();
                     for (int i = 0; i < row.getCount(); i++){
@@ -165,6 +176,57 @@ public class Catalogos extends AppCompatActivity {
                 }
                 row.close();
                 break;
+
+            case CAMPANAS:
+                row = dBhelper.getRecords(TBL_CATALOGOS_CAMPANAS,value," ORDER BY tipo_campana ASC ",null);
+                if(row.getCount()>0){
+                    row.moveToFirst();
+                    for(int i= 0;i<row.getCount();i++){
+                        ModeloCatalogoGral modeloCatalo = new ModeloCatalogoGral();
+                        modeloCatalo.setId(row.getString(1));
+                        modeloCatalo.setNombre(row.getString(2));
+                        modeloCatalo.setExtra("");
+                        modeloCatalo.setCatalogo(CAMPANAS);
+                        catalogo.add(modeloCatalo);
+                        row.moveToNext();
+                    }
+                }
+                row.close();
+                break;
+
+            case CARTERAEN:
+                row = dBhelper.getRecords(TBL_DATOS_ENTREGA_CARTERA,value," ORDER BY tipo_EntregaCartera ASC ",null);
+                if(row.getCount()>0){
+                    row.moveToFirst();
+                    for(int i= 0;i<row.getCount();i++){
+                        ModeloCatalogoGral modeloCatalo = new ModeloCatalogoGral();
+                        modeloCatalo.setId(row.getString(1));
+                        modeloCatalo.setNombre(row.getString(2));
+                        modeloCatalo.setExtra("");
+                        modeloCatalo.setCatalogo(CAMPANAS);
+                        catalogo.add(modeloCatalo);
+                        row.moveToNext();
+                    }
+                }
+                row.close();
+                break;
+
+
+            case SUCLOCALIDADES :
+                row = dBhelper.getRecords(TBL_SUCURSALES_LOCALIDADES, value , " ORDER BY tipo_EntregaCartera ASC",null);
+                if(row.getCount()>0){
+                    row.moveToFirst();
+                    for (int i=0;i<row.getCount();i++){
+                        ModeloCatalogoGral modeloCatalogoGral = new ModeloCatalogoGral();
+                        modeloCatalogoGral.setId(row.getString(1));
+                        modeloCatalogoGral.setNombre(row.getString(2));
+                        modeloCatalogoGral.setExtra("");
+                        catalogo.add(modeloCatalogoGral);
+                        row.moveToNext();
+                    }
+                }
+                row.close();
+                break;
         }
 
         adapter = new adapter_catalogos(ctx, catalogo, new adapter_catalogos.Event() {
@@ -176,12 +238,14 @@ public class Catalogos extends AppCompatActivity {
                     case OCUPACIONES:
                     case COLONIAS:
                     case SECTORES:
+                    case CAMPANAS:
+                    case CARTERAEN:
                     case LOCALIDADES:
+                    case SUCLOCALIDADES:
                         data.putExtra(ITEM, item);
                         setResult(request_code, data);
                         finish();
                         break;
-
                 }
             }
         });
@@ -227,6 +291,17 @@ public class Catalogos extends AppCompatActivity {
                     case SECTORES:
                         getCatalogo(" WHERE sector_nombre like '%"+newText+"%'");
                         break;
+                    case CAMPANAS:
+                        getCatalogo("WHERE tipo_campana like '%"+newText+"%'");
+                        break;
+
+                    case CARTERAEN:
+                        getCatalogo("WHERE  tipo_EntregaCartera like '%"+newText+"%'");
+                        break;
+
+                    case SUCLOCALIDADES:
+                        getCatalogo(" WHERE localidad like '%"+newText+"%' AND id_municipio = '"+extra+"'");
+
                 }
 
                 return false;

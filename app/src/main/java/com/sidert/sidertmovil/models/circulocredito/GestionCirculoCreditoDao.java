@@ -10,6 +10,7 @@ import android.util.Log;
 import com.sidert.sidertmovil.database.DBhelper;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static com.sidert.sidertmovil.utils.Constants.TBL_RECUPERACION_RECIBOS_CC;
@@ -18,20 +19,18 @@ public class GestionCirculoCreditoDao {
     final DBhelper dbHelper;
     final SQLiteDatabase db;
 
-    public GestionCirculoCreditoDao(Context ctx){
-        this.dbHelper = new DBhelper(ctx);
+    public GestionCirculoCreditoDao(Context ctx) {
+        this.dbHelper = DBhelper.getInstance(ctx);
         this.db = dbHelper.getWritableDatabase();
     }
 
-    public List<GestionCirculoCredito> show()
-    {
+    public List<GestionCirculoCredito> show() {
         List<GestionCirculoCredito> gestionCirculoCreditos = new ArrayList<>();
 
         return gestionCirculoCreditos;
     }
 
-    public long store(GestionCirculoCredito gestionCC)
-    {
+    public long store(GestionCirculoCredito gestionCC) {
         Long id;
         String sql;
         SQLiteStatement pInsert;
@@ -82,8 +81,7 @@ public class GestionCirculoCreditoDao {
         return id;
     }
 
-    public void update(int id, GestionCirculoCredito gestionCC)
-    {
+    public void update(int id, GestionCirculoCredito gestionCC) {
         ContentValues cv = new ContentValues();
         cv.put("evidencia", gestionCC.getMedioPago());
         cv.put("evidencia", gestionCC.getEvidencia());
@@ -96,17 +94,15 @@ public class GestionCirculoCreditoDao {
         db.update(TBL_RECUPERACION_RECIBOS_CC, cv, "_id = ?", new String[]{String.valueOf(id)});
     }
 
-    public GestionCirculoCredito findById(Integer id){
+    public GestionCirculoCredito findById(Integer id) {
         GestionCirculoCredito gestionCC = null;
 
         String sql = "SELECT rc.* " +
                 "FROM " + TBL_RECUPERACION_RECIBOS_CC + " rc " +
-                "WHERE rc._id = ?"
-                ;
+                "WHERE rc._id = ?";
         Cursor row = db.rawQuery(sql, new String[]{String.valueOf(id)});
 
-        if(row.getCount() > 0)
-        {
+        if (row.getCount() > 0) {
             row.moveToFirst();
 
             gestionCC = new GestionCirculoCredito();
@@ -133,18 +129,17 @@ public class GestionCirculoCreditoDao {
         return gestionCC;
     }
 
-    public GestionCirculoCredito findByCurp(String curp){
+    public GestionCirculoCredito findByCurp(String curp) {
         GestionCirculoCredito gestionCC = null;
 
         String sql = "SELECT rc.* " +
-            "FROM " + TBL_RECUPERACION_RECIBOS_CC + " rc " +
-            "WHERE rc.curp = ? "
-            //+ "and rc.curp <> 'LEFF911008HVZDRR09' "
-        ;
+                "FROM " + TBL_RECUPERACION_RECIBOS_CC + " rc " +
+                "WHERE rc.curp = ? "
+                //+ "and rc.curp <> 'LEFF911008HVZDRR09' "
+                ;
         Cursor row = db.rawQuery(sql, new String[]{curp});
 
-        if(row.getCount() > 0)
-        {
+        if (row.getCount() > 0) {
             row.moveToFirst();
 
             gestionCC = new GestionCirculoCredito();
@@ -171,17 +166,37 @@ public class GestionCirculoCreditoDao {
         return gestionCC;
     }
 
-    public List<GestionCirculoCredito> findAllByEstatus(List<Integer> estatus)
-    {
+    public boolean validarCurpCC(String curp) {
+
+        int cantidadDeCurpRegistradas = 0;
+
+        List<String> curpGenericas = Arrays.asList("XEXX010101HNEXXXA4", "XEXX010101MNEXXXA8");
+
+        String sql = " SELECT COUNT(*) " + " FROM " + TBL_RECUPERACION_RECIBOS_CC + " WHERE curp = ? AND estatus = 0";
+
+        try (Cursor row = db.rawQuery(sql, new String[]{curp})) {
+            if (row.getCount() > 0) {
+                row.moveToFirst();
+                cantidadDeCurpRegistradas = Integer.parseInt(row.getString(0));
+            }
+            if (curpGenericas.contains(curp)) {
+                return cantidadDeCurpRegistradas <= 2;
+            } else {
+                return cantidadDeCurpRegistradas == 0;
+            }
+        }
+    }
+
+
+    public List<GestionCirculoCredito> findAllByEstatus(List<Integer> estatus) {
         List<GestionCirculoCredito> gestionesCirculoCredito = new ArrayList<>();
 
         String where = "WHERE rr.estatus IN (";
 
-        for(int i = 0; i < estatus.size(); i++)
-        {
+        for (int i = 0; i < estatus.size(); i++) {
             where = where + estatus.get(i);
 
-            if(i < estatus.size() - 1) where = where + ", ";
+            if (i < estatus.size() - 1) where = where + ", ";
         }
 
         String sql = "SELECT rr.* " +
@@ -189,12 +204,10 @@ public class GestionCirculoCreditoDao {
                 ") OR rr.nombre_uno LIKE '%GUADALUPE MARCIAL JIMENEZ%' ORDER BY rr.fecha_termino DESC ";
         Cursor row = db.rawQuery(sql, new String[]{});
 
-        if(row.getCount() > 0)
-        {
+        if (row.getCount() > 0) {
             row.moveToFirst();
 
-            for(int i = 0; i < row.getCount(); i++)
-            {
+            for (int i = 0; i < row.getCount(); i++) {
                 GestionCirculoCredito gcc = new GestionCirculoCredito();
                 gcc.setId(row.getInt(0));
                 gcc.setTipoCredito(row.getInt(1));
@@ -223,4 +236,6 @@ public class GestionCirculoCreditoDao {
 
         return gestionesCirculoCredito;
     }
+
+
 }

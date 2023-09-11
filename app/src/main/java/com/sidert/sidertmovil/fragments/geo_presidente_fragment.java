@@ -3,6 +3,7 @@ package com.sidert.sidertmovil.fragments;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -52,10 +53,12 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.sidert.sidertmovil.R;
 import com.sidert.sidertmovil.activities.CameraVertical;
+import com.sidert.sidertmovil.activities.Catalogos;
 import com.sidert.sidertmovil.activities.GeolocalizacionGpo;
 import com.sidert.sidertmovil.activities.LectorCodigoBarras;
 import com.sidert.sidertmovil.activities.VerImagen;
 import com.sidert.sidertmovil.database.DBhelper;
+import com.sidert.sidertmovil.models.ModeloCatalogoGral;
 import com.sidert.sidertmovil.utils.CanvasCustom;
 import com.sidert.sidertmovil.utils.Constants;
 import com.sidert.sidertmovil.utils.Miscellaneous;
@@ -73,11 +76,17 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Objects;
 
+import static com.sidert.sidertmovil.utils.Constants.CARTERAEN;
+import static com.sidert.sidertmovil.utils.Constants.CATALOGO;
 import static com.sidert.sidertmovil.utils.Constants.FORMAT_TIMESTAMP;
+import static com.sidert.sidertmovil.utils.Constants.ITEM;
+import static com.sidert.sidertmovil.utils.Constants.REQUEST_CODE;
+import static com.sidert.sidertmovil.utils.Constants.REQUEST_CODE_CARTERAEN;
 import static com.sidert.sidertmovil.utils.Constants.TBL_GEO_RESPUESTAS_T;
 import static com.sidert.sidertmovil.utils.Constants.TBL_MIEMBROS_GPO_T;
 import static com.sidert.sidertmovil.utils.Constants.TBL_PRESTAMOS_GPO_T;
 import static com.sidert.sidertmovil.utils.Constants.TIMESTAMP;
+import static com.sidert.sidertmovil.utils.Constants.TITULO;
 
 
 public class geo_presidente_fragment extends Fragment {
@@ -86,6 +95,7 @@ public class geo_presidente_fragment extends Fragment {
     private GeolocalizacionGpo boostrap;
     private TextView tvMapa;
     private TextView tvDireccionCap;
+    private TextView txtCarteraEnPresidente;
     private EditText etNombre;
     public EditText etCodigoBarras;
     private EditText etDireccion;
@@ -135,7 +145,7 @@ public class geo_presidente_fragment extends Fragment {
         ctx = getContext();
         boostrap = (GeolocalizacionGpo) getActivity();
 
-        dBhelper = new DBhelper(ctx);
+        dBhelper = DBhelper.getInstance(ctx);
         db = dBhelper.getWritableDatabase();
 
         tvMapa          = view.findViewById(R.id.tvMapa);
@@ -150,6 +160,8 @@ public class geo_presidente_fragment extends Fragment {
 
         etFechaFinalizacion = view.findViewById(R.id.etFechaFinalizacion);
         etFechaEnvio        = view.findViewById(R.id.etFechaEnvio);
+
+        txtCarteraEnPresidente = view.findViewById(R.id.txtCarteraEnPresidente);
 
         ibUbicacion = view.findViewById(R.id.ibUbicacion);
         ibCodigoBarras = view.findViewById(R.id.ibCodigoBarras);
@@ -183,6 +195,7 @@ public class geo_presidente_fragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
 
         ibUbicacion.setOnClickListener(ibUbicacion_OnClick);
+        txtCarteraEnPresidente.setOnClickListener(txtCarteraEnPresidente_OnClick);
         ibCodigoBarras.setOnClickListener(ibCodigoBarras_OnClick);
         ibFotoFachada.setOnClickListener(ibFotoFachada_OnClick);
         ibGaleriaFachada.setOnClickListener(ibGaleriaFachada_OnClick);
@@ -267,6 +280,19 @@ public class geo_presidente_fragment extends Fragment {
         }
     };
 
+    private View.OnClickListener txtCarteraEnPresidente_OnClick = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+
+            Intent i_carteraEn = new Intent(ctx, Catalogos.class);
+            i_carteraEn.putExtra(TITULO,Miscellaneous.ucFirst(CARTERAEN));
+            i_carteraEn.putExtra(CATALOGO,CARTERAEN);
+            i_carteraEn.putExtra(REQUEST_CODE,REQUEST_CODE_CARTERAEN);
+            startActivityForResult(i_carteraEn,REQUEST_CODE_CARTERAEN);
+            
+        }
+    };
+
     private View.OnClickListener ibFotoFachada_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -276,27 +302,19 @@ public class geo_presidente_fragment extends Fragment {
         }
     };
 
-    private View.OnClickListener ibGaleriaFachada_OnClick = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            /**Valida si tiene los permisos de escritura y lectura de almacenamiento*/
-            if (ContextCompat.checkSelfPermission(ctx, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
-                    || ContextCompat.checkSelfPermission(ctx,Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED){
-                requestPermissions(new String[] {Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE}, 123);
-            } else {
-                int compress = 10;/**Porcentaje de calidad de imagen de salida*/
-                if( Build.MANUFACTURER.toUpperCase().equals("SAMSUNG"))/**Valida si es de un samsung para subir un poco la calidad*/
-                    compress = 40;
+    private final View.OnClickListener ibGaleriaFachada_OnClick = ignored -> {
+        String model = Build.MANUFACTURER;
+        int compress = 10;
 
-                /**Libreria para recortar imagenes*/
-                CropImage.activity()
-                        .setAutoZoomEnabled(true)
-                        .setMinCropWindowSize(3000,4000)
-                        .setOutputCompressQuality(compress)
-                        .start(ctx, geo_presidente_fragment.this);
-            }
-
+        if (model != null && model.equalsIgnoreCase("SAMSUNG")) {
+            compress = 40;
         }
+
+        CropImage.activity()
+                .setAutoZoomEnabled(true)
+                .setMinCropWindowSize(3000, 4000)
+                .setOutputCompressQuality(compress)
+                .start(ctx, this);
     };
 
     private View.OnClickListener ivFotoFachada_OnClick = new View.OnClickListener() {
@@ -508,6 +526,24 @@ public class geo_presidente_fragment extends Fragment {
                     }
                 }
                 break;
+
+
+            case REQUEST_CODE_CARTERAEN:
+                if(resultCode == REQUEST_CODE_CARTERAEN){
+                    if(data != null){
+                        Integer id_carteraEn = 0;
+                        ContentValues cv = new ContentValues();
+                        txtCarteraEnPresidente.setError(null);
+                        txtCarteraEnPresidente.setText(((ModeloCatalogoGral) data.getSerializableExtra(ITEM)).getNombre());
+                        id_carteraEn = Miscellaneous.selectCampana(ctx,Miscellaneous.GetStr(txtCarteraEnPresidente));
+
+                    }
+                }else{
+                    txtCarteraEnPresidente.setText(" ");
+                    Toast.makeText(ctx, "ESTE CAMPO ES REQUERIDO",Toast.LENGTH_SHORT).show();
+                }
+                break;
+
             case CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE:/**Recibe el archivo a adjuntar*/
                 if (data != null){/**Valida que se esté recibiendo el archivo*/
                     try {
@@ -584,6 +620,7 @@ public class geo_presidente_fragment extends Fragment {
             params.put(14, "");
             params.put(15, "0");
             params.put(16, cliente_clv);
+            params.put(17, String.valueOf(Miscellaneous.selectCarteraEn(ctx,Miscellaneous.GetStr(txtCarteraEnPresidente))));
 
             if (isSave)
                 dBhelper.saveGeoRespuestas(db, params);
@@ -660,6 +697,9 @@ public class geo_presidente_fragment extends Fragment {
             llFechaFinalizacion.setVisibility(View.VISIBLE);
             llFechaEnvio.setVisibility(View.VISIBLE);
             btnGuardar.setVisibility(View.GONE);
+            txtCarteraEnPresidente.setText(Miscellaneous.tipoEntregaCartera(ctx,row.getString(18)));
+            txtCarteraEnPresidente.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked));
+            txtCarteraEnPresidente.setEnabled(false);
 
         }
 

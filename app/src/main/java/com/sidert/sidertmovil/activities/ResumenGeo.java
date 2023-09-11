@@ -49,9 +49,9 @@ public class ResumenGeo extends AppCompatActivity {
 
         ctx = this;
 
-        session = new SessionManager(ctx);
+        session = SessionManager.getInstance(ctx);
 
-        dBhelper    = new DBhelper(ctx);
+        dBhelper    = DBhelper.getInstance(ctx);
         db          = dBhelper.getWritableDatabase();
 
         tvClientes          = findViewById(R.id.tvClientes);

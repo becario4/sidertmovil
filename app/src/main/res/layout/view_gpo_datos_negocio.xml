@@ -961,14 +961,14 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
         <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/btnRegresar3"
+            android:id="@+id/btnRegresarDatosNegocioGpo"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/ic_regresar"
             android:layout_marginLeft="20dp"
             android:layout_alignParentLeft="true"/>
         <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/btnContinuar3"
+            android:id="@+id/btnContinuarDatosNegocioGpo"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/ic_continuar"

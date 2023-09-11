@@ -13,7 +13,7 @@ public class DocumentoDao {
 
     public DocumentoDao(Context ctx)
     {
-        this.dBhelper = new DBhelper(ctx);
+        this.dBhelper = DBhelper.getInstance(ctx);
         this.db = dBhelper.getWritableDatabase();
     }
 

@@ -80,10 +80,10 @@ public class CierreDeDia extends AppCompatActivity {
 
         ctx = this;
 
-        dBhelper = new DBhelper(ctx);
+        dBhelper = DBhelper.getInstance(ctx);
         db = dBhelper.getWritableDatabase();
 
-        session = new SessionManager(ctx);
+        session = SessionManager.getInstance(ctx);
 
         Toolbar tbMain = findViewById(R.id.tbMain);
 
@@ -340,16 +340,14 @@ public class CierreDeDia extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:/**Menu de retroceso en el toolbar <- */
-                finish();
-                break;
-            case R.id.save:/**Se Guarda los datos de la gestion de cierre*/
-                if (this.item.getEstatusRespuesta() > 0)
-                    ValidarCampos();
-                else
-                    ShowMessage(5);
-                break;
+        int itemId = item.getItemId();
+        if (itemId == android.R.id.home) {/**Menu de retroceso en el toolbar <- */
+            finish();
+        } else if (itemId == R.id.save) {/**Se Guarda los datos de la gestion de cierre*/
+            if (this.item.getEstatusRespuesta() > 0)
+                ValidarCampos();
+            else
+                ShowMessage(5);
         }
         return super.onOptionsItemSelected(item);
     }

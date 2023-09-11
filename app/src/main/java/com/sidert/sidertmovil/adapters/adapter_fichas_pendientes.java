@@ -155,19 +155,18 @@ public class adapter_fichas_pendientes extends RecyclerView.Adapter<adapter_fich
                     popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                         @Override
                         public boolean onMenuItemClick(MenuItem item) {
-                            switch (item.getItemId()) {
-                                case R.id.nvPresidente:
-                                    Toast.makeText(view.getContext(), "Presidente", Toast.LENGTH_LONG).show();
-                                    return true;
-                                case R.id.nvTesorera:
-                                    Toast.makeText(view.getContext(), "Tesorero ", Toast.LENGTH_LONG).show();
-                                    return true;
-                                case R.id.nvSecretaria:
-                                    Toast.makeText(view.getContext(), "Secretario", Toast.LENGTH_LONG).show();
-                                    return true;
-                                default:
-                                    return false;
+                            int itemId = item.getItemId();
+                            if (itemId == R.id.nvPresidente) {
+                                Toast.makeText(view.getContext(), "Presidente", Toast.LENGTH_LONG).show();
+                                return true;
+                            } else if (itemId == R.id.nvTesorera) {
+                                Toast.makeText(view.getContext(), "Tesorero ", Toast.LENGTH_LONG).show();
+                                return true;
+                            } else if (itemId == R.id.nvSecretaria) {
+                                Toast.makeText(view.getContext(), "Secretario", Toast.LENGTH_LONG).show();
+                                return true;
                             }
+                            return false;
                         }
                     });
                     //popup.show();

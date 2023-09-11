@@ -6,22 +6,15 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.drawable.ColorDrawable;
 import android.location.LocationManager;
-import android.os.BatteryManager;
 import android.os.Build;
+import android.os.Bundle;
 import android.os.Environment;
 import android.provider.Settings;
-/*import androidx.annotation.Nullable;
-import android.support.annotation.RequiresApi;
-import android.support.v4.app.ActivityCompat;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;*/
-import android.os.Bundle;
-//import android.support.v7.widget.CardView;
 import android.telephony.TelephonyManager;
 import android.text.InputType;
 import android.util.Base64;
@@ -37,20 +30,11 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.cardview.widget.CardView;
-import androidx.core.app.ActivityCompat;
-
 import com.google.firebase.FirebaseApp;
 import com.sidert.sidertmovil.AlarmaManager.AlarmaTrackerReciver;
-import com.sidert.sidertmovil.Home;
 import com.sidert.sidertmovil.R;
 import com.sidert.sidertmovil.database.DBhelper;
 import com.sidert.sidertmovil.database.SidertTables;
-import com.sidert.sidertmovil.fragments.calculadoraPrestamo;
 import com.sidert.sidertmovil.fragments.dialogs.dialog_contrasena_root;
 import com.sidert.sidertmovil.fragments.dialogs.dialog_mailbox;
 import com.sidert.sidertmovil.models.LoginResponse;
@@ -66,6 +50,7 @@ import com.sidert.sidertmovil.utils.SessionManager;
 import com.sidert.sidertmovil.utils.Validator;
 import com.sidert.sidertmovil.views.pdfreader.PdfReaderActivity;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -74,6 +59,12 @@ import java.nio.charset.StandardCharsets;
 import java.util.Calendar;
 import java.util.HashMap;
 
+import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
+import androidx.core.app.ActivityCompat;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -127,13 +118,13 @@ public class Login extends AppCompatActivity {
 
         /**Inicializacion de variables*/
         context = this;
-        session = new SessionManager(context);
+        session = SessionManager.getInstance(context);
 
         FirebaseApp.initializeApp(this);
 
         locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
 
-        dBhelper = new DBhelper(context);
+        dBhelper = DBhelper.getInstance(context);
         db = dBhelper.getWritableDatabase();
 
         IVlogo = findViewById(R.id.IVlogo);
@@ -161,7 +152,7 @@ public class Login extends AppCompatActivity {
 
         /**Se valida si el dominio y el puerto guardado es diferente al de produccion
          * por lo tanto esta apuntando a un ambiente de pruebas y muestra la leyenda de pruebas*/
-        if (!session.getDominio().get(0).contains("sidert.ddns.net") || !session.getDominio().get(1).equals("83"))
+        if (!session.getDominio().contains("sidert.ddns.net") || !session.getDominio().endsWith("83"))
             tvAmbiente.setVisibility(View.VISIBLE);
 
         etUser.setOnEditorActionListener(new TextView.OnEditorActionListener() {
@@ -284,7 +275,7 @@ public class Login extends AppCompatActivity {
             loading.show();
 
             /**Se crea la interfaz de la peticion de login*/
-            ManagerInterface api = new RetrofitClient().generalRF(Constants.CONTROLLER_LOGIN, context).create(ManagerInterface.class);
+            ManagerInterface api = RetrofitClient.generalRF(Constants.CONTROLLER_LOGIN, context).create(ManagerInterface.class);
 
 
             /**Se le pasan los datos a la interfaz*/
@@ -359,6 +350,8 @@ public class Login extends AppCompatActivity {
 
                                 /**Se guarda en variables de sesion las sucursales que tiene asginada*/
                                 session.setSucursales(json_info.getString(SUCURSALES));
+
+                                getSucursalB(session);
 
                                 session.setAutorizacionAA(json_info.getString(AUTHORITIES));
                                 session.getAutorizacionAAA();
@@ -461,6 +454,31 @@ public class Login extends AppCompatActivity {
             error_connect.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
             error_connect.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
             error_connect.show();
+        }
+    }
+
+
+    public void getSucursalB(SessionManager sen) throws JSONException {
+        JSONArray jsonArray = sen.getSucursales();
+
+        HashMap<Integer,String> values = new HashMap<>();
+        DBhelper dBhelper = DBhelper.getInstance(this);
+        SQLiteDatabase db = dBhelper.getWritableDatabase();
+        Cursor row;
+
+        for (int i = 0; i < jsonArray.length(); i++) {
+
+            String data;
+            JSONObject ide = jsonArray.getJSONObject(Integer.parseInt(String.valueOf(i)));
+            data = ide.getString("centrocosto_id");
+            String objetos = null;
+            objetos = jsonArray.get(i).toString();
+
+            if (objetos.equals("centrocosto_id") || objetos != null) {
+               //DatosCompartidos.getInstance().setCentroCosto(Integer.valueOf(data));
+                values.put(1, String.valueOf(Integer.parseInt(data)));
+                dBhelper.saveCentroCost(db,values);
+            }
         }
     }
 

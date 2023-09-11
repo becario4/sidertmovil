@@ -1,6 +1,7 @@
 package com.sidert.sidertmovil.activities;
 
 import android.Manifest;
+import android.content.ActivityNotFoundException;
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.ContentValues;
@@ -170,18 +171,14 @@ public class VistaGestion extends AppCompatActivity {
     private DBhelper dBhelper;
     private SQLiteDatabase db;
     
-    private Miscellaneous m;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_vista_gestion);
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         ctx = this;
-        
-        m = new Miscellaneous();
 
-        dBhelper = new DBhelper(ctx);
+        dBhelper = DBhelper.getInstance(ctx);
         db = dBhelper.getWritableDatabase();
 
         tbMain          = findViewById(R.id.tbMain);
@@ -273,7 +270,7 @@ public class VistaGestion extends AppCompatActivity {
 
                 etMedioPago.setText(datos.getString(MEDIO_PAGO));
 
-                if ((m.GetMedioPagoId(m.GetStr(etMedioPago)) >= 0 && m.GetMedioPagoId(m.GetStr(etMedioPago)) < 6 || m.GetMedioPagoId(m.GetStr(etMedioPago)) == 7 || m.GetMedioPagoId(m.GetStr(etMedioPago)) == 8)){ //Banco y Oxxo
+                if ((Miscellaneous.GetMedioPagoId(Miscellaneous.GetStr(etMedioPago)) >= 0 && Miscellaneous.GetMedioPagoId(Miscellaneous.GetStr(etMedioPago)) < 6 || Miscellaneous.GetMedioPagoId(Miscellaneous.GetStr(etMedioPago)) == 7 || Miscellaneous.GetMedioPagoId(Miscellaneous.GetStr(etMedioPago)) == 8)){ //Banco y Oxxo
                     MedioPago.setVisibility(View.VISIBLE);
                     etMedioPago.setVisibility(View.VISIBLE);
                     Fecha.setVisibility(View.VISIBLE);
@@ -301,7 +298,7 @@ public class VistaGestion extends AppCompatActivity {
                     Evidencia.setText("Comprobante");
                     File evidenciaFile = new File(ROOT_PATH + "Evidencia/"+datos.getString(EVIDENCIA));
                     Uri uriEvidencia = Uri.fromFile(evidenciaFile);
-                    byteEvidencia = m.getBytesUri(ctx, uriEvidencia, 1);
+                    byteEvidencia = Miscellaneous.getBytesUri(ctx, uriEvidencia, 1);
                     Glide.with(ctx).load(uriEvidencia).centerCrop().into(ivEvidencia);
                     ivEvidencia.setVisibility(View.VISIBLE);
 
@@ -317,7 +314,7 @@ public class VistaGestion extends AppCompatActivity {
                     }
 
                 }
-                else if (m.GetMedioPagoId(m.GetStr(etMedioPago)) == 6 || datos.getString(MEDIO_PAGO).equals("EFECTIVO")){ //Efectivo o SIDERT
+                else if (Miscellaneous.GetMedioPagoId(Miscellaneous.GetStr(etMedioPago)) == 6 || datos.getString(MEDIO_PAGO).equals("EFECTIVO")){ //Efectivo o SIDERT
                     MedioPago.setVisibility(View.VISIBLE);
                     etMedioPago.setText(datos.getString(MEDIO_PAGO));
                     etMedioPago.setVisibility(View.VISIBLE);
@@ -333,7 +330,7 @@ public class VistaGestion extends AppCompatActivity {
                     etTipoImagen.setText(datos.getString(TIPO_IMAGEN));
                     File evidenciaFile = new File(ROOT_PATH + "Evidencia/"+datos.getString(EVIDENCIA));
                     Uri uriEvidencia = Uri.fromFile(evidenciaFile);
-                    byteEvidencia = m.getBytesUri(ctx, uriEvidencia, 1);
+                    byteEvidencia = Miscellaneous.getBytesUri(ctx, uriEvidencia, 1);
                     Glide.with(ctx).load(uriEvidencia).centerCrop().into(ivEvidencia);
                     ivEvidencia.setVisibility(View.VISIBLE);
                     Gerente.setVisibility(View.VISIBLE);
@@ -360,7 +357,7 @@ public class VistaGestion extends AppCompatActivity {
                 etResultadoGestion.setVisibility(View.VISIBLE);
 
                 etMotivoNoPago.setText(datos.getString(MOTIVO_NO_PAGO));
-                if (m.GetIdMotivoNoPago(m.GetStr(etMotivoNoPago)) == 1){ //Motivo de no pago Fallecimiento
+                if (Miscellaneous.GetIdMotivoNoPago(Miscellaneous.GetStr(etMotivoNoPago)) == 1){ //Motivo de no pago Fallecimiento
                     MotivoNoPago.setVisibility(View.VISIBLE);
                     etMotivoNoPago.setVisibility(View.VISIBLE);
                     Fecha.setVisibility(View.VISIBLE);
@@ -376,7 +373,7 @@ public class VistaGestion extends AppCompatActivity {
                     Evidencia.setVisibility(View.VISIBLE);
                     File fachadaFile = new File(ROOT_PATH + "Fachada/"+datos.getString(EVIDENCIA));
                     Uri uriFachada = Uri.fromFile(fachadaFile);
-                    byteEvidencia = m.getBytesUri(ctx, uriFachada, 0);
+                    byteEvidencia = Miscellaneous.getBytesUri(ctx, uriFachada, 0);
                     Glide.with(ctx).load(uriFachada).centerCrop().into(ivEvidencia);
                     ivEvidencia.setVisibility(View.VISIBLE);
 
@@ -393,7 +390,7 @@ public class VistaGestion extends AppCompatActivity {
                     }
 
                 }
-                else if (m.GetIdMotivoNoPago(m.GetStr(etMotivoNoPago)) ==  0|| m.GetIdMotivoNoPago(m.GetStr(etMotivoNoPago)) == 2){ //Motivo de no pago Negación u Otro
+                else if (Miscellaneous.GetIdMotivoNoPago(Miscellaneous.GetStr(etMotivoNoPago)) ==  0|| Miscellaneous.GetIdMotivoNoPago(Miscellaneous.GetStr(etMotivoNoPago)) == 2){ //Motivo de no pago Negación u Otro
                     MotivoNoPago.setVisibility(View.VISIBLE);
                     etMotivoNoPago.setText(datos.getString(MOTIVO_NO_PAGO));
                     etMotivoNoPago.setVisibility(View.VISIBLE);
@@ -406,7 +403,7 @@ public class VistaGestion extends AppCompatActivity {
                     Evidencia.setVisibility(View.VISIBLE);
                     File fachadaFile = new File(ROOT_PATH + "Fachada/"+datos.getString(EVIDENCIA));
                     Uri uriFachada = Uri.fromFile(fachadaFile);
-                    byteEvidencia = m.getBytesUri(ctx, uriFachada, 0);
+                    byteEvidencia = Miscellaneous.getBytesUri(ctx, uriFachada, 0);
                     Glide.with(ctx).load(uriFachada).centerCrop().into(ivEvidencia);
                     ivEvidencia.setVisibility(View.VISIBLE);
 
@@ -466,7 +463,7 @@ public class VistaGestion extends AppCompatActivity {
             Evidencia.setVisibility(View.VISIBLE);
             File fachadaFile = new File(ROOT_PATH + "Fachada/"+datos.getString(EVIDENCIA));
             Uri uriFachada = Uri.fromFile(fachadaFile);
-            byteEvidencia = m.getBytesUri(ctx, uriFachada, 0);
+            byteEvidencia = Miscellaneous.getBytesUri(ctx, uriFachada, 0);
             Glide.with(ctx).load(uriFachada).centerCrop().into(ivEvidencia);
 
             Gerente.setVisibility(View.VISIBLE);
@@ -608,141 +605,128 @@ public class VistaGestion extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                finish();
-                break;
-            case R.id.nvCancel:
-                dialog_cancel_gestion dlg_cancel = new dialog_cancel_gestion();
-                Bundle b = new Bundle();
-                b.putString(ID_RESPUESTA, idRespuesta);
-                b.putString(TIPO_GESTION, tipoGestion);
-                b.putString(TIPO_PRESTAMO, tipoPrestamo);
-                dlg_cancel.setArguments(b);
-                dlg_cancel.show(getSupportFragmentManager(), DIALOGCANCELGESTION);
-                break;
-            case R.id.nvShare:
+        int itemId = item.getItemId();
+        if (itemId == android.R.id.home) {
+            finish();
+        } else if (itemId == R.id.nvCancel) {
+            dialog_cancel_gestion dlg_cancel = new dialog_cancel_gestion();
+            Bundle b = new Bundle();
+            b.putString(ID_RESPUESTA, idRespuesta);
+            b.putString(TIPO_GESTION, tipoGestion);
+            b.putString(TIPO_PRESTAMO, tipoPrestamo);
+            dlg_cancel.setArguments(b);
+            dlg_cancel.show(getSupportFragmentManager(), DIALOGCANCELGESTION);
+        } else if (itemId == R.id.nvShare) {
+            String name = "";
 
-                String name = "";
+            if (resumen.isEmpty() && cliente.isEmpty()) {
+                String sql = "";
+                Cursor row = null;
 
-                if (resumen.isEmpty() && cliente.isEmpty()){
-                    String sql = "";
-                    Cursor row = null;
+                if (tipoGestion.equals("1") && tipoPrestamo.equals("VIGENTE")) {
+                    sql = "SELECT r.fecha_fin, c.nombre FROM " + TBL_RESPUESTAS_IND_T + " AS r INNER JOIN " + TBL_PRESTAMOS_IND_T + " AS p ON r.id_prestamo = p.id_prestamo INNER JOIN " + TBL_CARTERA_IND_T + " AS c ON p.id_cliente = c.id_cartera WHERE r._id = ? LIMIT 1";
+                    row = db.rawQuery(sql, new String[]{idRespuesta});
+                } else if (tipoGestion.equals("2") && tipoPrestamo.equals("VIGENTE")) {
+                    sql = "SELECT r.fecha_fin, c.nombre FROM " + TBL_RESPUESTAS_GPO_T + " AS r INNER JOIN " + TBL_PRESTAMOS_GPO_T + " AS p ON r.id_prestamo = p.id_prestamo INNER JOIN " + TBL_CARTERA_GPO_T + " AS c ON p.id_grupo = c.id_cartera WHERE r._id = ? LIMIT 1";
+                    row = db.rawQuery(sql, new String[]{idRespuesta});
+                } else if (tipoGestion.equals("1") && tipoPrestamo.equals("VENCIDA")) {
+                    sql = "SELECT r.fecha_fin, c.nombre FROM " + TBL_RESPUESTAS_IND_V_T + " AS r INNER JOIN " + TBL_PRESTAMOS_IND_T + " AS p ON r.id_prestamo = p.id_prestamo INNER JOIN " + TBL_CARTERA_IND_T + " AS c ON p.id_cliente = c.id_cartera WHERE r._id = ? LIMIT 1";
+                    row = db.rawQuery(sql, new String[]{idRespuesta});
+                } else if (tipoGestion.equals("2") && tipoPrestamo.equals("VENCIDA")) {
+                    Log.e("Respuesta", "Vencida Grupal Integrante: " + idRespuesta);
 
-                    if (tipoGestion.equals("1") && tipoPrestamo.equals("VIGENTE")) {
-                        sql = "SELECT r.fecha_fin, c.nombre FROM " + TBL_RESPUESTAS_IND_T + " AS r INNER JOIN " + TBL_PRESTAMOS_IND_T + " AS p ON r.id_prestamo = p.id_prestamo INNER JOIN " + TBL_CARTERA_IND_T + " AS c ON p.id_cliente = c.id_cartera WHERE r._id = ? LIMIT 1";
-                        row = db.rawQuery(sql, new String[]{idRespuesta});
-                    }
-                    else if (tipoGestion.equals("2") && tipoPrestamo.equals("VIGENTE")){
-                        sql = "SELECT r.fecha_fin, c.nombre FROM " + TBL_RESPUESTAS_GPO_T + " AS r INNER JOIN " + TBL_PRESTAMOS_GPO_T + " AS p ON r.id_prestamo = p.id_prestamo INNER JOIN " + TBL_CARTERA_GPO_T + " AS c ON p.id_grupo = c.id_cartera WHERE r._id = ? LIMIT 1";
-                        row = db.rawQuery(sql, new String[]{idRespuesta});
-                    }
-                    else if (tipoGestion.equals("1") && tipoPrestamo.equals("VENCIDA")){
-                        sql = "SELECT r.fecha_fin, c.nombre FROM " + TBL_RESPUESTAS_IND_V_T + " AS r INNER JOIN " + TBL_PRESTAMOS_IND_T + " AS p ON r.id_prestamo = p.id_prestamo INNER JOIN " + TBL_CARTERA_IND_T + " AS c ON p.id_cliente = c.id_cartera WHERE r._id = ? LIMIT 1";
-                        row = db.rawQuery(sql, new String[]{idRespuesta});
-                    }
-                    else if(tipoGestion.equals("2") && tipoPrestamo.equals("VENCIDA")){
-                        Log.e("Respuesta","Vencida Grupal Integrante: "+idRespuesta);
-
-                        sql = "SELECT r.fecha_fin, m.nombre FROM " + TBL_RESPUESTAS_INTEGRANTE_T + " AS r INNER JOIN " + TBL_MIEMBROS_GPO_T + " AS m ON r.id_prestamo = m.id_prestamo_integrante WHERE r._id = ? LIMIT 1";
-                        row = db.rawQuery(sql, new String[]{idRespuesta});
-                    }
-
-                    row.moveToFirst();
-                    tvTitulo.setText(row.getString(1));
-                    tvSubtitutlo.setText("Fin Gestión "+row.getString(0));
-
-                    cliente = row.getString(1);
-
-                    row.close();
-
-                    String mPath = ROOT_PATH+"Resumen";
-                    File img = null;
-                    int quality = 100;
-
-                    try {
-                        // create bitmap screen capture
-                        name = UUID.randomUUID().toString() + ".jpg";
-
-                        View v1 = getWindow().getDecorView().getRootView();
-                        v1.setDrawingCacheEnabled(true);
-                        Bitmap bitmap = Bitmap.createBitmap(v1.getDrawingCache());
-                        v1.setDrawingCacheEnabled(false);
-
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                            FileOutputStream fos;
-                            ContentResolver resolver = getContentResolver();
-                            ContentValues contentValues = new ContentValues();
-                            contentValues.put(MediaStore.MediaColumns.DISPLAY_NAME, name);
-                            contentValues.put(MediaStore.MediaColumns.MIME_TYPE, "image/jpeg");
-                            contentValues.put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_PICTURES + File.separator + "SidertMovil");
-                            Uri imageUri = resolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues);
-                            fos = (FileOutputStream) resolver.openOutputStream(Objects.requireNonNull(imageUri));
-                            bitmap.compress(Bitmap.CompressFormat.JPEG, quality, fos);
-                        }
-                        else
-                        {
-                            File directory = new File(mPath);
-                            if(!directory.exists())
-                            {
-                                directory.mkdir();
-                            }
-
-                            img = new File(mPath+"/"+name);
-                            FileOutputStream outputStream = new FileOutputStream(img);
-                            bitmap.compress(Bitmap.CompressFormat.JPEG, quality, outputStream);
-                            outputStream.flush();
-                            outputStream.close();
-                        }
-
-                        resumen = name;
-
-                    } catch (Throwable e) {
-                        // Several error may come out with file handling or DOM
-                        e.printStackTrace();
-                    }
-
-                    HashMap<Integer, String> values = new HashMap();
-                    values.put(0, idRespuesta);
-                    values.put(1, name);
-                    values.put(2, cliente);
-                    values.put(3, tipoGestion);
-                    dBhelper.saveResumenGestion(db, values);
-                }
-                else {
-                    String sql = "";
-                    Cursor row = null;
-
-                    if (tipoGestion.equals("1") && tipoPrestamo.equals("VIGENTE")) {
-                        sql = "SELECT r.fecha_fin, c.nombre FROM " + TBL_RESPUESTAS_IND_T + " AS r INNER JOIN " + TBL_PRESTAMOS_IND_T + " AS p ON r.id_prestamo = p.id_prestamo INNER JOIN " + TBL_CARTERA_IND_T + " AS c ON p.id_cliente = c.id_cartera WHERE r._id = ? LIMIT 1";
-                        row = db.rawQuery(sql, new String[]{idRespuesta});
-                    }
-                    else if (tipoGestion.equals("2") && tipoPrestamo.equals("VIGENTE")){
-                        sql = "SELECT r.fecha_fin, c.nombre FROM " + TBL_RESPUESTAS_GPO_T + " AS r INNER JOIN " + TBL_PRESTAMOS_GPO_T + " AS p ON r.id_prestamo = p.id_prestamo INNER JOIN " + TBL_CARTERA_GPO_T + " AS c ON p.id_grupo = c.id_cartera WHERE r._id = ? LIMIT 1";
-                        row = db.rawQuery(sql, new String[]{idRespuesta});
-                    }
-                    else if (tipoGestion.equals("1") && tipoPrestamo.equals("VENCIDA")){
-                        sql = "SELECT r.fecha_fin, c.nombre FROM " + TBL_RESPUESTAS_IND_V_T + " AS r INNER JOIN " + TBL_PRESTAMOS_IND_T + " AS p ON r.id_prestamo = p.id_prestamo INNER JOIN " + TBL_CARTERA_IND_T + " AS c ON p.id_cliente = c.id_cartera WHERE r._id = ? LIMIT 1";
-                        row = db.rawQuery(sql, new String[]{idRespuesta});
-                    }
-                    else if(tipoGestion.equals("2") && tipoPrestamo.equals("VENCIDA")){
-                        Log.e("Respuesta","Vencida Grupal Integrante: "+idRespuesta);
-
-                        sql = "SELECT r.fecha_fin, m.nombre FROM " + TBL_RESPUESTAS_INTEGRANTE_T + " AS r INNER JOIN " + TBL_MIEMBROS_GPO_T + " AS m ON r.id_prestamo = m.id_prestamo_integrante WHERE r._id = ? LIMIT 1";
-                        row = db.rawQuery(sql, new String[]{idRespuesta});
-                    }
-
-                    row.moveToFirst();
-                    tvTitulo.setText(row.getString(1));
-                    tvSubtitutlo.setText("Fin Gestión "+ row.getString(0));
-
-                    Log.e("AQUI TITULO", cliente);
-                    Log.e("AQUI SUBTITULO", row.getString(0));
-
-                    row.close();
+                    sql = "SELECT r.fecha_fin, Miscellaneous.nombre FROM " + TBL_RESPUESTAS_INTEGRANTE_T + " AS r INNER JOIN " + TBL_MIEMBROS_GPO_T + " AS m ON r.id_prestamo = Miscellaneous.id_prestamo_integrante WHERE r._id = ? LIMIT 1";
+                    row = db.rawQuery(sql, new String[]{idRespuesta});
                 }
 
-                Log.e("AQUI VISTA GESTION", "PRUEBA WHATSAPP");
+                row.moveToFirst();
+                tvTitulo.setText(row.getString(1));
+                tvSubtitutlo.setText("Fin Gestión " + row.getString(0));
+
+                cliente = row.getString(1);
+
+                row.close();
+
+                String mPath = ROOT_PATH + "Resumen";
+                File img = null;
+                int quality = 100;
+
+                try {
+                    // create bitmap screen capture
+                    name = UUID.randomUUID().toString() + ".jpg";
+
+                    View v1 = getWindow().getDecorView().getRootView();
+                    v1.setDrawingCacheEnabled(true);
+                    Bitmap bitmap = Bitmap.createBitmap(v1.getDrawingCache());
+                    v1.setDrawingCacheEnabled(false);
+
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                        FileOutputStream fos;
+                        ContentResolver resolver = getContentResolver();
+                        ContentValues contentValues = new ContentValues();
+                        contentValues.put(MediaStore.MediaColumns.DISPLAY_NAME, name);
+                        contentValues.put(MediaStore.MediaColumns.MIME_TYPE, "image/jpeg");
+                        contentValues.put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_PICTURES + File.separator + "SidertMovil");
+                        Uri imageUri = resolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues);
+                        fos = (FileOutputStream) resolver.openOutputStream(Objects.requireNonNull(imageUri));
+                        bitmap.compress(Bitmap.CompressFormat.JPEG, quality, fos);
+                    } else {
+                        File directory = new File(mPath);
+                        if (!directory.exists()) {
+                            directory.mkdir();
+                        }
+
+                        img = new File(mPath + "/" + name);
+                        FileOutputStream outputStream = new FileOutputStream(img);
+                        bitmap.compress(Bitmap.CompressFormat.JPEG, quality, outputStream);
+                        outputStream.flush();
+                        outputStream.close();
+                    }
+
+                    resumen = name;
+
+                } catch (Throwable e) {
+                    // Several error may come out with file handling or DOM
+                    e.printStackTrace();
+                }
+
+                HashMap<Integer, String> values = new HashMap();
+                values.put(0, idRespuesta);
+                values.put(1, name);
+                values.put(2, cliente);
+                values.put(3, tipoGestion);
+                dBhelper.saveResumenGestion(db, values);
+            } else {
+                String sql = "";
+                Cursor row = null;
+
+                if (tipoGestion.equals("1") && tipoPrestamo.equals("VIGENTE")) {
+                    sql = "SELECT r.fecha_fin, c.nombre FROM " + TBL_RESPUESTAS_IND_T + " AS r INNER JOIN " + TBL_PRESTAMOS_IND_T + " AS p ON r.id_prestamo = p.id_prestamo INNER JOIN " + TBL_CARTERA_IND_T + " AS c ON p.id_cliente = c.id_cartera WHERE r._id = ? LIMIT 1";
+                    row = db.rawQuery(sql, new String[]{idRespuesta});
+                } else if (tipoGestion.equals("2") && tipoPrestamo.equals("VIGENTE")) {
+                    sql = "SELECT r.fecha_fin, c.nombre FROM " + TBL_RESPUESTAS_GPO_T + " AS r INNER JOIN " + TBL_PRESTAMOS_GPO_T + " AS p ON r.id_prestamo = p.id_prestamo INNER JOIN " + TBL_CARTERA_GPO_T + " AS c ON p.id_grupo = c.id_cartera WHERE r._id = ? LIMIT 1";
+                    row = db.rawQuery(sql, new String[]{idRespuesta});
+                } else if (tipoGestion.equals("1") && tipoPrestamo.equals("VENCIDA")) {
+                    sql = "SELECT r.fecha_fin, c.nombre FROM " + TBL_RESPUESTAS_IND_V_T + " AS r INNER JOIN " + TBL_PRESTAMOS_IND_T + " AS p ON r.id_prestamo = p.id_prestamo INNER JOIN " + TBL_CARTERA_IND_T + " AS c ON p.id_cliente = c.id_cartera WHERE r._id = ? LIMIT 1";
+                    row = db.rawQuery(sql, new String[]{idRespuesta});
+                } else if (tipoGestion.equals("2") && tipoPrestamo.equals("VENCIDA")) {
+                    Log.e("Respuesta", "Vencida Grupal Integrante: " + idRespuesta);
+
+                    sql = "SELECT r.fecha_fin, Miscellaneous.nombre FROM " + TBL_RESPUESTAS_INTEGRANTE_T + " AS r INNER JOIN " + TBL_MIEMBROS_GPO_T + " AS m ON r.id_prestamo = Miscellaneous.id_prestamo_integrante WHERE r._id = ? LIMIT 1";
+                    row = db.rawQuery(sql, new String[]{idRespuesta});
+                }
+
+                row.moveToFirst();
+                tvTitulo.setText(row.getString(1));
+                tvSubtitutlo.setText("Fin Gestión " + row.getString(0));
+
+                Log.e("AQUI TITULO", cliente);
+                Log.e("AQUI SUBTITULO", row.getString(0));
+
+                row.close();
+            }
+
+            Log.e("AQUI VISTA GESTION", "PRUEBA WHATSAPP");
 
                 /*File img;
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
@@ -754,48 +738,45 @@ public class VistaGestion extends AppCompatActivity {
                 }*/
 
 
-                Intent whatsappIntent = new Intent(Intent.ACTION_SEND);
+            Intent whatsappIntent = new Intent(Intent.ACTION_SEND);
 
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                    String[] projection = new String[] { MediaStore.Images.Media._ID, MediaStore.Images.Media.DISPLAY_NAME };
-                    String selection = "_display_name = ?";
-                    String[] selectionArgs = new String[] {resumen};
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                String[] projection = new String[]{MediaStore.Images.Media._ID, MediaStore.Images.Media.DISPLAY_NAME};
+                String selection = "_display_name = ?";
+                String[] selectionArgs = new String[]{resumen};
 
-                    Cursor cursor = getApplicationContext().getContentResolver().query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, projection, selection, selectionArgs,null);
+                Cursor cursor = getApplicationContext().getContentResolver().query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, projection, selection, selectionArgs, null);
 
-                    Uri contentUri = null;
+                Uri contentUri = null;
 
-                    while (cursor.moveToNext()) {
-                        int idColumn = cursor.getColumnIndexOrThrow(MediaStore.Images.Media._ID);
-                        long id = cursor.getLong(idColumn);
-                        contentUri = ContentUris.withAppendedId(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, id);
-                    }
-
-                    whatsappIntent.setType("text/plain");
-                    whatsappIntent.setPackage("com.whatsapp");
-                    whatsappIntent.putExtra(Intent.EXTRA_TEXT, "Le comparto el resumen de la gestión del cliente " + cliente);
-                    whatsappIntent.putExtra(Intent.EXTRA_STREAM, contentUri);
-                    whatsappIntent.setType("image/jpeg");
-                    whatsappIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                }
-                else
-                {
-                    File img = new File(ROOT_PATH+"/Resumen/"+resumen);
-                    Uri imgUri = Uri.parse(img.getPath());
-                    whatsappIntent.setType("text/plain");
-                    whatsappIntent.setPackage("com.whatsapp");
-                    whatsappIntent.putExtra(Intent.EXTRA_TEXT, "Le comparto el resumen de la gestión del cliente " + cliente);
-                    whatsappIntent.putExtra(Intent.EXTRA_STREAM, imgUri);
-                    whatsappIntent.setType("image/jpeg");
-                    whatsappIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                while (cursor.moveToNext()) {
+                    int idColumn = cursor.getColumnIndexOrThrow(MediaStore.Images.Media._ID);
+                    long id = cursor.getLong(idColumn);
+                    contentUri = ContentUris.withAppendedId(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, id);
                 }
 
-                try {
-                    ctx.startActivity(whatsappIntent);
-                } catch (android.content.ActivityNotFoundException ex) {
-                    Toast.makeText(ctx, "No cuenta con Whatsapp", Toast.LENGTH_SHORT).show();
-                }
-                break;
+                whatsappIntent.setType("text/plain");
+                whatsappIntent.setPackage("com.whatsapp");
+                whatsappIntent.putExtra(Intent.EXTRA_TEXT, "Le comparto el resumen de la gestión del cliente " + cliente);
+                whatsappIntent.putExtra(Intent.EXTRA_STREAM, contentUri);
+                whatsappIntent.setType("image/jpeg");
+                whatsappIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            } else {
+                File img = new File(ROOT_PATH + "/Resumen/" + resumen);
+                Uri imgUri = Uri.parse(img.getPath());
+                whatsappIntent.setType("text/plain");
+                whatsappIntent.setPackage("com.whatsapp");
+                whatsappIntent.putExtra(Intent.EXTRA_TEXT, "Le comparto el resumen de la gestión del cliente " + cliente);
+                whatsappIntent.putExtra(Intent.EXTRA_STREAM, imgUri);
+                whatsappIntent.setType("image/jpeg");
+                whatsappIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            }
+
+            try {
+                ctx.startActivity(whatsappIntent);
+            } catch (ActivityNotFoundException ex) {
+                Toast.makeText(ctx, "No cuenta con Whatsapp", Toast.LENGTH_SHORT).show();
+            }
         }
         return super.onOptionsItemSelected(item);
     }

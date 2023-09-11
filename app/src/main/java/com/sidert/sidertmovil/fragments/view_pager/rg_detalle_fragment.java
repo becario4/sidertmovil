@@ -87,7 +87,7 @@ public class rg_detalle_fragment extends Fragment {
 
         ctx                      = getContext();
 
-        dBhelper                 = new DBhelper(ctx);
+        dBhelper                 = DBhelper.getInstance(ctx);
 
         parent                   = (RecuperacionGrupal) getActivity();
         assert parent != null;

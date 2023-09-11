@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.location.LocationManager;
 /*import android.support.design.widget.FloatingActionButton;
@@ -456,7 +457,7 @@ public class SolicitudInd extends AppCompatActivity {
 
         ctx = this;
 
-        dBhelper = new DBhelper(ctx);
+        dBhelper = DBhelper.getInstance(ctx);
         db = dBhelper.getWritableDatabase();
 
         validator = new Validator();
@@ -808,20 +809,20 @@ public class SolicitudInd extends AppCompatActivity {
         btnContinuar0 = findViewById(R.id.btnContinuar0);
         btnContinuar1 = findViewById(R.id.btnContinuar1);
         btnContinuar2 = findViewById(R.id.btnContinuar2);
-        btnContinuar3 = findViewById(R.id.btnContinuar3);
-        btnContinuar4 = findViewById(R.id.btnContinuar4);
-        btnContinuar5 = findViewById(R.id.btnContinuar5);
-        btnContinuar6 = findViewById(R.id.btnContinuar6);
+       // btnContinuar3 = findViewById(R.id.btnContinuar3);
+       // btnContinuar4 = findViewById(R.id.btnContinuarDatosNegocio);
+       // btnContinuar5 = findViewById(R.id.btnContinuar5);
+       // btnContinuar6 = findViewById(R.id.btnContinuar6);
         btnContinuar7 = findViewById(R.id.btnContinuar7);
         btnContinuar8 = findViewById(R.id.btnContinuar8);
         btnContinuar8.hide();
 
         btnRegresar1 = findViewById(R.id.btnRegresar1);
         btnRegresar2 = findViewById(R.id.btnRegresar2);
-        btnRegresar3 = findViewById(R.id.btnRegresar3);
-        btnRegresar4 = findViewById(R.id.btnRegresar4);
-        btnRegresar5 = findViewById(R.id.btnRegresar5);
-        btnRegresar6 = findViewById(R.id.btnRegresar6);
+        //btnRegresar3 = findViewById(R.id.btnRegresar3);
+        //btnRegresar4 = findViewById(R.id.btnRegresarDatosNegocio);
+        //btnRegresar5 = findViewById(R.id.btnRegresar5);
+        //btnRegresar6 = findViewById(R.id.btnRegresar6);
         btnRegresar7 = findViewById(R.id.btnRegresar7);
         btnRegresar8 = findViewById(R.id.btnRegresar8);
 
@@ -1374,50 +1375,46 @@ public class SolicitudInd extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-
-                break;
-            case R.id.enviar:
-                final AlertDialog loading = Popups.showLoadingDialog(ctx, R.string.please_wait, R.string.loading_info);
-                loading.show();
+        int itemId = item.getItemId();
+        if (itemId == android.R.id.home) {
+        } else if (itemId == R.id.enviar) {
+            final AlertDialog loading = Popups.showLoadingDialog(ctx, R.string.please_wait, R.string.loading_info);
+            loading.show();
 
 
-                if (!validator.validate(etMontoAutorizado, new String[]{validator.REQUIRED, validator.MONEY, validator.CREDITO})){
+            if (!validator.validate(etMontoAutorizado, new String[]{validator.REQUIRED, validator.MONEY, validator.CREDITO})) {
 
-                    ContentValues cv = new ContentValues();
-                    cv.put("estatus_completado", 1);
-                    cv.put("monto_autorizado", etMontoAutorizado.getText().toString().trim().replace(",",""));
-                    db.update(TBL_CREDITO_IND_AUTO, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
+                ContentValues cv = new ContentValues();
+                cv.put("estatus_completado", 1);
+                cv.put("monto_autorizado", etMontoAutorizado.getText().toString().trim().replace(",", ""));
+                db.update(TBL_CREDITO_IND_AUTO, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
 
-                    cv = new ContentValues();
-                    cv.put("estatus", 1);
-                    db.update(TBL_SOLICITUDES_AUTO, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
+                cv = new ContentValues();
+                cv.put("estatus", 1);
+                db.update(TBL_SOLICITUDES_AUTO, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
 
-                    Servicios_Sincronizado ss = new Servicios_Sincronizado();
-                    ss.MontoAutorizado(ctx, false);
-                    loading.dismiss();
-                    //Toast.makeText(ctx, "termina guardado", Toast.LENGTH_SHORT).show();
+                Servicios_Sincronizado ss = new Servicios_Sincronizado();
+                ss.MontoAutorizado(ctx, false);
+                loading.dismiss();
+                //Toast.makeText(ctx, "termina guardado", Toast.LENGTH_SHORT).show();
 
-                    finish();
+                finish();
 
-                }
-                else {
-                    loading.dismiss();
-                    final AlertDialog solicitud;
-                    solicitud = Popups.showDialogMessage(this, warning,
-                            "Faltan colocar el monto autorizado", R.string.accept, new Popups.DialogMessage() {
-                                @Override
-                                public void OnClickListener(AlertDialog dialog) {
-                                    dialog.dismiss();
-                                }
-                            });
-                    solicitud.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
-                    solicitud.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
-                    solicitud.show();
+            } else {
+                loading.dismiss();
+                final AlertDialog solicitud;
+                solicitud = Popups.showDialogMessage(this, warning,
+                        "Faltan colocar el monto autorizado", R.string.accept, new Popups.DialogMessage() {
+                            @Override
+                            public void OnClickListener(AlertDialog dialog) {
+                                dialog.dismiss();
+                            }
+                        });
+                solicitud.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+                solicitud.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                solicitud.show();
 
-                }
-                break;
+            }
         }
         return super.onOptionsItemSelected(item);
     }

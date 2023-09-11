@@ -1,11 +1,7 @@
 package com.sidert.sidertmovil.fragments.view_pager;
 
 
-import static android.app.Activity.RESULT_OK;
-
 import android.Manifest;
-import android.app.Activity;
-import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
@@ -22,18 +18,7 @@ import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
-/*import android.provider.MediaStore;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.Fragment;
-import androidx.appcompat.app.AppCompatActivity;
-import android.support.v4.view.MenuItemCompat;*/
-import androidx.appcompat.app.AlertDialog;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-import androidx.fragment.app.Fragment;
-
 import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.InputType;
@@ -52,12 +37,10 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
-import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
-import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -77,7 +60,6 @@ import com.sidert.sidertmovil.activities.VistaPreviaGestion;
 import com.sidert.sidertmovil.database.DBhelper;
 import com.sidert.sidertmovil.fragments.dialogs.dialog_date_picker;
 import com.sidert.sidertmovil.models.MImpresion;
-import com.sidert.sidertmovil.models.MPago;
 import com.sidert.sidertmovil.utils.CanvasCustom;
 import com.sidert.sidertmovil.utils.Miscellaneous;
 import com.sidert.sidertmovil.utils.MyCurrentListener;
@@ -92,20 +74,22 @@ import com.theartofdev.edmodo.cropper.CropImage;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Objects;
 
+import androidx.appcompat.app.AlertDialog;
+import androidx.core.app.ActivityCompat;
+import androidx.fragment.app.Fragment;
+
+import static android.app.Activity.RESULT_OK;
 import static com.sidert.sidertmovil.utils.Constants.ACTUALIZAR_TELEFONO;
 import static com.sidert.sidertmovil.utils.Constants.COMENTARIO;
 import static com.sidert.sidertmovil.utils.Constants.CONTACTO;
@@ -274,8 +258,6 @@ public class recuperacion_ind_fragment extends Fragment {
 
     private String fechaIni = "";
     
-    private  Miscellaneous m;
-
     private static final int PICK_IMAGE = 100;
 
     @Override
@@ -283,16 +265,14 @@ public class recuperacion_ind_fragment extends Fragment {
         View v = inflater.inflate(R.layout.fragment_recuperacion_ind, container, false);
 
         ctx = getContext();
-        dBhelper = new DBhelper(ctx);
+        dBhelper = DBhelper.getInstance(ctx);
         db = dBhelper.getWritableDatabase();
-
-        m = new Miscellaneous();
 
         parent = (RecuperacionIndividual) getActivity();
         assert parent != null;
         parent.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 
-        session = new SessionManager(ctx);
+        session = SessionManager.getInstance(ctx);
 
         _contacto = getResources().getStringArray(R.array.contacto_cliente);
         _motivo_aclaracion = getResources().getStringArray(R.array.outdated_information);
@@ -412,7 +392,7 @@ public class recuperacion_ind_fragment extends Fragment {
             @Override
             public void afterTextChanged(Editable s) {
                 if (s.length() > 0) {
-                    Update("comentario", m.GetStr(etComentario));
+                    Update("comentario", Miscellaneous.GetStr(etComentario));
                 } else
                     Update("comentario", "");
             }
@@ -432,9 +412,9 @@ public class recuperacion_ind_fragment extends Fragment {
             @Override
             public void afterTextChanged(Editable s) {
                 if (s.length() == 10) {
-                    if (!m.GetStr(etActualizarTelefono).isEmpty() &&
-                            m.GetStr(etActualizarTelefono).length() == 10) {
-                        Update("nuevo_telefono", m.GetStr(etActualizarTelefono));
+                    if (!Miscellaneous.GetStr(etActualizarTelefono).isEmpty() &&
+                            Miscellaneous.GetStr(etActualizarTelefono).length() == 10) {
+                        Update("nuevo_telefono", Miscellaneous.GetStr(etActualizarTelefono));
                     }
                 } else {
                     Update("nuevo_telefono", "");
@@ -449,7 +429,7 @@ public class recuperacion_ind_fragment extends Fragment {
 
                 try {
                     int inilen, endlen;
-                    inilen = m.GetStr(etPagoRealizado).length();
+                    inilen = Miscellaneous.GetStr(etPagoRealizado).length();
                     Log.e("symbols", String.valueOf(df.getDecimalFormatSymbols().getGroupingSeparator()) + " Symbols");
                     String v = s.toString().replace(String.valueOf(df.getDecimalFormatSymbols().getGroupingSeparator()), "");
                     Number n = df.parse(v);
@@ -459,13 +439,13 @@ public class recuperacion_ind_fragment extends Fragment {
                     } else {
                         etPagoRealizado.setText(dfnd.format(n));
                     }
-                    endlen = m.GetStr(etPagoRealizado).length();
+                    endlen = Miscellaneous.GetStr(etPagoRealizado).length();
                     int sel = (cp + (endlen - inilen));
-                    if (sel > 0 && sel <= m.GetStr(etPagoRealizado).length()) {
+                    if (sel > 0 && sel <= Miscellaneous.GetStr(etPagoRealizado).length()) {
                         etPagoRealizado.setSelection(sel);
                     } else {
                         // place cursor at the end?
-                        etPagoRealizado.setSelection(m.GetStr(etPagoRealizado).length() - 1);
+                        etPagoRealizado.setSelection(Miscellaneous.GetStr(etPagoRealizado).length() - 1);
                     }
                 } catch (NumberFormatException nfe) {
                     // do nothing?
@@ -474,10 +454,10 @@ public class recuperacion_ind_fragment extends Fragment {
                 }
 
                 if (s.length() > 0) {
-                    if (!m.GetStr(etPagoRealizado).isEmpty()) {
+                    if (!Miscellaneous.GetStr(etPagoRealizado).isEmpty()) {
                         try {
-                            if (Double.parseDouble(m.GetStr(etPagoRealizado).replace(",", "")) > 0) {
-                                Update("pago_realizado", m.GetStr(etPagoRealizado).replace(",", ""));
+                            if (Double.parseDouble(Miscellaneous.GetStr(etPagoRealizado).replace(",", "")) > 0) {
+                                Update("pago_realizado", Miscellaneous.GetStr(etPagoRealizado).replace(",", ""));
                             }
                         } catch (NumberFormatException e) {
                             etPagoRealizado.setText("");
@@ -517,7 +497,7 @@ public class recuperacion_ind_fragment extends Fragment {
 
             @Override
             public void afterTextChanged(Editable s) {
-                if (m.GetMedioPagoId(m.GetStr(tvMedioPago)) == 6) {
+                if (Miscellaneous.GetMedioPagoId(Miscellaneous.GetStr(tvMedioPago)) == 6) {
                     if (s.length() > 0) {
                         Update("folio", s.toString());
                     } else {
@@ -592,7 +572,7 @@ public class recuperacion_ind_fragment extends Fragment {
                         params.put(18, "");
                         params.put(19, "");
                         params.put(20, "");
-                        fechaIni = m.ObtenerFecha(TIMESTAMP);
+                        fechaIni = Miscellaneous.ObtenerFecha(TIMESTAMP);
                         params.put(21, fechaIni);
                         params.put(22, "");
                         params.put(23, "");
@@ -638,7 +618,7 @@ public class recuperacion_ind_fragment extends Fragment {
                             params.put(18, "");
                             params.put(19, "");
                             params.put(20, "");
-                            fechaIni = m.ObtenerFecha(TIMESTAMP);
+                            fechaIni = Miscellaneous.ObtenerFecha(TIMESTAMP);
                             params.put(21, fechaIni);
                             params.put(22, "");
                             params.put(23, "");
@@ -711,7 +691,7 @@ public class recuperacion_ind_fragment extends Fragment {
                         params.put(18, "");
                         params.put(19, "");
                         params.put(20, "");
-                        fechaIni = m.ObtenerFecha(TIMESTAMP);
+                        fechaIni = Miscellaneous.ObtenerFecha(TIMESTAMP);
                         params.put(21, fechaIni);
                         params.put(22, "");
                         params.put(23, "");
@@ -751,7 +731,7 @@ public class recuperacion_ind_fragment extends Fragment {
                             params.put(18, "");
                             params.put(19, "");
                             params.put(20, "");
-                            fechaIni = m.ObtenerFecha(TIMESTAMP);
+                            fechaIni = Miscellaneous.ObtenerFecha(TIMESTAMP);
                             params.put(21, fechaIni);
                             params.put(22, "");
                             params.put(23, "");
@@ -784,7 +764,7 @@ public class recuperacion_ind_fragment extends Fragment {
     private View.OnClickListener ibImprimir_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            if (!m.GetStr(etPagoRealizado).isEmpty() && Double.parseDouble(m.GetStr(etPagoRealizado).replace(",","")) > 0){
+            if (!Miscellaneous.GetStr(etPagoRealizado).isEmpty() && Double.parseDouble(Miscellaneous.GetStr(etPagoRealizado).replace(",","")) > 0){
 
                 String fechaPago = "";
                 String montoPago = "";
@@ -803,7 +783,7 @@ public class recuperacion_ind_fragment extends Fragment {
                 MImpresion mImpresion = new MImpresion();
                 mImpresion.setIdPrestamo(parent.id_prestamo);
                 mImpresion.setIdGestion(parent.id_respuesta);
-                mImpresion.setMonto(String.valueOf(Math.ceil(Double.parseDouble(m.GetStr(etPagoRealizado).replace(",","")))));
+                mImpresion.setMonto(String.valueOf(Math.ceil(Double.parseDouble(Miscellaneous.GetStr(etPagoRealizado).replace(",","")))));
                 mImpresion.setMontoPrestamo(parent.monto_prestamo);
                 mImpresion.setNumeroPrestamo(parent.num_prestamo);
                 mImpresion.setNumeroCliente(parent.num_cliente);
@@ -839,37 +819,19 @@ public class recuperacion_ind_fragment extends Fragment {
         }
     };
 
-    private View.OnClickListener ibGaleria_OnClick = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
+    private final View.OnClickListener ibGaleria_OnClick = ignored -> {
+        String model = Build.MANUFACTURER;
+        int compress = 10;
 
-            if (ContextCompat.checkSelfPermission(ctx, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
-                    || ContextCompat.checkSelfPermission(ctx,Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED){
-                requestPermissions(new String[] {Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE}, 123);
-            } else {
-                int compress = 10;
-                if( Build.MANUFACTURER.toUpperCase().equals("SAMSUNG"))
-                    compress = 40;
-                CropImage.activity()
-                        .setAutoZoomEnabled(true)
-                        .setMinCropWindowSize(3000,4000)
-                        .setOutputCompressQuality(compress)
-                        .start(ctx,recuperacion_ind_fragment.this);
-            }
-            Intent gallery = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI);
-            gallery.setAction(Intent.ACTION_GET_CONTENT);
-            startActivityForResult(gallery, PICK_IMAGE);
-
-           /* try{
-
-            }catch (Exception e){
-                Toast.makeText(ctx,"Ocurrio un error: " + e, Toast.LENGTH_SHORT).show();
-                Log.e("Error:", e.getMessage());
-            }*/
-            //startActivityForResult(Intent.createChooser(gallery, "selecciona una opción"), REQUEST_CODE_GALERIA);
-            //gallery.setAction(Intent.ACTION_GET_CONTENT);
-           // startActivityForResult(Intent.createChooser(gallery, "Select Picture"), REQUEST_CODE_GALERIA);
+        if (model != null && model.equalsIgnoreCase("SAMSUNG")) {
+            compress = 40;
         }
+
+        CropImage.activity()
+                .setAutoZoomEnabled(true)
+                .setMinCropWindowSize(3000, 4000)
+                .setOutputCompressQuality(compress)
+                .start(ctx, this);
     };
 
 
@@ -933,7 +895,7 @@ public class recuperacion_ind_fragment extends Fragment {
                                     params.put(18, "");
                                     params.put(19, "");
                                     params.put(20, "");
-                                    fechaIni = m.ObtenerFecha(TIMESTAMP);
+                                    fechaIni = Miscellaneous.ObtenerFecha(TIMESTAMP);
                                     params.put(21, fechaIni);
                                     params.put(22, "");
                                     params.put(23, "");
@@ -970,7 +932,7 @@ public class recuperacion_ind_fragment extends Fragment {
                                         params.put(18, "");
                                         params.put(19, "");
                                         params.put(20, "");
-                                        fechaIni = m.ObtenerFecha(TIMESTAMP);
+                                        fechaIni = Miscellaneous.ObtenerFecha(TIMESTAMP);
                                         params.put(21, fechaIni);
                                         params.put(22, "");
                                         params.put(23, "");
@@ -1055,7 +1017,7 @@ public class recuperacion_ind_fragment extends Fragment {
                         public void onClick(DialogInterface dialog, int position) {
                             tvMedioPago.setError(null);
                             tvMedioPago.setText(_medio_pago[position]);
-                            if (m.GetMedioPagoId(m.GetStr(tvMedioPago)) == 6 && medio_pago_anterio >= 0) {
+                            if (Miscellaneous.GetMedioPagoId(Miscellaneous.GetStr(tvMedioPago)) == 6 && medio_pago_anterio >= 0) {
                                 Update("evidencia", "");
                                 Update("tipo_imagen", "");
                                 byteEvidencia = null;
@@ -1067,7 +1029,7 @@ public class recuperacion_ind_fragment extends Fragment {
                                 llFotoGaleria.setVisibility(View.VISIBLE);
                                 ivEvidencia.setVisibility(View.GONE);
                             }
-                            else if(m.GetMedioPagoId(m.GetStr(tvMedioPago)) >= 0 && medio_pago_anterio == 6){
+                            else if(Miscellaneous.GetMedioPagoId(Miscellaneous.GetStr(tvMedioPago)) >= 0 && medio_pago_anterio == 6){
                                 byteEvidencia = null;
                                 Update("evidencia", "");
                                 Update("tipo_imagen", "");
@@ -1080,7 +1042,7 @@ public class recuperacion_ind_fragment extends Fragment {
                             }
                             medio_pago_anterio = position;
                             Update("medio_pago", _medio_pago[position]);
-                            SelectMedioPago(m.GetMedioPagoId(m.GetStr(tvMedioPago)));
+                            SelectMedioPago(Miscellaneous.GetMedioPagoId(Miscellaneous.GetStr(tvMedioPago)));
                         }
                     });
             builder.create();
@@ -1120,11 +1082,11 @@ public class recuperacion_ind_fragment extends Fragment {
                                 Update("pagara_requerido", _confirmacion[position]);
                                 switch (position) {
                                     case 0:
-                                        if (m.GetMedioPagoId(m.GetStr(tvMedioPago)) == 6)
+                                        if (Miscellaneous.GetMedioPagoId(Miscellaneous.GetStr(tvMedioPago)) == 6)
                                             etPagoRealizado.setText(String.valueOf(Math.ceil(Double.parseDouble(parent.monto_requerido))));
                                         else
                                             etPagoRealizado.setText(parent.monto_requerido);
-                                        if (!m.GetStr(etPagoRealizado).isEmpty() && Double.parseDouble(m.GetStr(etPagoRealizado).replace(",","")) > 0) {
+                                        if (!Miscellaneous.GetStr(etPagoRealizado).isEmpty() && Double.parseDouble(Miscellaneous.GetStr(etPagoRealizado).replace(",","")) > 0) {
                                             SelectPagoRequerido(0);
                                         } else {
                                             Toast.makeText(ctx, "No se pueden capturar pagos iguales a cero", Toast.LENGTH_SHORT).show();
@@ -1134,7 +1096,7 @@ public class recuperacion_ind_fragment extends Fragment {
                                         }
                                         break;
                                     case 1:
-                                        if (m.GetMedioPagoId(m.GetStr(tvMedioPago)) == 6)
+                                        if (Miscellaneous.GetMedioPagoId(Miscellaneous.GetStr(tvMedioPago)) == 6)
                                             etPagoRealizado.setText(String.valueOf(Math.ceil(Double.parseDouble(parent.monto_requerido))));
                                         else
                                             etPagoRealizado.setText(parent.monto_requerido);
@@ -1278,7 +1240,7 @@ public class recuperacion_ind_fragment extends Fragment {
         @Override
         public void onClick(View v) {
             try{
-                if (m.GetStr(tvMedioPago).equals("EFECTIVO")){
+                if (Miscellaneous.GetStr(tvMedioPago).equals("EFECTIVO")){
                     final AlertDialog evidencia_dlg = Popups.showDialogConfirm(ctx, question,
                             R.string.capturar_nueva_fotografia, R.string.fotografia, new Popups.DialogMessage() {
                                 @Override
@@ -1419,7 +1381,7 @@ public class recuperacion_ind_fragment extends Fragment {
 
     //=========================  Comportamientos  ================================================
     private void SelectContactoCliente (int pos){
-        if (!m.GetStr(tvGerente).isEmpty()) tvGerente.setError(null);
+        if (!Miscellaneous.GetStr(tvGerente).isEmpty()) tvGerente.setError(null);
         else tvGerente.setError("");
         switch (pos){
             case 0: // Si contacto cliente
@@ -1556,7 +1518,7 @@ public class recuperacion_ind_fragment extends Fragment {
         }
     }
     private void SelectMedioPago (int pos){
-        if (!m.GetStr(tvPagaraRequerido).isEmpty()) tvPagaraRequerido.setError(null);
+        if (!Miscellaneous.GetStr(tvPagaraRequerido).isEmpty()) tvPagaraRequerido.setError(null);
         else tvPagaraRequerido.setError("");
 
         tvMedioPago.setError(null);
@@ -1584,7 +1546,7 @@ public class recuperacion_ind_fragment extends Fragment {
                 else
                     tvFotoGaleria.setError("");
 
-                if (m.GetStr(tvFechaDeposito).isEmpty())
+                if (Miscellaneous.GetStr(tvFechaDeposito).isEmpty())
                     tvFechaDeposito.setError(getResources().getString(R.string.campo_requerido));
                 ibGaleria.setEnabled(true);
                 ibGaleria.setBackground(ctx.getResources().getDrawable(R.drawable.round_corner_blue));
@@ -1604,7 +1566,7 @@ public class recuperacion_ind_fragment extends Fragment {
                     tvFotoGaleria.setError("");
 
                 Log.v("Aqui paso"," primero");
-                if (m.GetStr(tvFechaDeposito).isEmpty())
+                if (Miscellaneous.GetStr(tvFechaDeposito).isEmpty())
                     tvFechaDeposito.setError(getResources().getString(R.string.campo_requerido));
                 ibGaleria.setEnabled(true);
                 ibGaleria.setBackground(ctx.getResources().getDrawable(R.drawable.round_corner_blue));
@@ -1626,7 +1588,7 @@ public class recuperacion_ind_fragment extends Fragment {
                     tvFotoGaleria.setError("");
                 ibGaleria.setEnabled(false);
                 ibGaleria.setBackground(ctx.getResources().getDrawable(R.drawable.btn_disable));
-                if (!m.GetStr(etFolioRecibo).isEmpty())
+                if (!Miscellaneous.GetStr(etFolioRecibo).isEmpty())
                     tvImprimirRecibo.setError(null);
                 else
                     tvImprimirRecibo.setError("");
@@ -1637,7 +1599,7 @@ public class recuperacion_ind_fragment extends Fragment {
                 llImprimirRecibo.setVisibility(View.VISIBLE);
                 tvImprimirRecibo.setText(_imprimir[1]);
                 tvImprimirRecibo.setEnabled(false);
-                SelectImprimirRecibos(m.GetIdImpresion(m.GetStr(tvImprimirRecibo)));
+                SelectImprimirRecibos(Miscellaneous.GetIdImpresion(Miscellaneous.GetStr(tvImprimirRecibo)));
                 llFotoGaleria.setVisibility(View.VISIBLE);
                 llGerente.setVisibility(View.VISIBLE);
                 break;
@@ -1648,7 +1610,7 @@ public class recuperacion_ind_fragment extends Fragment {
                     tvFotoGaleria.setError("");
                 ibGaleria.setEnabled(false);
                 ibGaleria.setBackground(ctx.getResources().getDrawable(R.drawable.btn_disable));
-                if (!m.GetStr(etFolioRecibo).isEmpty())
+                if (!Miscellaneous.GetStr(etFolioRecibo).isEmpty())
                     tvImprimirRecibo.setError(null);
                 else
                     tvImprimirRecibo.setError("");
@@ -1744,7 +1706,7 @@ public class recuperacion_ind_fragment extends Fragment {
                 break;
             case 1: //Fallecimiento
                 tvFechaDefuncion.setError("");
-                if (!m.GetStr(tvFechaDefuncion).isEmpty())
+                if (!Miscellaneous.GetStr(tvFechaDefuncion).isEmpty())
                     tvFechaDefuncion.setError(null);
                 llDefuncion.setVisibility(View.VISIBLE);
                 break;
@@ -1811,13 +1773,13 @@ public class recuperacion_ind_fragment extends Fragment {
 
                 if (!row.getString(4).isEmpty()){
                     tvContacto.setText(row.getString(4));
-                    switch (m.GetIdContacto(m.GetStr(tvContacto))) {
+                    switch (Miscellaneous.GetIdContacto(Miscellaneous.GetStr(tvContacto))) {
                         case 0: //SI CONTACTO
-                            SelectContactoCliente(m.GetIdContacto(m.GetStr(tvContacto)));
+                            SelectContactoCliente(Miscellaneous.GetIdContacto(Miscellaneous.GetStr(tvContacto)));
 
                             if (!row.getString(7).isEmpty()){//ACTUALIZAR TELEFONO
                                 tvActualizarTelefono.setText(row.getString(7));
-                                if (m.GetIdConfirmacion(m.GetStr(tvActualizarTelefono)) == 0){
+                                if (Miscellaneous.GetIdConfirmacion(Miscellaneous.GetStr(tvActualizarTelefono)) == 0){
                                     if (!row.getString(8).isEmpty()){//NUEVO TELEFONO
                                         etActualizarTelefono.setText(row.getString(8));
                                         etActualizarTelefono.setError(null);
@@ -1828,14 +1790,14 @@ public class recuperacion_ind_fragment extends Fragment {
 
                             if (!row.getString(9).isEmpty()){//RESULTADO PAGO
                                 tvResultadoGestion.setText(row.getString(9));
-                                SelectResultadoGestion(m.GetIdPago(m.GetStr(tvResultadoGestion)));
-                                switch (m.GetIdPago(m.GetStr(tvResultadoGestion))){
+                                SelectResultadoGestion(Miscellaneous.GetIdPago(Miscellaneous.GetStr(tvResultadoGestion)));
+                                switch (Miscellaneous.GetIdPago(Miscellaneous.GetStr(tvResultadoGestion))){
                                     case 1: //No Pago
 
                                         tvMotivoNoPago.setText(row.getString(10));
 
                                         if (!row.getString(11).isEmpty()){//FECHA DE DEFUNCION
-                                            SelectMotivoNoPago(m.GetIdMotivoNoPago(m.GetStr(tvMotivoNoPago)));
+                                            SelectMotivoNoPago(Miscellaneous.GetIdMotivoNoPago(Miscellaneous.GetStr(tvMotivoNoPago)));
                                             tvFechaDefuncion.setText(row.getString(11));
                                             tvFechaDefuncion.setError(null);
                                             tvFechaDefuncion.setVisibility(View.VISIBLE);
@@ -1853,16 +1815,16 @@ public class recuperacion_ind_fragment extends Fragment {
                                             Glide.with(ctx).load(uriFachada).into(ivFachada);
                                             ibFachada.setVisibility(View.GONE);
                                             ivFachada.setVisibility(View.VISIBLE);
-                                            byteEvidencia = m.getBytesUri(ctx, uriFachada, 1);
+                                            byteEvidencia = Miscellaneous.getBytesUri(ctx, uriFachada, 1);
                                             tvFachada.setError(null);
                                         }
 
                                         tvGerente.setVisibility(View.VISIBLE);
                                         if (!row.getString(20).isEmpty()){//ESTA GERENTE
                                             tvGerente.setText(row.getString(20));
-                                            SelectEstaGerente(m.GetIdConfirmacion(m.GetStr(tvGerente)));
+                                            SelectEstaGerente(Miscellaneous.GetIdConfirmacion(Miscellaneous.GetStr(tvGerente)));
 
-                                            if (m.GetIdConfirmacion(m.GetStr(tvGerente)) == 0){
+                                            if (Miscellaneous.GetIdConfirmacion(Miscellaneous.GetStr(tvGerente)) == 0){
 
                                                 if (!row.getString(21).isEmpty()){//FIRMA
                                                     File firmaFile = new File(ROOT_PATH + "Firma/"+row.getString(21));
@@ -1870,7 +1832,7 @@ public class recuperacion_ind_fragment extends Fragment {
                                                     Glide.with(ctx).load(uriFirma).into(ivFirma);
                                                     ibFirma.setVisibility(View.GONE);
                                                     ivFirma.setVisibility(View.VISIBLE);
-                                                    byteFirma = m.getBytesUri(ctx, uriFirma, 1);
+                                                    byteFirma = Miscellaneous.getBytesUri(ctx, uriFirma, 1);
                                                     tvFirma.setError(null);
                                                 }
                                             }
@@ -1879,12 +1841,12 @@ public class recuperacion_ind_fragment extends Fragment {
                                     case 0: // Si Pago
                                         if (!row.getString(12).isEmpty()){//MEDIO PAGO
                                             tvMedioPago.setText(row.getString(12));
-                                            medio_pago_anterio = m.GetMedioPagoId(m.GetStr(tvMedioPago));
-                                            SelectMedioPago(m.GetMedioPagoId(m.GetStr(tvMedioPago)));
+                                            medio_pago_anterio = Miscellaneous.GetMedioPagoId(Miscellaneous.GetStr(tvMedioPago));
+                                            SelectMedioPago(Miscellaneous.GetMedioPagoId(Miscellaneous.GetStr(tvMedioPago)));
                                             if (!row.getString(14).isEmpty()){//PAGARA REQUERIDO
 
                                                 tvPagaraRequerido.setText(row.getString(14));
-                                                SelectPagoRequerido(m.PagoRequerido(tvPagaraRequerido));
+                                                SelectPagoRequerido(Miscellaneous.PagoRequerido(tvPagaraRequerido));
                                                 etPagoRealizado.setText(row.getString(15));
                                             }
 
@@ -1893,13 +1855,13 @@ public class recuperacion_ind_fragment extends Fragment {
                                                 tvFechaDeposito.setError(null);
                                             }
 
-                                            if (m.GetMedioPagoId(m.GetStr(tvMedioPago)) == 6){ //EFECTIVO
+                                            if (Miscellaneous.GetMedioPagoId(Miscellaneous.GetStr(tvMedioPago)) == 6){ //EFECTIVO
                                                 if (!row.getString(16).isEmpty()){//IMPRIMIRA RECIBOS
                                                     tvImprimirRecibo.setText(row.getString(16));
-                                                    SelectImprimirRecibos(m.GetIdImpresion(m.GetStr(tvImprimirRecibo)));
+                                                    SelectImprimirRecibos(Miscellaneous.GetIdImpresion(Miscellaneous.GetStr(tvImprimirRecibo)));
                                                     etFolioRecibo.setEnabled(true);
 
-                                                    if (m.GetIdImpresion(m.GetStr(tvImprimirRecibo)) == 0){ //SI IMPRIMIRA RECIBOS
+                                                    if (Miscellaneous.GetIdImpresion(Miscellaneous.GetStr(tvImprimirRecibo)) == 0){ //SI IMPRIMIRA RECIBOS
 
                                                         if (!row.getString(17).isEmpty()){//FOLIO
                                                             etPagoRealizado.setEnabled(false);
@@ -1935,7 +1897,7 @@ public class recuperacion_ind_fragment extends Fragment {
                                                     }
                                                 }
                                             }
-                                            else if (m.GetMedioPagoId(m.GetStr(tvMedioPago)) == 7){
+                                            else if (Miscellaneous.GetMedioPagoId(Miscellaneous.GetStr(tvMedioPago)) == 7){
                                                     ibImprimir.setVisibility(View.GONE);
                                                     llFolioRecibo.setVisibility(View.VISIBLE);
                                                     etFolioRecibo.setText(row.getString(17));
@@ -1949,22 +1911,22 @@ public class recuperacion_ind_fragment extends Fragment {
                                                 ibFoto.setVisibility(View.GONE);
                                                 ibGaleria.setVisibility(View.GONE);
                                                 ivEvidencia.setVisibility(View.VISIBLE);
-                                                byteEvidencia = m.getBytesUri(ctx, uriEvidencia, 1);
+                                                byteEvidencia = Miscellaneous.getBytesUri(ctx, uriEvidencia, 1);
                                                 tvFotoGaleria.setError(null);
                                             }
 
                                             if (!row.getString(20).isEmpty()){//ESTA GERENTE
                                                 tvGerente.setText(row.getString(20));
 
-                                                SelectEstaGerente(m.GetIdConfirmacion(m.GetStr(tvGerente)));
-                                                if (m.GetIdConfirmacion(m.GetStr(tvGerente)) == 0){//SI ESTA GERENTE
+                                                SelectEstaGerente(Miscellaneous.GetIdConfirmacion(Miscellaneous.GetStr(tvGerente)));
+                                                if (Miscellaneous.GetIdConfirmacion(Miscellaneous.GetStr(tvGerente)) == 0){//SI ESTA GERENTE
                                                     if (!row.getString(21).isEmpty()){//FIRMA
                                                         File firmaFile = new File(ROOT_PATH + "Firma/"+row.getString(21));
                                                         Uri uriFirma = Uri.fromFile(firmaFile);
                                                         Glide.with(ctx).load(uriFirma).into(ivFirma);
                                                         ibFirma.setVisibility(View.GONE);
                                                         ivFirma.setVisibility(View.VISIBLE);
-                                                        byteFirma = m.getBytesUri(ctx, uriFirma, 1);
+                                                        byteFirma = Miscellaneous.getBytesUri(ctx, uriFirma, 1);
                                                         tvFirma.setError(null);
                                                     }
                                                 }
@@ -1975,7 +1937,7 @@ public class recuperacion_ind_fragment extends Fragment {
                             }
                             break;
                         case 1: //NO CONTACTO
-                            SelectContactoCliente(m.GetIdContacto(m.GetStr(tvContacto)));
+                            SelectContactoCliente(Miscellaneous.GetIdContacto(Miscellaneous.GetStr(tvContacto)));
                             if (!row.getString(6).isEmpty()){//COMENTARIO
                                 etComentario.setText(row.getString(6));
                                 etComentario.setVisibility(View.VISIBLE);
@@ -1988,30 +1950,30 @@ public class recuperacion_ind_fragment extends Fragment {
                                 Glide.with(ctx).load(uriFachada).into(ivFachada);
                                 ibFachada.setVisibility(View.GONE);
                                 ivFachada.setVisibility(View.VISIBLE);
-                                byteEvidencia = m.getBytesUri(ctx, uriFachada, 1);
+                                byteEvidencia = Miscellaneous.getBytesUri(ctx, uriFachada, 1);
                                 tvFachada.setError(null);
                             }
 
                             tvGerente.setVisibility(View.VISIBLE);
                             if (!row.getString(20).isEmpty()){//ESTA GERENTE
                                 tvGerente.setText(row.getString(20));
-                                SelectEstaGerente(m.GetIdConfirmacion(m.GetStr(tvGerente)));
+                                SelectEstaGerente(Miscellaneous.GetIdConfirmacion(Miscellaneous.GetStr(tvGerente)));
 
-                                if (m.GetIdConfirmacion(m.GetStr(tvGerente)) == 0){
+                                if (Miscellaneous.GetIdConfirmacion(Miscellaneous.GetStr(tvGerente)) == 0){
                                     if (!row.getString(21).isEmpty()){
                                         File firmaFile = new File(ROOT_PATH + "Firma/"+row.getString(21));
                                         Uri uriFirma = Uri.fromFile(firmaFile);
                                         Glide.with(ctx).load(uriFirma).into(ivFirma);
                                         ibFirma.setVisibility(View.GONE);
                                         ivFirma.setVisibility(View.VISIBLE);
-                                        byteFirma = m.getBytesUri(ctx, uriFirma, 1);
+                                        byteFirma = Miscellaneous.getBytesUri(ctx, uriFirma, 1);
                                         tvFirma.setError(null);
                                     }
                                 }
                             }
                             break;
                         case 2:
-                            SelectContactoCliente(m.GetIdContacto(m.GetStr(tvContacto)));
+                            SelectContactoCliente(Miscellaneous.GetIdContacto(Miscellaneous.GetStr(tvContacto)));
                             if (!row.getString(5).isEmpty()){//MOTIVO ACLARACION
                                 tvMotivoAclaracion.setText(row.getString(5));
                                 tvMotivoAclaracion.setVisibility(View.VISIBLE);
@@ -2027,15 +1989,15 @@ public class recuperacion_ind_fragment extends Fragment {
                             tvGerente.setVisibility(View.VISIBLE);
                             if (!row.getString(20).isEmpty()){//ESTA GERENTE
                                 tvGerente.setText(row.getString(20));
-                                SelectEstaGerente(m.GetIdConfirmacion(m.GetStr(tvGerente)));
-                                if (m.GetIdConfirmacion(m.GetStr(tvGerente)) == 0){
+                                SelectEstaGerente(Miscellaneous.GetIdConfirmacion(Miscellaneous.GetStr(tvGerente)));
+                                if (Miscellaneous.GetIdConfirmacion(Miscellaneous.GetStr(tvGerente)) == 0){
                                     if (!row.getString(21).isEmpty()){
                                         File firmaFile = new File(ROOT_PATH + "Firma/"+row.getString(21));
                                         Uri uriFirma = Uri.fromFile(firmaFile);
                                         Glide.with(ctx).load(uriFirma).into(ivFirma);
                                         ibFirma.setVisibility(View.GONE);
                                         ivFirma.setVisibility(View.VISIBLE);
-                                        byteFirma = m.getBytesUri(ctx, uriFirma, 1);
+                                        byteFirma = Miscellaneous.getBytesUri(ctx, uriFirma, 1);
                                         tvFirma.setError(null);
                                     }
                                 }
@@ -2072,7 +2034,7 @@ public class recuperacion_ind_fragment extends Fragment {
                         byteFirma = data.getByteArrayExtra(FIRMA_IMAGE);
 
                         try {
-                            Update("firma", m.save(byteFirma, 3));
+                            Update("firma", Miscellaneous.save(byteFirma, 3));
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
@@ -2089,7 +2051,7 @@ public class recuperacion_ind_fragment extends Fragment {
                         Glide.with(ctx).load(byteEvidencia).centerCrop().into(ivFachada);
 
                         try {
-                            Update("evidencia", m.save(byteEvidencia, 1));
+                            Update("evidencia", Miscellaneous.save(byteEvidencia, 1));
                             Update("tipo_imagen", "FACHADA");
                         } catch (IOException e) {
                             e.printStackTrace();
@@ -2120,7 +2082,7 @@ public class recuperacion_ind_fragment extends Fragment {
                     try {
                         imageUri = data.getData();
 
-                        byteEvidencia = m.getBytesUri(ctx, imageUri, 0);
+                        byteEvidencia = Miscellaneous.getBytesUri(ctx, imageUri, 0);
 
                         ibFoto.setVisibility(View.GONE);
                         ibGaleria.setVisibility(View.GONE);
@@ -2150,7 +2112,7 @@ public class recuperacion_ind_fragment extends Fragment {
                         Glide.with(ctx).load(baos.toByteArray()).centerCrop().into(ivEvidencia);
 
                         try {
-                            Update("evidencia", m.save(byteEvidencia, 2));
+                            Update("evidencia", Miscellaneous.save(byteEvidencia, 2));
                             Update("tipo_imagen", "GALERIA");
                         } catch (IOException e) {
                             e.printStackTrace();
@@ -2179,7 +2141,7 @@ public class recuperacion_ind_fragment extends Fragment {
                         byteEvidencia = data.getByteArrayExtra(PICTURE);
                         Glide.with(ctx).load(byteEvidencia).centerCrop().into(ivEvidencia);
                         try {
-                            Update("evidencia", m.save(byteEvidencia, 2));
+                            Update("evidencia", Miscellaneous.save(byteEvidencia, 2));
                             Update("tipo_imagen", "FOTOGRAFIA");
                         } catch (IOException e) {
                             e.printStackTrace();
@@ -2193,7 +2155,7 @@ public class recuperacion_ind_fragment extends Fragment {
                     CropImage.ActivityResult result = CropImage.getActivityResult(data);
                     imageUri = result.getUri();
 
-                        byteEvidencia = m.getBytesUri(ctx, imageUri, 0);
+                        byteEvidencia = Miscellaneous.getBytesUri(ctx, imageUri, 0);
 
                         ibFoto.setVisibility(View.GONE);
                         ibGaleria.setVisibility(View.GONE);
@@ -2221,7 +2183,7 @@ public class recuperacion_ind_fragment extends Fragment {
                         Glide.with(ctx).load(baos.toByteArray()).centerCrop().into(ivEvidencia);
 
                         try {
-                            Update("evidencia", m.save(byteEvidencia, 2));
+                            Update("evidencia", Miscellaneous.save(byteEvidencia, 2));
                             Update("tipo_imagen", "GALERIA");
                         } catch (IOException e) {
                             e.printStackTrace();
@@ -2246,7 +2208,7 @@ public class recuperacion_ind_fragment extends Fragment {
                     if (data != null){
                         tvFechaDefuncion.setError(null);
                         tvFechaDefuncion.setText(data.getStringExtra(DATE));
-                        Update("fecha_fallecimiento", m.GetStr(tvFechaDefuncion));
+                        Update("fecha_fallecimiento", Miscellaneous.GetStr(tvFechaDefuncion));
                     }
                 }
                 break;
@@ -2255,7 +2217,7 @@ public class recuperacion_ind_fragment extends Fragment {
                     if (data != null){
                         tvFechaDeposito.setError(null);
                         tvFechaDeposito.setText(data.getStringExtra(DATE));
-                        Update("fecha_pago", m.GetStr(tvFechaDeposito));
+                        Update("fecha_pago", Miscellaneous.GetStr(tvFechaDeposito));
 
                     }
                 }
@@ -2282,7 +2244,7 @@ public class recuperacion_ind_fragment extends Fragment {
                             cv.put("saldo_corte", data.getStringExtra(SALDO_CORTE));
                             cv.put("saldo_actual", data.getStringExtra(SALDO_ACTUAL));
                         }
-                        cv.put("dias_atraso", m.GetDiasAtraso(parent.fecha_establecida));
+                        cv.put("dias_atraso", Miscellaneous.GetDiasAtraso(parent.fecha_establecida));
                         cv.put("fecha_fin", data.getStringExtra(FECHA_FIN));
                         cv.put("estatus", "1");
 
@@ -2302,8 +2264,8 @@ public class recuperacion_ind_fragment extends Fragment {
                             if (row_amortiz.getCount() > 0){
                                 row_amortiz.moveToFirst();
                                 Double abono = 0.0;
-                                if (!m.GetStr(etPagoRealizado).isEmpty() && m.GetStr(tvResultadoGestion).equals("PAGO"))
-                                    abono = Double.parseDouble(m.GetStr(etPagoRealizado).replace(",", ""));
+                                if (!Miscellaneous.GetStr(etPagoRealizado).isEmpty() && Miscellaneous.GetStr(tvResultadoGestion).equals("PAGO"))
+                                    abono = Double.parseDouble(Miscellaneous.GetStr(etPagoRealizado).replace(",", ""));
                                 for (int i = 0; i < row_amortiz.getCount(); i++){
 
                                     Log.e("Total&TotalPagado", row_amortiz.getString(1)+" " + row_amortiz.getString(2)+ " "+row_amortiz.getString(5));
@@ -2313,7 +2275,7 @@ public class recuperacion_ind_fragment extends Fragment {
                                         ContentValues cv_amortiz = new ContentValues();
                                         cv_amortiz.put("total_pagado", row_amortiz.getString(1));
                                         cv_amortiz.put("pagado", "PAGADO");
-                                        cv_amortiz.put("dias_atraso", m.GetDiasAtraso(row_amortiz.getString(4)));
+                                        cv_amortiz.put("dias_atraso", Miscellaneous.GetDiasAtraso(row_amortiz.getString(4)));
                                         db.update(TBL_AMORTIZACIONES_T, cv_amortiz, "id_prestamo = ? AND numero = ?", new String[]{parent.id_prestamo, row_amortiz.getString(5)});
                                         abono = abono - pendiente;
                                     }
@@ -2321,7 +2283,7 @@ public class recuperacion_ind_fragment extends Fragment {
                                         ContentValues cv_amortiz = new ContentValues();
                                         cv_amortiz.put("total_pagado", row_amortiz.getString(1));
                                         cv_amortiz.put("pagado", "PAGADO");
-                                        cv_amortiz.put("dias_atraso", m.GetDiasAtraso(row_amortiz.getString(4)));
+                                        cv_amortiz.put("dias_atraso", Miscellaneous.GetDiasAtraso(row_amortiz.getString(4)));
                                         db.update(TBL_AMORTIZACIONES_T, cv_amortiz, "id_prestamo = ? AND numero = ?", new String[]{parent.id_prestamo, row_amortiz.getString(5)});
                                         abono = 0.0;
                                     }
@@ -2330,7 +2292,7 @@ public class recuperacion_ind_fragment extends Fragment {
                                         cv_amortiz.put("total_pagado", (row_amortiz.getDouble(2) + abono));
                                         cv_amortiz.put("pagado", "PARCIAL");
                                         abono = 0.0;
-                                        cv_amortiz.put("dias_atraso", m.GetDiasAtraso(row_amortiz.getString(4)));
+                                        cv_amortiz.put("dias_atraso", Miscellaneous.GetDiasAtraso(row_amortiz.getString(4)));
                                         db.update(TBL_AMORTIZACIONES_T, cv_amortiz, "id_prestamo = ? AND numero = ?", new String[]{parent.id_prestamo, row_amortiz.getString(5)});
                                     }
                                     else
@@ -2361,7 +2323,7 @@ public class recuperacion_ind_fragment extends Fragment {
                             Calendar calFechaEst = Calendar.getInstance();
 
                             try {
-                                Date dFechaEstablecida = sdf.parse(m.ObtenerFecha(FECHA.toLowerCase()));
+                                Date dFechaEstablecida = sdf.parse(Miscellaneous.ObtenerFecha(FECHA.toLowerCase()));
                                 calFechaEst.setTime(dFechaEstablecida);
                                 weekFechaEst = calFechaEst.get(Calendar.WEEK_OF_YEAR);
 
@@ -2499,34 +2461,34 @@ public class recuperacion_ind_fragment extends Fragment {
                 b.putDouble(LATITUD, 0);
                 b.putDouble(LONGITUD, 0);
             }
-            if (m.GetIdContacto(m.GetStr(tvContacto)) == 0) { //Si Contacto cliente
-                b.putString(CONTACTO, m.GetStr(tvContacto));
-                if (!m.GetStr(tvActualizarTelefono).isEmpty()){
-                    if ((m.GetIdConfirmacion(m.GetStr(tvActualizarTelefono)) == 0 && !validator.validate(etActualizarTelefono, new String[]{validator.REQUIRED, validator.PHONE})) || m.GetIdConfirmacion(m.GetStr(tvActualizarTelefono)) == 1){
-                        if (m.GetIdConfirmacion(m.GetStr(tvActualizarTelefono)) == 0){
+            if (Miscellaneous.GetIdContacto(Miscellaneous.GetStr(tvContacto)) == 0) { //Si Contacto cliente
+                b.putString(CONTACTO, Miscellaneous.GetStr(tvContacto));
+                if (!Miscellaneous.GetStr(tvActualizarTelefono).isEmpty()){
+                    if ((Miscellaneous.GetIdConfirmacion(Miscellaneous.GetStr(tvActualizarTelefono)) == 0 && !validator.validate(etActualizarTelefono, new String[]{validator.REQUIRED, validator.PHONE})) || Miscellaneous.GetIdConfirmacion(Miscellaneous.GetStr(tvActualizarTelefono)) == 1){
+                        if (Miscellaneous.GetIdConfirmacion(Miscellaneous.GetStr(tvActualizarTelefono)) == 0){
                             b.putString(ACTUALIZAR_TELEFONO, "SI");
-                            b.putString(NUEVO_TELEFONO, m.GetStr(etActualizarTelefono));
+                            b.putString(NUEVO_TELEFONO, Miscellaneous.GetStr(etActualizarTelefono));
                         }else {
                             b.putString(ACTUALIZAR_TELEFONO, "NO");
                         }
-                        if (m.GetIdPago(m.GetStr(tvResultadoGestion)) == 0){ // Si pago
+                        if (Miscellaneous.GetIdPago(Miscellaneous.GetStr(tvResultadoGestion)) == 0){ // Si pago
                             b.putString(RESULTADO_PAGO, "PAGO");
-                            if (m.GetMedioPagoId(m.GetStr(tvMedioPago)) >= 0 && m.GetMedioPagoId(m.GetStr(tvMedioPago)) < 6 || m.GetMedioPagoId(m.GetStr(tvMedioPago)) == 7 ){ // Medio de pago Bancos y Oxxo
-                                b.putString(MEDIO_PAGO, m.GetStr(tvMedioPago));
-                                if (!m.GetStr(tvFechaDeposito).isEmpty()){ //Fecha de deposito capturada
-                                    b.putString(FECHA_DEPOSITO, m.GetStr(tvFechaDeposito));
-                                    if (!m.GetStr(tvPagaraRequerido).isEmpty()){ //Selecionó que pagará requerido o no requerido
+                            if (Miscellaneous.GetMedioPagoId(Miscellaneous.GetStr(tvMedioPago)) >= 0 && Miscellaneous.GetMedioPagoId(Miscellaneous.GetStr(tvMedioPago)) < 6 || Miscellaneous.GetMedioPagoId(Miscellaneous.GetStr(tvMedioPago)) == 7 ){ // Medio de pago Bancos y Oxxo
+                                b.putString(MEDIO_PAGO, Miscellaneous.GetStr(tvMedioPago));
+                                if (!Miscellaneous.GetStr(tvFechaDeposito).isEmpty()){ //Fecha de deposito capturada
+                                    b.putString(FECHA_DEPOSITO, Miscellaneous.GetStr(tvFechaDeposito));
+                                    if (!Miscellaneous.GetStr(tvPagaraRequerido).isEmpty()){ //Selecionó que pagará requerido o no requerido
                                         b.putString(PAGO_REQUERIDO, "SI");
-                                        if (!m.GetStr(etPagoRealizado).isEmpty() && Double.parseDouble(m.GetStr(etPagoRealizado).replace(",","")) > 0){ //El pago realizado es mayor a cero
+                                        if (!Miscellaneous.GetStr(etPagoRealizado).isEmpty() && Double.parseDouble(Miscellaneous.GetStr(etPagoRealizado).replace(",","")) > 0){ //El pago realizado es mayor a cero
                                             b.putDouble(SALDO_CORTE, parent.saldo_corte);
                                             b.putDouble(MONTO_REQUERIDO, Double.parseDouble(parent.monto_requerido));
-                                            b.putString(PAGO_REALIZADO, m.GetStr(etPagoRealizado).replace(",",""));
+                                            b.putString(PAGO_REALIZADO, Miscellaneous.GetStr(etPagoRealizado).replace(",",""));
                                             //-------------------------------------------------------
-                                            if (m.GetMedioPagoId(m.GetStr(tvMedioPago)) == 7) {
-                                                if (m.GetIdImpresion(m.GetStr(tvImprimirRecibo)) == 1) { //No imprimirá recibos
-                                                    if (!m.GetStr(etFolioRecibo).isEmpty()) {
-                                                        b.putString(IMPRESORA, m.GetStr(tvImprimirRecibo));
-                                                        b.putString(FOLIO_TICKET, m.GetStr(etFolioRecibo));
+                                            if (Miscellaneous.GetMedioPagoId(Miscellaneous.GetStr(tvMedioPago)) == 7) {
+                                                if (Miscellaneous.GetIdImpresion(Miscellaneous.GetStr(tvImprimirRecibo)) == 1) { //No imprimirá recibos
+                                                    if (!Miscellaneous.GetStr(etFolioRecibo).isEmpty()) {
+                                                        b.putString(IMPRESORA, Miscellaneous.GetStr(tvImprimirRecibo));
+                                                        b.putString(FOLIO_TICKET, Miscellaneous.GetStr(etFolioRecibo));
                                                     }
                                                     else
                                                         Toast.makeText(ctx, "No ha capturado el folio del recibo manual", Toast.LENGTH_SHORT).show();
@@ -2535,7 +2497,7 @@ public class recuperacion_ind_fragment extends Fragment {
 
                                             //----------------------------------------------------
                                             if (byteEvidencia != null){ //Ha capturado una evidencia (Fotografía al ticket)
-                                                if (m.GetIdConfirmacion(m.GetStr(tvGerente)) == 0) { //Selecciono que si está el gerente
+                                                if (Miscellaneous.GetIdConfirmacion(Miscellaneous.GetStr(tvGerente)) == 0) { //Selecciono que si está el gerente
                                                     if (byteFirma != null) { //Capturó una firma
                                                         b.putByteArray(EVIDENCIA, byteEvidencia);
                                                         b.putString(GERENTE, "SI");
@@ -2543,7 +2505,7 @@ public class recuperacion_ind_fragment extends Fragment {
                                                         b.putBoolean(TERMINADO, true);
                                                     } else //No ha capturado la firma
                                                         Toast.makeText(ctx, "Capture la firma del gerente", Toast.LENGTH_SHORT).show();
-                                                } else if (m.GetIdConfirmacion(m.GetStr(tvGerente)) == 1) { //No se encuentra el Gerente
+                                                } else if (Miscellaneous.GetIdConfirmacion(Miscellaneous.GetStr(tvGerente)) == 1) { //No se encuentra el Gerente
                                                     b.putByteArray(EVIDENCIA, byteEvidencia);
                                                     b.putString(GERENTE, "NO");
                                                     b.putBoolean(TERMINADO, true);
@@ -2564,28 +2526,28 @@ public class recuperacion_ind_fragment extends Fragment {
                                     Toast.makeText(ctx, "No ha seleccionado la fecha de deposito", Toast.LENGTH_SHORT).show();
                                 }
                             }
-                            else if (m.GetMedioPagoId(m.GetStr(tvMedioPago)) == 6){ //Efectivo
-                                b.putString(MEDIO_PAGO, m.GetStr(tvMedioPago));
-                                if (!m.GetStr(tvPagaraRequerido).isEmpty()){ //Selecionó que pagará requerido o no requerido
+                            else if (Miscellaneous.GetMedioPagoId(Miscellaneous.GetStr(tvMedioPago)) == 6){ //Efectivo
+                                b.putString(MEDIO_PAGO, Miscellaneous.GetStr(tvMedioPago));
+                                if (!Miscellaneous.GetStr(tvPagaraRequerido).isEmpty()){ //Selecionó que pagará requerido o no requerido
                                     b.putString(PAGO_REQUERIDO, "SI");
-                                    if (!m.GetStr(etPagoRealizado).isEmpty() && Double.parseDouble(m.GetStr(etPagoRealizado).replace(",","")) > 0){ //El pago realizado es mayor a cero
+                                    if (!Miscellaneous.GetStr(etPagoRealizado).isEmpty() && Double.parseDouble(Miscellaneous.GetStr(etPagoRealizado).replace(",","")) > 0){ //El pago realizado es mayor a cero
                                         b.putDouble(SALDO_CORTE, parent.saldo_corte);
                                         b.putDouble(MONTO_REQUERIDO, Double.parseDouble(parent.monto_requerido));
-                                        b.putString(PAGO_REALIZADO, m.GetStr(etPagoRealizado).replace(",",""));
-                                        if (m.GetIdImpresion(m.GetStr(tvImprimirRecibo)) == 0){ //Si imprimirá recibos
-                                            if (!m.GetStr(etFolioRecibo).isEmpty()){
+                                        b.putString(PAGO_REALIZADO, Miscellaneous.GetStr(etPagoRealizado).replace(",",""));
+                                        if (Miscellaneous.GetIdImpresion(Miscellaneous.GetStr(tvImprimirRecibo)) == 0){ //Si imprimirá recibos
+                                            if (!Miscellaneous.GetStr(etFolioRecibo).isEmpty()){
                                                 b.putString(IMPRESORA, "SI");
-                                                b.putString(FOLIO_TICKET, m.GetStr(etFolioRecibo));
+                                                b.putString(FOLIO_TICKET, Miscellaneous.GetStr(etFolioRecibo));
                                                 if (byteEvidencia != null){ //Ha capturado una evidencia (Fotografía al ticket)
                                                     b.putByteArray(EVIDENCIA, byteEvidencia);
-                                                    if (m.GetIdConfirmacion(m.GetStr(tvGerente)) == 0) { //Selecciono que si está el gerente
+                                                    if (Miscellaneous.GetIdConfirmacion(Miscellaneous.GetStr(tvGerente)) == 0) { //Selecciono que si está el gerente
                                                         if (byteFirma != null) { //Capturó una firma
                                                             b.putString(GERENTE, "SI");
                                                             b.putByteArray(FIRMA, byteFirma);
                                                             b.putBoolean(TERMINADO, true);
                                                         } else //No ha capturado la firma
                                                             Toast.makeText(ctx, "Capture la firma del gerente", Toast.LENGTH_SHORT).show();
-                                                    } else if (m.GetIdConfirmacion(m.GetStr(tvGerente)) == 1) { //No se encuentra el Gerente
+                                                    } else if (Miscellaneous.GetIdConfirmacion(Miscellaneous.GetStr(tvGerente)) == 1) { //No se encuentra el Gerente
                                                         b.putString(GERENTE, "NO");
                                                         b.putBoolean(TERMINADO, true);
                                                     } else //No ha seleccionado si está el gerente
@@ -2597,20 +2559,20 @@ public class recuperacion_ind_fragment extends Fragment {
                                             else //No ha impreso ningun ticket
                                                 Toast.makeText(ctx,"No ha realizado nignuna impresión", Toast.LENGTH_SHORT).show();
                                         }
-                                        else if (m.GetIdImpresion(m.GetStr(tvImprimirRecibo)) == 1){ //No imprimirá recibos
-                                            if (!m.GetStr(etFolioRecibo).isEmpty()){
+                                        else if (Miscellaneous.GetIdImpresion(Miscellaneous.GetStr(tvImprimirRecibo)) == 1){ //No imprimirá recibos
+                                            if (!Miscellaneous.GetStr(etFolioRecibo).isEmpty()){
                                                 b.putString(IMPRESORA, "NO CUENTA CON BATERIA");
-                                                b.putString(FOLIO_TICKET, m.GetStr(etFolioRecibo));
+                                                b.putString(FOLIO_TICKET, Miscellaneous.GetStr(etFolioRecibo));
                                                 if (byteEvidencia != null){ //Ha capturado una evidencia (Fotografía al ticket)
                                                     b.putByteArray(EVIDENCIA, byteEvidencia);
-                                                    if (m.GetIdConfirmacion(m.GetStr(tvGerente)) == 0) { //Selecciono que si está el gerente
+                                                    if (Miscellaneous.GetIdConfirmacion(Miscellaneous.GetStr(tvGerente)) == 0) { //Selecciono que si está el gerente
                                                         if (byteFirma != null) { //Capturó una firma
                                                             b.putString(GERENTE, "SI");
                                                             b.putByteArray(FIRMA, byteFirma);
                                                             b.putBoolean(TERMINADO, true);
                                                         } else //No ha capturado la firma
                                                             Toast.makeText(ctx, "Capture la firma del gerente", Toast.LENGTH_SHORT).show();
-                                                    } else if (m.GetIdConfirmacion(m.GetStr(tvGerente)) == 1) { //No se encuentra el Gerente
+                                                    } else if (Miscellaneous.GetIdConfirmacion(Miscellaneous.GetStr(tvGerente)) == 1) { //No se encuentra el Gerente
                                                         b.putString(GERENTE, "NO");
                                                         b.putBoolean(TERMINADO, true);
                                                     } else //No ha seleccionado si está el gerente
@@ -2634,22 +2596,22 @@ public class recuperacion_ind_fragment extends Fragment {
                             else //No ha seleccionado algun medio de pago
                                 Toast.makeText(ctx, "No ha seleccionado un medio de pago", Toast.LENGTH_SHORT).show();
                         }// ================ TERMINA PAGO  ==================================
-                        else if (m.GetIdPago(m.GetStr(tvResultadoGestion)) == 1){ //No pago
+                        else if (Miscellaneous.GetIdPago(Miscellaneous.GetStr(tvResultadoGestion)) == 1){ //No pago
                             b.putString(RESULTADO_PAGO, "NO PAGO");
-                            if (m.GetIdMotivoNoPago(m.GetStr(tvMotivoNoPago)) == 0 || m.GetIdMotivoNoPago(m.GetStr(tvMotivoNoPago)) == 2){ //Motivo de no pago Negacion u Otra
-                                b.putString(MOTIVO_NO_PAGO, m.GetStr(tvMotivoNoPago));
-                                if (!m.GetStr(etComentario).isEmpty()){ //El campo comentario es diferente de vacio
-                                    b.putString(COMENTARIO, m.GetStr(etComentario));
+                            if (Miscellaneous.GetIdMotivoNoPago(Miscellaneous.GetStr(tvMotivoNoPago)) == 0 || Miscellaneous.GetIdMotivoNoPago(Miscellaneous.GetStr(tvMotivoNoPago)) == 2){ //Motivo de no pago Negacion u Otra
+                                b.putString(MOTIVO_NO_PAGO, Miscellaneous.GetStr(tvMotivoNoPago));
+                                if (!Miscellaneous.GetStr(etComentario).isEmpty()){ //El campo comentario es diferente de vacio
+                                    b.putString(COMENTARIO, Miscellaneous.GetStr(etComentario));
                                     if (byteEvidencia != null){
                                         b.putByteArray(EVIDENCIA, byteEvidencia);
-                                        if (m.GetIdConfirmacion(m.GetStr(tvGerente)) == 0) { //Selecciono que si está el gerente
+                                        if (Miscellaneous.GetIdConfirmacion(Miscellaneous.GetStr(tvGerente)) == 0) { //Selecciono que si está el gerente
                                             if (byteFirma != null) { //Capturó una firma
                                                 b.putString(GERENTE, "SI");
                                                 b.putByteArray(FIRMA, byteFirma);
                                                 b.putBoolean(TERMINADO, true);
                                             } else //No ha capturado la firma
                                                 Toast.makeText(ctx, "Capture la firma del gerente", Toast.LENGTH_SHORT).show();
-                                        } else if (m.GetIdConfirmacion(m.GetStr(tvGerente)) == 1) { //No se encuentra el Gerente
+                                        } else if (Miscellaneous.GetIdConfirmacion(Miscellaneous.GetStr(tvGerente)) == 1) { //No se encuentra el Gerente
                                             b.putString(GERENTE, "NO");
                                             b.putBoolean(TERMINADO, true);
                                         } else //No ha seleccionado si está el gerente
@@ -2661,23 +2623,23 @@ public class recuperacion_ind_fragment extends Fragment {
                                 else // No ha ingresado alguno comentario
                                     Toast.makeText(ctx, "El campo Comentario es requerido.", Toast.LENGTH_SHORT).show();
                             }
-                            else if(m.GetIdMotivoNoPago(m.GetStr(tvMotivoNoPago)) == 1) { //Motivo de no pago fue Fallecimiento
+                            else if(Miscellaneous.GetIdMotivoNoPago(Miscellaneous.GetStr(tvMotivoNoPago)) == 1) { //Motivo de no pago fue Fallecimiento
                                 b.getString(RESULTADO_PAGO, "NO PAGO");
-                                b.putString(MOTIVO_NO_PAGO, m.GetStr(tvMotivoNoPago));
-                                if (!m.GetStr(tvFechaDefuncion).isEmpty()){ //El campo Fecha es diferente de vacio
-                                    b.putString(FECHA_DEFUNCION, m.GetStr(tvFechaDefuncion));
-                                    if (!m.GetStr(etComentario).isEmpty()){ // El campo Comentario es diferente de vacio
-                                        b.putString(COMENTARIO, m.GetStr(etComentario));
+                                b.putString(MOTIVO_NO_PAGO, Miscellaneous.GetStr(tvMotivoNoPago));
+                                if (!Miscellaneous.GetStr(tvFechaDefuncion).isEmpty()){ //El campo Fecha es diferente de vacio
+                                    b.putString(FECHA_DEFUNCION, Miscellaneous.GetStr(tvFechaDefuncion));
+                                    if (!Miscellaneous.GetStr(etComentario).isEmpty()){ // El campo Comentario es diferente de vacio
+                                        b.putString(COMENTARIO, Miscellaneous.GetStr(etComentario));
                                         if (byteEvidencia != null){ //Capturo una fotografia de fachada
                                             b.putByteArray(EVIDENCIA, byteEvidencia);
-                                            if (m.GetIdConfirmacion(m.GetStr(tvGerente)) == 0) { //Si está el gerente
+                                            if (Miscellaneous.GetIdConfirmacion(Miscellaneous.GetStr(tvGerente)) == 0) { //Si está el gerente
                                                 if (byteFirma != null) { //Capturó un firma
                                                     b.putString(GERENTE, "SI");
                                                     b.putByteArray(FIRMA, byteFirma);
                                                     b.putBoolean(TERMINADO, true);
                                                 } else //No ha Capturado un Firma
                                                     Toast.makeText(ctx, "Capture la firma del gerente", Toast.LENGTH_SHORT).show();
-                                            } else if (m.GetIdConfirmacion(m.GetStr(tvGerente)) == 1) { //No está el gerente
+                                            } else if (Miscellaneous.GetIdConfirmacion(Miscellaneous.GetStr(tvGerente)) == 1) { //No está el gerente
                                                 b.putString(GERENTE, "NO");
                                                 b.putBoolean(TERMINADO, true);
                                             } else //No ha seleccionado si está el gerente
@@ -2704,20 +2666,20 @@ public class recuperacion_ind_fragment extends Fragment {
                 else //No ha seleccionado si va actualizar el telefono
                     Toast.makeText(ctx, "No ha seleccionado si va actualizar el teléfono", Toast.LENGTH_SHORT).show();
             }
-            else if(m.GetIdContacto(m.GetStr(tvContacto)) == 1) { //No contactó al cliente
+            else if(Miscellaneous.GetIdContacto(Miscellaneous.GetStr(tvContacto)) == 1) { //No contactó al cliente
                 b.putString(CONTACTO, "NO");
-                if (!m.GetStr(etComentario).isEmpty()) { //El campo comentario es diferente de vacio
-                    b.putString(COMENTARIO, m.GetStr(etComentario));
+                if (!Miscellaneous.GetStr(etComentario).isEmpty()) { //El campo comentario es diferente de vacio
+                    b.putString(COMENTARIO, Miscellaneous.GetStr(etComentario));
                     if (byteEvidencia != null) { //Ha capturado una fotografia de la fachada
                         b.putByteArray(EVIDENCIA, byteEvidencia);
-                        if (m.GetIdConfirmacion(m.GetStr(tvGerente)) == 0) { // Seleccionó que está el gerente
+                        if (Miscellaneous.GetIdConfirmacion(Miscellaneous.GetStr(tvGerente)) == 0) { // Seleccionó que está el gerente
                             if (byteFirma != null) { // Ha capturado un firma
                                 b.putString(GERENTE, "SI");
                                 b.putByteArray(FIRMA, byteFirma);
                                 b.putBoolean(TERMINADO, true);
                             } else //No ha capturado un firma
                                 Toast.makeText(ctx, "Capture la firma del gerente", Toast.LENGTH_SHORT).show();
-                        } else if (m.GetIdConfirmacion(m.GetStr(tvGerente)) == 1) { //No se encuentra el gerente
+                        } else if (Miscellaneous.GetIdConfirmacion(Miscellaneous.GetStr(tvGerente)) == 1) { //No se encuentra el gerente
                             b.putString(GERENTE, "NO");
                             b.putBoolean(TERMINADO, true);
                         } else //No ha seleccionado si está el gerente
@@ -2727,20 +2689,20 @@ public class recuperacion_ind_fragment extends Fragment {
                 } else //No ha ingresado algun comentario
                     Toast.makeText(ctx, "El campo Comentario es obligatorio", Toast.LENGTH_SHORT).show();
             }
-            else if(m.GetIdContacto(m.GetStr(tvContacto)) == 2) { //Seleccionó Aclaración
+            else if(Miscellaneous.GetIdContacto(Miscellaneous.GetStr(tvContacto)) == 2) { //Seleccionó Aclaración
                 b.putString(CONTACTO, "ACLARACION");
-                if (!m.GetStr(tvMotivoAclaracion).isEmpty()) { //Motivo de aclaración es diferente de vacio
-                    b.putString(MOTIVO_ACLARACION, m.GetStr(tvMotivoAclaracion));
-                    if (!m.GetStr(etComentario).isEmpty()) { // Ingresó algun comentario
-                        b.putString(COMENTARIO, m.GetStr(etComentario));
-                        if (m.GetIdConfirmacion(m.GetStr(tvGerente)) == 0) { //Seleccionó que está el gerente
+                if (!Miscellaneous.GetStr(tvMotivoAclaracion).isEmpty()) { //Motivo de aclaración es diferente de vacio
+                    b.putString(MOTIVO_ACLARACION, Miscellaneous.GetStr(tvMotivoAclaracion));
+                    if (!Miscellaneous.GetStr(etComentario).isEmpty()) { // Ingresó algun comentario
+                        b.putString(COMENTARIO, Miscellaneous.GetStr(etComentario));
+                        if (Miscellaneous.GetIdConfirmacion(Miscellaneous.GetStr(tvGerente)) == 0) { //Seleccionó que está el gerente
                             if (byteFirma != null) { //Ha capturado una firma
                                 b.putString(GERENTE, "SI");
                                 b.putByteArray(FIRMA, byteFirma);
                                 b.putBoolean(TERMINADO, true);
                             } else //No ha capturado una firma
                                 Toast.makeText(ctx, "Capture la firma del gerente", Toast.LENGTH_SHORT).show();
-                        } else if (m.GetIdConfirmacion(m.GetStr(tvGerente)) == 1) { //Seleccionó que no está el gerente
+                        } else if (Miscellaneous.GetIdConfirmacion(Miscellaneous.GetStr(tvGerente)) == 1) { //Seleccionó que no está el gerente
                             b.putString(GERENTE, "NO");
                             b.putBoolean(TERMINADO, true);
                         } else //No ha confirmado si está el gerente
@@ -2774,13 +2736,11 @@ public class recuperacion_ind_fragment extends Fragment {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.save:
-                GuardarGestion();
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
+        if (item.getItemId() == R.id.save) {
+            GuardarGestion();
+            return true;
         }
+        return super.onOptionsItemSelected(item);
     }
 
     private void DisableFields(){

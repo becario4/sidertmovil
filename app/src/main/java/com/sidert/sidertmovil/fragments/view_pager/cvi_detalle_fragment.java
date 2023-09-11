@@ -74,7 +74,7 @@ public class cvi_detalle_fragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_cvi_detalle, container, false);
         ctx                      = getContext();
 
-        dBhelper                 = new DBhelper(ctx);
+        dBhelper                 = DBhelper.getInstance(ctx);
         db                       = dBhelper.getWritableDatabase();
 
         mPrestamo                = new MPrestamoRes();

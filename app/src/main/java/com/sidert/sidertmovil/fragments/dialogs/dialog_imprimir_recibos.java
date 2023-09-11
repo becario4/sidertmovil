@@ -67,10 +67,10 @@ public class dialog_imprimir_recibos extends DialogFragment {
 
         parent = (Integrantes)getActivity();
 
-        dBhelper = new DBhelper(ctx);
+        dBhelper = DBhelper.getInstance(ctx);
         db = dBhelper.getWritableDatabase();
 
-        session = new SessionManager(ctx);
+        session = SessionManager.getInstance(ctx);
 
         btnCC = v.findViewById(R.id.btnCC);
         btnAGF = v.findViewById(R.id.btnAGF);

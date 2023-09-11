@@ -82,21 +82,18 @@ public class DocumentosFragment extends Fragment {
         }
 
         rgDocumentos.setOnCheckedChangeListener((group, checkedId) -> {
-            switch (checkedId){
-                case R.id.rbIne:
-                    try {
-                        showIne();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                    break;
-                case R.id.rbComprobanteDomicilio:
-                    try {
-                        showComprobanteDomicilio();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                    break;
+            if (checkedId == R.id.rbIne) {
+                try {
+                    showIne();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            } else if (checkedId == R.id.rbComprobanteDomicilio) {
+                try {
+                    showComprobanteDomicilio();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         });
     }

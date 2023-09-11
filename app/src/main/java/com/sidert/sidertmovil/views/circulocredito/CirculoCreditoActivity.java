@@ -12,19 +12,11 @@ import android.graphics.Canvas;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Build;
-
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.app.AlertDialog;
 import android.os.Bundle;
-import androidx.appcompat.widget.Toolbar;
-import androidx.core.content.ContextCompat;
-
 import android.text.Editable;
 import android.text.InputFilter;
 import android.text.InputType;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -40,8 +32,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.gson.Gson;
 import com.sidert.sidertmovil.R;
 import com.sidert.sidertmovil.activities.CameraVertical;
 import com.sidert.sidertmovil.activities.FormatoRecibos;
@@ -59,8 +49,6 @@ import com.sidert.sidertmovil.utils.Validator;
 import com.sidert.sidertmovil.utils.ValidatorTextView;
 import com.theartofdev.edmodo.cropper.CropImage;
 
-import org.json.JSONObject;
-
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
@@ -71,6 +59,12 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
 import java.util.Objects;
+
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.ContextCompat;
 
 import static com.sidert.sidertmovil.utils.Constants.FOLIO;
 import static com.sidert.sidertmovil.utils.Constants.FORMAT_TIMESTAMP;
@@ -86,7 +80,6 @@ import static com.sidert.sidertmovil.utils.Constants.question;
 public class CirculoCreditoActivity extends AppCompatActivity {
     private Context ctx;
     private Toolbar tbMain;
-
     private TextView tvTipo;
     private RadioGroup rgTipo;
     private TextView tvCostoConsulta;
@@ -105,7 +98,6 @@ public class CirculoCreditoActivity extends AppCompatActivity {
     private TextView tvMedioPago;
 
     private LinearLayout llImprimirRecibo;
-    private LinearLayout llDuracionPrestamo;
     private TextView tvImprimirRecibo;
     private ImageButton ibImprimir;
     private LinearLayout llFolioRecibo;
@@ -141,116 +133,108 @@ public class CirculoCreditoActivity extends AppCompatActivity {
 
     private boolean isEdit = true;
 
-    private Miscellaneous misc;
-
     private GestionCirculoCreditoDao gestionCirculoCreditoDao;
     private GestionCirculoCredito gestionCC;
     private ReciboCirculoCredito reciboCirculoCredito;
     private ReciboCirculoCreditoDao reciboCirculoCreditoDao;
 
     private Button button;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_recuperacion_c_c);
-        _medio_pago     = getResources().getStringArray(R.array.medio_pago);
+        _medio_pago = getResources().getStringArray(R.array.medio_pago);
         //_imprimir       = getResources().getStringArray(R.array.imprimir);
-        _imprimir       = new String[]{"SI"};
+        _imprimir = new String[]{"SI"};
         _costo_consulta = getResources().getStringArray(R.array.costo_consulta);
         ctx = this;
         gestionCirculoCreditoDao = new GestionCirculoCreditoDao(ctx);
         reciboCirculoCreditoDao = new ReciboCirculoCreditoDao(ctx);
-        misc = new Miscellaneous();
-        session = new SessionManager(ctx);
+        session = SessionManager.getInstance(ctx);
         tbMain = findViewById(R.id.tbMain);
-        tvTipo          = findViewById(R.id.tvTipo);
-        rgTipo          = findViewById(R.id.rgTipo);
-
+        tvTipo = findViewById(R.id.tvTipo);
+        rgTipo = findViewById(R.id.rgTipo);
 
 
         //   button =findViewById(R.id.button);
         //   button.setVisibility(View.GONE);
         //   button.setOnClickListener(fbAgregarCC_OnClick);
 
-        tvCostoConsulta         = findViewById(R.id.tvCostoConsulta);
-        llClienteGrupo          = findViewById(R.id.llClienteGrupo);
-        tvClienteGrupo          = findViewById(R.id.tvClienteGrupo);
-        etClienteGrupo          = findViewById(R.id.etClienteGrupo);
-        llCurpCliente           = findViewById(R.id.llCurpCliente);
-        tvCurpCliente           = findViewById(R.id.tvCurpCliente);
-        etCurpCliente           = findViewById(R.id.etCurpCliente);
-        llAvalRepresentante     = findViewById(R.id.llAvalRepresentante);
-        tvAvalRepresentante     = findViewById(R.id.tvAvalRepresentante);
-        etAvalRepresentate      = findViewById(R.id.etAvalRepresentante);
-        llIntegrantes   = findViewById(R.id.llIntegrantes);
-        etIntegrantes   = findViewById(R.id.etIntegrantes);
-        etMonto         = findViewById(R.id.etMonto);
-        tvMedioPago     = findViewById(R.id.tvMedioPago);
-        llDuracionPrestamo  = findViewById(R.id.llDuracionPrestamo);
-        llImprimirRecibo    = findViewById(R.id.llImprimirRecibo);
-        tvImprimirRecibo    = findViewById(R.id.tvImprimirRecibo);
-        ibImprimir          = findViewById(R.id.ibImprimir);
-        llFolioRecibo       = findViewById(R.id.llFolioRecibo);
-        etFolioRecibo       = findViewById(R.id.etFolioRecibo);
-        llFotoGaleria       = findViewById(R.id.llFotoGaleria);
-        tvFotoGaleria       = findViewById(R.id.tvFotoGaleria);
-        ibFoto              = findViewById(R.id.ibFoto);
-        ibGaleria           = findViewById(R.id.ibGaleria);
-        ivEvidencia         = findViewById(R.id.ivEvidencia);
+        tvCostoConsulta = findViewById(R.id.tvCostoConsulta);
+        llClienteGrupo = findViewById(R.id.llClienteGrupo);
+        tvClienteGrupo = findViewById(R.id.tvClienteGrupo);
+        etClienteGrupo = findViewById(R.id.etClienteGrupo);
+        llCurpCliente = findViewById(R.id.llCurpCliente);
+        tvCurpCliente = findViewById(R.id.tvCurpCliente);
+        etCurpCliente = findViewById(R.id.etCurpCliente);
+        llAvalRepresentante = findViewById(R.id.llAvalRepresentante);
+        tvAvalRepresentante = findViewById(R.id.tvAvalRepresentante);
+        etAvalRepresentate = findViewById(R.id.etAvalRepresentante);
+        llIntegrantes = findViewById(R.id.llIntegrantes);
+        etIntegrantes = findViewById(R.id.etIntegrantes);
+        etMonto = findViewById(R.id.etMonto);
+        tvMedioPago = findViewById(R.id.tvMedioPago);
+        llImprimirRecibo = findViewById(R.id.llImprimirRecibo);
+        tvImprimirRecibo = findViewById(R.id.tvImprimirRecibo);
+        ibImprimir = findViewById(R.id.ibImprimir);
+        llFolioRecibo = findViewById(R.id.llFolioRecibo);
+        etFolioRecibo = findViewById(R.id.etFolioRecibo);
+        llFotoGaleria = findViewById(R.id.llFotoGaleria);
+        tvFotoGaleria = findViewById(R.id.tvFotoGaleria);
+        ibFoto = findViewById(R.id.ibFoto);
+        ibGaleria = findViewById(R.id.ibGaleria);
+        ivEvidencia = findViewById(R.id.ivEvidencia);
         setSupportActionBar(tbMain);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
         Bundle b = getIntent().getExtras();
 
-        if(b != null)
-        {
+        if (b != null) {
             gestionCC = (GestionCirculoCredito) getIntent().getExtras().get("circulo_credito");
-                if(gestionCC!=null){
-                    if(gestionCC.getEstatus()!=null){
-                        if(gestionCC.getEstatus()==2){
+            if (gestionCC != null) {
+                if (gestionCC.getEstatus() != null) {
+                    if (gestionCC.getEstatus() == 2) {
 
-                          //  button.setVisibility(View.VISIBLE);
-                        }
+                        //  button.setVisibility(View.VISIBLE);
                     }
                 }
+            }
 
         }
 
         /**Evento de radiogroup para mostrar ciertos campos dependiendo la seleccion*/
         rgTipo.setOnCheckedChangeListener((radioGroup, rbId) -> {
             tvTipo.setError(null);
-            switch (rbId){
-                case R.id.rbInd:/**si seleccionaron individual*/
-                    etClienteGrupo.setFilters(new InputFilter[] {new InputFilter.LengthFilter(60)});
-                    etClienteGrupo.setText("");
-                    etCurpCliente.setText("");
-                    tvClienteGrupo.setText("Nombre de Prospecto de Cliente");
-                    etClienteGrupo.setHint("Nombre Completo");
-                    tvCurpCliente.setText("Curp del Prospecto");
-                    etCurpCliente.setHint("Curp del Prospecto");
+            if (rbId == R.id.rbInd) {/**si seleccionaron individual*/
+                etClienteGrupo.setFilters(new InputFilter[]{new InputFilter.LengthFilter(60)});
+                etClienteGrupo.setText("");
+                etCurpCliente.setText("");
+                tvClienteGrupo.setText("Nombre de Prospecto de Cliente");
+                etClienteGrupo.setHint("Nombre Completo");
+                tvCurpCliente.setText("Curp del Prospecto");
+                etCurpCliente.setHint("Curp del Prospecto");
 
-                    llAvalRepresentante.setVisibility(View.GONE);
-                    tvAvalRepresentante.setText("Nombre del Aval");
-                    etAvalRepresentate.setHint("Nombre del Aval");
-                    etIntegrantes.setText("1");
-                    llIntegrantes.setVisibility(View.GONE);
-                    break;
-                case R.id.rbGpo:/**seleccionaron grupal*/
-                    etClienteGrupo.setFilters(new InputFilter[] {new InputFilter.LengthFilter(30)});
-                    etClienteGrupo.setText("");
-                    etCurpCliente.setText("");
-                    etAvalRepresentate.setText("");
-                    tvClienteGrupo.setText("Nombre de Prospecto de Grupo");
-                    etClienteGrupo.setHint("Nombre del Grupo");
-                    tvCurpCliente.setText("Curp del Representante");
-                    etCurpCliente.setHint("Curp del Representante");
-                    llAvalRepresentante.setVisibility(View.VISIBLE);
-                    tvAvalRepresentante.setText("Nombre del Representante");
-                    etAvalRepresentate.setHint("Nombre Completo");
-                    etIntegrantes.setText("");
-                    llIntegrantes.setVisibility(View.VISIBLE);
-                    break;
+                llAvalRepresentante.setVisibility(View.GONE);
+                tvAvalRepresentante.setText("Nombre del Aval");
+                etAvalRepresentate.setHint("Nombre del Aval");
+                etIntegrantes.setText("1");
+                llIntegrantes.setVisibility(View.GONE);
+            } else if (rbId == R.id.rbGpo) {/**seleccionaron grupal*/
+                etClienteGrupo.setFilters(new InputFilter[]{new InputFilter.LengthFilter(30)});
+                etClienteGrupo.setText("");
+                etCurpCliente.setText("");
+                etAvalRepresentate.setText("");
+                tvClienteGrupo.setText("Nombre de Prospecto de Grupo");
+                etClienteGrupo.setHint("Nombre del Grupo");
+                tvCurpCliente.setText("Curp del Representante");
+                etCurpCliente.setHint("Curp del Representante");
+                llAvalRepresentante.setVisibility(View.VISIBLE);
+                tvAvalRepresentante.setText("Nombre del Representante");
+                etAvalRepresentate.setHint("Nombre Completo");
+                etIntegrantes.setText("");
+                llIntegrantes.setVisibility(View.VISIBLE);
             }
             llCurpCliente.setVisibility(View.VISIBLE);
             llClienteGrupo.setVisibility(View.VISIBLE);
@@ -259,20 +243,21 @@ public class CirculoCreditoActivity extends AppCompatActivity {
         /**Al ingresar un valor en el campo de total de integrates se actualiza el monto en automatico*/
         etIntegrantes.addTextChangedListener(new TextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            }
 
             @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            }
 
             @Override
             public void afterTextChanged(Editable e) {
-                if (e.length() > 0){
+                if (e.length() > 0) {
                     if (!Miscellaneous.GetStr(tvCostoConsulta).isEmpty()) {
                         Double costo = Double.parseDouble(Miscellaneous.GetStr(tvCostoConsulta));
-                        etMonto.setText(String.valueOf( costo * Integer.parseInt(e.toString())).replace("$", ""));
+                        etMonto.setText(String.valueOf(costo * Integer.parseInt(e.toString())).replace("$", ""));
                     }
-                }
-                else{
+                } else {
                     etMonto.setText("0");
                 }
             }
@@ -280,12 +265,12 @@ public class CirculoCreditoActivity extends AppCompatActivity {
 
         etMonto.addTextChangedListener(new TextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            }
 
             @Override
             public void onTextChanged(CharSequence cs, int i, int i1, int i2) {
-                if (cs.toString().contains(String.valueOf(dfnd.getDecimalFormatSymbols().getDecimalSeparator())))
-                {
+                if (cs.toString().contains(String.valueOf(dfnd.getDecimalFormatSymbols().getDecimalSeparator()))) {
                     hasFractionalPart = true;
                 } else {
                     hasFractionalPart = false;
@@ -343,6 +328,7 @@ public class CirculoCreditoActivity extends AppCompatActivity {
         /**Funcion para inicializar los valores*/
         initComponents();
     }
+
     private View.OnClickListener fbAgregarCC_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -350,7 +336,7 @@ public class CirculoCreditoActivity extends AppCompatActivity {
             formulario_cc.putExtra("circulo_credito", gestionCC);
 
 
-            startActivityForResult  (formulario_cc,0);
+            startActivityForResult(formulario_cc, 0);
 
 
         }
@@ -363,13 +349,12 @@ public class CirculoCreditoActivity extends AppCompatActivity {
             builder.setTitle(R.string.selected_option)
                     .setItems(_costo_consulta, (dialog, position) -> {
                         tvCostoConsulta.setError(null);
-                        tvCostoConsulta.setText(_costo_consulta[position].replace("$",""));
+                        tvCostoConsulta.setText(_costo_consulta[position].replace("$", ""));
 
-                        if (tipoCredito.equals("1")){
+                        if (tipoCredito.equals("1")) {
                             etMonto.setText(Miscellaneous.GetStr(tvCostoConsulta).replace("$", ""));
-                        }
-                        else{
-                            if (!Miscellaneous.GetStr(etIntegrantes).isEmpty()){
+                        } else {
+                            if (!Miscellaneous.GetStr(etIntegrantes).isEmpty()) {
                                 double total = Integer.parseInt(Miscellaneous.GetStr(etIntegrantes)) * Double.parseDouble(Miscellaneous.GetStr(tvCostoConsulta).replace("$", ""));
                                 etMonto.setText(Miscellaneous.moneyFormat(String.valueOf(total)).replace("$", ""));
                             }
@@ -380,34 +365,32 @@ public class CirculoCreditoActivity extends AppCompatActivity {
         }
     };
 
-    /**Evento de clic para seleccionar el medio de pago pero primero tendrá que llenar los campos anteriores*/
+    /**
+     * Evento de clic para seleccionar el medio de pago pero primero tendrá que llenar los campos anteriores
+     */
     private View.OnClickListener tvMedioPago_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
             Validator validator = new Validator();
             /**Valida si ya seleccionó el producto de individual o grupal*/
-            if (rgTipo.getCheckedRadioButtonId() == R.id.rbInd || rgTipo.getCheckedRadioButtonId() == R.id.rbGpo)
-            {
+            if (rgTipo.getCheckedRadioButtonId() == R.id.rbInd || rgTipo.getCheckedRadioButtonId() == R.id.rbGpo) {
                 /**Valida que los campos de nombre de cliente/grupo y curp esten llenos*/
                 if (!validator.validate(etClienteGrupo, new String[]{validator.REQUIRED, validator.ONLY_TEXT}) &&
-                    !validator.validate(etCurpCliente, new String[]{validator.REQUIRED, validator.CURP}))
-                {
-                    GestionCirculoCredito cc = gestionCirculoCreditoDao.findByCurp(misc.GetStr(etCurpCliente));
+                        !validator.validate(etCurpCliente, new String[]{validator.REQUIRED, validator.CURP})) {
+                    //GestionCirculoCredito cc = gestionCirculoCreditoDao.findByCurp(Miscellaneous.GetStr(etCurpCliente));
 
-                    if(cc != null && gestionCC.getId() != cc.getId())
+                    boolean validarCurp = false;
+                    validarCurp = gestionCirculoCreditoDao.validarCurpCC(etCurpCliente.getText().toString().trim());
+                    int dato = 10;
+                    if (!validarCurp)//&& gestionCC.getId() != cc.getId())
                     {
                         etCurpCliente.setError("Esta CURP ya ha sido utilizada!");
-                    }
-                    else
-                    {
-                        if (misc.CurpValidador(misc.GetStr(etCurpCliente)))
-                        {
+                    } else {
+                        if (Miscellaneous.CurpValidador(Miscellaneous.GetStr(etCurpCliente))) {
                             /**Valida el campo de aval/representante esten llenos*/
-                            if(rgTipo.getCheckedRadioButtonId() == R.id.rbInd || (rgTipo.getCheckedRadioButtonId() == R.id.rbGpo && !validator.validate(etAvalRepresentate, new String[]{validator.REQUIRED, validator.ONLY_TEXT})))
-                            {
+                            if (rgTipo.getCheckedRadioButtonId() == R.id.rbInd || (rgTipo.getCheckedRadioButtonId() == R.id.rbGpo && !validator.validate(etAvalRepresentate, new String[]{validator.REQUIRED, validator.ONLY_TEXT}))) {
                                 /**Valida que el numero de integrantes sea mayor que 0*/
-                                if (!validator.validate(etIntegrantes, new String[]{validator.REQUIRED, validator.YEARS}))
-                                {
+                                if (!validator.validate(etIntegrantes, new String[]{validator.REQUIRED, validator.YEARS})) {
                                     /**Muestra un dialog para poder seleccionar el medio de pago*/
                                     AlertDialog.Builder builder = new AlertDialog.Builder(ctx);
                                     builder.setTitle(R.string.selected_option)
@@ -417,7 +400,7 @@ public class CirculoCreditoActivity extends AppCompatActivity {
                                                     tvMedioPago.setText(_medio_pago[position]);
                                                     byteEvidencia = null;
                                                     /**Si selecciona medio de pago EFECTIVO tendra que imprimir recibos y tomar fotografia o adjunto*/
-                                                    if (misc.GetMedioPagoId(misc.GetStr(tvMedioPago)) == 6) {
+                                                    if (Miscellaneous.GetMedioPagoId(Miscellaneous.GetStr(tvMedioPago)) == 6) {
                                                         llImprimirRecibo.setVisibility(View.VISIBLE);
                                                         ibGaleria.setVisibility(View.VISIBLE);
                                                         ibGaleria.setEnabled(false);
@@ -429,8 +412,7 @@ public class CirculoCreditoActivity extends AppCompatActivity {
                                                         ivEvidencia.setVisibility(View.GONE);
                                                         tvImprimirRecibo.setText("SI");
                                                         SelectImprimirRecibos(0);
-                                                    }
-                                                    else{
+                                                    } else {
                                                         /**Medio de pago diferente a efectivo solo tomara una fotografia o adjunto*/
                                                         llImprimirRecibo.setVisibility(View.GONE);
                                                         llFolioRecibo.setVisibility(View.GONE);
@@ -447,20 +429,16 @@ public class CirculoCreditoActivity extends AppCompatActivity {
                                             });
                                     builder.create();
                                     builder.show();
-                                }
-                                else
+                                } else
                                     etIntegrantes.setError("No ha seleccionado el total de integrantes que pagaron");
                             }
-                        }
-                        else{
+                        } else {
                             etCurpCliente.setError("No es una Curp Válida");
                         }
                     }
                 }
 
-            }
-            else
-            {
+            } else {
                 Toast.makeText(ctx, "Falta seleccionar el tipo de credito", Toast.LENGTH_SHORT).show();
                 tvTipo.setError("");
             }
@@ -468,7 +446,9 @@ public class CirculoCreditoActivity extends AppCompatActivity {
         }
     };
 
-    /**Evento de click para poder seleccionar si va a imprimir o va a capturar el folio de recibo manual*/
+    /**
+     * Evento de click para poder seleccionar si va a imprimir o va a capturar el folio de recibo manual
+     */
     private View.OnClickListener tvImprimirRecibo_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -485,37 +465,40 @@ public class CirculoCreditoActivity extends AppCompatActivity {
         }
     };
 
-    /**Evento de click para imprimir los recibos de CC*/
+    /**
+     * Evento de click para imprimir los recibos de CC
+     */
     private View.OnClickListener ibImprimir_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            if (misc.GetStr(etCurpCliente).length() == 18 && misc.CurpValidador(misc.GetStr(etCurpCliente))) {
+            if (Miscellaneous.GetStr(etCurpCliente).length() == 18 && Miscellaneous.CurpValidador(Miscellaneous.GetStr(etCurpCliente))) {
                 Guardar(-1);
 
-                if(gestionCC.getId() != null){
+                if (gestionCC.getId() != null) {
                     int tipoPrestamo = (rgTipo.getCheckedRadioButtonId() == R.id.rbInd) ? 1 : 2;
 
                     Intent i_formato_recibo = new Intent(ctx, FormatoRecibos.class);
-                    i_formato_recibo.putExtra("nombre", misc.RemoveTildesVocal(misc.GetStr(etClienteGrupo)));
-                    i_formato_recibo.putExtra("nombre_firma", misc.RemoveTildesVocal(misc.GetStr(etAvalRepresentate)));
-                    i_formato_recibo.putExtra("monto", misc.GetStr(etMonto));
+                    i_formato_recibo.putExtra("nombre", Miscellaneous.RemoveTildesVocal(Miscellaneous.GetStr(etClienteGrupo)));
+                    i_formato_recibo.putExtra("nombre_firma", Miscellaneous.RemoveTildesVocal(Miscellaneous.GetStr(etAvalRepresentate)));
+                    i_formato_recibo.putExtra("monto", Miscellaneous.GetStr(etMonto));
                     i_formato_recibo.putExtra("tipo", "CC");
                     i_formato_recibo.putExtra("tipo_credito", tipoPrestamo);
-                    i_formato_recibo.putExtra("curp", misc.RemoveTildesVocal(misc.GetStr(etCurpCliente)));
-                    i_formato_recibo.putExtra("integrantes", Integer.parseInt(misc.GetStr(etIntegrantes)));
+                    i_formato_recibo.putExtra("curp", Miscellaneous.RemoveTildesVocal(Miscellaneous.GetStr(etCurpCliente)));
+                    i_formato_recibo.putExtra("integrantes", Integer.parseInt(Miscellaneous.GetStr(etIntegrantes)));
                     i_formato_recibo.putExtra("res_impresion", 0);
                     i_formato_recibo.putExtra("is_reeimpresion", false);
                     startActivityForResult(i_formato_recibo, REQUEST_CODE_IMPRESORA);
                 }
-            }
-            else{
+            } else {
                 etCurpCliente.setError("No es una Curp válida");
                 Toast.makeText(ctx, "No es una Curp válida", Toast.LENGTH_SHORT).show();
             }
         }
     };
 
-    /**Evento de click para tomar la fotografia para evidencia*/
+    /**
+     * Evento de click para tomar la fotografia para evidencia
+     */
     private View.OnClickListener ibFoto_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -524,36 +507,32 @@ public class CirculoCreditoActivity extends AppCompatActivity {
         }
     };
 
-    /**Evento para adjuntar una imagen de galeria*/
-    private View.OnClickListener ibGaleria_OnClick = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            /**Valida si tiene los permisos de escritura y lectura de almacenamiento*/
-            if (ContextCompat.checkSelfPermission(ctx, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
-                    || ContextCompat.checkSelfPermission(ctx,Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED){
-                requestPermissions(new String[] {Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE}, 123);
-            } else {
-                int compress = 10;/**Porcentaje de calidad de imagen de salida*/
-                if( Build.MANUFACTURER.toUpperCase().equals("SAMSUNG"))/**Valida si es de un samsung para subir un poco la calidad*/
-                    compress = 40;
+    /**
+     * Evento para adjuntar una imagen de galeria
+     */
+    private final View.OnClickListener ibGaleria_OnClick = ignored -> {
+        String model = Build.MANUFACTURER;
+        int compress = 10;
 
-                /**Libreria para recortar imagenes*/
-                CropImage.activity()
-                        .setAutoZoomEnabled(true)
-                        .setMinCropWindowSize(3000,4000)
-                        .setOutputCompressQuality(compress)
-                        .start(CirculoCreditoActivity.this);
-            }
-
+        if (model != null && model.equalsIgnoreCase("SAMSUNG")) {
+            compress = 40;
         }
+
+        CropImage.activity()
+                .setAutoZoomEnabled(true)
+                .setMinCropWindowSize(3000, 4000)
+                .setOutputCompressQuality(compress)
+                .start(this);
     };
 
-    /**Evento para saber si va a cambiar la fotografia/adjunto*/
+    /**
+     * Evento para saber si va a cambiar la fotografia/adjunto
+     */
     private View.OnClickListener ivEvidencia_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
             if (isEdit) {
-                if (tvMedioPago.getText().toString().trim().toUpperCase().equals("EFECTIVO")) {
+                if (tvMedioPago.getText().toString().trim().equalsIgnoreCase("EFECTIVO")) {
                     final AlertDialog evidencia_dlg = Popups.showDialogConfirm(ctx, question,
                             R.string.capturar_nueva_fotografia, R.string.fotografia, new Popups.DialogMessage() {
                                 @Override
@@ -572,9 +551,7 @@ public class CirculoCreditoActivity extends AppCompatActivity {
                     Objects.requireNonNull(evidencia_dlg.getWindow()).requestFeature(Window.FEATURE_NO_TITLE);
                     evidencia_dlg.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
                     evidencia_dlg.show();
-                }
-                else
-                {
+                } else {
                     final AlertDialog evidencia_dlg = Popups.showDialogConfirmImage(ctx, question,
                             R.string.capturar_foto_galeria, R.string.fotografia, new Popups.DialogMessage() {
                                 @Override
@@ -612,9 +589,11 @@ public class CirculoCreditoActivity extends AppCompatActivity {
         }
     };
 
-    /**Funcion que establece si se va imprimir o va a capturar el folio de recibo manual*/
-    private void SelectImprimirRecibos(int pos){
-        switch (pos){
+    /**
+     * Funcion que establece si se va imprimir o va a capturar el folio de recibo manual
+     */
+    private void SelectImprimirRecibos(int pos) {
+        switch (pos) {
             case 0: // Imprimir Recibos
                 ibImprimir.setVisibility(View.VISIBLE);
                 if (!folio_impreso.trim().isEmpty()) {
@@ -624,8 +603,7 @@ public class CirculoCreditoActivity extends AppCompatActivity {
                     etFolioRecibo.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked));
                     etFolioRecibo.setError(null);
                     llFolioRecibo.setVisibility(View.VISIBLE);
-                }
-                else {
+                } else {
                     llFolioRecibo.setVisibility(View.GONE);
                 }
                 break;
@@ -648,18 +626,15 @@ public class CirculoCreditoActivity extends AppCompatActivity {
         }
     }
 
-    private void initComponents()
-    {
+    private void initComponents() {
 
-        if(gestionCC.getId() != null)
-        {
-            for (int i = 0; i < rgTipo.getChildCount(); i++)
-            {
+        if (gestionCC.getId() != null) {
+            for (int i = 0; i < rgTipo.getChildCount(); i++) {
                 rgTipo.getChildAt(i).setEnabled(false);
             }
 
             rgTipo.check((gestionCC.getTipoCredito() == 1) ? R.id.rbInd : R.id.rbGpo);
-            Toast.makeText(ctx,"Text" + gestionCC.getTipoCredito().toString().trim(),Toast.LENGTH_SHORT).show();
+            Toast.makeText(ctx, "Text" + gestionCC.getTipoCredito().toString().trim(), Toast.LENGTH_SHORT).show();
 
             tvCostoConsulta.setText(gestionCC.getCostoConsulta());
             tvCostoConsulta.setEnabled(false);
@@ -686,10 +661,9 @@ public class CirculoCreditoActivity extends AppCompatActivity {
             tvMedioPago.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked));
 
             if (
-                gestionCC.getMedioPago().equals("EFECTIVO")
-                && gestionCC.getImprimirRecibo().equals("SI")
-            )
-            {
+                    gestionCC.getMedioPago().equals("EFECTIVO")
+                            && gestionCC.getImprimirRecibo().equals("SI")
+            ) {
                 llImprimirRecibo.setVisibility(View.VISIBLE);
 
 
@@ -699,8 +673,7 @@ public class CirculoCreditoActivity extends AppCompatActivity {
                 tvImprimirRecibo.setText("SI");
                 SelectImprimirRecibos(0);
 
-                if(reciboCirculoCredito != null)
-                {
+                if (reciboCirculoCredito != null) {
                     llFolioRecibo.setVisibility(View.VISIBLE);
                     etFolioRecibo.setText("CC-" + session.getUser().get(0) + "-" + reciboCirculoCredito.getFolio());
 
@@ -717,23 +690,20 @@ public class CirculoCreditoActivity extends AppCompatActivity {
                 tvImprimirRecibo.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked));
                 tvImprimirRecibo.setEnabled(false);
 
-                if(!gestionCC.getEvidencia().isEmpty() && gestionCC.getEvidencia() != null)
-                {
+                if (!gestionCC.getEvidencia().isEmpty() && gestionCC.getEvidencia() != null) {
                     File evidenciaFile = new File(ROOT_PATH + "Evidencia/" + gestionCC.getEvidencia());
                     Uri uriEvidencia = Uri.fromFile(evidenciaFile);
                     Glide.with(ctx).load(uriEvidencia).centerCrop().into(ivEvidencia);
                     ibFoto.setVisibility(View.GONE);
                     ibGaleria.setVisibility(View.GONE);
                     ivEvidencia.setVisibility(View.VISIBLE);
-                    byteEvidencia = misc.getBytesUri(ctx, uriEvidencia, 1);
+                    byteEvidencia = Miscellaneous.getBytesUri(ctx, uriEvidencia, 1);
                     tvFotoGaleria.setError(null);
                 }
-            }
-            else if (
-                gestionCC.getMedioPago().equals("EFECTIVO")
-                && gestionCC.getImprimirRecibo().equals("NO")
-            )
-            {
+            } else if (
+                    gestionCC.getMedioPago().equals("EFECTIVO")
+                            && gestionCC.getImprimirRecibo().equals("NO")
+            ) {
                 llImprimirRecibo.setVisibility(View.VISIBLE);
                 ibGaleria.setEnabled(false);
                 ibGaleria.setBackground(ctx.getResources().getDrawable(R.drawable.btn_disable));
@@ -755,21 +725,18 @@ public class CirculoCreditoActivity extends AppCompatActivity {
                 tvImprimirRecibo.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked));
                 tvImprimirRecibo.setEnabled(false);
 
-                if (!gestionCC.getEvidencia().isEmpty() && gestionCC.getEvidencia() != null)
-                {
+                if (!gestionCC.getEvidencia().isEmpty() && gestionCC.getEvidencia() != null) {
                     File evidenciaFile = new File(ROOT_PATH + "Evidencia/" + gestionCC.getEvidencia());
                     Uri uriEvidencia = Uri.fromFile(evidenciaFile);
                     Glide.with(ctx).load(uriEvidencia).centerCrop().into(ivEvidencia);
                     ibFoto.setVisibility(View.GONE);
                     ibGaleria.setVisibility(View.GONE);
                     ivEvidencia.setVisibility(View.VISIBLE);
-                    byteEvidencia = misc.getBytesUri(ctx, uriEvidencia, 1);
+                    byteEvidencia = Miscellaneous.getBytesUri(ctx, uriEvidencia, 1);
                     tvFotoGaleria.setError(null);
                 }
-            }
-            else {
-                if (gestionCC.getMedioPago() != null && !gestionCC.getMedioPago().equals(""))
-                {
+            } else {
+                if (gestionCC.getMedioPago() != null && !gestionCC.getMedioPago().equals("")) {
                     llImprimirRecibo.setVisibility(View.GONE);
                     ibGaleria.setEnabled(true);
                     ibGaleria.setBackground(ctx.getResources().getDrawable(R.drawable.round_corner_blue));
@@ -779,13 +746,12 @@ public class CirculoCreditoActivity extends AppCompatActivity {
                     ivEvidencia.setVisibility(View.GONE);
                 }
 
-                if(gestionCC.getEvidencia() != null && !gestionCC.getEvidencia().equals(""))
-                {
+                if (gestionCC.getEvidencia() != null && !gestionCC.getEvidencia().equals("")) {
                     File evidenciaFile = new File(ROOT_PATH + "Evidencia/" + gestionCC.getEvidencia());
                     Uri uriEvidencia = Uri.fromFile(evidenciaFile);
                     Glide.with(ctx).load(uriEvidencia).centerCrop().into(ivEvidencia);
 
-                    byteEvidencia = misc.getBytesUri(ctx, uriEvidencia, 1);
+                    byteEvidencia = Miscellaneous.getBytesUri(ctx, uriEvidencia, 1);
 
                     tvFotoGaleria.setError(null);
 
@@ -796,14 +762,12 @@ public class CirculoCreditoActivity extends AppCompatActivity {
                 }
             }
 
-            if(gestionCC.getEstatus() == 1)
-            {
+            if (gestionCC.getEstatus() == 1) {
                 tvMedioPago.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked));
                 tvMedioPago.setEnabled(false);
                 isEdit = false;
                 ibImprimir.setVisibility(View.GONE);
-            }
-            else if(gestionCC.getEstatus() == 2) {
+            } else if (gestionCC.getEstatus() == 2) {
                 /*etAvalRepresentate.setText("");
                 etAvalRepresentate.setEnabled(true);
                 etAvalRepresentate.setBackground(getResources().getDrawable(R.drawable.et_rounded_edges));
@@ -848,8 +812,7 @@ public class CirculoCreditoActivity extends AppCompatActivity {
         }
     }
 
-    private void Guardar(Integer estatus)
-    {
+    private void Guardar(Integer estatus) {
         ReciboCirculoCredito rcc = null;
         ReciboCirculoCredito rccc = null;
 
@@ -858,79 +821,68 @@ public class CirculoCreditoActivity extends AppCompatActivity {
         Validator validator = new Validator();
         ValidatorTextView validatorTV = new ValidatorTextView();
 
-        if(
-            rgTipo.getCheckedRadioButtonId() != R.id.rbInd
-            && rgTipo.getCheckedRadioButtonId() != R.id.rbGpo
-        )
-        {
+        if (
+                rgTipo.getCheckedRadioButtonId() != R.id.rbInd
+                        && rgTipo.getCheckedRadioButtonId() != R.id.rbGpo
+        ) {
             guardar = false;
             Toast.makeText(ctx, "Falta seleccionar el tipo de credito!", Toast.LENGTH_SHORT).show();
             tvTipo.setError("");
         }
 
-        if(guardar && validatorTV.validate(tvCostoConsulta, new String[]{validatorTV.REQUIRED}))
-        {
+        if (guardar && validatorTV.validate(tvCostoConsulta, new String[]{validatorTV.REQUIRED})) {
             guardar = false;
             Toast.makeText(ctx, "Falta seleccionar el costo de la consulta!", Toast.LENGTH_SHORT).show();
         }
 
-        if(guardar && validator.validate(etClienteGrupo, new String[]{validator.REQUIRED, validator.ONLY_TEXT}))
-        {
+        if (guardar && validator.validate(etClienteGrupo, new String[]{validator.REQUIRED, validator.ONLY_TEXT})) {
             guardar = false;
             Toast.makeText(ctx, "Ingrese el nombre del cliente o grupo!", Toast.LENGTH_SHORT).show();
         }
 
-        if(guardar && validator.validate(etCurpCliente, new String[]{validator.REQUIRED, validator.CURP}))
-        {
+        if (guardar && validator.validate(etCurpCliente, new String[]{validator.REQUIRED, validator.CURP})) {
             guardar = false;
             Toast.makeText(ctx, "Ingrese una CURP valida!", Toast.LENGTH_SHORT).show();
         }
 
-        if(guardar && !misc.CurpValidador(misc.GetStr(etCurpCliente)))
-        {
+        if (guardar && !Miscellaneous.CurpValidador(Miscellaneous.GetStr(etCurpCliente))) {
             guardar = false;
             etCurpCliente.setError("No corresponde a una CURP válida!");
             Toast.makeText(ctx, "Ingrese una CURP valida!", Toast.LENGTH_SHORT).show();
         }
 
-        if(
-            guardar
-            && rgTipo.getCheckedRadioButtonId() == R.id.rbGpo
-            && validator.validate(etAvalRepresentate, new String[]{validator.REQUIRED, validator.ONLY_TEXT})
-        )
-        {
+        if (
+                guardar
+                        && rgTipo.getCheckedRadioButtonId() == R.id.rbGpo
+                        && validator.validate(etAvalRepresentate, new String[]{validator.REQUIRED, validator.ONLY_TEXT})
+        ) {
             guardar = false;
             Toast.makeText(ctx, "No cuenta con un representante!", Toast.LENGTH_SHORT).show();
         }
 
-        if(
-            guardar
-            && validator.validate(etIntegrantes, new String[]{validator.REQUIRED, validator.YEARS})
-        )
-        {
+        if (
+                guardar
+                        && validator.validate(etIntegrantes, new String[]{validator.REQUIRED, validator.YEARS})
+        ) {
             guardar = false;
             etIntegrantes.setError("No ha seleccionado el total de integrantes que pagaron!");
             Toast.makeText(ctx, "No ha seleccionado el total de integrantes que pagaron!", Toast.LENGTH_SHORT).show();
         }
 
-        if(
-            guardar
-            && validatorTV.validate(tvMedioPago, new String[]{validatorTV.REQUIRED})
-        )
-        {
+        if (
+                guardar
+                        && validatorTV.validate(tvMedioPago, new String[]{validatorTV.REQUIRED})
+        ) {
             guardar = false;
             Toast.makeText(ctx, "Falta seleccionar el medio de pago!", Toast.LENGTH_SHORT).show();
         }
 
-        if(
-            guardar
-            && !validatorTV.validate(tvMedioPago, new String[]{validatorTV.REQUIRED})
-        )
-        {
-            if(!misc.GetStr(tvMedioPago).equals("EFECTIVO"))
-            {
-                if(byteEvidencia == null)
-                {
+        if (
+                guardar
+                        && !validatorTV.validate(tvMedioPago, new String[]{validatorTV.REQUIRED})
+        ) {
+            if (!Miscellaneous.GetStr(tvMedioPago).equals("EFECTIVO")) {
+                if (byteEvidencia == null) {
                     guardar = false;
                     Toast.makeText(ctx, "Debe tomar una fotografía del pago o adjuntar la imagen desde la galería!", Toast.LENGTH_SHORT).show();
                 }
@@ -961,106 +913,79 @@ public class CirculoCreditoActivity extends AppCompatActivity {
         }*/
 
 
-        if(guardar)
-        {
-            if(gestionCC.getId() == null)
-            {
-                gestionCC.setTipoCredito((rgTipo.getCheckedRadioButtonId() == R.id.rbInd)? 1 : 2);
-                gestionCC.setNombreUno(misc.RemoveTildesVocal(misc.GetStr(etClienteGrupo)));
-                gestionCC.setCurp(misc.RemoveTildesVocal(misc.GetStr(etCurpCliente)));
-                gestionCC.setNombreDos(misc.RemoveTildesVocal(misc.GetStr(etAvalRepresentate)));
-                gestionCC.setIntegrantes(Integer.parseInt(misc.GetStr(etIntegrantes)));
-                gestionCC.setMonto(misc.GetStr(etMonto).replace(",",""));
-                gestionCC.setMedioPago(misc.GetStr(tvMedioPago));
+        if (guardar) {
+            if (gestionCC.getId() == null) {
+                gestionCC.setTipoCredito((rgTipo.getCheckedRadioButtonId() == R.id.rbInd) ? 1 : 2);
+                gestionCC.setNombreUno(Miscellaneous.RemoveTildesVocal(Miscellaneous.GetStr(etClienteGrupo)));
+                gestionCC.setCurp(Miscellaneous.RemoveTildesVocal(Miscellaneous.GetStr(etCurpCliente)));
+                gestionCC.setNombreDos(Miscellaneous.RemoveTildesVocal(Miscellaneous.GetStr(etAvalRepresentate)));
+                gestionCC.setIntegrantes(Integer.parseInt(Miscellaneous.GetStr(etIntegrantes)));
+                gestionCC.setMonto(Miscellaneous.GetStr(etMonto).replace(",", ""));
+                gestionCC.setMedioPago(Miscellaneous.GetStr(tvMedioPago));
 
                 rcc = reciboCirculoCreditoDao.findByCurpAndTipoImpresion(gestionCC.getCurp(), "O");
                 rccc = reciboCirculoCreditoDao.findByCurpAndTipoImpresion(gestionCC.getCurp(), "C");
 
-                if(rcc == null)
-                {
-                    if(tvImprimirRecibo.getText().equals("SI")){
+                if (rcc == null) {
+                    if (tvImprimirRecibo.getText().equals("SI")) {
                         gestionCC.setImprimirRecibo("SI");
-                    }
-                    else{
+                    } else {
                         gestionCC.setImprimirRecibo("NO");
                     }
-                }
-                else {
+                } else {
                     gestionCC.setImprimirRecibo("SI");
                 }
 
-                if(estatus >= 0 && gestionCC.getImprimirRecibo().equals("SI") && !etFolioRecibo.getText().toString().trim().equals(""))
-                {
+                if (estatus >= 0 && gestionCC.getImprimirRecibo().equals("SI") && !etFolioRecibo.getText().toString().trim().equals("")) {
                     String[] folio = etFolioRecibo.getText().toString().trim().split("-");
                     gestionCC.setFolio(Integer.parseInt(folio[2]));
-                }
-                else
-                {
+                } else {
                     gestionCC.setFolio(0);
                 }
 
                 gestionCC.setFechaTermino("");
                 gestionCC.setFechaEnvio("");
                 gestionCC.setEstatus(0);
-                gestionCC.setCostoConsulta(misc.GetStr(tvCostoConsulta));
-            }
-            else
-            {
-                if(tvImprimirRecibo.getText().equals("SI")) {
+                gestionCC.setCostoConsulta(Miscellaneous.GetStr(tvCostoConsulta));
+            } else {
+                if (tvImprimirRecibo.getText().equals("SI")) {
                     rcc = reciboCirculoCreditoDao.findByCurpAndTipoImpresion(gestionCC.getCurp(), "O");
                     rccc = reciboCirculoCreditoDao.findByCurpAndTipoImpresion(gestionCC.getCurp(), "C");
                 }
             }
 
-            if(byteEvidencia != null)
-            {
+            if (byteEvidencia != null) {
                 gestionCC.setTipoImagen(tipoImagen);
 
                 try {
-                    gestionCC.setEvidencia(misc.save(byteEvidencia, 2));
-                }
-                catch (IOException e)
-                {
+                    gestionCC.setEvidencia(Miscellaneous.save(byteEvidencia, 2));
+                } catch (IOException e) {
                     e.printStackTrace();
                 }
-            }
-            else
-            {
+            } else {
                 gestionCC.setTipoImagen("");
                 gestionCC.setEvidencia("");
             }
 
-            if(gestionCC.getEvidencia() != null && !gestionCC.getEvidencia().equals("") && estatus > 0)
-            {
-                if(tvImprimirRecibo.getText().equals("SI"))
-                {
-                    if(rcc != null && rccc != null)
-                    {
+            if (gestionCC.getEvidencia() != null && !gestionCC.getEvidencia().equals("") && estatus > 0) {
+                if (tvImprimirRecibo.getText().equals("SI")) {
+                    if (rcc != null && rccc != null) {
                         gestionCC.setEstatus(1);
-                        gestionCC.setFechaTermino(misc.ObtenerFecha(TIMESTAMP));
+                        gestionCC.setFechaTermino(Miscellaneous.ObtenerFecha(TIMESTAMP));
                     }
-                }
-                else
-                {
+                } else {
                     gestionCC.setEstatus(1);
-                    gestionCC.setFechaTermino(misc.ObtenerFecha(TIMESTAMP));
+                    gestionCC.setFechaTermino(Miscellaneous.ObtenerFecha(TIMESTAMP));
                 }
             }
 
-            if(gestionCC.getId() == null)
-            {
+            if (gestionCC.getId() == null) {
                 gestionCC.setId(Integer.parseInt(String.valueOf(gestionCirculoCreditoDao.store(gestionCC))));
-            }
-            else
-            {
+            } else {
                 gestionCirculoCreditoDao.update(gestionCC.getId(), gestionCC);
             }
 
-            Servicios_Sincronizado ss = new Servicios_Sincronizado();
-            ss.SendRecibos(ctx, false);
-
-            for (int i = 0; i < rgTipo.getChildCount(); i++)
-            {
+            for (int i = 0; i < rgTipo.getChildCount(); i++) {
                 rgTipo.getChildAt(i).setEnabled(false);
             }
 
@@ -1081,8 +1006,10 @@ public class CirculoCreditoActivity extends AppCompatActivity {
             tvImprimirRecibo.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked));
 
 
-            if(gestionCC.getEvidencia() != null && !gestionCC.getEvidencia().equals("") && estatus > 0)
-            {
+            if (gestionCC.getEvidencia() != null && !gestionCC.getEvidencia().equals("") && estatus > 0) {
+                Servicios_Sincronizado ss = new Servicios_Sincronizado();
+                ss.SendRecibos(ctx, false);
+
                 ibFoto.setEnabled(false);
                 ibGaleria.setEnabled(false);
                 finish();
@@ -1090,7 +1017,9 @@ public class CirculoCreditoActivity extends AppCompatActivity {
         }
     }
 
-    /**Infla el menu para guardar la gestion o en caso de que este guardado se oculta el menu*/
+    /**
+     * Infla el menu para guardar la gestion o en caso de que este guardado se oculta el menu
+     */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
@@ -1099,32 +1028,33 @@ public class CirculoCreditoActivity extends AppCompatActivity {
         return true;
     }
 
-    /**Acciones del menu*/
+    /**
+     * Acciones del menu
+     */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:/**Menu de retroceso del toolbar <- */
-                finish();
-                break;
-            case R.id.save: /**Menu para guardar la gestion*/
-                Guardar(1);
-                break;
+        int itemId = item.getItemId();
+        if (itemId == android.R.id.home) {/**Menu de retroceso del toolbar <- */
+            finish();
+        } else if (itemId == R.id.save) {/**Menu para guardar la gestion*/
+            Guardar(1);
         }
         return super.onOptionsItemSelected(item);
     }
 
-    /**Obtiene las respuestas de otras clases que se mandaron a llamar como la camara, impresiones, o galeria*/
+    /**
+     * Obtiene las respuestas de otras clases que se mandaron a llamar como la camara, impresiones, o galeria
+     */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        switch (requestCode){
+        switch (requestCode) {
             case REQUEST_CODE_IMPRESORA:/**Recibe la informacion de la impresion*/
-                if (resultCode == Activity.RESULT_OK){
-                    if (data != null){
+                if (resultCode == Activity.RESULT_OK) {
+                    if (data != null) {
                         Toast.makeText(ctx, data.getStringExtra(MESSAGE), Toast.LENGTH_SHORT).show();
 
-                        if(data.getIntExtra(RES_PRINT,0) > 0)
-                        {
+                        if (data.getIntExtra(RES_PRINT, 0) > 0) {
                             tvCostoConsulta.setEnabled(false);
                             tvCostoConsulta.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked));
                             tvMedioPago.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked));
@@ -1133,13 +1063,12 @@ public class CirculoCreditoActivity extends AppCompatActivity {
                             tvImprimirRecibo.setEnabled(false);
 
                             res_impresion = data.getIntExtra(RES_PRINT, 0);
-                            folio_impreso = "CC-" + session.getUser().get(0) + "-" + data.getIntExtra(FOLIO,0);
+                            folio_impreso = "CC-" + session.getUser().get(0) + "-" + data.getIntExtra(FOLIO, 0);
                             etFolioRecibo.setText(folio_impreso);
                             tvImprimirRecibo.setError(null);
                             llFolioRecibo.setVisibility(View.VISIBLE);
 
-                            for (int i = 0; i < rgTipo.getChildCount(); i++)
-                            {
+                            for (int i = 0; i < rgTipo.getChildCount(); i++) {
                                 (rgTipo.getChildAt(i)).setEnabled(false);
                             }
 
@@ -1154,8 +1083,7 @@ public class CirculoCreditoActivity extends AppCompatActivity {
 
                             Guardar(0);
 
-                            if(data.getIntExtra(FOLIO,0) != 0 && byteEvidencia == null)
-                            {
+                            if (data.getIntExtra(FOLIO, 0) != 0 && byteEvidencia == null) {
                                 ibGaleria.setVisibility(View.VISIBLE);
                                 ibFoto.setEnabled(true);
                                 ibFoto.setBackground(ctx.getResources().getDrawable(R.drawable.round_corner_blue));
@@ -1168,8 +1096,8 @@ public class CirculoCreditoActivity extends AppCompatActivity {
                 }
                 break;
             case REQUEST_CODE_CAMARA_TICKET:/**Recibe informacion de la fotografia capturada*/
-                if (resultCode == Activity.RESULT_OK){
-                    if (data != null){
+                if (resultCode == Activity.RESULT_OK) {
+                    if (data != null) {
                         tipoImagen = "FOTOGRAFIA";
                         ibFoto.setVisibility(View.GONE);
                         ibGaleria.setVisibility(View.GONE);
@@ -1182,8 +1110,7 @@ public class CirculoCreditoActivity extends AppCompatActivity {
 
                         Guardar(0);
 
-                        if(byteEvidencia != null)
-                        {
+                        if (byteEvidencia != null) {
                             tvMedioPago.setEnabled(false);
                             tvMedioPago.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked));
                             etIntegrantes.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked));
@@ -1193,7 +1120,7 @@ public class CirculoCreditoActivity extends AppCompatActivity {
                 }
                 break;
             case CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE:/**Recibe el archivo a adjuntar*/
-                if (data != null){/**Valida que se esté recibiendo el archivo*/
+                if (data != null) {/**Valida que se esté recibiendo el archivo*/
                     try {
                         /**se establece el origen o procedencia de la imagen en este caso GELERIA*/
                         tipoImagen = "GALERIA";
@@ -1201,7 +1128,7 @@ public class CirculoCreditoActivity extends AppCompatActivity {
                         imageUri = result.getUri();
 
                         /**Convierte la iamgen adjuntada a un array de byte*/
-                        byteEvidencia = misc.getBytesUri(ctx, imageUri, 0);
+                        byteEvidencia = Miscellaneous.getBytesUri(ctx, imageUri, 0);
 
                         ibFoto.setVisibility(View.GONE);
                         ibGaleria.setVisibility(View.GONE);
@@ -1235,14 +1162,13 @@ public class CirculoCreditoActivity extends AppCompatActivity {
 
                         Guardar(0);
 
-                        if(byteEvidencia != null)
-                        {
+                        if (byteEvidencia != null) {
                             tvMedioPago.setEnabled(false);
                             tvMedioPago.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked));
                             etIntegrantes.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked));
                             etIntegrantes.setEnabled(false);
                         }
-                    }catch (Exception e){
+                    } catch (Exception e) {
                         /**En caso de que haya adjuntado un archivo  con diferente formato al JPEG*/
                         AlertDialog success = Popups.showDialogMessage(ctx, "",
                                 R.string.error_image, R.string.accept, new Popups.DialogMessage() {

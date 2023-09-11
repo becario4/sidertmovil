@@ -103,10 +103,10 @@ public class GenerarCurp extends AppCompatActivity {
 
         ctx = this;
 
-        dBhelper = new DBhelper(ctx);
+        dBhelper = DBhelper.getInstance(ctx);
         db = dBhelper.getWritableDatabase();
 
-        session = new SessionManager(ctx);
+        session = SessionManager.getInstance(ctx);
 
         _sexo = getResources().getStringArray(R.array.sexo);
 

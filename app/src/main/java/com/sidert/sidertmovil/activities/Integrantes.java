@@ -53,7 +53,7 @@ public class Integrantes extends AppCompatActivity {
         setContentView(R.layout.activity_integrantes);
 
         ctx = this;
-        dBhelper = new DBhelper(ctx);
+        dBhelper = DBhelper.getInstance(ctx);
         tbMain = findViewById(R.id.tbMain);
 
         tvNombreGpo = findViewById(R.id.tvnombreGpo);

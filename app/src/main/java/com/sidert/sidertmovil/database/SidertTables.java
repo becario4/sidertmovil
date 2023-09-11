@@ -31,6 +31,9 @@ public class SidertTables {
         public static final String TABLE_IDENTIFICACIONES = IDENTIFICACIONES;
         public static final String TABLE_BENEFICIARIOS = TBL_DATOS_BENEFICIARIO;
         public static final String TABLE_BENEFICIARIOS_GPO = TBL_DATOS_BENEFICIARIO_GPO;
+        public static final String TABLE_CATALOGOS_CAMP  = TBL_CATALOGOS_CAMPANAS;
+        public static final String TABLE_SUCURSALES_LOCALIDADES = TBL_SUCURSALES_LOCALIDADES;
+        public static final String TABLE_CATALOGO_ENTREGA_CARTERA = TBL_DATOS_ENTREGA_CARTERA;
 
         // == COLUMNS IMPRESSIONS LOG
         public static final String ASESOR_ID = "asesor_id";
@@ -119,8 +122,8 @@ public class SidertTables {
         public static final String NUEVO_FOLIO = "nuevo_folio";
         public static final String FOLIO_ANTERIOR = "folio_anterior";
         public static final String INCIDENCIA = "incidencia";
-
-
+        public static final String ID_CAMAPANAS = "id_campanas";
+        public static final String TIPO_CAMPANAS = "tipo_campanas";
         // == QUERIES CREATE
 
         //=============================== TABLES TEST  ===============================================
@@ -190,6 +193,12 @@ public class SidertTables {
                 + SidertEntry._ID + " INTEGER PRIMARY KEY,"
                 + SidertEntry.SERIE_ID + " TEXT,"
                 + SidertEntry.TIMESTAMP + " TEXT)";
+
+
+
+        static final String CREATE_TABLE_CENTRO_COSTO = " CREATE TABLE " + TBL_CENTRO_COSTO + " ( " +
+                "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                "centroCosto INTEGER)";
 
 
         static final String CREATE_TABLE_DIRECCIONES = "CREATE TABLE " + TBL_DIRECCIONES + " (" +
@@ -2231,7 +2240,7 @@ public class SidertTables {
                 + SidertEntry._ID                    + " INTEGER PRIMARY KEY,"
                 + SidertEntry.IDENTIFICACION_ID      + " INTEGER,"
                 + SidertEntry.IDENTIFICACION_NOMBRE  + " TEXT)";
-        
+
         static final String CREATE_TABLE_LOCALIDADES = "CREATE TABLE " + LOCALIDADES + " (" +
                 "_id INTEGER PRIMARY KEY AUTOINCREMENT," +
                 "id_localidad INTEGER," +
@@ -2334,6 +2343,20 @@ public class SidertTables {
                 ")";
         //"curp_cliente TEXT, " +
 
+        static final String  CREATE_TBL_DATOS_BENEFICIARIO_IND_REN = "CREATE TABLE " + TBL_DATOS_BENEFICIARIO_REN + " (" +
+                "idBeneficiario INTEGER PRIMARY KEY AUTOINCREMENT," +
+                "id_solicitud INTEGER," +
+                "id_originacion INTEGER, " +
+                "id_cliente INTEGER," +
+                "id_grupo INTEGER," +
+                "nombre TEXT," +
+                "paterno TEXT," +
+                "materno TEXT," +
+                "parentesco TEXT," +
+                "serieid TEXT" +
+                ")";
+
+
         static final String CREATE_TBL_DATOS_BENEFICIARIOS_GPO = " CREATE TABLE " + TBL_DATOS_BENEFICIARIO_GPO + " (" +
                 "idBeneficiario INTEGER PRIMARY KEY AUTOINCREMENT," +
                 "id_solicitud INTEGER," +
@@ -2346,6 +2369,72 @@ public class SidertTables {
                 "materno TEXT," +
                 "parentesco TEXT," +
                 "serieid TEXT" +
+                ")";
+
+        static final String CREATE_TBL_DATOS_BENEFICIARIOS_GPO_REN = " CREATE TABLE " + TBL_DATOS_BENEFICIARIO_GPO_REN + " (" +
+                "idBeneficiario INTEGER PRIMARY KEY AUTOINCREMENT," +
+                "id_solicitud INTEGER," +
+                "id_solicitud_integrante INTEGER," +
+                "id_cliente INTEGER," +
+                "id_integrante INTEGER, " +
+                "id_grupo INTEGER," +
+                "nombre TEXT," +
+                "paterno TEXT," +
+                "materno TEXT," +
+                "parentesco TEXT," +
+                "serieid TEXT" +
+                ")";
+
+
+        static final String CREATE_TBL_CATALOGOS_CAMPANA = " CREATE TABLE " + TBL_CATALOGOS_CAMPANAS + " ( " +
+                "_id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                " id_campana INTEGER," +
+                " tipo_campana TEXT, " +
+                " estatus INTEGER" +
+                " ) ";
+
+        static final String CREATE_TBL_SUCURSALES_LOCALIDADES = " CREATE TABLE " + TBL_SUCURSALES_LOCALIDADES + " ( " +
+                "id_sucursales_localidades INTEGER PRIMARY KEY AUTOINCREMENT," +
+                "centrocosto INTEGER, " +
+                "id_municipio INTEGER, " +
+                "id_localidad INTEGER, " +
+                "localidad TEXT " +
+                ") ";
+
+
+        static final String CREATE_TBL_DATOS_CREDITO_CAMPANA = " CREATE TABLE " + TBL_DATOS_CREDITO_CAMPANA + " ( " +
+                "_id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                "id_solicitud INTEGER," +
+                "id_originacion INTEGER, " +
+                "id_campana INTEGER, " +
+                "tipo_campana TEXT, " +
+                "nombre_refiero TEXT" +
+                ")";
+
+        static final String CREATE_TBL_DATOS_CREDITO_CAMPANA_GPO = " CREATE TABLE " + TBL_DATOS_CREDITO_CAMPANA_GPO + " ( " +
+                "_id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                "id_solicitud INTEGER," +
+                "id_originacion INTEGER, " +
+                "id_campana INTEGER, " +
+                "tipo_campana TEXT, " +
+                "nombre_refiero TEXT" +
+                ")";
+
+
+        static final String CREATE_TBL_DATOS_CREDITO_CAMPANA_GPO_REN = " CREATE TABLE " + TBL_DATOS_CREDITO_CAMPANA_GPO_REN + " ( " +
+                "_id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                "id_solicitud INTEGER," +
+                "id_originacion INTEGER, " +
+                "id_campana INTEGER, " +
+                "tipo_campana TEXT, " +
+                "nombre_refiero TEXT" +
+                ")";
+
+        static final String CREATE_TBL_DATOS_ENTREGA_CARTERA = " CREATE TABLE " +  TBL_DATOS_ENTREGA_CARTERA + " ( " +
+                "_id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                "id_tipocartera INTEGER, " +
+                "tipo_EntregaCartera TEXT, " +
+                "estatus INTEGER " +
                 ")";
 
         static final String ADD_CREATE_AT_GEO = "ALTER TABLE " + TABLE_GEOLOCALIZACION +
@@ -2367,6 +2456,27 @@ public class SidertTables {
         static final String ADD_RES_IMPRESION = "ALTER TABLE " + TBL_RESPUESTAS_IND +
                 " ADD COLUMN res_impresion" +
                 " TEXT DEFAULT \"0\"";
+
+        static final String ADD_ID_CAMPANA = " ALTER TABLE " + TBL_CREDITO_IND +
+                " add column id_campana " +
+                " TEXT DEFAULT \"0\"";
+
+        static final String ADD_ID_CAMPANA_REN = " ALTER TABLE " + TBL_CREDITO_IND_REN +
+                " add column id_campana " +
+                " TEXT DEFAULT  \"0\"";
+
+        /** CONTINUE CODE...... GPO */
+        static final String ADD_ID_CAMPANA_GPO = " ALTER TABLE " + TBL_OTROS_DATOS_INTEGRANTE +
+                " add column id_campana " +
+                " TEXT DEFAULT \"0\" ";
+
+        static final String ADD_ID_CAMPANA_GPO_REN = " ALTER TABLE " + TBL_OTROS_DATOS_INTEGRANTE_REN +
+                " add column id_campana " +
+                " TEXT DEFAULT  \"0\" ";
+
+        static final String ADD_ID_CARTERAEN = " ALTER TABLE " + TBL_GEO_RESPUESTAS_T +
+                " add column id_tipocartera " +
+                " TEXT DEFAULT  \"0\" ";
 
         static final String ADD_RES_IMPRESION_GPO_T = "ALTER TABLE " + TBL_RESPUESTAS_GPO_T +
                 " ADD COLUMN res_impresion" +
@@ -2980,5 +3090,8 @@ public class SidertTables {
                 " ADD COLUMN prestamo_id" +
                 " INTEGER DEFAULT NULL";
 
+
+
     }
+
 }

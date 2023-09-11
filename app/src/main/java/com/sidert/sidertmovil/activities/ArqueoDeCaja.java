@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 //import androidx.appcompat.app.AlertDialog;
 //import androidx.appcompat.app.AppCompatActivity;
@@ -64,7 +65,7 @@ public class ArqueoDeCaja extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_arqueo_de_caja);
         Context ctx = getApplicationContext();
-        dBhelper = new DBhelper(ctx);
+        dBhelper = DBhelper.getInstance(ctx);
         db = dBhelper.getWritableDatabase();
         
         m = new Miscellaneous();
@@ -173,7 +174,7 @@ public class ArqueoDeCaja extends AppCompatActivity {
             @Override
             public void OnClickListener(AlertDialog dialog) {
                 /**Valida si el total de arqueo de caja es igual al monto registrado en la gestion se guarda*/
-                if (Double.parseDouble(m.GetStr(etPagoRealizado)) >= Double.parseDouble(m.GetStr(etTotal))) {
+                if (Double.parseDouble(Miscellaneous.GetStr(etPagoRealizado)) >= Double.parseDouble(Miscellaneous.GetStr(etTotal))) {
                     boolean b = ArqueoCaja();
                     i_save_caja.putExtra(Constants.SAVE, b);
                     setResult(RESULT_OK, i_save_caja);
@@ -214,38 +215,38 @@ public class ArqueoDeCaja extends AppCompatActivity {
 
         if (row.getCount() > 0){ //Actualiza
             ContentValues cv = new ContentValues();
-            cv.put("mil", m.GetStr(etBmil));
-            cv.put("quinientos", m.GetStr(etBquinientos));
-            cv.put("doscientos", m.GetStr(etBdocientos));
-            cv.put("cien", m.GetStr(etBcien));
-            cv.put("cincuenta", m.GetStr(etBcincuenta));
-            cv.put("veinte", m.GetStr(etBveinte));
-            cv.put("diez", m.GetStr(etPdiez));
-            cv.put("cinco", m.GetStr(etPcinco));
-            cv.put("dos", m.GetStr(etPdos));
-            cv.put("peso", m.GetStr(etPuno));
-            cv.put("c_cincuenta", m.GetStr(etCcincuenta));
-            cv.put("c_veinte", m.GetStr(etCveinte));
-            cv.put("c_diez", m.GetStr(etCdiez));
+            cv.put("mil", Miscellaneous.GetStr(etBmil));
+            cv.put("quinientos", Miscellaneous.GetStr(etBquinientos));
+            cv.put("doscientos", Miscellaneous.GetStr(etBdocientos));
+            cv.put("cien", Miscellaneous.GetStr(etBcien));
+            cv.put("cincuenta", Miscellaneous.GetStr(etBcincuenta));
+            cv.put("veinte", Miscellaneous.GetStr(etBveinte));
+            cv.put("diez", Miscellaneous.GetStr(etPdiez));
+            cv.put("cinco", Miscellaneous.GetStr(etPcinco));
+            cv.put("dos", Miscellaneous.GetStr(etPdos));
+            cv.put("peso", Miscellaneous.GetStr(etPuno));
+            cv.put("c_cincuenta", Miscellaneous.GetStr(etCcincuenta));
+            cv.put("c_veinte", Miscellaneous.GetStr(etCveinte));
+            cv.put("c_diez", Miscellaneous.GetStr(etCdiez));
 
             db.update(TBL_ARQUEO_CAJA_T, cv, "id_gestion = ?", new String[]{id_gestion});
         }
         else{ //Registra
             HashMap<Integer, String> params = new HashMap<>();
             params.put(0, id_gestion);
-            params.put(1, m.GetStr(etBmil));
-            params.put(2, m.GetStr(etBquinientos));
-            params.put(3, m.GetStr(etBdocientos));
-            params.put(4, m.GetStr(etBcien));
-            params.put(5, m.GetStr(etBcincuenta));
-            params.put(6, m.GetStr(etBveinte));
-            params.put(7, m.GetStr(etPdiez));
-            params.put(8, m.GetStr(etPcinco));
-            params.put(9, m.GetStr(etPdos));
-            params.put(10, m.GetStr(etPuno));
-            params.put(11, m.GetStr(etCcincuenta));
-            params.put(12, m.GetStr(etCveinte));
-            params.put(13, m.GetStr(etCdiez));
+            params.put(1, Miscellaneous.GetStr(etBmil));
+            params.put(2, Miscellaneous.GetStr(etBquinientos));
+            params.put(3, Miscellaneous.GetStr(etBdocientos));
+            params.put(4, Miscellaneous.GetStr(etBcien));
+            params.put(5, Miscellaneous.GetStr(etBcincuenta));
+            params.put(6, Miscellaneous.GetStr(etBveinte));
+            params.put(7, Miscellaneous.GetStr(etPdiez));
+            params.put(8, Miscellaneous.GetStr(etPcinco));
+            params.put(9, Miscellaneous.GetStr(etPdos));
+            params.put(10, Miscellaneous.GetStr(etPuno));
+            params.put(11, Miscellaneous.GetStr(etCcincuenta));
+            params.put(12, Miscellaneous.GetStr(etCveinte));
+            params.put(13, Miscellaneous.GetStr(etCdiez));
 
             dBhelper.saveArqueoCaja(db, params);
         }
@@ -261,30 +262,26 @@ public class ArqueoDeCaja extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:/**Menu de retroceso del toolbar <- */
-                finish();
-                break;
-            case R.id.save:
-                /**Valida que el total sea diferente de vacio para continuar con la validacion de montos*/
-                if (!m.GetStr(etTotal).isEmpty()){
-                    guardarArqueCaja();
-                }
-                else {
-                    /**Si no ha ingresado ninguna cantidad de billetes y/o monedas*/
-                    final AlertDialog dialog_error = Popups.showDialogMessage(ArqueoDeCaja.this,
-                            Constants.money, R.string.error_guardar_arqueo,
-                            R.string.accept, new Popups.DialogMessage() {
-                                @Override
-                                public void OnClickListener(AlertDialog dialog) {
-                                    dialog.dismiss();
-                                }
-                            });
-                    Objects.requireNonNull(dialog_error.getWindow()).requestFeature(Window.FEATURE_NO_TITLE);
-                    dialog_error.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
-                    dialog_error.show();
-                }
-                break;
+        int itemId = item.getItemId();
+        if (itemId == android.R.id.home) {/**Menu de retroceso del toolbar <- */
+            finish();
+        } else if (itemId == R.id.save) {/**Valida que el total sea diferente de vacio para continuar con la validacion de montos*/
+            if (!Miscellaneous.GetStr(etTotal).isEmpty()) {
+                guardarArqueCaja();
+            } else {
+                /**Si no ha ingresado ninguna cantidad de billetes y/o monedas*/
+                final AlertDialog dialog_error = Popups.showDialogMessage(ArqueoDeCaja.this,
+                        Constants.money, R.string.error_guardar_arqueo,
+                        R.string.accept, new Popups.DialogMessage() {
+                            @Override
+                            public void OnClickListener(AlertDialog dialog) {
+                                dialog.dismiss();
+                            }
+                        });
+                Objects.requireNonNull(dialog_error.getWindow()).requestFeature(Window.FEATURE_NO_TITLE);
+                dialog_error.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                dialog_error.show();
+            }
         }
         return super.onOptionsItemSelected(item);
     }

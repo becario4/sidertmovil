@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 /*import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
@@ -110,7 +111,6 @@ public class FormularioCC extends AppCompatActivity {
     private EditText tvDireccion;
     private SimpleDateFormat sdf = new SimpleDateFormat(FORMAT_DATE_GNRAL);
     private Calendar myCal;
-    private Miscellaneous m;
     private Validator validator;
     private ValidatorTextView validatorTV;
     private DBhelper dBhelper;
@@ -126,7 +126,7 @@ public class FormularioCC extends AppCompatActivity {
         setContentView(R.layout.activity_formulario_c_c);
 
         ctx = this;
-        dBhelper         = new DBhelper(ctx);
+        dBhelper         = DBhelper.getInstance(ctx);
         db               = dBhelper.getWritableDatabase();
         tbMain           = findViewById(R.id.tbMain);
         tvProducto       = findViewById(R.id.tvProducto);
@@ -303,9 +303,9 @@ public class FormularioCC extends AppCompatActivity {
             dialog_date_picker dialogDatePicker = new dialog_date_picker();
  
             Bundle b = new Bundle();
-            b.putInt(YEAR_CURRENT, ((m.GetStr(tvFechaNac).isEmpty())?myCal.get(Calendar.YEAR):Integer.parseInt(m.GetStr(tvFechaNac).substring(0,4))));
-            b.putInt(MONTH_CURRENT, ((m.GetStr(tvFechaNac).isEmpty())?myCal.get(Calendar.MONTH):(Integer.parseInt(m.GetStr(tvFechaNac).substring(5,7))-1)));
-            b.putInt(DAY_CURRENT, ((m.GetStr(tvFechaNac).isEmpty())?myCal.get(Calendar.DAY_OF_MONTH):Integer.parseInt(m.GetStr(tvFechaNac).substring(8,10))));
+            b.putInt(YEAR_CURRENT, ((Miscellaneous.GetStr(tvFechaNac).isEmpty())?myCal.get(Calendar.YEAR):Integer.parseInt(Miscellaneous.GetStr(tvFechaNac).substring(0,4))));
+            b.putInt(MONTH_CURRENT, ((Miscellaneous.GetStr(tvFechaNac).isEmpty())?myCal.get(Calendar.MONTH):(Integer.parseInt(Miscellaneous.GetStr(tvFechaNac).substring(5,7))-1)));
+            b.putInt(DAY_CURRENT, ((Miscellaneous.GetStr(tvFechaNac).isEmpty())?myCal.get(Calendar.DAY_OF_MONTH):Integer.parseInt(Miscellaneous.GetStr(tvFechaNac).substring(8,10))));
             b.putString(DATE_CURRENT, sdf.format(myCal.getTime()));
             b.putInt(IDENTIFIER, 19);
             b.putBoolean(FECHAS_POST, false);
@@ -359,24 +359,24 @@ public class FormularioCC extends AppCompatActivity {
         HashMap<Integer, String> params = new HashMap<>();
         //DATOS DEL PRODUCTO
         params.put(0, producto); //producto credito
-        params.put(1, m.GetStr(etCredSolicitado).replace(",","")); //monto solicitado
+        params.put(1, Miscellaneous.GetStr(etCredSolicitado).replace(",","")); //monto solicitado
         //DATOS GENERALES
-        params.put(2, m.GetStr(etPriNombre));  //primer nombre
-        params.put(3, m.GetStr(etSegNombre));  //segundo nombre
-        params.put(4, m.GetStr(etApPaterno));   //primer apellido
-        params.put(5, m.GetStr(etApMaterno));   //segundo apellido
-        params.put(6, m.GetStr(tvFechaNac));    //fecha nacimiento
+        params.put(2, Miscellaneous.GetStr(etPriNombre));  //primer nombre
+        params.put(3, Miscellaneous.GetStr(etSegNombre));  //segundo nombre
+        params.put(4, Miscellaneous.GetStr(etApPaterno));   //primer apellido
+        params.put(5, Miscellaneous.GetStr(etApMaterno));   //segundo apellido
+        params.put(6, Miscellaneous.GetStr(tvFechaNac));    //fecha nacimiento
         params.put(7, genero);                  //genero
-        params.put(8, m.GetStr(tvEstadoNac));   //estado nacimiento
-        params.put(9, m.GetStr(etCurp));        //Curp
-        params.put(10, m.GetStr(tvRfc));        //Rfc
+        params.put(8, Miscellaneous.GetStr(tvEstadoNac));   //estado nacimiento
+        params.put(9, Miscellaneous.GetStr(etCurp));        //Curp
+        params.put(10, Miscellaneous.GetStr(tvRfc));        //Rfc
         //DOMICILIO
-        params.put(11, m.GetStr(tvDireccion));      //Direccion
-        params.put(12, m.GetStr(tvColonia));    //colonia
-        params.put(13, m.GetStr(tvMunicipio));  //municipio
-        params.put(14, m.GetStr(etCiudad));     //ciudad
-        params.put(15, m.GetStr(tvEstado));     //estado
-        params.put(16, m.GetStr(etCp));         //Cp
+        params.put(11, Miscellaneous.GetStr(tvDireccion));      //Direccion
+        params.put(12, Miscellaneous.GetStr(tvColonia));    //colonia
+        params.put(13, Miscellaneous.GetStr(tvMunicipio));  //municipio
+        params.put(14, Miscellaneous.GetStr(etCiudad));     //ciudad
+        params.put(15, Miscellaneous.GetStr(tvEstado));     //estado
+        params.put(16, Miscellaneous.GetStr(etCp));         //Cp
         params.put(17, Miscellaneous.ObtenerFecha(TIMESTAMP)); //fecha termino
         params.put(18, Miscellaneous.ObtenerFecha(TIMESTAMP)); //fecha termino
         params.put(19,"0");
@@ -406,130 +406,121 @@ public class FormularioCC extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                /**Si el usuario quiere salir de la vista y hay campos llenos se valida si estan vacios cierra la venta*/
-                if (FillFields())
-                    finish();
-                else{
-                    /**En el caso de que hay campo que esten llenos mostrará un mensaje si quiere salir o terminar de consultar*/
-                    final AlertDialog dlg = Popups.showDialogConfirm(ctx, warning,
-                            "Existen algunos campos llenados, si sale del formulario se perderá la información, ¿Está seguro que desea salir?.", R.string.accept, new Popups.DialogMessage() {
-                                @Override
-                                public void OnClickListener(AlertDialog dialog) {
-                                    dialog.dismiss();
-                                    finish();
-                                }
-                            }, R.string.cancel, new Popups.DialogMessage() {
-                                @Override
-                                public void OnClickListener(AlertDialog dialog) {
-                                    dialog.dismiss();
-                                }
-                            });
-                    dlg.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
-                    dlg.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
-                    dlg.show();
-                }
-
-                break;
-            case R.id.enviar:
-                /**Valida que los campos que son requeridos esten llenos para poder realizar la consulta*/
-                validator = new Validator();
-                validatorTV = new ValidatorTextView();
-                if (rgProducto.getCheckedRadioButtonId() == R.id.rbCreditoInd || rgProducto.getCheckedRadioButtonId() == R.id.rbCreditoGpo) {
-                    if (!validator.validate(etCredSolicitado, new String[]{validator.REQUIRED, validator.CREDITO}) &&
-                            !validator.validate(etPriNombre, new String[]{validator.REQUIRED, validator.ONLY_TEXT}) &&
-                            !validator.validate(etSegNombre, new String[]{validator.ONLY_TEXT}) &&
-                            !validator.validate(etApPaterno, new String[]{validator.ONLY_TEXT}) &&
-                            !validator.validate(etApMaterno, new String[]{validator.ONLY_TEXT}) &&
-                            !validatorTV.validate(tvFechaNac, new String[]{validatorTV.REQUIRED})) {
-                        if ( true || rgGenero.getCheckedRadioButtonId() == R.id.rbHombre || rgGenero.getCheckedRadioButtonId() == R.id.rbMujer) {
-                            if (!validatorTV.validate(tvEstadoNac, new String[]{validatorTV.ONLY_TEXT})) {
-                                /**estas lineas que estan comentadas hay que descomentarlas y eliminar las 2 lineas que tiene true la 389 y 393*/
-                                // !validator.validate(etCurp, new String[]{validator.REQUIRED, validator.CURP})) {
-                                //if (m.CurpValidador(m.GetStr(etCurp))) {
-                                if (true) {
-                                    if (!validator.validate(tvRfc, new String[]{validator.REQUIRED}) &&
-                                            !validator.validate(tvDireccion, new String[]{validator.REQUIRED}) &&
-                                            !validator.validate(etCp, new String[]{validator.REQUIRED, validator.CP}) &&
-                                            !validatorTV.validate(tvColonia, new String[]{validatorTV.REQUIRED}) &&
-                                            !validatorTV.validate(tvMunicipio, new String[]{validatorTV.REQUIRED}) &&
-                                            !validator.validate(etCiudad, new String[]{validator.REQUIRED}) &&
-                                            !validatorTV.validate(tvEstado, new String[]{validatorTV.REQUIRED})) {
-
-                                        String nombre = m.GetStr(etPriNombre) + " " + m.GetStr(etSegNombre);
-                                        nombre = nombre.trim() + " " + m.GetStr(etApPaterno) + " " + m.GetStr(etApMaterno);
-                                        String genero = "";
-                                        switch (rgGenero.getCheckedRadioButtonId()){
-                                            case R.id.rbHombre:
-                                                genero = "HOMBRE";
-                                                break;
-                                            case R.id.rbMujer:
-                                                genero = "MUJER";
-                                                break;
-                                        }
-                                        String producto = (rgProducto.getCheckedRadioButtonId() == R.id.rbCreditoInd)?"CREDITO INDIVIDUAL":"CREDITO GRUPAL";
-
-                                        /**Muestra mensaje de confirmacion de datos antes de hacer la peticion de la consulta*/
-                                        final AlertDialog solicitud = Popups.showDialogConfirm(ctx, warning,
-                                                "Los datos son los correctos:" +
-                                                        "\n Producto: " + producto +
-                                                        "\n Monto Solicitado: " + m.GetStr(etCredSolicitado) +
-                                                        "\n Nombre: " + nombre.trim() +
-                                                        "\n Fecha Nacimiento: " + m.GetStr(tvFechaNac) +
-                                                        "\n Género: " + genero +
-                                                        "\n Estado Nacimiento: " + m.GetStr(tvEstadoNac) +
-                                                        "\n CURP: " + m.GetStr(etCurp) +
-                                                        "\n RFC: " + m.GetStr(tvRfc) +
-                                                        "\n Dirección: " + m.GetStr(tvDireccion) +
-                                                        "\n Colonia: "+ m.GetStr(tvColonia)+
-                                                        "\n Municipio:"+ m.GetStr(tvMunicipio)+
-                                                        "\n Ciudad:"+  m.GetStr(etCiudad)+
-                                                        "\n Estado:"+ m.GetStr(tvEstado)+
-                                                        "\n Cp:"+ m.GetStr(etCp), R.string.accept, new Popups.DialogMessage() {
-                                                    @Override
-                                                    public void OnClickListener(AlertDialog dialog) {
-                                                        dialog.dismiss();
-                                                        if (NetworkStatus.haveNetworkConnection(ctx)){
-                                                            ConsultarDatos(true);
-                                                        }
-                                                        else{
-                                                            final AlertDialog dlgSave= Popups.showDialogMessage(ctx, not_network,
-                                                                    "Error de conexión, no cuenta con conexión a internet para realizar " +
-                                                                            "la consulta a círculo de crédito, se guardarán los datos para que en el momento " +
-                                                                            "de reconexión se realice la consulta en automático.", R.string.accept, new Popups.DialogMessage() {
-                                                                        @Override
-                                                                        public void OnClickListener(AlertDialog d) {
-                                                                            d.dismiss();
-                                                                            ConsultarDatos(false);
-                                                                        }
-                                                                    });
-                                                            dlgSave.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
-                                                            dlgSave.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
-                                                            dlgSave.show();
-                                                        }
-
-                                                    }
-                                                }, R.string.cancel, new Popups.DialogMessage() {
-                                                    @Override
-                                                    public void OnClickListener(AlertDialog dialog) {
-                                                        dialog.dismiss();
-                                                    }
-                                                });
-                                        solicitud.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
-                                        solicitud.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
-                                        solicitud.show();
-                                    }
-                                } else
-                                    etCurp.setError("No corresponde a una Curp válida");
+        int itemId = item.getItemId();
+        if (itemId == android.R.id.home) {/**Si el usuario quiere salir de la vista y hay campos llenos se valida si estan vacios cierra la venta*/
+            if (FillFields())
+                finish();
+            else {
+                /**En el caso de que hay campo que esten llenos mostrará un mensaje si quiere salir o terminar de consultar*/
+                final AlertDialog dlg = Popups.showDialogConfirm(ctx, warning,
+                        "Existen algunos campos llenados, si sale del formulario se perderá la información, ¿Está seguro que desea salir?.", R.string.accept, new Popups.DialogMessage() {
+                            @Override
+                            public void OnClickListener(AlertDialog dialog) {
+                                dialog.dismiss();
+                                finish();
                             }
-                        } else
-                            tvGenero.setError("");
-                    }
+                        }, R.string.cancel, new Popups.DialogMessage() {
+                            @Override
+                            public void OnClickListener(AlertDialog dialog) {
+                                dialog.dismiss();
+                            }
+                        });
+                dlg.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+                dlg.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                dlg.show();
+            }
+        } else if (itemId == R.id.enviar) {/**Valida que los campos que son requeridos esten llenos para poder realizar la consulta*/
+            validator = new Validator();
+            validatorTV = new ValidatorTextView();
+            if (rgProducto.getCheckedRadioButtonId() == R.id.rbCreditoInd || rgProducto.getCheckedRadioButtonId() == R.id.rbCreditoGpo) {
+                if (!validator.validate(etCredSolicitado, new String[]{validator.REQUIRED, validator.CREDITO}) &&
+                        !validator.validate(etPriNombre, new String[]{validator.REQUIRED, validator.ONLY_TEXT}) &&
+                        !validator.validate(etSegNombre, new String[]{validator.ONLY_TEXT}) &&
+                        !validator.validate(etApPaterno, new String[]{validator.ONLY_TEXT}) &&
+                        !validator.validate(etApMaterno, new String[]{validator.ONLY_TEXT}) &&
+                        !validatorTV.validate(tvFechaNac, new String[]{validatorTV.REQUIRED})) {
+                    if (true || rgGenero.getCheckedRadioButtonId() == R.id.rbHombre || rgGenero.getCheckedRadioButtonId() == R.id.rbMujer) {
+                        if (!validatorTV.validate(tvEstadoNac, new String[]{validatorTV.ONLY_TEXT})) {
+                            /**estas lineas que estan comentadas hay que descomentarlas y eliminar las 2 lineas que tiene true la 389 y 393*/
+                            // !validator.validate(etCurp, new String[]{validator.REQUIRED, validator.CURP})) {
+                            //if (m.CurpValidador(m.GetStr(etCurp))) {
+                            if (true) {
+                                if (!validator.validate(tvRfc, new String[]{validator.REQUIRED}) &&
+                                        !validator.validate(tvDireccion, new String[]{validator.REQUIRED}) &&
+                                        !validator.validate(etCp, new String[]{validator.REQUIRED, validator.CP}) &&
+                                        !validatorTV.validate(tvColonia, new String[]{validatorTV.REQUIRED}) &&
+                                        !validatorTV.validate(tvMunicipio, new String[]{validatorTV.REQUIRED}) &&
+                                        !validator.validate(etCiudad, new String[]{validator.REQUIRED}) &&
+                                        !validatorTV.validate(tvEstado, new String[]{validatorTV.REQUIRED})) {
+
+                                    String nombre = Miscellaneous.GetStr(etPriNombre) + " " + Miscellaneous.GetStr(etSegNombre);
+                                    nombre = nombre.trim() + " " + Miscellaneous.GetStr(etApPaterno) + " " + Miscellaneous.GetStr(etApMaterno);
+                                    String genero = "";
+                                    int checkedRadioButtonId = rgGenero.getCheckedRadioButtonId();
+                                    if (checkedRadioButtonId == R.id.rbHombre) {
+                                        genero = "HOMBRE";
+                                    } else if (checkedRadioButtonId == R.id.rbMujer) {
+                                        genero = "MUJER";
+                                    }
+                                    String producto = (rgProducto.getCheckedRadioButtonId() == R.id.rbCreditoInd) ? "CREDITO INDIVIDUAL" : "CREDITO GRUPAL";
+
+                                    /**Muestra mensaje de confirmacion de datos antes de hacer la peticion de la consulta*/
+                                    final AlertDialog solicitud = Popups.showDialogConfirm(ctx, warning,
+                                            "Los datos son los correctos:" +
+                                                    "\n Producto: " + producto +
+                                                    "\n Monto Solicitado: " + Miscellaneous.GetStr(etCredSolicitado) +
+                                                    "\n Nombre: " + nombre.trim() +
+                                                    "\n Fecha Nacimiento: " + Miscellaneous.GetStr(tvFechaNac) +
+                                                    "\n Género: " + genero +
+                                                    "\n Estado Nacimiento: " + Miscellaneous.GetStr(tvEstadoNac) +
+                                                    "\n CURP: " + Miscellaneous.GetStr(etCurp) +
+                                                    "\n RFC: " + Miscellaneous.GetStr(tvRfc) +
+                                                    "\n Dirección: " + Miscellaneous.GetStr(tvDireccion) +
+                                                    "\n Colonia: " + Miscellaneous.GetStr(tvColonia) +
+                                                    "\n Municipio:" + Miscellaneous.GetStr(tvMunicipio) +
+                                                    "\n Ciudad:" + Miscellaneous.GetStr(etCiudad) +
+                                                    "\n Estado:" + Miscellaneous.GetStr(tvEstado) +
+                                                    "\n Cp:" + Miscellaneous.GetStr(etCp), R.string.accept, new Popups.DialogMessage() {
+                                                @Override
+                                                public void OnClickListener(AlertDialog dialog) {
+                                                    dialog.dismiss();
+                                                    if (NetworkStatus.haveNetworkConnection(ctx)) {
+                                                        ConsultarDatos(true);
+                                                    } else {
+                                                        final AlertDialog dlgSave = Popups.showDialogMessage(ctx, not_network,
+                                                                "Error de conexión, no cuenta con conexión a internet para realizar " +
+                                                                        "la consulta a círculo de crédito, se guardarán los datos para que en el momento " +
+                                                                        "de reconexión se realice la consulta en automático.", R.string.accept, new Popups.DialogMessage() {
+                                                                    @Override
+                                                                    public void OnClickListener(AlertDialog d) {
+                                                                        d.dismiss();
+                                                                        ConsultarDatos(false);
+                                                                    }
+                                                                });
+                                                        dlgSave.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+                                                        dlgSave.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                                                        dlgSave.show();
+                                                    }
+
+                                                }
+                                            }, R.string.cancel, new Popups.DialogMessage() {
+                                                @Override
+                                                public void OnClickListener(AlertDialog dialog) {
+                                                    dialog.dismiss();
+                                                }
+                                            });
+                                    solicitud.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+                                    solicitud.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                                    solicitud.show();
+                                }
+                            } else
+                                etCurp.setError("No corresponde a una Curp válida");
+                        }
+                    } else
+                        tvGenero.setError("");
                 }
-                else
-                    tvProducto.setError("");
-                break;
+            } else
+                tvProducto.setError("");
         }
 
         return super.onOptionsItemSelected(item);
@@ -597,11 +588,11 @@ public class FormularioCC extends AppCompatActivity {
     private void GenerarCurp(){
         HashMap<Integer, String> params = new HashMap<>();
 
-        String nombres = m.GetStr(etPriNombre) + " " + m.GetStr(etSegNombre);
+        String nombres = Miscellaneous.GetStr(etPriNombre) + " " + Miscellaneous.GetStr(etSegNombre);
         params.put(0, nombres.trim());
-        params.put(1, m.GetStr(etApPaterno));
-        params.put(2, m.GetStr(etApMaterno));
-        params.put(3, m.GetStr(tvFechaNac));
+        params.put(1, Miscellaneous.GetStr(etApPaterno));
+        params.put(2, Miscellaneous.GetStr(etApMaterno));
+        params.put(3, Miscellaneous.GetStr(tvFechaNac));
 
         if (rgGenero.getCheckedRadioButtonId()==R.id.rbHombre)
             params.put(4, "Hombre");
@@ -610,7 +601,7 @@ public class FormularioCC extends AppCompatActivity {
         else
             params.put(4, "");
 
-        params.put(5, m.GetStr(tvEstadoNac));
+        params.put(5, Miscellaneous.GetStr(tvEstadoNac));
 
         etCurp.setText(Miscellaneous.GenerarCurp(params));
         tvRfc.setText(Miscellaneous.GenerarCurp(params));

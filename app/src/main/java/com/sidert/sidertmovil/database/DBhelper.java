@@ -21,12 +21,19 @@ import java.util.HashMap;
 import static com.sidert.sidertmovil.utils.Constants.*;
 
 public class DBhelper extends SQLiteOpenHelper {
-
+    private static DBhelper instance;
     private static final int DATABASE_VERSION = 1;
-    private static final String DATABASE_NAME = "sidert.db";
+    public static final String DATABASE_NAME = "sidert.db";
 
-    public DBhelper(Context context) {
+    private DBhelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
+    }
+
+    public static synchronized DBhelper getInstance(Context context) {
+        if (instance == null) {
+            instance = new DBhelper(context);
+        }
+        return instance;
     }
 
     @Override
@@ -42,6 +49,7 @@ public class DBhelper extends SQLiteOpenHelper {
         //db.execSQL(SidertTables.SidertEntry.CREATE_TABLE_IDENTIFICACIONES);
         db.execSQL(SidertTables.SidertEntry.CREATE_TABLE_OCUPACIONES);
         db.execSQL(SidertTables.SidertEntry.CREATE_TABLE_SINCRONIZADO_T);
+        db.execSQL(SidertTables.SidertEntry.CREATE_TABLE_CENTRO_COSTO);
 
         db.execSQL(SidertTables.SidertEntry.CREATE_TBL_INTEGRANTES_GPO_T);
         db.execSQL(SidertTables.SidertEntry.CREATE_TBL_TELEFONOS_INTEGRANTE_T);
@@ -171,783 +179,1803 @@ public class DBhelper extends SQLiteOpenHelper {
         /** TABLA PARA TESTEAR LOS DATOS DE UN BENEFICIARIO*/
         db.execSQL(SidertTables.SidertEntry.CREATE_TBL_DATOS_BENEFICIARIO);
 
+        db.execSQL(SidertTables.SidertEntry.CREATE_TBL_DATOS_BENEFICIARIO_IND_REN);
 
+        db.execSQL(SidertTables.SidertEntry.CREATE_TBL_DATOS_CREDITO_CAMPANA);
+
+        /** TABLA PARA TESTEAR LAS SUCURSALES CON LOCALIDADES*/
+        db.execSQL(SidertTables.SidertEntry.CREATE_TBL_SUCURSALES_LOCALIDADES);
         Log.v("CreacionTablas", "se crearon tablas");
+
+        db.execSQL(SidertTables.SidertEntry.CREATE_TBL_DATOS_CREDITO_CAMPANA_GPO);
+
+        db.execSQL(SidertTables.SidertEntry.CREATE_TBL_DATOS_CREDITO_CAMPANA_GPO_REN);
+
+        db.execSQL(SidertTables.SidertEntry.CREATE_TBL_DATOS_ENTREGA_CARTERA);
+
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 
-        try { db.execSQL(SidertTables.SidertEntry.CREATE_TABLE_GEOLOCALIZACION_T); }
-        catch (Exception e) { Log.e("Tablas", "Catch ya existe las tabla GEOLOCALIZACION_T"); }
+        try {
+            db.execSQL(SidertTables.SidertEntry.CREATE_TABLE_GEOLOCALIZACION_T);
+        } catch (Exception e) {
+            Log.e("Tablas", "Catch ya existe las tabla GEOLOCALIZACION_T");
+        }
 
-        try { db.execSQL(SidertTables.SidertEntry.CREATE_TABLE_LOGIN_REPORT_T); }
-        catch (Exception e) { Log.e("Tablas", "Catch ya existe las tabla LOGIN_REPORT_T"); }
+        try {
+            db.execSQL(SidertTables.SidertEntry.CREATE_TABLE_LOGIN_REPORT_T);
+        } catch (Exception e) {
+            Log.e("Tablas", "Catch ya existe las tabla LOGIN_REPORT_T");
+        }
 
-        try { db.execSQL(SidertTables.SidertEntry.CREATE_TABLE_FICHAS_T); }
-        catch (Exception e) { Log.e("Tablas", "Catch ya existe las tabla FICHAS_T"); }
+        try {
+            db.execSQL(SidertTables.SidertEntry.CREATE_TABLE_FICHAS_T);
+        } catch (Exception e) {
+            Log.e("Tablas", "Catch ya existe las tabla FICHAS_T");
+        }
 
-        try { db.execSQL(SidertTables.SidertEntry.CREATE_TABLE_ESTADOS); }
-        catch (Exception e) { Log.e("Tablas", "Catch ya existe las tabla ESTADOS"); }
+        try {
+            db.execSQL(SidertTables.SidertEntry.CREATE_TBL_SUCURSALES_LOCALIDADES);
+        } catch (Exception e) {
+            Log.e("Tablas", "Catch ya existe la tabla SUCUSARLES_LOCALIDADES");
+        }
 
-        try { db.execSQL(SidertTables.SidertEntry.CREATE_TABLE_MUNICIPIOS); }
-        catch (Exception e) { Log.e("Tablas", "Catch ya existe las tabla MUNICIPIOS"); }
+        try {
+            db.execSQL(SidertTables.SidertEntry.CREATE_TABLE_ESTADOS);
+        } catch (Exception e) {
+            Log.e("Tablas", "Catch ya existe las tabla ESTADOS");
+        }
 
-        try { db.execSQL(SidertTables.SidertEntry.CREATE_TABLE_COLONIAS); }
-        catch (Exception e) { Log.e("Tablas", "Catch ya existe las tabla COLONIAS"); }
+        try {
+            db.execSQL(SidertTables.SidertEntry.CREATE_TABLE_MUNICIPIOS);
+        } catch (Exception e) {
+            Log.e("Tablas", "Catch ya existe las tabla MUNICIPIOS");
+        }
 
-        try { db.execSQL(SidertTables.SidertEntry.CREATE_TABLE_SECTORES); }
-        catch (Exception e) { Log.e("Tablas", "Catch ya existe las tabla SECTORES"); }
+        try {
+            db.execSQL(SidertTables.SidertEntry.CREATE_TABLE_COLONIAS);
+        } catch (Exception e) {
+            Log.e("Tablas", "Catch ya existe las tabla COLONIAS");
+        }
+
+        try {
+            db.execSQL(SidertTables.SidertEntry.CREATE_TABLE_SECTORES);
+        } catch (Exception e) {
+            Log.e("Tablas", "Catch ya existe las tabla SECTORES");
+        }
 
         //try { db.execSQL(SidertTables.SidertEntry.CREATE_TABLE_IDENTIFICACIONES); }
         //catch (Exception e) { Log.e("Tablas", "Catch ya existe las tabla IDENTIFICACIONES"); }
 
-        try { db.execSQL(SidertTables.SidertEntry.CREATE_TABLE_OCUPACIONES); }
-        catch (Exception e) { Log.e("Tablas", "Catch ya existe las tabla OCUPACIONES"); }
+        try {
+            db.execSQL(SidertTables.SidertEntry.CREATE_TABLE_OCUPACIONES);
+        } catch (Exception e) {
+            Log.e("Tablas", "Catch ya existe las tabla OCUPACIONES");
+        }
 
-        try { db.execSQL(SidertTables.SidertEntry.CREATE_TABLE_SINCRONIZADO_T); }
-        catch (Exception e) { Log.e("Tablas", "Catch ya existe las tabla SINCRONIZADO_T"); }
+        try {
+            db.execSQL(SidertTables.SidertEntry.CREATE_TABLE_SINCRONIZADO_T);
+        } catch (Exception e) {
+            Log.e("Tablas", "Catch ya existe las tabla SINCRONIZADO_T");
+        }
 
-        try { db.execSQL(SidertTables.SidertEntry.ADD_CREATE_AT_GEO); }
-        catch (Exception e) { Log.e("ADD GEO CREATE", "ya contiene la columna"); }
+        try {
+            db.execSQL(SidertTables.SidertEntry.ADD_CREATE_AT_GEO);
+        } catch (Exception e) {
+            Log.e("ADD GEO CREATE", "ya contiene la columna");
+        }
 
-        try { db.execSQL(SidertTables.SidertEntry.ADD_CREATE_AT_GEO_T); }
-        catch (Exception e) { Log.e("ADD GEO_T CREATE", "ya contiene la columna"); }
+        try {
+            db.execSQL(SidertTables.SidertEntry.ADD_CREATE_AT_GEO_T);
+        } catch (Exception e) {
+            Log.e("ADD GEO_T CREATE", "ya contiene la columna");
+        }
 
-        try { db.execSQL(SidertTables.SidertEntry.ADD_IS_RUTA_T); }
-        catch (Exception e) { Log.e("ADD GEO_T CREATE", "ya contiene la columna"); }
+        try {
+            db.execSQL(SidertTables.SidertEntry.ADD_IS_RUTA_T);
+        } catch (Exception e) {
+            Log.e("ADD GEO_T CREATE", "ya contiene la columna");
+        }
 
-        try { db.execSQL(SidertTables.SidertEntry.CREATE_TBL_INTEGRANTES_GPO_T); }
-        catch (Exception e) {  Log.e("Tablas", "Catch tabla INTEGRANTES_GPO_T"); }
+        try {
+            db.execSQL(SidertTables.SidertEntry.CREATE_TBL_INTEGRANTES_GPO_T);
+        } catch (Exception e) {
+            Log.e("Tablas", "Catch tabla INTEGRANTES_GPO_T");
+        }
 
-        try { db.execSQL(SidertTables.SidertEntry.CREATE_TBL_TELEFONOS_INTEGRANTE_T); }
-        catch (Exception e) {  Log.e("Tablas", "Catch tabla TELEFONOS_INTEGRANTE_T"); }
+        try {
+            db.execSQL(SidertTables.SidertEntry.CREATE_TBL_TELEFONOS_INTEGRANTE_T);
+        } catch (Exception e) {
+            Log.e("Tablas", "Catch tabla TELEFONOS_INTEGRANTE_T");
+        }
 
-        try { db.execSQL(SidertTables.SidertEntry.CREATE_TBL_DOMICILIO_INTEGRANTE_T); }
-        catch (Exception e) {  Log.e("Tablas", "Catch tabla DOMICILIO_INTEGRANTE_T"); }
+        try {
+            db.execSQL(SidertTables.SidertEntry.CREATE_TBL_DOMICILIO_INTEGRANTE_T);
+        } catch (Exception e) {
+            Log.e("Tablas", "Catch tabla DOMICILIO_INTEGRANTE_T");
+        }
 
-        try { db.execSQL(SidertTables.SidertEntry.CREATE_TBL_NEGOCIO_INTEGRANTE_T); }
-        catch (Exception e) {  Log.e("Tablas", "Catch tabla NEGOCIO_INTEGRANTE_T"); }
+        try {
+            db.execSQL(SidertTables.SidertEntry.CREATE_TBL_NEGOCIO_INTEGRANTE_T);
+        } catch (Exception e) {
+            Log.e("Tablas", "Catch tabla NEGOCIO_INTEGRANTE_T");
+        }
 
-        try { db.execSQL(SidertTables.SidertEntry.CREATE_TBL_CONYUGE_INTEGRANTE_T); }
-        catch (Exception e) {  Log.e("Tablas", "Catch tabla CONYUGE_INTEGRANTE_T"); }
+        try {
+            db.execSQL(SidertTables.SidertEntry.CREATE_TBL_CONYUGE_INTEGRANTE_T);
+        } catch (Exception e) {
+            Log.e("Tablas", "Catch tabla CONYUGE_INTEGRANTE_T");
+        }
 
-        try { db.execSQL(SidertTables.SidertEntry.CREATE_TBL_OTROS_DATOS_INTEGRANTE); }
-        catch (Exception e) {  Log.e("Tablas", "Catch tabla OTROS_DATOS_INTEGRANTE"); }
+        try {
+            db.execSQL(SidertTables.SidertEntry.CREATE_TBL_OTROS_DATOS_INTEGRANTE);
+        } catch (Exception e) {
+            Log.e("Tablas", "Catch tabla OTROS_DATOS_INTEGRANTE");
+        }
 
-        try { db.execSQL(SidertTables.SidertEntry.CREATE_TBL_CROQUIS_GPO); }
-        catch (Exception e) {  Log.e("Tablas", "Catch tabla TBL_CROQUIS_GPO"); }
+        try {
+            db.execSQL(SidertTables.SidertEntry.CREATE_TBL_CROQUIS_GPO);
+        } catch (Exception e) {
+            Log.e("Tablas", "Catch tabla TBL_CROQUIS_GPO");
+        }
 
-        try { db.execSQL(SidertTables.SidertEntry.CREATE_TBL_POLITICAS_INTEGRANTE); }
-        catch (Exception e) {  Log.e("Tablas", "Catch tabla TBL_POLITICAS_INTEGRANTE"); }
+        try {
+            db.execSQL(SidertTables.SidertEntry.CREATE_TBL_POLITICAS_INTEGRANTE);
+        } catch (Exception e) {
+            Log.e("Tablas", "Catch tabla TBL_POLITICAS_INTEGRANTE");
+        }
 
-        try { db.execSQL(SidertTables.SidertEntry.CREATE_TBL_DOCUMENTOS_INTEGRANTE_T); }
-        catch (Exception e) {  Log.e("Tablas", "Catch tabla DOCUMENTOS_INTEGRANTE_T"); }
+        try {
+            db.execSQL(SidertTables.SidertEntry.CREATE_TBL_DOCUMENTOS_INTEGRANTE_T);
+        } catch (Exception e) {
+            Log.e("Tablas", "Catch tabla DOCUMENTOS_INTEGRANTE_T");
+        }
 
-        try { db.execSQL(SidertTables.SidertEntry.CREATE_TBL_CARTERA_IND_T); }
-        catch (Exception e) {  Log.e("Tablas", "Catch tabla CARTERA_IND_T"); }
+        try {
+            db.execSQL(SidertTables.SidertEntry.CREATE_TBL_CARTERA_IND_T);
+        } catch (Exception e) {
+            Log.e("Tablas", "Catch tabla CARTERA_IND_T");
+        }
 
-        try { db.execSQL(SidertTables.SidertEntry.CREATE_TBL_CARTERA_GPO_T); }
-        catch (Exception e) {  Log.e("Tablas", "Catch tabla CARTERA_GPO_T"); }
+        try {
+            db.execSQL(SidertTables.SidertEntry.CREATE_TBL_CARTERA_GPO_T);
+        } catch (Exception e) {
+            Log.e("Tablas", "Catch tabla CARTERA_GPO_T");
+        }
 
-        try { db.execSQL(SidertTables.SidertEntry.CREATE_TBL_PRESTAMOS_IND_T); }
-        catch (Exception e) {  Log.e("Tablas", "Catch tabla PRESTAMOS_IND_T"); }
+        try {
+            db.execSQL(SidertTables.SidertEntry.CREATE_TBL_PRESTAMOS_IND_T);
+        } catch (Exception e) {
+            Log.e("Tablas", "Catch tabla PRESTAMOS_IND_T");
+        }
 
-        try { db.execSQL(SidertTables.SidertEntry.CREATE_TBL_AMORTIZACIONES_T); }
-        catch (Exception e) {  Log.e("Tablas", "Catch tabla AMORTIZACIONES_T"); }
+        try {
+            db.execSQL(SidertTables.SidertEntry.CREATE_TBL_AMORTIZACIONES_T);
+        } catch (Exception e) {
+            Log.e("Tablas", "Catch tabla AMORTIZACIONES_T");
+        }
 
-        try { db.execSQL(SidertTables.SidertEntry.CREATE_TBL_PAGOS_IND_T); }
-        catch (Exception e) {  Log.e("Tablas", "Catch tabla PAGOS_IND_T"); }
+        try {
+            db.execSQL(SidertTables.SidertEntry.CREATE_TBL_PAGOS_IND_T);
+        } catch (Exception e) {
+            Log.e("Tablas", "Catch tabla PAGOS_IND_T");
+        }
 
-        try { db.execSQL(SidertTables.SidertEntry.CREATE_TBL_PRESTAMOS_GPO_T); }
-        catch (Exception e) {  Log.e("Tablas", "Catch tabla PRESTAMOS_GPO_T"); }
+        try {
+            db.execSQL(SidertTables.SidertEntry.CREATE_TBL_PRESTAMOS_GPO_T);
+        } catch (Exception e) {
+            Log.e("Tablas", "Catch tabla PRESTAMOS_GPO_T");
+        }
 
-        try { db.execSQL(SidertTables.SidertEntry.CREATE_TBL_MIEMBROS_T); }
-        catch (Exception e) {  Log.e("Tablas", "Catch tabla MIEMBROS_T"); }
+        try {
+            db.execSQL(SidertTables.SidertEntry.CREATE_TBL_MIEMBROS_T);
+        } catch (Exception e) {
+            Log.e("Tablas", "Catch tabla MIEMBROS_T");
+        }
 
-        try { db.execSQL(SidertTables.SidertEntry.CREATE_TBL_MIEMBROS_PAGOS_T); }
-        catch (Exception e) {  Log.e("Tablas", "Catch tabla MIEMBROS_PAGOS_T"); }
+        try {
+            db.execSQL(SidertTables.SidertEntry.CREATE_TBL_MIEMBROS_PAGOS_T);
+        } catch (Exception e) {
+            Log.e("Tablas", "Catch tabla MIEMBROS_PAGOS_T");
+        }
 
-        try { db.execSQL(SidertTables.SidertEntry.CREATE_TBL_PAGOS_T); }
-        catch (Exception e) {  Log.e("Tablas", "Catch tabla PAGOS_T"); }
+        try {
+            db.execSQL(SidertTables.SidertEntry.CREATE_TBL_PAGOS_T);
+        } catch (Exception e) {
+            Log.e("Tablas", "Catch tabla PAGOS_T");
+        }
 
-        try { db.execSQL(SidertTables.SidertEntry.CREATE_TBL_AVAL_T); }
-        catch (Exception e) {  Log.e("Tablas", "Catch tabla AVAL_T"); }
+        try {
+            db.execSQL(SidertTables.SidertEntry.CREATE_TBL_AVAL_T);
+        } catch (Exception e) {
+            Log.e("Tablas", "Catch tabla AVAL_T");
+        }
 
-        try { db.execSQL(SidertTables.SidertEntry.CREATE_TBL_RESPUESTAS_IND_T); }
-        catch (Exception e) {  Log.e("Tablas", "Catch tabla RESPUESTAS_IND_T"); }
+        try {
+            db.execSQL(SidertTables.SidertEntry.CREATE_TBL_RESPUESTAS_IND_T);
+        } catch (Exception e) {
+            Log.e("Tablas", "Catch tabla RESPUESTAS_IND_T");
+        }
 
-        try { db.execSQL(SidertTables.SidertEntry.CREATE_TBL_RESPUESTAS_GPO_T); }
-        catch (Exception e) {  Log.e("Tablas", "Catch tabla RESPUESTAS_GPO_T"); }
+        try {
+            db.execSQL(SidertTables.SidertEntry.CREATE_TBL_RESPUESTAS_GPO_T);
+        } catch (Exception e) {
+            Log.e("Tablas", "Catch tabla RESPUESTAS_GPO_T");
+        }
 
-        try { db.execSQL(SidertTables.SidertEntry.CREATE_TBL_IMPRESIONES_VIGENTE_T); }
-        catch (Exception e) {  Log.e("Tablas", "Catch tabla IMPRESIONES_VIGENTE_T"); }
+        try {
+            db.execSQL(SidertTables.SidertEntry.CREATE_TBL_IMPRESIONES_VIGENTE_T);
+        } catch (Exception e) {
+            Log.e("Tablas", "Catch tabla IMPRESIONES_VIGENTE_T");
+        }
 
-        try { db.execSQL(SidertTables.SidertEntry.CREATE_TBL_IMPRESIONES_VENCIDA_T); }
-        catch (Exception e) {  Log.e("Tablas", "Catch tabla IMPRESIONES_VIGENTE_T"); }
+        try {
+            db.execSQL(SidertTables.SidertEntry.CREATE_TBL_IMPRESIONES_VENCIDA_T);
+        } catch (Exception e) {
+            Log.e("Tablas", "Catch tabla IMPRESIONES_VIGENTE_T");
+        }
 
-        try { db.execSQL(SidertTables.SidertEntry.CREATE_TBL_REIMPRESION_VIGENTE_T); }
-        catch (Exception e) {  Log.e("Tablas", "Catch tabla IMPRESIONES_VIGENTE_T"); }
+        try {
+            db.execSQL(SidertTables.SidertEntry.CREATE_TBL_REIMPRESION_VIGENTE_T);
+        } catch (Exception e) {
+            Log.e("Tablas", "Catch tabla IMPRESIONES_VIGENTE_T");
+        }
 
-        try { db.execSQL(SidertTables.SidertEntry.CREATE_TBL_ARQUEO_CAJA_T); }
-        catch (Exception e) {  Log.e("Tablas", "Catch tabla ARQUEO_CAJA_T"); }
+        try {
+            db.execSQL(SidertTables.SidertEntry.CREATE_TBL_ARQUEO_CAJA_T);
+        } catch (Exception e) {
+            Log.e("Tablas", "Catch tabla ARQUEO_CAJA_T");
+        }
 
-        try { db.execSQL(SidertTables.SidertEntry.CREATE_TABLE_VER_DOM); }
-        catch (Exception e) {  Log.e("Tablas", "Catch tabla CREATE_TABLE_VER_DOM"); }
+        try {
+            db.execSQL(SidertTables.SidertEntry.CREATE_TABLE_VER_DOM);
+        } catch (Exception e) {
+            Log.e("Tablas", "Catch tabla CREATE_TABLE_VER_DOM");
+        }
 
-        try { db.execSQL(SidertTables.SidertEntry.CREATE_TABLE_GESTIONES_VER_DOM); }
-        catch (Exception e) {  Log.e("Tablas", "Catch tabla CREATE_TABLE_GESTIONES_VER_DOM"); }
+        try {
+            db.execSQL(SidertTables.SidertEntry.CREATE_TABLE_GESTIONES_VER_DOM);
+        } catch (Exception e) {
+            Log.e("Tablas", "Catch tabla CREATE_TABLE_GESTIONES_VER_DOM");
+        }
 
-        try { db.execSQL(SidertTables.SidertEntry.CREATE_TBL_SERVICIOS_SINCRONIZADOS); }
-        catch (Exception e) {  Log.e("Tablas", "Catch tabla CREATE_TBL_SERVICIOS_SINCRONIZADOS"); }
+        try {
+            db.execSQL(SidertTables.SidertEntry.CREATE_TBL_SERVICIOS_SINCRONIZADOS);
+        } catch (Exception e) {
+            Log.e("Tablas", "Catch tabla CREATE_TBL_SERVICIOS_SINCRONIZADOS");
+        }
 
         /** TABLA PARA TESTEAR LOS DATOS DE UN BENEFICIARIO*/
-        try{ db.execSQL(SidertTables.SidertEntry.CREATE_TBL_DATOS_BENEFICIARIO);}
-        catch (Exception e) {Log.e("Tablas", "Catch tabla CREATE_TBL_DATOS_BENEFICIARIO");}
+        try {
+            db.execSQL(SidertTables.SidertEntry.CREATE_TBL_DATOS_BENEFICIARIO);
+        } catch (Exception e) {
+            Log.e("Tablas", "Catch tabla CREATE_TBL_DATOS_BENEFICIARIO");
+        }
 
-        try{ db.execSQL(SidertTables.SidertEntry.CREATE_TBL_DATOS_BENEFICIARIOS_GPO);}
-        catch (Exception e){ Log.e("Tablas","Catch tabla CREATE_TBL_DATOS_BENEFICIARIOS_GPO"); }
+        try {
+            db.execSQL(SidertTables.SidertEntry.CREATE_TBL_DATOS_BENEFICIARIO_IND_REN);
+        } catch (Exception e) {
+            Log.e("Tablas", "Catch tabla CREATE_TBL_DATOS_BENEFICIARIO_IND_REN");
+        }
 
+        try {
+            db.execSQL(SidertTables.SidertEntry.CREATE_TBL_DATOS_BENEFICIARIOS_GPO);
+        } catch (Exception e) {
+            Log.e("Tablas", "Catch tabla CREATE_TBL_DATOS_BENEFICIARIOS_GPO");
+        }
+
+        try {
+            db.execSQL(SidertTables.SidertEntry.CREATE_TBL_DATOS_BENEFICIARIOS_GPO_REN);
+        } catch (Exception e) {
+            Log.e("Tablas", "Catch tabla CREATE_TBL_DATOS_BENEFICIARIOS_GPO_REN");
+        }
+
+        try {
+            db.execSQL(SidertTables.SidertEntry.CREATE_TBL_CATALOGOS_CAMPANA);
+        } catch (Exception e) {
+            Log.e("Tablas", "Catch tabla CREATE_TBL_CATALOGOS_CAMPANAS");
+        }
 
         /** **************************************************************************************************** **/
 
-        try { db.execSQL(SidertTables.SidertEntry.ADD_RES_IMPRESION); }
-        catch (Exception e) { Log.e("ADD RES IMPRESION", "ya contiene la columna"); }
-
-
-        try { db.execSQL(SidertTables.SidertEntry.ADD_RES_IMPRESION_T); }
-        catch (Exception e) { Log.e("ADD RES IMPRESION T", "ya contiene la columna"); }
-
-        try { db.execSQL(SidertTables.SidertEntry.ADD_RES_IMPRESION_GPO); }
-        catch (Exception e) { Log.e("ADD RES IMPRESION", "ya contiene la columna"); }
-
-        try { db.execSQL(SidertTables.SidertEntry.ADD_RES_IMPRESION_GPO_T); }
-        catch (Exception e) { Log.e("ADD RES IMPRESION T", "ya contiene la columna"); }
-
-        try { db.execSQL(SidertTables.SidertEntry.ADD_ARQUEO_CAJA_GPO); }
-        catch (Exception e) { Log.e("ADD_ARQUEO_CAJA", "ya contiene la columna"); }
-
-        try { db.execSQL(SidertTables.SidertEntry.ADD_ARQUEO_CAJA_GPO_T); }
-        catch (Exception e) { Log.e("ADD ARQUEO_CAJA T", "ya contiene la columna"); }
-
-        try { db.execSQL(SidertTables.SidertEntry.ADD_COLONIA_CARTERA_IND); }
-        catch (Exception e) { Log.e("ADD RES IMPRESION", "ya contiene la columna"); }
-
-        try { db.execSQL(SidertTables.SidertEntry.ADD_COLONIA_CARTERA_IND_T); }
-        catch (Exception e) { Log.e("ADD RES IMPRESION T", "ya contiene la columna"); }
-
-        try { db.execSQL(SidertTables.SidertEntry.ADD_COLONIA_CARTERA_GPO); }
-        catch (Exception e) { Log.e("ADD RES IMPRESION", "ya contiene la columna"); }
-
-        try { db.execSQL(SidertTables.SidertEntry.ADD_COLONIA_CARTERA_GPO_T); }
-        catch (Exception e) { Log.e("ADD RES IMPRESION T", "ya contiene la columna"); }
-
-        try { db.execSQL(SidertTables.SidertEntry.ADD_ESTATUS_PAGO_IND_T); }
-        catch (Exception e) { Log.e("ADD RES IMPRESION T", "ya contiene la columna"); }
-
-        try { db.execSQL(SidertTables.SidertEntry.ADD_SALDO_CORTE_IND_T); }
-        catch (Exception e) { Log.e("ADD RES IMPRESION T", "ya contiene la columna"); }
-
-        try { db.execSQL(SidertTables.SidertEntry.ADD_SALDO_ACTUAL_IND_T); }
-        catch (Exception e) { Log.e("ADD RES IMPRESION T", "ya contiene la columna"); }
-
-        try { db.execSQL(SidertTables.SidertEntry.ADD_ESTATUS_PAGO_IND); }
-        catch (Exception e) { Log.e("ADD RES IMPRESION T", "ya contiene la columna"); }
-
-        try { db.execSQL(SidertTables.SidertEntry.ADD_SALDO_CORTE_IND); }
-        catch (Exception e) { Log.e("ADD RES IMPRESION T", "ya contiene la columna"); }
-
-        try { db.execSQL(SidertTables.SidertEntry.ADD_SALDO_ACTUAL_IND); }
-        catch (Exception e) { Log.e("ADD RES IMPRESION T", "ya contiene la columna"); }
-
-        try { db.execSQL(SidertTables.SidertEntry.ADD_ESTATUS_PAGO_GPO_T); }
-        catch (Exception e) { Log.e("ADD RES IMPRESION T", "ya contiene la columna"); }
-
-        try { db.execSQL(SidertTables.SidertEntry.ADD_SALDO_CORTE_GPO_T); }
-        catch (Exception e) { Log.e("ADD RES IMPRESION T", "ya contiene la columna"); }
-
-        try { db.execSQL(SidertTables.SidertEntry.ADD_SALDO_ACTUAL_GPO_T); }
-        catch (Exception e) { Log.e("ADD RES IMPRESION T", "ya contiene la columna"); }
-
-        try { db.execSQL(SidertTables.SidertEntry.ADD_ESTATUS_PAGO_GPO); }
-        catch (Exception e) { Log.e("ADD RES IMPRESION T", "ya contiene la columna"); }
-
-        try { db.execSQL(SidertTables.SidertEntry.ADD_SALDO_CORTE_GPO); }
-        catch (Exception e) { Log.e("ADD RES IMPRESION T", "ya contiene la columna"); }
-
-        try { db.execSQL(SidertTables.SidertEntry.ADD_SALDO_ACTUAL_GPO); }
-        catch (Exception e) { Log.e("ADD RES IMPRESION T", "ya contiene la columna"); }
-
-        try { db.execSQL(SidertTables.SidertEntry.ADD_DIAS_ATRASO_GPO); }
-        catch (Exception e) { Log.e("ADD RES IMPRESION T", "ya contiene la columna"); }
-
-        try { db.execSQL(SidertTables.SidertEntry.ADD_DIAS_ATRASO_GPO_T); }
-        catch (Exception e) { Log.e("ADD RES IMPRESION T", "ya contiene la columna"); }
-
-        try { db.execSQL(SidertTables.SidertEntry.ADD_DIAS_ATRASO_IND); }
-        catch (Exception e) { Log.e("ADD RES IMPRESION T", "ya contiene la columna"); }
-
-        try { db.execSQL(SidertTables.SidertEntry.ADD_NUM_PRESTAMO); }
-        catch (Exception e) { Log.e("ADD RES IMPRESION T", "ya contiene la columna"); }
-
-        try { db.execSQL(SidertTables.SidertEntry.ADD_NUM_PRESTAMO_T); }
-        catch (Exception e) { Log.e("ADD RES IMPRESION T", "ya contiene la columna"); }
-
-        try { db.execSQL(SidertTables.SidertEntry.ADD_CELULAR_T); }
-        catch (Exception e) { Log.e("ADD RES IMPRESION T", "ya contiene la columna"); }
-
-        try { db.execSQL(SidertTables.SidertEntry.ADD_CELULAR_VE_T); }
-        catch (Exception e) { Log.e("ADD RES IMPRESION T", "ya contiene la columna"); }
-
-        try { db.execSQL(SidertTables.SidertEntry.ADD_CELULAR_REIMPRESION_T); }
-        catch (Exception e) { Log.e("ADD RES IMPRESION T", "ya contiene la columna"); }
-
-        try { db.execSQL(SidertTables.SidertEntry.ADD_DIAS_ATRASO_IND_T); }
-        catch (Exception e) { Log.e("ADD RES IMPRESION T", "ya contiene la columna"); }
-
-        try { db.execSQL(SidertTables.SidertEntry.ADD_NUM_PRESTAMO_RIM); }
-        catch (Exception e) { Log.e("ADD RES IMPRESION T", "ya contiene la columna"); }
-
-        try{ db.execSQL(SidertTables.SidertEntry.CREATE_TBL_TRACKER_ASESOR_T); }
-        catch (Exception e) {}
-
-        try { db.execSQL(SidertTables.SidertEntry.CREATE_TBL_GEO_RESPUESTAS); }
-        catch (Exception e) {  Log.e("Tablas", "Catch tabla GEO_RESPUESTAS"); }
-
-        try { db.execSQL(SidertTables.SidertEntry.ADD_CLAVE_INTEGRANTE); }
-        catch (Exception e) { Log.e("ADD CLAVE INTEGRANTE", "ya contiene la columna"); }
-
-        try { db.execSQL(SidertTables.SidertEntry.ADD_CLAVE_INTEGRANTE_T); }
-        catch (Exception e) { Log.e("ADD CLAVE INTEGRANTE T", "ya contiene la columna"); }
-
-        try { db.execSQL(SidertTables.SidertEntry.ADD_PRESTAMO_ID_INTEGRANTE); }
-        catch (Exception e) { Log.e("ADD ID PRESTAMO INTE", "ya contiene la columna"); }
-        try { db.execSQL(SidertTables.SidertEntry.ADD_PRESTAMO_ID_INTEGRANTE_T); }
-        catch (Exception e) { Log.e("ADD ID PRESTAMO INTE T", "ya contiene la columna"); }
-        try { db.execSQL(SidertTables.SidertEntry.ADD_CLAVE_GEO_RESP); }
-        catch (Exception e) { Log.e("ADD CLAVE GEO", "ya contiene la columna"); }
-        try { db.execSQL(SidertTables.SidertEntry.ADD_GEO_CLIENTE_IND); }
-        catch (Exception e) { Log.e("ADD CLAVE GEO", "ya contiene la columna"); }
-        try { db.execSQL(SidertTables.SidertEntry.ADD_GEO_AVAL_IND); }
-        catch (Exception e) { Log.e("ADD CLAVE GEO", "ya contiene la columna"); }
-        try { db.execSQL(SidertTables.SidertEntry.ADD_GEO_NEGOCIO_IND); }
-        catch (Exception e) { Log.e("ADD CLAVE GEO", "ya contiene la columna"); }
-        try { db.execSQL(SidertTables.SidertEntry.ADD_GEOLOCALIZADAS_GPO); }
-        catch (Exception e) { Log.e("ADD CLAVE GEO", "ya contiene la columna"); }
-        try{ db.execSQL(SidertTables.SidertEntry.CREATE_TBL_RESPUESTAS_IND_V_T); }
-        catch (Exception e) {}
-        try{ db.execSQL(SidertTables.SidertEntry.CREATE_TBL_RESPUESTAS_INTEGRANTE_T); }
-        catch (Exception e) {}
-        try { db.execSQL(SidertTables.SidertEntry.ADD_SERIAL_INDIVIDUAL); }
-        catch (Exception e) { Log.e("ADD_SERIE_ID", "ya contiene la columna"); }
-        try { db.execSQL(SidertTables.SidertEntry.ADD_SERIAL_INTEGRANTE); }
-        catch (Exception e) { Log.e("ADD_SERIE_ID", "ya contiene la columna"); }
-        try { db.execSQL(SidertTables.SidertEntry.CREATE_TBL_CIERRE_DIA); }
-        catch (Exception e) { Log.e("Tablas", "Catch ya existe las tabla CIERRE DE DIA"); }
-
-        try { db.execSQL(SidertTables.SidertEntry.ADD_NOMBRE_CIERRE_DIA); }
-        catch (Exception e) { Log.e("ADD NOMBRE CIERRE", "ya contiene la columna"); }
-        try { db.execSQL(SidertTables.SidertEntry.ADD_SERIAL_ID_CIERRE_DIA); }
-        catch (Exception e) { Log.e("ADD SERIAL CIERRE", "ya contiene la columna"); }
-        try{ db.execSQL(SidertTables.SidertEntry.CREATE_TBL_REPORTE_SESIONES); }
-        catch (Exception e) {}
-        try{ db.execSQL(SidertTables.SidertEntry.CREATE_TBL_SUCURSALES); }
-        catch (Exception e) {}
-        try{ db.execSQL(SidertTables.SidertEntry.CREATE_TBL_CODIGOS_OXXO); }
-        catch (Exception e) {}
-        try { db.execSQL(SidertTables.SidertEntry.ADD_FECHA_VENCIMIENTO_CODIGOS); }
-        catch (Exception e) { Log.e("ADD FECHA VENCI", "ya contiene la columna"); }
-        try { db.execSQL(SidertTables.SidertEntry.ADD_ESTATUS_CARTERA_IND); }
-        catch (Exception e) { Log.e("ADD ESTATUS CAR IND", "ya contiene la columna"); }
-        try { db.execSQL(SidertTables.SidertEntry.ADD_ESTATUS_CARTERA_GPO); }
-        catch (Exception e) { Log.e("ADD ESTATUS CAR GPO", "ya contiene la columna"); }
-        try { db.execSQL(SidertTables.SidertEntry.CREATE_TBL_CANCEL_GESTIONES); }
-        catch (Exception e) { Log.e("CANCEL_GESTI", "Catch ya existe las tabla CANCEL GESTIONES"); }
-        try { db.execSQL(SidertTables.SidertEntry.CREATE_TBL_RECIBOS); }
-        catch (Exception e) {  Log.e("Tablas", "Catch tabla RECIBOS"); }
-        try { db.execSQL(SidertTables.SidertEntry.ADD_CURP_RECIBOS); }
-        catch (Exception e) { Log.e("ADD CURP", "ya contiene la columna"); }
-
-        try { db.execSQL(SidertTables.SidertEntry.ADD_CC_IND); }
-        catch (Exception e) { Log.e("ADD CC_IND", "ya contiene la columna"); }
-        try { db.execSQL(SidertTables.SidertEntry.ADD_AGF_IND); }
-        catch (Exception e) { Log.e("ADD AGF_IND", "ya contiene la columna"); }
-        try { db.execSQL(SidertTables.SidertEntry.ADD_CURP_CARTERA); }
-        catch (Exception e) { Log.e("ADD CURP_IND", "ya contiene la columna"); }
-        try { db.execSQL(SidertTables.SidertEntry.ADD_CC_GPO); }
-        catch (Exception e) { Log.e("ADD CC_GPO", "ya contiene la columna"); }
-        try { db.execSQL(SidertTables.SidertEntry.ADD_AGF_GPO); }
-        catch (Exception e) { Log.e("ADD AGF_GPO", "ya contiene la columna"); }
-        try { db.execSQL(SidertTables.SidertEntry.ADD_CURP_MIEMBROS); }
-        catch (Exception e) { Log.e("ADD CURP_MIEM", "ya contiene la columna"); }
-        try { db.execSQL(SidertTables.SidertEntry.CREATE_TBL_CATEGORIA_TICKETS); }
-        catch (Exception e) { Log.e("CREA TICKETS", "ya existe tickets"); }
-
-        try { db.execSQL(SidertTables.SidertEntry.CREATE_TBL_SOPORTE); }
-        catch (Exception e) { Log.e("CREA SOPORTE", "ya existe tickets"); }
-
-        try { db.execSQL(SidertTables.SidertEntry.CREATE_TBL_PLAZOS_PRESTAMOS); }
-        catch (Exception e) { Log.e("CREA PLAZOS", "ya existe tickets"); }
-
-        try { db.execSQL(SidertTables.SidertEntry.CREATE_TBL_SOLICITUDES); }
-        catch (Exception e) {  Log.e("Tablas", "Catch tabla TBL_SOLICITUDES"); }
-        try { db.execSQL(SidertTables.SidertEntry.CREATE_TBL_CREDITO_IND); }
-        catch (Exception e) {  Log.e("Tablas", "Catch tabla TBL_CREDITO_IND"); }
-        try { db.execSQL(SidertTables.SidertEntry.CREATE_TBL_CLIENTE_IND); }
-        catch (Exception e) {  Log.e("Tablas", "Catch tabla TBL_CLIENTE_IND"); }
-        try { db.execSQL(SidertTables.SidertEntry.CREATE_TBL_CONYUGE_IND); }
-        catch (Exception e) {  Log.e("Tablas", "Catch tabla TBL_CONYUGE_IND"); }
-        try { db.execSQL(SidertTables.SidertEntry.CREATE_TBL_ECONOMICOS_IND); }
-        catch (Exception e) {  Log.e("Tablas", "Catch tabla TBL_ECONOMICOS_IND"); }
-        try { db.execSQL(SidertTables.SidertEntry.CREATE_TBL_NEGOCIO_IND); }
-        catch (Exception e) {  Log.e("Tablas", "Catch tabla TBL_NEGOCIO_IND"); }
-        try { db.execSQL(SidertTables.SidertEntry.CREATE_TBL_AVAL_IND); }
-        catch (Exception e) {  Log.e("Tablas", "Catch tabla TBL_AVAL_IND"); }
-        try { db.execSQL(SidertTables.SidertEntry.CREATE_TBL_REFERENCIA_IND); }
-        catch (Exception e) {  Log.e("Tablas", "Catch tabla TBL_REFERENCIA_IND"); }
-        try { db.execSQL(SidertTables.SidertEntry.CREATE_TBL_CROQUIS_IND); }
-        catch (Exception e) {  Log.e("Tablas", "Catch tabla TBL_CROQUIS_IND"); }
-        try { db.execSQL(SidertTables.SidertEntry.CREATE_TBL_POLITICAS_PLD_IND); }
-        catch (Exception e) {  Log.e("Tablas", "Catch tabla TBL_POLITICAS_PLD_IND"); }
-        try { db.execSQL(SidertTables.SidertEntry.CREATE_TBL_DOCUMENTOS); }
-        catch (Exception e) {  Log.e("Tablas", "Catch tabla TBL_DOCUMENTOS"); }
-        try { db.execSQL(SidertTables.SidertEntry.CREATE_TBL_RESUMENES_GESTION); }
-        catch (Exception e) {  Log.e("Tablas", "Catch tabla TBL_RESUMENES_GESTION"); }
-
-        try { db.execSQL(SidertTables.SidertEntry.ADD_ID_SOLICITUD_INTEGRANTE); }
-        catch (Exception e) { Log.e("ID_SOLICITUD_INTEGRANTE", "ya contiene la columna"); }
-
-        try { db.execSQL(SidertTables.SidertEntry.CREATE_TBL_DATOS_CREDITO_GPO); }
-        catch (Exception e) {  Log.e("Tablas", "Catch tabla DATOS_CREDITO_GPO"); }
-
-        try { db.execSQL(SidertTables.SidertEntry.CREATE_TBL_PRESTAMOS_TO_RENOVAR); }
-        catch (Exception e) {  Log.e("Tablas", "Catch tabla PRESTAMOS_TO_RENOVAR"); }
-
-        try { db.execSQL(SidertTables.SidertEntry.CREATE_TABLE_IDENTIFICACIONES_TIPO); }
-        catch (Exception e) {  Log.e("Tablas", "Catch tabla TABLE_IDENTIFICACIONES_TIPO"); }
-        try { db.execSQL(SidertTables.SidertEntry.CREATE_TABLE_ESTADOS_CIVILES); }
-        catch (Exception e) {  Log.e("Tablas", "Catch tabla TABLE_ESTADOS_CIVILES"); }
-        try { db.execSQL(SidertTables.SidertEntry.CREATE_TABLE_NIVELES_ESTUDIOS); }
-        catch (Exception e) {  Log.e("Tablas", "Catch tabla TABLE_NIVELES_ESTUDIOS"); }
-        try { db.execSQL(SidertTables.SidertEntry.CREATE_TABLE_MEDIOS_PAGO_ORIG); }
-        catch (Exception e) {  Log.e("Tablas", "Catch tabla TABLE_MEDIOS_PAGO_ORIG"); }
-        try { db.execSQL(SidertTables.SidertEntry.CREATE_TABLE_PARENTESCOS); }
-        catch (Exception e) {  Log.e("Tablas", "Catch tabla TABLE_PARENTESCOS"); }
-        try { db.execSQL(SidertTables.SidertEntry.CREATE_TABLE_VIVIENDA_TIPOS); }
-        catch (Exception e) {  Log.e("Tablas", "Catch tabla TABLE_VIVIENDA_TIPOS"); }
-        try { db.execSQL(SidertTables.SidertEntry.CREATE_TABLE_MEDIOS_CONTACTO); }
-        catch (Exception e) {  Log.e("Tablas", "Catch tabla TABLE_MEDIOS_CONTACTO"); }
-        try { db.execSQL(SidertTables.SidertEntry.CREATE_TABLE_DESTINOS_CREDITO); }
-        catch (Exception e) {  Log.e("Tablas", "Catch tabla TABLE_DESTINOS_CREDITO"); }
-        try { db.execSQL(SidertTables.SidertEntry.CREATE_TABLE_DIRECCIONES); }
-        catch (Exception e) {  Log.e("Tablas", "Catch tabla TABLE_DIRECCIONES"); }
-        try { db.execSQL(SidertTables.SidertEntry.CREATE_TABLE_LOCALIDADES); }
-        catch (Exception e) {  Log.e("Tablas", "Catch tabla TABLE_LOCALIDADES"); }
-
-
-        try {db.execSQL(SidertTables.SidertEntry.CREATE_TBL_SOLICITUDES_REN);}
-        catch (Exception e) {  Log.e("Tablas", "Catch tabla TBL_SOLICITUDES_REN"); }
-        try {db.execSQL(SidertTables.SidertEntry.CREATE_TBL_CREDITO_IND_REN);}
-        catch (Exception e) {  Log.e("Tablas", "Catch tabla TBL_CREDITO_IND_REN"); }
-        try {db.execSQL(SidertTables.SidertEntry.CREATE_TBL_CLIENTE_IND_REN);}
-        catch (Exception e) {  Log.e("Tablas", "Catch tabla TBL_CLIENTE_IND_REN"); }
-        try {db.execSQL(SidertTables.SidertEntry.CREATE_TBL_CONYUGE_IND_REN);}
-        catch (Exception e) {  Log.e("Tablas", "Catch tabla TBL_CONYUGE_IND_REN"); }
-        try {db.execSQL(SidertTables.SidertEntry.CREATE_TBL_ECONOMICOS_IND_REN);}
-        catch (Exception e) {  Log.e("Tablas", "Catch tabla TBL_ECONOMICOS_IND_REN"); }
-        try {db.execSQL(SidertTables.SidertEntry.CREATE_TBL_NEGOCIO_IND_REN);}
-        catch (Exception e) {  Log.e("Tablas", "Catch tabla TBL_NEGOCIO_IND_REN"); }
-        try {db.execSQL(SidertTables.SidertEntry.CREATE_TBL_AVAL_IND_REN);}
-        catch (Exception e) {  Log.e("Tablas", "Catch tabla TBL_AVAL_IND_REN"); }
-        try {db.execSQL(SidertTables.SidertEntry.CREATE_TBL_REFERENCIA_IND_REN);}
-        catch (Exception e) {  Log.e("Tablas", "Catch tabla TBL_REFERENCIA_IND_REN"); }
-        try {db.execSQL(SidertTables.SidertEntry.CREATE_TBL_CROQUIS_IND_REN);}
-        catch (Exception e) {  Log.e("Tablas", "Catch tabla TBL_CROQUIS_IND_REN"); }
-        try {db.execSQL(SidertTables.SidertEntry.CREATE_TBL_POLITICAS_PLD_IND_REN);}
-        catch (Exception e) {  Log.e("Tablas", "Catch tabla TBL_POLITICAS_PLD_IND_REN"); }
-        try {db.execSQL(SidertTables.SidertEntry.CREATE_TABLE_DIRECCIONES_REN);}
-        catch (Exception e) {  Log.e("Tablas", "Catch tabla TABLE_DIRECCIONES_REN"); }
-        try {db.execSQL(SidertTables.SidertEntry.CREATE_TBL_DOCUMENTOS_REN);}
-        catch (Exception e) {  Log.e("Tablas", "Catch tabla TBL_DOCUMENTOS_REN"); }
-
-        try{db.execSQL(SidertTables.SidertEntry.CREATE_TBL_DATOS_CREDITO_GPO_REN);}
-        catch (Exception e){Log.e("Tablas","Catch tabla TBL_DATOS_CREDITO_GPO_REN");}
-        try{db.execSQL(SidertTables.SidertEntry.CREATE_TBL_INTEGRANTES_GPO_REN);}
-        catch (Exception e){Log.e("Tablas","Catch tabla TBL_INTEGRANTES_GPO_REN");}
-        try{db.execSQL(SidertTables.SidertEntry.CREATE_TBL_TELEFONOS_INTEGRANTE_REN);}
-        catch (Exception e){Log.e("Tablas","Catch tabla TELEFONOS_INTEGRANTE_REN");}
-        try{db.execSQL(SidertTables.SidertEntry.CREATE_TBL_DOMICILIO_INTEGRANTE_REN);}
-        catch (Exception e){Log.e("Tablas","Catch tabla TBL_DOMICILIO_INTEGRANTE_REN");}
-        try{db.execSQL(SidertTables.SidertEntry.CREATE_TBL_NEGOCIO_INTEGRANTE_REN);}
-        catch (Exception e){Log.e("Tablas","Catch tabla TBL_NEGOCIO_INTEGRANTE_REN");}
-        try{db.execSQL(SidertTables.SidertEntry.CREATE_TBL_CONYUGE_INTEGRANTE_REN);}
-        catch (Exception e){Log.e("Tablas","Catch tabla TBL_CONYUGE_INTEGRANTE_REN");}
-        try{db.execSQL(SidertTables.SidertEntry.CREATE_TBL_OTROS_DATOS_INTEGRANTE_REN);}
-        catch (Exception e){Log.e("Tablas","Catch tabla TBL_OTROS_DATOS_INTEGRANTE_REN");}
-        try{db.execSQL(SidertTables.SidertEntry.CREATE_TBL_CROQUIS_GPO_REN);}
-        catch (Exception e){Log.e("Tablas","Catch tabla TBL_CROQUIS_GPO_REN");}
-        try{db.execSQL(SidertTables.SidertEntry.CREATE_TBL_POLITICAS_INTEGRANTE_REN);}
-        catch (Exception e){Log.e("Tablas","Catch tabla TBL_POLITICAS_INTEGRANTE_REN");}
-        try{db.execSQL(SidertTables.SidertEntry.CREATE_TBL_DOCUMENTOS_INTEGRANTE_REN);}
-        catch (Exception e){Log.e("Tablas","Catch tabla TBL_DOCUMENTOS_INTEGRANTE_REN");}
-
-        try {db.execSQL(SidertTables.SidertEntry.CREATE_TBL_SOLICITUDES_AUTO);}
-        catch (Exception e) {  Log.e("Tablas", "Catch tabla TBL_SOLICITUDES_REN"); }
-        try {db.execSQL(SidertTables.SidertEntry.CREATE_TBL_CREDITO_IND_AUTO);}
-        catch (Exception e) {  Log.e("Tablas", "Catch tabla TBL_CREDITO_IND_REN"); }
-        try {db.execSQL(SidertTables.SidertEntry.CREATE_TBL_CLIENTE_IND_AUTO);}
-        catch (Exception e) {  Log.e("Tablas", "Catch tabla TBL_CLIENTE_IND_REN"); }
-        try {db.execSQL(SidertTables.SidertEntry.CREATE_TBL_CONYUGE_IND_AUTO);}
-        catch (Exception e) {  Log.e("Tablas", "Catch tabla TBL_CONYUGE_IND_REN"); }
-        try {db.execSQL(SidertTables.SidertEntry.CREATE_TBL_ECONOMICOS_IND_AUTO);}
-        catch (Exception e) {  Log.e("Tablas", "Catch tabla TBL_ECONOMICOS_IND_REN"); }
-        try {db.execSQL(SidertTables.SidertEntry.CREATE_TBL_NEGOCIO_IND_AUTO);}
-        catch (Exception e) {  Log.e("Tablas", "Catch tabla TBL_NEGOCIO_IND_REN"); }
-        try {db.execSQL(SidertTables.SidertEntry.CREATE_TBL_AVAL_IND_AUTO);}
-        catch (Exception e) {  Log.e("Tablas", "Catch tabla TBL_AVAL_IND_REN"); }
-        try {db.execSQL(SidertTables.SidertEntry.CREATE_TBL_REFERENCIA_IND_AUTO);}
-        catch (Exception e) {  Log.e("Tablas", "Catch tabla TBL_REFERENCIA_IND_REN"); }
-        try {db.execSQL(SidertTables.SidertEntry.CREATE_TBL_CROQUIS_IND_AUTO);}
-        catch (Exception e) {  Log.e("Tablas", "Catch tabla TBL_CROQUIS_IND_REN"); }
-        try {db.execSQL(SidertTables.SidertEntry.CREATE_TBL_POLITICAS_PLD_IND_AUTO);}
-        catch (Exception e) {  Log.e("Tablas", "Catch tabla TBL_POLITICAS_PLD_IND_REN"); }
-        try {db.execSQL(SidertTables.SidertEntry.CREATE_TABLE_DIRECCIONES_AUTO);}
-        catch (Exception e) {  Log.e("Tablas", "Catch tabla TABLE_DIRECCIONES_REN"); }
-
-        try {db.execSQL(SidertTables.SidertEntry.CREATE_TBL_DATOS_CREDITO_GPO_AUTO);}
-        catch (Exception e) {  Log.e("Tablas", "Catch tabla BL_DATOS_CREDITO_GPO_AUTO"); }
-        try {db.execSQL(SidertTables.SidertEntry.CREATE_TBL_INTEGRANTES_GPO_AUTO);}
-        catch (Exception e) {  Log.e("Tablas", "Catch tabla TBL_INTEGRANTES_GPO_AUTO"); }
-        try {db.execSQL(SidertTables.SidertEntry.CREATE_TBL_TELEFONOS_INTEGRANTE_AUTO);}
-        catch (Exception e) {  Log.e("Tablas", "Catch tabla TBL_TELEFONOS_INTEGRANTE_AUTO"); }
-        try {db.execSQL(SidertTables.SidertEntry.CREATE_TBL_DOMICILIO_INTEGRANTE_AUTO);}
-        catch (Exception e) {  Log.e("Tablas", "Catch tabla TBL_DOMICILIO_INTEGRANTE_AUTO"); }
-        try {db.execSQL(SidertTables.SidertEntry.CREATE_TBL_NEGOCIO_INTEGRANTE_AUTO);}
-        catch (Exception e) {  Log.e("Tablas", "Catch tabla TBL_NEGOCIO_INTEGRANTE_AUTO"); }
-        try {db.execSQL(SidertTables.SidertEntry.CREATE_TBL_CONYUGE_INTEGRANTE_AUTO);}
-        catch (Exception e) {  Log.e("Tablas", "Catch tabla TBL_CONYUGE_INTEGRANTE_AUTO"); }
-        try {db.execSQL(SidertTables.SidertEntry.CREATE_TBL_OTROS_DATOS_INTEGRANTE_AUTO);}
-        catch (Exception e) {  Log.e("Tablas", "Catch tabla TBL_OTROS_DATOS_INTEGRANTE_AUTO"); }
-        try {db.execSQL(SidertTables.SidertEntry.CREATE_TBL_CROQUIS_GPO_AUTO);}
-        catch (Exception e) {  Log.e("Tablas", "Catch tabla TBL_CROQUIS_GPO_AUTO"); }
-        try {db.execSQL(SidertTables.SidertEntry.CREATE_TBL_POLITICAS_INTEGRANTE_AUTO);}
-        catch (Exception e) {  Log.e("Tablas", "Catch tabla TBL_POLITICAS_INTEGRANTE_AUTO"); }
-
-        try{db.execSQL(SidertTables.SidertEntry.CREATE_TBL_PRESTAMOS);}
-        catch (Exception e){Log.e("Tablas","Catch tabla TBL_PRESTAMOS");}
-        try{db.execSQL(SidertTables.SidertEntry.CREATE_TBL_RECIBOS_AGF_CC);}
-        catch (Exception e){Log.e("Tablas","Catch tabla TBL_RECIBOS_AGF_CC");}
-        try { db.execSQL(SidertTables.SidertEntry.CREATE_TBL_RECUPERACION_RECIBOS); }
-        catch (Exception e) { Log.e("Tablas", "Catch ya existe la tabla RECUPERACION_RECIBOS"); }
-
-        try { db.execSQL(SidertTables.SidertEntry.CREATE_TBL_CONSULTA_CC); }
-        catch (Exception e) { Log.e("Tablas", "Catch ya existe la tabla TBL_CONSULTA_CC"); }
-        try { db.execSQL(SidertTables.SidertEntry.CREATE_TBL_RECIBOS_CC); }
-        catch (Exception e) { Log.e("Tablas", "Catch ya existe la tabla TBL_RECIBOS_CC"); }
-        try { db.execSQL(SidertTables.SidertEntry.CREATE_TBL_RECUPERACION_CC); }
-        catch (Exception e) { Log.e("Tablas", "Catch ya existe la tabla TBL_RECUPERACION_CC"); }
-
-        try { db.execSQL(SidertTables.SidertEntry.CREATE_TBL_TELEFONOS_CLIENTE); }
-        catch (Exception e) { Log.e("Tablas", "Catch ya existe la tabla TBL_TELEFONOS_CLIENTE"); }
-
-        try { db.execSQL(SidertTables.SidertEntry.ADD_DIAS_ATRASO_CARTERA_IND); }
-        catch (Exception e) { Log.e("ADD ATRASO IND", "ya contiene la columna"); }
-        try { db.execSQL(SidertTables.SidertEntry.ADD_DIAS_ATRASO_CARTERA_GPO); }
-        catch (Exception e) { Log.e("ADD ATRASO GPO", "ya contiene la columna"); }
-        try { db.execSQL(SidertTables.SidertEntry.ADD_DEPENDIENTES_ECONOMICOS_INTEGRANTE); }
-        catch (Exception e) { Log.e("ADD DEPENDIENTES INT", "ya contiene la columna"); }
-
-        try { db.execSQL(SidertTables.SidertEntry.ADD_TIPO_PRESTAMO); }
-        catch (Exception e) { Log.e("ADD_TIPO_PRESTAMO", "ya contiene la columna"); }
-
-        try { db.execSQL(SidertTables.SidertEntry.ADD_GRUPO_ID); }
-        catch (Exception e) { Log.e("ADD_GRUPO_ID", "ya contiene la columna"); }
-
-        try { db.execSQL(SidertTables.SidertEntry.ADD_COMENTARIO_NEGOCIO_IND); }
-        catch (Exception e) { Log.e("COMENT_NEGOCIO_IND", "ya contiene la columna"); }
-
-        try { db.execSQL(SidertTables.SidertEntry.ADD_COMENTARIO_REFERENCIA_IND); }
-        catch (Exception e) { Log.e("COMENT_REFE_IND", "ya contiene la columna"); }
-
-        try { db.execSQL(SidertTables.SidertEntry.ADD_COMENTARIO_CROQUIS_IND); }
-        catch (Exception e) { Log.e("COMENT_CROQUIS_IND", "ya contiene la columna"); }
-
-        try { db.execSQL(SidertTables.SidertEntry.ADD_COMENTARIO_NEGOCIO_IND_REN); }
-        catch (Exception e) { Log.e("COMENT_NEGOCIO_IND", "ya contiene la columna"); }
-
-        try { db.execSQL(SidertTables.SidertEntry.ADD_COMENTARIO_REFERENCIA_IND_REN); }
-        catch (Exception e) { Log.e("COMENT_REFE_IND", "ya contiene la columna"); }
-
-        try { db.execSQL(SidertTables.SidertEntry.ADD_COMENTARIO_CROQUIS_IND_REN); }
-        catch (Exception e) { Log.e("COMENT_CROQUIS_IND", "ya contiene la columna"); }
-
-        try { db.execSQL(SidertTables.SidertEntry.ADD_MONTO_PRESTAMOS); }
-        catch (Exception e) { Log.e("MONTO_PRESTAMO", "ya contiene la columna"); }
-
-        try { db.execSQL(SidertTables.SidertEntry.ADD_MONTO_AUTORIZADO); }
-        catch (Exception e) { Log.e("MONTO_AUTORIZADO", "ya contiene la columna"); }
-
-        try { db.execSQL(SidertTables.SidertEntry.ADD_MONTO_AUTORIZADO_GPO); }
-        catch (Exception e) { Log.e("MONTO_AUTORIZADO_GPO", "ya contiene la columna"); }
-
-        try { db.execSQL(SidertTables.SidertEntry.ADD_COSTO_CONSULTA); }
-        catch (Exception e) { Log.e("COSTO_CONSULTA", "ya contiene la columna"); }
-
-        try { db.execSQL(SidertTables.SidertEntry.ADD_PLAZO_AGF_CC); }
-        catch (Exception e) { Log.e("ADD_PLAZO_AGF_CC", "ya contiene la columna"); }
-
-        try { db.execSQL(SidertTables.SidertEntry.ADD_TOTAL_INTEGRANTES_AGF); }
-        catch (Exception e) { Log.e("ADD_TOTAL_INTEGRANTES", "ya contiene la columna"); }
-
-        try { db.execSQL(SidertTables.SidertEntry.ADD_TOTAL_INT_MANUAL_AGF); }
-        catch (Exception e) { Log.e("ADD_TOTAL_INT_MANUAL", "ya contiene la columna"); }
-
-        try { db.execSQL(SidertTables.SidertEntry.ADD_FECHA_ENTREGA_PRESTAMOS_AV); }
-        catch (Exception e) { Log.e("ADD_FCHA_EGA_PMOS_AV", "ya contiene la columna"); }
-
-        try { db.execSQL(SidertTables.SidertEntry.ADD_ESTATUS_PRESTAMO_PRESTAMOS_AV); }
-        catch (Exception e) { Log.e("ADD_EST_PMO_PRMOS_AV", "ya contiene la columna"); }
-
-        try { db.execSQL(SidertTables.SidertEntry.ADD_LOCATED_AT_DIRECCIONES); }
-        catch (Exception e) { Log.e("ADD_LOCATEDAT_DIR", "ya contiene la columna"); }
-
-        try { db.execSQL(SidertTables.SidertEntry.ADD_LOCATED_AT_DIRECCIONES_AUTO); }
-        catch (Exception e) { Log.e("ADD_LOCATEDAT_DIR_AUTO", "ya contiene la columna"); }
-
-        try { db.execSQL(SidertTables.SidertEntry.ADD_LOCATED_AT_DIRECCIONES_RENOV); }
-        catch (Exception e) { Log.e("ADD_LOCATEDAT_DIR_RENOV", "ya contiene la columna"); }
-
-        try { db.execSQL(SidertTables.SidertEntry.ADD_LATITUD_CLIENTE); }
-        catch (Exception e) { Log.e("ADD_LATITUD_CLI", "ya contiene la columna"); }
-
-        try { db.execSQL(SidertTables.SidertEntry.ADD_LONGITUD_CLIENTE); }
-        catch (Exception e) { Log.e("ADD_LONGITUD_CLI", "ya contiene la columna"); }
-
-        try { db.execSQL(SidertTables.SidertEntry.ADD_LOCATED_AT_CLIENTE); }
-        catch (Exception e) { Log.e("ADD_LOCATEDAT_CLI", "ya contiene la columna"); }
-
-        try { db.execSQL(SidertTables.SidertEntry.ADD_LATITUD_CLIENTE_AUTO); }
-        catch (Exception e) { Log.e("ADD_LATITUD_CLI_AUTO", "ya contiene la columna"); }
-
-        try { db.execSQL(SidertTables.SidertEntry.ADD_LONGITUD_CLIENTE_AUTO); }
-        catch (Exception e) { Log.e("ADD_LONGITUD_CLI_AUTO", "ya contiene la columna"); }
-
-        try { db.execSQL(SidertTables.SidertEntry.ADD_LOCATED_AT_CLIENTE_AUTO); }
-        catch (Exception e) { Log.e("ADD_LOCATEDAT_CLI_AUTO", "ya contiene la columna"); }
-
-        try { db.execSQL(SidertTables.SidertEntry.ADD_LATITUD_CLIENTE_RENOV); }
-        catch (Exception e) { Log.e("ADD_LATITUD_CLIE_REN", "ya contiene la columna"); }
-
-        try { db.execSQL(SidertTables.SidertEntry.ADD_LONGITUD_CLIENTE_RENOV); }
-        catch (Exception e) { Log.e("ADD_LONGITUD_CLIE_REN", "ya contiene la columna"); }
-
-        try { db.execSQL(SidertTables.SidertEntry.ADD_LOCATED_AT_CLIENTE_RENOV); }
-        catch (Exception e) { Log.e("ADD_LOCATED_AT_CLIE_REN", "ya contiene la columna"); }
-
-        try { db.execSQL(SidertTables.SidertEntry.ADD_LATITUD_AVAL); }
-        catch (Exception e) { Log.e("ADD_LATITUD_AVAL", "ya contiene la columna"); }
-
-        try { db.execSQL(SidertTables.SidertEntry.ADD_LONGITUD_AVAL); }
-        catch (Exception e) { Log.e("ADD_LONGITUD_AVAL", "ya contiene la columna"); }
-
-        try { db.execSQL(SidertTables.SidertEntry.ADD_LOCATED_AT_AVAL); }
-        catch (Exception e) { Log.e("ADD_LOCATED_AT_AVAL", "ya contiene la columna"); }
-
-        try { db.execSQL(SidertTables.SidertEntry.ADD_LATITUD_AVAL_AUTO); }
-        catch (Exception e) { Log.e("ADD_LATITUD_AVAL_AUTO", "ya contiene la columna"); }
-
-        try { db.execSQL(SidertTables.SidertEntry.ADD_LONGITUD_AVAL_AUTO); }
-        catch (Exception e) { Log.e("ADD_LONGITUD_AVAL_AUTO", "ya contiene la columna"); }
-
-        try { db.execSQL(SidertTables.SidertEntry.ADD_LOCATED_AT_AVAL_AUTO); }
-        catch (Exception e) { Log.e("ADD_LOCATED_AT_AVAL_AU", "ya contiene la columna"); }
-
-        try { db.execSQL(SidertTables.SidertEntry.ADD_LATITUD_AVAL_RENOV); }
-        catch (Exception e) { Log.e("ADD_LATITUD_AVAL_RENOV", "ya contiene la columna"); }
-
-        try { db.execSQL(SidertTables.SidertEntry.ADD_LONGITUD_AVAL_RENOV); }
-        catch (Exception e) { Log.e("ADD_LONGITUD_AVAL_RENOV", "ya contiene la columna"); }
-
-        try { db.execSQL(SidertTables.SidertEntry.ADD_LOCATED_AT_AVAL_RENOV); }
-        catch (Exception e) { Log.e("ADD_LOCATED_AT_AVAL_REN", "ya contiene la columna"); }
-
-        try { db.execSQL(SidertTables.SidertEntry.ADD_LOCATED_AT_NEG_INT); }
-        catch (Exception e) { Log.e("ADD_LOCATED_AT_NEG_INT", "ya contiene la columna"); }
-
-        try { db.execSQL(SidertTables.SidertEntry.ADD_LOCATED_AT_DOM_INT); }
-        catch (Exception e) { Log.e("ADD_LOCATED_AT_NEG_INT", "ya contiene la columna"); }
-
-        try { db.execSQL(SidertTables.SidertEntry.ADD_LATITUD_OD_INT); }
-        catch (Exception e) { Log.e("ADD_LATITUD_OD_INT", "ya contiene la columna"); }
-
-        try { db.execSQL(SidertTables.SidertEntry.ADD_LONGITUD_OD_INT); }
-        catch (Exception e) { Log.e("ADD_LONGITUD_OD_INT", "ya contiene la columna"); }
-
-        try { db.execSQL(SidertTables.SidertEntry.ADD_LOCATED_AT_OD_INT); }
-        catch (Exception e) { Log.e("ADD_LOCATED_AT_OD_INT", "ya contiene la columna"); }
-
-        try { db.execSQL(SidertTables.SidertEntry.ADD_LATITUD_OD_INT_REN); }
-        catch (Exception e) { Log.e("ADD_LATITUD_OD_INT_REN", "ya contiene la columna"); }
-
-        try { db.execSQL(SidertTables.SidertEntry.ADD_LONGITUD_OD_INT_REN); }
-        catch (Exception e) { Log.e("ADD_LONGITUD_OD_INT_REN", "ya contiene la columna"); }
-
-        try { db.execSQL(SidertTables.SidertEntry.ADD_LOCATED_AT_OD_INT_REN); }
-        catch (Exception e) { Log.e("ADD_LOCATED_AT_ODINTREN", "ya contiene la columna"); }
-
-        try { db.execSQL(SidertTables.SidertEntry.ADD_LOCATED_AT_NEG_INT_REN); }
-        catch (Exception e) { Log.e("ADD_LOCATED_AT_NEGINREN", "ya contiene la columna"); }
-
-        try { db.execSQL(SidertTables.SidertEntry.ADD_LOCATED_AT_DOM_INT_REN); }
-        catch (Exception e) { Log.e("ADD_LOCATED_AT_DOMINREN", "ya contiene la columna"); }
-
-        try { db.execSQL(SidertTables.SidertEntry.ADD_LATITUD_OD_INT_AUTO); }
-        catch (Exception e) { Log.e("ADD_LATITUD_OD_INT_AUTO", "ya contiene la columna"); }
-
-        try { db.execSQL(SidertTables.SidertEntry.ADD_LONGITUD_OD_INT_AUTO); }
-        catch (Exception e) { Log.e("ADD_LONGITUD_OD_INTAUTO", "ya contiene la columna"); }
-
-        try { db.execSQL(SidertTables.SidertEntry.ADD_LOCATED_AT_OD_INT_AUTO); }
-        catch (Exception e) { Log.e("ADD_LOCATED_AT_ODINAUTO", "ya contiene la columna"); }
-
-        try { db.execSQL(SidertTables.SidertEntry.ADD_LOCATED_AT_DOM_INT_AUTO); }
-        catch (Exception e) { Log.e("ADD_LOCATED_AT_DOMINAU", "ya contiene la columna"); }
-
-        try { db.execSQL(SidertTables.SidertEntry.ADD_LOCATED_AT_NEG_INT_AUTO); }
-        catch (Exception e) { Log.e("ADD_LOCATED_AT_NEGINTAU", "ya contiene la columna"); }
-
-        try { db.execSQL(SidertTables.SidertEntry.ADD_UBIC_DC_NEG_IND); }
-        catch (Exception e) { Log.e("ADD_UBIC_DC_NEG_IND", "ya contiene la columna"); }
-
-        try { db.execSQL(SidertTables.SidertEntry.ADD_UBIC_DC_NEG_IND_REN); }
-        catch (Exception e) { Log.e("ADD_UBIC_DC_NEG_IND_REN", "ya contiene la columna"); }
-
-        try { db.execSQL(SidertTables.SidertEntry.ADD_UBIC_DC_NEG_IND_AUT); }
-        catch (Exception e) { Log.e("ADD_UBIC_DC_NEG_IND_AUT", "ya contiene la columna"); }
-
-        try { db.execSQL(SidertTables.SidertEntry.ADD_TIENE_F_OD_INT); }
-        catch (Exception e) { Log.e("ADD_TIENE_F_OD_INT", "ya contiene la columna"); }
-
-        try { db.execSQL(SidertTables.SidertEntry.ADD_NOM_QF_OD_INT); }
-        catch (Exception e) { Log.e("ADD_NOM_QF_OD_INT", "ya contiene la columna"); }
-
-        try { db.execSQL(SidertTables.SidertEntry.ADD_TIENE_F_OD_INT_REN); }
-        catch (Exception e) { Log.e("ADD_TIENE_F_OD_INT_REN", "ya contiene la columna"); }
-
-        try { db.execSQL(SidertTables.SidertEntry.ADD_NOM_QF_OD_INT_REN); }
-        catch (Exception e) { Log.e("ADD_NOM_QF_OD_INT_REN", "ya contiene la columna"); }
-
-        try { db.execSQL(SidertTables.SidertEntry.ADD_TIENE_F_OD_INT_AUT); }
-        catch (Exception e) { Log.e("ADD_TIENE_F_OD_INT_AUT", "ya contiene la columna"); }
-
-        try { db.execSQL(SidertTables.SidertEntry.ADD_NOM_QF_OD_INT_AUT); }
-        catch (Exception e) { Log.e("ADD_NOM_QF_OD_INT_AUT", "ya contiene la columna"); }
-
-        try { db.execSQL(SidertTables.SidertEntry.ADD_TIENE_NEG_NEG_INT); }
-        catch (Exception e) { Log.e("ADD_TIENE_NEG_NEG_INT", "ya contiene la columna"); }
-
-        try { db.execSQL(SidertTables.SidertEntry.ADD_UBIC_DC_NEG_INT); }
-        catch (Exception e) { Log.e("ADD_UBIC_DC_NEG_INT", "ya contiene la columna"); }
-
-        try { db.execSQL(SidertTables.SidertEntry.ADD_TIENE_NEG_NEG_INT_REN); }
-        catch (Exception e) { Log.e("ADD_TIENE_N_NEG_INT_REN", "ya contiene la columna"); }
-
-        try { db.execSQL(SidertTables.SidertEntry.ADD_UBIC_DC_NEG_INT_REN); }
-        catch (Exception e) { Log.e("ADD_UBIC_DC_NEG_INT_REN", "ya contiene la columna"); }
-
-        try { db.execSQL(SidertTables.SidertEntry.ADD_TIENE_NEG_NEG_INT_AUT); }
-        catch (Exception e) { Log.e("ADD_TIENE_N_NEG_INT_AUT", "ya contiene la columna"); }
-
-        try { db.execSQL(SidertTables.SidertEntry.ADD_UBIC_DC_NEG_INT_AUT); }
-        catch (Exception e) { Log.e("ADD_UBIC_DC_NEG_INT_AUT", "ya contiene la columna"); }
-
-        try { db.execSQL(SidertTables.SidertEntry.ADD_CICLO_INT_GPO_REN); }
-        catch (Exception e) { Log.e("ADD_CICLO_INT_GPO_REN", "ya contiene la columna"); }
-
-        try { db.execSQL(SidertTables.SidertEntry.ADD_MONTO_ANT_INT_GPO_REN); }
-        catch (Exception e) { Log.e("ADD_MTO_ANT_INT_GPO_REN", "ya contiene la columna"); }
-
-        try { db.execSQL(SidertTables.SidertEntry.ADD_GRUPO_ID_VER_DOM); }
-        catch (Exception e) { Log.e("ADD_GRUPO_ID_VER_DOM", "ya contiene la columna"); }
-
-        try { db.execSQL(SidertTables.SidertEntry.ADD_GRUPO_NOM_VER_DOM); }
-        catch (Exception e) { Log.e("ADD_GRUPO_NOM_VER_DOM", "ya contiene la columna"); }
-
-        try { db.execSQL(SidertTables.SidertEntry.ADD_NO_SOL_VER_DOM); }
-        catch (Exception e) { Log.e("ADD_NO_SOL_VER_DOM", "ya contiene la columna"); }
-
-        try { db.execSQL(SidertTables.SidertEntry.ADD_MONTO_REFINANCIAR_IND); }
-        catch (Exception e) { Log.e("ADD_MONTO_REFINANCIAR_IND", "ya contiene la columna"); }
-
-        try { db.execSQL(SidertTables.SidertEntry.ADD_CARACT_DOM_CRO_IND); }
-        catch (Exception e) { Log.e("ADD_CARACT_DOM_CRO_IND", "ya contiene la columna"); }
-
-        try { db.execSQL(SidertTables.SidertEntry.ADD_INE_SELF_DOC_IND); }
-        catch (Exception e) { Log.e("ADD_INE_SELF_DOC_IND", "ya contiene la columna"); }
-
-        try { db.execSQL(SidertTables.SidertEntry.ADD_COM_GAR_DOC_IND); }
-        catch (Exception e) { Log.e("ADD_COM_GAR_DOC_IND", "ya contiene la columna"); }
-
-        try { db.execSQL(SidertTables.SidertEntry.ADD_INE_FRON_AVAL_DOC_IND); }
-        catch (Exception e) { Log.e("ADD_INE_FRON_AVAL_DOC_IND", "ya contiene la columna"); }
-
-        try { db.execSQL(SidertTables.SidertEntry.ADD_INE_REV_AVAL_DOC_IND); }
-        catch (Exception e) { Log.e("ADD_INE_REV_AVAL_DOC_IND", "ya contiene la columna"); }
-
-        try { db.execSQL(SidertTables.SidertEntry.ADD_CURP_AVAL_DOC_IND); }
-        catch (Exception e) { Log.e("ADD_CURP_AVAL_DOC_IND", "ya contiene la columna"); }
-
-        try { db.execSQL(SidertTables.SidertEntry.ADD_COM_DOM_AVAL_DOC_IND); }
-        catch (Exception e) { Log.e("ADD_COM_DOM_AVAL_DOC_IND", "ya contiene la columna"); }
-
-        try { db.execSQL(SidertTables.SidertEntry.ADD_MONTO_REFINANCIAR_IND_REN); }
-        catch (Exception e) { Log.e("ADD_MONTO_REFINANCIAR_IND_REN", "ya contiene la columna"); }
-
-        try { db.execSQL(SidertTables.SidertEntry.ADD_CARACT_DOM_CRO_IND_REN); }
-        catch (Exception e) { Log.e("ADD_CARACT_DOM_CRO_IND_REN", "ya contiene la columna"); }
-
-        try { db.execSQL(SidertTables.SidertEntry.ADD_INE_SELF_DOC_IND_REN); }
-        catch (Exception e) { Log.e("ADD_INE_SELF_DOC_IND_REN", "ya contiene la columna"); }
-
-        try { db.execSQL(SidertTables.SidertEntry.ADD_COM_GAR_DOC_IND_REN); }
-        catch (Exception e) { Log.e("ADD_COM_GAR_DOC_IND_REN", "ya contiene la columna"); }
-
-        try { db.execSQL(SidertTables.SidertEntry.ADD_INE_FRON_AVAL_DOC_IND_REN); }
-        catch (Exception e) { Log.e("ADD_INE_FRON_AVAL_DOC_IND_REN", "ya contiene la columna"); }
-
-        try { db.execSQL(SidertTables.SidertEntry.ADD_INE_REV_AVAL_DOC_IND_REN); }
-        catch (Exception e) { Log.e("ADD_INE_REV_AVAL_DOC_IND_REN", "ya contiene la columna"); }
-
-        try { db.execSQL(SidertTables.SidertEntry.ADD_CURP_AVAL_DOC_IND_REN); }
-        catch (Exception e) { Log.e("ADD_CURP_AVAL_DOC_IND_REN", "ya contiene la columna"); }
-
-        try { db.execSQL(SidertTables.SidertEntry.ADD_COM_DOM_AVAL_DOC_IND_REN); }
-        catch (Exception e) { Log.e("ADD_COM_DOM_AVAL_DOC_IND_REN", "ya contiene la columna"); }
-
-        try { db.execSQL(SidertTables.SidertEntry.ADD_MONTO_REFIN_INT); }
-        catch (Exception e) { Log.e("ADD_MONTO_REFIN_INT", "ya contiene la columna"); }
-
-        try { db.execSQL(SidertTables.SidertEntry.ADD_CARAC_DOM_INT); }
-        catch (Exception e) { Log.e("ADD_CARAC_DOM_INT", "ya contiene la columna"); }
-
-        try { db.execSQL(SidertTables.SidertEntry.ADD_INE_SELFIE_DOC_INT); }
-        catch (Exception e) { Log.e("ADD_INE_SELFIE_DOC_INT", "ya contiene la columna"); }
-
-        try { db.execSQL(SidertTables.SidertEntry.ADD_MONTO_REFIN_INT_REN); }
-        catch (Exception e) { Log.e("ADD_MONTO_REFIN_INT_REN", "ya contiene la columna"); }
-
-        try { db.execSQL(SidertTables.SidertEntry.ADD_CARAC_DOM_INT_REN); }
-        catch (Exception e) { Log.e("ADD_CARAC_DOM_INT_REN", "ya contiene la columna"); }
-
-        try { db.execSQL(SidertTables.SidertEntry.ADD_INE_SELFIE_DOC_INT_REN); }
-        catch (Exception e) { Log.e("ADD_INE_SELFIE_DOC_INT_REN", "ya contiene la columna"); }
-
-        try { db.execSQL(SidertTables.SidertEntry.ADD_PRESTAMO_ID_SOL_REN); }
-        catch (Exception e) { Log.e("ADD_PRESTAMO_ID_SOL_REN", "ya contiene la columna"); }
-
-        try { db.execSQL(SidertTables.SidertEntry.CREATE_TBL_DOCUMENTOS_CLIENTES); }
-        catch (Exception e) { Log.e("CREATE_TBL_DOCUMENTOS_CLIENTES", "ya existe la tabla DOCUMENTOS_CLIENTES"); }
-
+        try {
+            db.execSQL(SidertTables.SidertEntry.CREATE_TBL_SUCURSALES_LOCALIDADES);
+        } catch (Exception e) {
+            Log.e("Tablas", "Catch tabla CREATE_TBL_SUCURSALES_LOCALIDADES");
+        }
+
+        try {
+            db.execSQL(SidertTables.SidertEntry.CREATE_TABLE_CENTRO_COSTO);
+        } catch (Exception e) {
+            Log.e("Tablas", "Catch tabla CREATE_TBL_CENTRO_COSTO");
+        }
+
+        try {
+            db.execSQL(SidertTables.SidertEntry.CREATE_TBL_DATOS_CREDITO_CAMPANA);
+        } catch (Exception e) {
+            Log.e("CREATE_TBL_DATOS_CREDITOS_CAMPANA", "Ya existe la tabala DATOS CREDITO CAMPANA");
+        }
+
+        try {
+            db.execSQL(SidertTables.SidertEntry.CREATE_TBL_DATOS_CREDITO_CAMPANA_GPO);
+        } catch (Exception e) {
+            Log.e("CREATE_TBL_DATOS_CREDITOS_CAMPANA_GPO", "Ya existe la tabala DATOS CREDITO CAMPANA GPO");
+        }
+
+        try {
+            db.execSQL(SidertTables.SidertEntry.CREATE_TBL_DATOS_CREDITO_CAMPANA_GPO_REN);
+        } catch (Exception e) {
+            Log.e("CREATE_TBL_DATOS_CREDITOS_CAMPANA_GPO_REN", "Ya existe la tabala DATOS CREDITO CAMPANA GPO REN");
+        }
+
+        try {
+            db.execSQL(SidertTables.SidertEntry.CREATE_TBL_DATOS_ENTREGA_CARTERA);
+        } catch (Exception e) {
+            Log.e(" CREATE_TBL_DATOS_ENTREGA_CARTERA ", "Ya existe la tabala CREATE_TBL_DATOS_ENTREGA_CARTERA ");
+        }
+
+        /** **************************************************************************************************** **/
+
+        try {
+            db.execSQL(SidertTables.SidertEntry.ADD_RES_IMPRESION);
+        } catch (Exception e) {
+            Log.e("ADD RES IMPRESION", "ya contiene la columna");
+        }
+
+
+        try {
+            db.execSQL(SidertTables.SidertEntry.ADD_RES_IMPRESION_T);
+        } catch (Exception e) {
+            Log.e("ADD RES IMPRESION T", "ya contiene la columna");
+        }
+
+        try {
+            db.execSQL(SidertTables.SidertEntry.ADD_RES_IMPRESION_GPO);
+        } catch (Exception e) {
+            Log.e("ADD RES IMPRESION", "ya contiene la columna");
+        }
+
+        try {
+            db.execSQL(SidertTables.SidertEntry.ADD_ID_CAMPANA);
+        } catch (Exception e) {
+            Log.e("ADD_ID_CAMPANA", "ya contiene la columna");
+        }
+
+        try {
+            db.execSQL(SidertTables.SidertEntry.ADD_ID_CAMPANA_REN);
+        } catch (Exception e) {
+            Log.e("ADD_ID_CAMAPANA_REN", " ya contiene la columna");
+        }
+
+        try {
+            db.execSQL(SidertTables.SidertEntry.ADD_ID_CAMPANA_GPO);
+        } catch (Exception e) {
+            Log.e("ADD_ID_CAMPANA_GPO", " ya contiene la columna ");
+        }
+
+        try {
+            db.execSQL(SidertTables.SidertEntry.ADD_ID_CAMPANA_GPO_REN);
+        } catch (Exception e) {
+            Log.e("ADD_ID_CAMPANA_GPO_REN", " ya contiene la columna ");
+        }
+
+        try {
+            db.execSQL(SidertTables.SidertEntry.ADD_ID_CARTERAEN);
+        } catch (Exception e) {
+            Log.e("ADD_ID_CARTERAEN", " ya contiene la columna ");
+        }
+
+        try {
+            db.execSQL(SidertTables.SidertEntry.ADD_RES_IMPRESION_GPO_T);
+        } catch (Exception e) {
+            Log.e("ADD RES IMPRESION T", "ya contiene la columna");
+        }
+
+        try {
+            db.execSQL(SidertTables.SidertEntry.ADD_ARQUEO_CAJA_GPO);
+        } catch (Exception e) {
+            Log.e("ADD_ARQUEO_CAJA", "ya contiene la columna");
+        }
+
+        try {
+            db.execSQL(SidertTables.SidertEntry.ADD_ARQUEO_CAJA_GPO_T);
+        } catch (Exception e) {
+            Log.e("ADD ARQUEO_CAJA T", "ya contiene la columna");
+        }
+
+        try {
+            db.execSQL(SidertTables.SidertEntry.ADD_COLONIA_CARTERA_IND);
+        } catch (Exception e) {
+            Log.e("ADD RES IMPRESION", "ya contiene la columna");
+        }
+
+        try {
+            db.execSQL(SidertTables.SidertEntry.ADD_COLONIA_CARTERA_IND_T);
+        } catch (Exception e) {
+            Log.e("ADD RES IMPRESION T", "ya contiene la columna");
+        }
+
+        try {
+            db.execSQL(SidertTables.SidertEntry.ADD_COLONIA_CARTERA_GPO);
+        } catch (Exception e) {
+            Log.e("ADD RES IMPRESION", "ya contiene la columna");
+        }
+
+        try {
+            db.execSQL(SidertTables.SidertEntry.ADD_COLONIA_CARTERA_GPO_T);
+        } catch (Exception e) {
+            Log.e("ADD RES IMPRESION T", "ya contiene la columna");
+        }
+
+        try {
+            db.execSQL(SidertTables.SidertEntry.ADD_ESTATUS_PAGO_IND_T);
+        } catch (Exception e) {
+            Log.e("ADD RES IMPRESION T", "ya contiene la columna");
+        }
+
+        try {
+            db.execSQL(SidertTables.SidertEntry.ADD_SALDO_CORTE_IND_T);
+        } catch (Exception e) {
+            Log.e("ADD RES IMPRESION T", "ya contiene la columna");
+        }
+
+        try {
+            db.execSQL(SidertTables.SidertEntry.ADD_SALDO_ACTUAL_IND_T);
+        } catch (Exception e) {
+            Log.e("ADD RES IMPRESION T", "ya contiene la columna");
+        }
+
+        try {
+            db.execSQL(SidertTables.SidertEntry.ADD_ESTATUS_PAGO_IND);
+        } catch (Exception e) {
+            Log.e("ADD RES IMPRESION T", "ya contiene la columna");
+        }
+
+        try {
+            db.execSQL(SidertTables.SidertEntry.ADD_SALDO_CORTE_IND);
+        } catch (Exception e) {
+            Log.e("ADD RES IMPRESION T", "ya contiene la columna");
+        }
+
+        try {
+            db.execSQL(SidertTables.SidertEntry.ADD_SALDO_ACTUAL_IND);
+        } catch (Exception e) {
+            Log.e("ADD RES IMPRESION T", "ya contiene la columna");
+        }
+
+        try {
+            db.execSQL(SidertTables.SidertEntry.ADD_ESTATUS_PAGO_GPO_T);
+        } catch (Exception e) {
+            Log.e("ADD RES IMPRESION T", "ya contiene la columna");
+        }
+
+        try {
+            db.execSQL(SidertTables.SidertEntry.ADD_SALDO_CORTE_GPO_T);
+        } catch (Exception e) {
+            Log.e("ADD RES IMPRESION T", "ya contiene la columna");
+        }
+
+        try {
+            db.execSQL(SidertTables.SidertEntry.ADD_SALDO_ACTUAL_GPO_T);
+        } catch (Exception e) {
+            Log.e("ADD RES IMPRESION T", "ya contiene la columna");
+        }
+
+        try {
+            db.execSQL(SidertTables.SidertEntry.ADD_ESTATUS_PAGO_GPO);
+        } catch (Exception e) {
+            Log.e("ADD RES IMPRESION T", "ya contiene la columna");
+        }
+
+        try {
+            db.execSQL(SidertTables.SidertEntry.ADD_SALDO_CORTE_GPO);
+        } catch (Exception e) {
+            Log.e("ADD RES IMPRESION T", "ya contiene la columna");
+        }
+
+        try {
+            db.execSQL(SidertTables.SidertEntry.ADD_SALDO_ACTUAL_GPO);
+        } catch (Exception e) {
+            Log.e("ADD RES IMPRESION T", "ya contiene la columna");
+        }
+
+        try {
+            db.execSQL(SidertTables.SidertEntry.ADD_DIAS_ATRASO_GPO);
+        } catch (Exception e) {
+            Log.e("ADD RES IMPRESION T", "ya contiene la columna");
+        }
+
+        try {
+            db.execSQL(SidertTables.SidertEntry.ADD_DIAS_ATRASO_GPO_T);
+        } catch (Exception e) {
+            Log.e("ADD RES IMPRESION T", "ya contiene la columna");
+        }
+
+        try {
+            db.execSQL(SidertTables.SidertEntry.ADD_DIAS_ATRASO_IND);
+        } catch (Exception e) {
+            Log.e("ADD RES IMPRESION T", "ya contiene la columna");
+        }
+
+        try {
+            db.execSQL(SidertTables.SidertEntry.ADD_NUM_PRESTAMO);
+        } catch (Exception e) {
+            Log.e("ADD RES IMPRESION T", "ya contiene la columna");
+        }
+
+        try {
+            db.execSQL(SidertTables.SidertEntry.ADD_NUM_PRESTAMO_T);
+        } catch (Exception e) {
+            Log.e("ADD RES IMPRESION T", "ya contiene la columna");
+        }
+
+        try {
+            db.execSQL(SidertTables.SidertEntry.ADD_CELULAR_T);
+        } catch (Exception e) {
+            Log.e("ADD RES IMPRESION T", "ya contiene la columna");
+        }
+
+        try {
+            db.execSQL(SidertTables.SidertEntry.ADD_CELULAR_VE_T);
+        } catch (Exception e) {
+            Log.e("ADD RES IMPRESION T", "ya contiene la columna");
+        }
+
+        try {
+            db.execSQL(SidertTables.SidertEntry.ADD_CELULAR_REIMPRESION_T);
+        } catch (Exception e) {
+            Log.e("ADD RES IMPRESION T", "ya contiene la columna");
+        }
+
+        try {
+            db.execSQL(SidertTables.SidertEntry.ADD_DIAS_ATRASO_IND_T);
+        } catch (Exception e) {
+            Log.e("ADD RES IMPRESION T", "ya contiene la columna");
+        }
+
+        try {
+            db.execSQL(SidertTables.SidertEntry.ADD_NUM_PRESTAMO_RIM);
+        } catch (Exception e) {
+            Log.e("ADD RES IMPRESION T", "ya contiene la columna");
+        }
+
+        try {
+            db.execSQL(SidertTables.SidertEntry.CREATE_TBL_TRACKER_ASESOR_T);
+        } catch (Exception e) {
+        }
+
+        try {
+            db.execSQL(SidertTables.SidertEntry.CREATE_TBL_GEO_RESPUESTAS);
+        } catch (Exception e) {
+            Log.e("Tablas", "Catch tabla GEO_RESPUESTAS");
+        }
+
+        try {
+            db.execSQL(SidertTables.SidertEntry.ADD_CLAVE_INTEGRANTE);
+        } catch (Exception e) {
+            Log.e("ADD CLAVE INTEGRANTE", "ya contiene la columna");
+        }
+
+        try {
+            db.execSQL(SidertTables.SidertEntry.ADD_CLAVE_INTEGRANTE_T);
+        } catch (Exception e) {
+            Log.e("ADD CLAVE INTEGRANTE T", "ya contiene la columna");
+        }
+
+        try {
+            db.execSQL(SidertTables.SidertEntry.ADD_PRESTAMO_ID_INTEGRANTE);
+        } catch (Exception e) {
+            Log.e("ADD ID PRESTAMO INTE", "ya contiene la columna");
+        }
+        try {
+            db.execSQL(SidertTables.SidertEntry.ADD_PRESTAMO_ID_INTEGRANTE_T);
+        } catch (Exception e) {
+            Log.e("ADD ID PRESTAMO INTE T", "ya contiene la columna");
+        }
+        try {
+            db.execSQL(SidertTables.SidertEntry.ADD_CLAVE_GEO_RESP);
+        } catch (Exception e) {
+            Log.e("ADD CLAVE GEO", "ya contiene la columna");
+        }
+        try {
+            db.execSQL(SidertTables.SidertEntry.ADD_GEO_CLIENTE_IND);
+        } catch (Exception e) {
+            Log.e("ADD CLAVE GEO", "ya contiene la columna");
+        }
+        try {
+            db.execSQL(SidertTables.SidertEntry.ADD_GEO_AVAL_IND);
+        } catch (Exception e) {
+            Log.e("ADD CLAVE GEO", "ya contiene la columna");
+        }
+        try {
+            db.execSQL(SidertTables.SidertEntry.ADD_GEO_NEGOCIO_IND);
+        } catch (Exception e) {
+            Log.e("ADD CLAVE GEO", "ya contiene la columna");
+        }
+        try {
+            db.execSQL(SidertTables.SidertEntry.ADD_GEOLOCALIZADAS_GPO);
+        } catch (Exception e) {
+            Log.e("ADD CLAVE GEO", "ya contiene la columna");
+        }
+        try {
+            db.execSQL(SidertTables.SidertEntry.CREATE_TBL_RESPUESTAS_IND_V_T);
+        } catch (Exception e) {
+        }
+        try {
+            db.execSQL(SidertTables.SidertEntry.CREATE_TBL_RESPUESTAS_INTEGRANTE_T);
+        } catch (Exception e) {
+        }
+        try {
+            db.execSQL(SidertTables.SidertEntry.ADD_SERIAL_INDIVIDUAL);
+        } catch (Exception e) {
+            Log.e("ADD_SERIE_ID", "ya contiene la columna");
+        }
+        try {
+            db.execSQL(SidertTables.SidertEntry.ADD_SERIAL_INTEGRANTE);
+        } catch (Exception e) {
+            Log.e("ADD_SERIE_ID", "ya contiene la columna");
+        }
+        try {
+            db.execSQL(SidertTables.SidertEntry.CREATE_TBL_CIERRE_DIA);
+        } catch (Exception e) {
+            Log.e("Tablas", "Catch ya existe las tabla CIERRE DE DIA");
+        }
+
+        try {
+            db.execSQL(SidertTables.SidertEntry.ADD_NOMBRE_CIERRE_DIA);
+        } catch (Exception e) {
+            Log.e("ADD NOMBRE CIERRE", "ya contiene la columna");
+        }
+        try {
+            db.execSQL(SidertTables.SidertEntry.ADD_SERIAL_ID_CIERRE_DIA);
+        } catch (Exception e) {
+            Log.e("ADD SERIAL CIERRE", "ya contiene la columna");
+        }
+        try {
+            db.execSQL(SidertTables.SidertEntry.CREATE_TBL_REPORTE_SESIONES);
+        } catch (Exception e) {
+        }
+        try {
+            db.execSQL(SidertTables.SidertEntry.CREATE_TBL_SUCURSALES);
+        } catch (Exception e) {
+        }
+        try {
+            db.execSQL(SidertTables.SidertEntry.CREATE_TBL_CODIGOS_OXXO);
+        } catch (Exception e) {
+        }
+        try {
+            db.execSQL(SidertTables.SidertEntry.ADD_FECHA_VENCIMIENTO_CODIGOS);
+        } catch (Exception e) {
+            Log.e("ADD FECHA VENCI", "ya contiene la columna");
+        }
+        try {
+            db.execSQL(SidertTables.SidertEntry.ADD_ESTATUS_CARTERA_IND);
+        } catch (Exception e) {
+            Log.e("ADD ESTATUS CAR IND", "ya contiene la columna");
+        }
+        try {
+            db.execSQL(SidertTables.SidertEntry.ADD_ESTATUS_CARTERA_GPO);
+        } catch (Exception e) {
+            Log.e("ADD ESTATUS CAR GPO", "ya contiene la columna");
+        }
+        try {
+            db.execSQL(SidertTables.SidertEntry.CREATE_TBL_CANCEL_GESTIONES);
+        } catch (Exception e) {
+            Log.e("CANCEL_GESTI", "Catch ya existe las tabla CANCEL GESTIONES");
+        }
+        try {
+            db.execSQL(SidertTables.SidertEntry.CREATE_TBL_RECIBOS);
+        } catch (Exception e) {
+            Log.e("Tablas", "Catch tabla RECIBOS");
+        }
+        try {
+            db.execSQL(SidertTables.SidertEntry.ADD_CURP_RECIBOS);
+        } catch (Exception e) {
+            Log.e("ADD CURP", "ya contiene la columna");
+        }
+
+        try {
+            db.execSQL(SidertTables.SidertEntry.ADD_CC_IND);
+        } catch (Exception e) {
+            Log.e("ADD CC_IND", "ya contiene la columna");
+        }
+        try {
+            db.execSQL(SidertTables.SidertEntry.ADD_AGF_IND);
+        } catch (Exception e) {
+            Log.e("ADD AGF_IND", "ya contiene la columna");
+        }
+        try {
+            db.execSQL(SidertTables.SidertEntry.ADD_CURP_CARTERA);
+        } catch (Exception e) {
+            Log.e("ADD CURP_IND", "ya contiene la columna");
+        }
+        try {
+            db.execSQL(SidertTables.SidertEntry.ADD_CC_GPO);
+        } catch (Exception e) {
+            Log.e("ADD CC_GPO", "ya contiene la columna");
+        }
+        try {
+            db.execSQL(SidertTables.SidertEntry.ADD_AGF_GPO);
+        } catch (Exception e) {
+            Log.e("ADD AGF_GPO", "ya contiene la columna");
+        }
+        try {
+            db.execSQL(SidertTables.SidertEntry.ADD_CURP_MIEMBROS);
+        } catch (Exception e) {
+            Log.e("ADD CURP_MIEM", "ya contiene la columna");
+        }
+        try {
+            db.execSQL(SidertTables.SidertEntry.CREATE_TBL_CATEGORIA_TICKETS);
+        } catch (Exception e) {
+            Log.e("CREA TICKETS", "ya existe tickets");
+        }
+
+        try {
+            db.execSQL(SidertTables.SidertEntry.CREATE_TBL_SOPORTE);
+        } catch (Exception e) {
+            Log.e("CREA SOPORTE", "ya existe tickets");
+        }
+
+        try {
+            db.execSQL(SidertTables.SidertEntry.CREATE_TBL_PLAZOS_PRESTAMOS);
+        } catch (Exception e) {
+            Log.e("CREA PLAZOS", "ya existe tickets");
+        }
+
+        try {
+            db.execSQL(SidertTables.SidertEntry.CREATE_TBL_SOLICITUDES);
+        } catch (Exception e) {
+            Log.e("Tablas", "Catch tabla TBL_SOLICITUDES");
+        }
+        try {
+            db.execSQL(SidertTables.SidertEntry.CREATE_TBL_CREDITO_IND);
+        } catch (Exception e) {
+            Log.e("Tablas", "Catch tabla TBL_CREDITO_IND");
+        }
+        try {
+            db.execSQL(SidertTables.SidertEntry.CREATE_TBL_CLIENTE_IND);
+        } catch (Exception e) {
+            Log.e("Tablas", "Catch tabla TBL_CLIENTE_IND");
+        }
+        try {
+            db.execSQL(SidertTables.SidertEntry.CREATE_TBL_CONYUGE_IND);
+        } catch (Exception e) {
+            Log.e("Tablas", "Catch tabla TBL_CONYUGE_IND");
+        }
+        try {
+            db.execSQL(SidertTables.SidertEntry.CREATE_TBL_ECONOMICOS_IND);
+        } catch (Exception e) {
+            Log.e("Tablas", "Catch tabla TBL_ECONOMICOS_IND");
+        }
+        try {
+            db.execSQL(SidertTables.SidertEntry.CREATE_TBL_NEGOCIO_IND);
+        } catch (Exception e) {
+            Log.e("Tablas", "Catch tabla TBL_NEGOCIO_IND");
+        }
+        try {
+            db.execSQL(SidertTables.SidertEntry.CREATE_TBL_AVAL_IND);
+        } catch (Exception e) {
+            Log.e("Tablas", "Catch tabla TBL_AVAL_IND");
+        }
+        try {
+            db.execSQL(SidertTables.SidertEntry.CREATE_TBL_REFERENCIA_IND);
+        } catch (Exception e) {
+            Log.e("Tablas", "Catch tabla TBL_REFERENCIA_IND");
+        }
+        try {
+            db.execSQL(SidertTables.SidertEntry.CREATE_TBL_CROQUIS_IND);
+        } catch (Exception e) {
+            Log.e("Tablas", "Catch tabla TBL_CROQUIS_IND");
+        }
+        try {
+            db.execSQL(SidertTables.SidertEntry.CREATE_TBL_POLITICAS_PLD_IND);
+        } catch (Exception e) {
+            Log.e("Tablas", "Catch tabla TBL_POLITICAS_PLD_IND");
+        }
+        try {
+            db.execSQL(SidertTables.SidertEntry.CREATE_TBL_DOCUMENTOS);
+        } catch (Exception e) {
+            Log.e("Tablas", "Catch tabla TBL_DOCUMENTOS");
+        }
+        try {
+            db.execSQL(SidertTables.SidertEntry.CREATE_TBL_RESUMENES_GESTION);
+        } catch (Exception e) {
+            Log.e("Tablas", "Catch tabla TBL_RESUMENES_GESTION");
+        }
+
+        try {
+            db.execSQL(SidertTables.SidertEntry.ADD_ID_SOLICITUD_INTEGRANTE);
+        } catch (Exception e) {
+            Log.e("ID_SOLICITUD_INTEGRANTE", "ya contiene la columna");
+        }
+
+        try {
+            db.execSQL(SidertTables.SidertEntry.CREATE_TBL_DATOS_CREDITO_GPO);
+        } catch (Exception e) {
+            Log.e("Tablas", "Catch tabla DATOS_CREDITO_GPO");
+        }
+
+        try {
+            db.execSQL(SidertTables.SidertEntry.CREATE_TBL_PRESTAMOS_TO_RENOVAR);
+        } catch (Exception e) {
+            Log.e("Tablas", "Catch tabla PRESTAMOS_TO_RENOVAR");
+        }
+
+        try {
+            db.execSQL(SidertTables.SidertEntry.CREATE_TABLE_IDENTIFICACIONES_TIPO);
+        } catch (Exception e) {
+            Log.e("Tablas", "Catch tabla TABLE_IDENTIFICACIONES_TIPO");
+        }
+        try {
+            db.execSQL(SidertTables.SidertEntry.CREATE_TABLE_ESTADOS_CIVILES);
+        } catch (Exception e) {
+            Log.e("Tablas", "Catch tabla TABLE_ESTADOS_CIVILES");
+        }
+        try {
+            db.execSQL(SidertTables.SidertEntry.CREATE_TABLE_NIVELES_ESTUDIOS);
+        } catch (Exception e) {
+            Log.e("Tablas", "Catch tabla TABLE_NIVELES_ESTUDIOS");
+        }
+        try {
+            db.execSQL(SidertTables.SidertEntry.CREATE_TABLE_MEDIOS_PAGO_ORIG);
+        } catch (Exception e) {
+            Log.e("Tablas", "Catch tabla TABLE_MEDIOS_PAGO_ORIG");
+        }
+        try {
+            db.execSQL(SidertTables.SidertEntry.CREATE_TABLE_PARENTESCOS);
+        } catch (Exception e) {
+            Log.e("Tablas", "Catch tabla TABLE_PARENTESCOS");
+        }
+        try {
+            db.execSQL(SidertTables.SidertEntry.CREATE_TABLE_VIVIENDA_TIPOS);
+        } catch (Exception e) {
+            Log.e("Tablas", "Catch tabla TABLE_VIVIENDA_TIPOS");
+        }
+        try {
+            db.execSQL(SidertTables.SidertEntry.CREATE_TABLE_MEDIOS_CONTACTO);
+        } catch (Exception e) {
+            Log.e("Tablas", "Catch tabla TABLE_MEDIOS_CONTACTO");
+        }
+        try {
+            db.execSQL(SidertTables.SidertEntry.CREATE_TABLE_DESTINOS_CREDITO);
+        } catch (Exception e) {
+            Log.e("Tablas", "Catch tabla TABLE_DESTINOS_CREDITO");
+        }
+        try {
+            db.execSQL(SidertTables.SidertEntry.CREATE_TABLE_DIRECCIONES);
+        } catch (Exception e) {
+            Log.e("Tablas", "Catch tabla TABLE_DIRECCIONES");
+        }
+        try {
+            db.execSQL(SidertTables.SidertEntry.CREATE_TABLE_LOCALIDADES);
+        } catch (Exception e) {
+            Log.e("Tablas", "Catch tabla TABLE_LOCALIDADES");
+        }
+
+
+        try {
+            db.execSQL(SidertTables.SidertEntry.CREATE_TBL_SOLICITUDES_REN);
+        } catch (Exception e) {
+            Log.e("Tablas", "Catch tabla TBL_SOLICITUDES_REN");
+        }
+        try {
+            db.execSQL(SidertTables.SidertEntry.CREATE_TBL_CREDITO_IND_REN);
+        } catch (Exception e) {
+            Log.e("Tablas", "Catch tabla TBL_CREDITO_IND_REN");
+        }
+        try {
+            db.execSQL(SidertTables.SidertEntry.CREATE_TBL_CLIENTE_IND_REN);
+        } catch (Exception e) {
+            Log.e("Tablas", "Catch tabla TBL_CLIENTE_IND_REN");
+        }
+        try {
+            db.execSQL(SidertTables.SidertEntry.CREATE_TBL_CONYUGE_IND_REN);
+        } catch (Exception e) {
+            Log.e("Tablas", "Catch tabla TBL_CONYUGE_IND_REN");
+        }
+        try {
+            db.execSQL(SidertTables.SidertEntry.CREATE_TBL_ECONOMICOS_IND_REN);
+        } catch (Exception e) {
+            Log.e("Tablas", "Catch tabla TBL_ECONOMICOS_IND_REN");
+        }
+        try {
+            db.execSQL(SidertTables.SidertEntry.CREATE_TBL_NEGOCIO_IND_REN);
+        } catch (Exception e) {
+            Log.e("Tablas", "Catch tabla TBL_NEGOCIO_IND_REN");
+        }
+        try {
+            db.execSQL(SidertTables.SidertEntry.CREATE_TBL_AVAL_IND_REN);
+        } catch (Exception e) {
+            Log.e("Tablas", "Catch tabla TBL_AVAL_IND_REN");
+        }
+        try {
+            db.execSQL(SidertTables.SidertEntry.CREATE_TBL_REFERENCIA_IND_REN);
+        } catch (Exception e) {
+            Log.e("Tablas", "Catch tabla TBL_REFERENCIA_IND_REN");
+        }
+        try {
+            db.execSQL(SidertTables.SidertEntry.CREATE_TBL_CROQUIS_IND_REN);
+        } catch (Exception e) {
+            Log.e("Tablas", "Catch tabla TBL_CROQUIS_IND_REN");
+        }
+        try {
+            db.execSQL(SidertTables.SidertEntry.CREATE_TBL_POLITICAS_PLD_IND_REN);
+        } catch (Exception e) {
+            Log.e("Tablas", "Catch tabla TBL_POLITICAS_PLD_IND_REN");
+        }
+        try {
+            db.execSQL(SidertTables.SidertEntry.CREATE_TABLE_DIRECCIONES_REN);
+        } catch (Exception e) {
+            Log.e("Tablas", "Catch tabla TABLE_DIRECCIONES_REN");
+        }
+        try {
+            db.execSQL(SidertTables.SidertEntry.CREATE_TBL_DOCUMENTOS_REN);
+        } catch (Exception e) {
+            Log.e("Tablas", "Catch tabla TBL_DOCUMENTOS_REN");
+        }
+
+        try {
+            db.execSQL(SidertTables.SidertEntry.CREATE_TBL_DATOS_CREDITO_GPO_REN);
+        } catch (Exception e) {
+            Log.e("Tablas", "Catch tabla TBL_DATOS_CREDITO_GPO_REN");
+        }
+        try {
+            db.execSQL(SidertTables.SidertEntry.CREATE_TBL_INTEGRANTES_GPO_REN);
+        } catch (Exception e) {
+            Log.e("Tablas", "Catch tabla TBL_INTEGRANTES_GPO_REN");
+        }
+        try {
+            db.execSQL(SidertTables.SidertEntry.CREATE_TBL_TELEFONOS_INTEGRANTE_REN);
+        } catch (Exception e) {
+            Log.e("Tablas", "Catch tabla TELEFONOS_INTEGRANTE_REN");
+        }
+        try {
+            db.execSQL(SidertTables.SidertEntry.CREATE_TBL_DOMICILIO_INTEGRANTE_REN);
+        } catch (Exception e) {
+            Log.e("Tablas", "Catch tabla TBL_DOMICILIO_INTEGRANTE_REN");
+        }
+        try {
+            db.execSQL(SidertTables.SidertEntry.CREATE_TBL_NEGOCIO_INTEGRANTE_REN);
+        } catch (Exception e) {
+            Log.e("Tablas", "Catch tabla TBL_NEGOCIO_INTEGRANTE_REN");
+        }
+        try {
+            db.execSQL(SidertTables.SidertEntry.CREATE_TBL_CONYUGE_INTEGRANTE_REN);
+        } catch (Exception e) {
+            Log.e("Tablas", "Catch tabla TBL_CONYUGE_INTEGRANTE_REN");
+        }
+        try {
+            db.execSQL(SidertTables.SidertEntry.CREATE_TBL_OTROS_DATOS_INTEGRANTE_REN);
+        } catch (Exception e) {
+            Log.e("Tablas", "Catch tabla TBL_OTROS_DATOS_INTEGRANTE_REN");
+        }
+        try {
+            db.execSQL(SidertTables.SidertEntry.CREATE_TBL_CROQUIS_GPO_REN);
+        } catch (Exception e) {
+            Log.e("Tablas", "Catch tabla TBL_CROQUIS_GPO_REN");
+        }
+        try {
+            db.execSQL(SidertTables.SidertEntry.CREATE_TBL_POLITICAS_INTEGRANTE_REN);
+        } catch (Exception e) {
+            Log.e("Tablas", "Catch tabla TBL_POLITICAS_INTEGRANTE_REN");
+        }
+        try {
+            db.execSQL(SidertTables.SidertEntry.CREATE_TBL_DOCUMENTOS_INTEGRANTE_REN);
+        } catch (Exception e) {
+            Log.e("Tablas", "Catch tabla TBL_DOCUMENTOS_INTEGRANTE_REN");
+        }
+
+        try {
+            db.execSQL(SidertTables.SidertEntry.CREATE_TBL_SOLICITUDES_AUTO);
+        } catch (Exception e) {
+            Log.e("Tablas", "Catch tabla TBL_SOLICITUDES_REN");
+        }
+        try {
+            db.execSQL(SidertTables.SidertEntry.CREATE_TBL_CREDITO_IND_AUTO);
+        } catch (Exception e) {
+            Log.e("Tablas", "Catch tabla TBL_CREDITO_IND_REN");
+        }
+        try {
+            db.execSQL(SidertTables.SidertEntry.CREATE_TBL_CLIENTE_IND_AUTO);
+        } catch (Exception e) {
+            Log.e("Tablas", "Catch tabla TBL_CLIENTE_IND_REN");
+        }
+        try {
+            db.execSQL(SidertTables.SidertEntry.CREATE_TBL_CONYUGE_IND_AUTO);
+        } catch (Exception e) {
+            Log.e("Tablas", "Catch tabla TBL_CONYUGE_IND_REN");
+        }
+        try {
+            db.execSQL(SidertTables.SidertEntry.CREATE_TBL_ECONOMICOS_IND_AUTO);
+        } catch (Exception e) {
+            Log.e("Tablas", "Catch tabla TBL_ECONOMICOS_IND_REN");
+        }
+        try {
+            db.execSQL(SidertTables.SidertEntry.CREATE_TBL_NEGOCIO_IND_AUTO);
+        } catch (Exception e) {
+            Log.e("Tablas", "Catch tabla TBL_NEGOCIO_IND_REN");
+        }
+        try {
+            db.execSQL(SidertTables.SidertEntry.CREATE_TBL_AVAL_IND_AUTO);
+        } catch (Exception e) {
+            Log.e("Tablas", "Catch tabla TBL_AVAL_IND_REN");
+        }
+        try {
+            db.execSQL(SidertTables.SidertEntry.CREATE_TBL_REFERENCIA_IND_AUTO);
+        } catch (Exception e) {
+            Log.e("Tablas", "Catch tabla TBL_REFERENCIA_IND_REN");
+        }
+        try {
+            db.execSQL(SidertTables.SidertEntry.CREATE_TBL_CROQUIS_IND_AUTO);
+        } catch (Exception e) {
+            Log.e("Tablas", "Catch tabla TBL_CROQUIS_IND_REN");
+        }
+        try {
+            db.execSQL(SidertTables.SidertEntry.CREATE_TBL_POLITICAS_PLD_IND_AUTO);
+        } catch (Exception e) {
+            Log.e("Tablas", "Catch tabla TBL_POLITICAS_PLD_IND_REN");
+        }
+        try {
+            db.execSQL(SidertTables.SidertEntry.CREATE_TABLE_DIRECCIONES_AUTO);
+        } catch (Exception e) {
+            Log.e("Tablas", "Catch tabla TABLE_DIRECCIONES_REN");
+        }
+
+        try {
+            db.execSQL(SidertTables.SidertEntry.CREATE_TBL_DATOS_CREDITO_GPO_AUTO);
+        } catch (Exception e) {
+            Log.e("Tablas", "Catch tabla BL_DATOS_CREDITO_GPO_AUTO");
+        }
+        try {
+            db.execSQL(SidertTables.SidertEntry.CREATE_TBL_INTEGRANTES_GPO_AUTO);
+        } catch (Exception e) {
+            Log.e("Tablas", "Catch tabla TBL_INTEGRANTES_GPO_AUTO");
+        }
+        try {
+            db.execSQL(SidertTables.SidertEntry.CREATE_TBL_TELEFONOS_INTEGRANTE_AUTO);
+        } catch (Exception e) {
+            Log.e("Tablas", "Catch tabla TBL_TELEFONOS_INTEGRANTE_AUTO");
+        }
+        try {
+            db.execSQL(SidertTables.SidertEntry.CREATE_TBL_DOMICILIO_INTEGRANTE_AUTO);
+        } catch (Exception e) {
+            Log.e("Tablas", "Catch tabla TBL_DOMICILIO_INTEGRANTE_AUTO");
+        }
+        try {
+            db.execSQL(SidertTables.SidertEntry.CREATE_TBL_NEGOCIO_INTEGRANTE_AUTO);
+        } catch (Exception e) {
+            Log.e("Tablas", "Catch tabla TBL_NEGOCIO_INTEGRANTE_AUTO");
+        }
+        try {
+            db.execSQL(SidertTables.SidertEntry.CREATE_TBL_CONYUGE_INTEGRANTE_AUTO);
+        } catch (Exception e) {
+            Log.e("Tablas", "Catch tabla TBL_CONYUGE_INTEGRANTE_AUTO");
+        }
+        try {
+            db.execSQL(SidertTables.SidertEntry.CREATE_TBL_OTROS_DATOS_INTEGRANTE_AUTO);
+        } catch (Exception e) {
+            Log.e("Tablas", "Catch tabla TBL_OTROS_DATOS_INTEGRANTE_AUTO");
+        }
+        try {
+            db.execSQL(SidertTables.SidertEntry.CREATE_TBL_CROQUIS_GPO_AUTO);
+        } catch (Exception e) {
+            Log.e("Tablas", "Catch tabla TBL_CROQUIS_GPO_AUTO");
+        }
+        try {
+            db.execSQL(SidertTables.SidertEntry.CREATE_TBL_POLITICAS_INTEGRANTE_AUTO);
+        } catch (Exception e) {
+            Log.e("Tablas", "Catch tabla TBL_POLITICAS_INTEGRANTE_AUTO");
+        }
+
+        try {
+            db.execSQL(SidertTables.SidertEntry.CREATE_TBL_PRESTAMOS);
+        } catch (Exception e) {
+            Log.e("Tablas", "Catch tabla TBL_PRESTAMOS");
+        }
+        try {
+            db.execSQL(SidertTables.SidertEntry.CREATE_TBL_RECIBOS_AGF_CC);
+        } catch (Exception e) {
+            Log.e("Tablas", "Catch tabla TBL_RECIBOS_AGF_CC");
+        }
+        try {
+            db.execSQL(SidertTables.SidertEntry.CREATE_TBL_RECUPERACION_RECIBOS);
+        } catch (Exception e) {
+            Log.e("Tablas", "Catch ya existe la tabla RECUPERACION_RECIBOS");
+        }
+
+        try {
+            db.execSQL(SidertTables.SidertEntry.CREATE_TBL_CONSULTA_CC);
+        } catch (Exception e) {
+            Log.e("Tablas", "Catch ya existe la tabla TBL_CONSULTA_CC");
+        }
+        try {
+            db.execSQL(SidertTables.SidertEntry.CREATE_TBL_RECIBOS_CC);
+        } catch (Exception e) {
+            Log.e("Tablas", "Catch ya existe la tabla TBL_RECIBOS_CC");
+        }
+        try {
+            db.execSQL(SidertTables.SidertEntry.CREATE_TBL_RECUPERACION_CC);
+        } catch (Exception e) {
+            Log.e("Tablas", "Catch ya existe la tabla TBL_RECUPERACION_CC");
+        }
+
+        try {
+            db.execSQL(SidertTables.SidertEntry.CREATE_TBL_TELEFONOS_CLIENTE);
+        } catch (Exception e) {
+            Log.e("Tablas", "Catch ya existe la tabla TBL_TELEFONOS_CLIENTE");
+        }
+
+        try {
+            db.execSQL(SidertTables.SidertEntry.ADD_DIAS_ATRASO_CARTERA_IND);
+        } catch (Exception e) {
+            Log.e("ADD ATRASO IND", "ya contiene la columna");
+        }
+        try {
+            db.execSQL(SidertTables.SidertEntry.ADD_DIAS_ATRASO_CARTERA_GPO);
+        } catch (Exception e) {
+            Log.e("ADD ATRASO GPO", "ya contiene la columna");
+        }
+        try {
+            db.execSQL(SidertTables.SidertEntry.ADD_DEPENDIENTES_ECONOMICOS_INTEGRANTE);
+        } catch (Exception e) {
+            Log.e("ADD DEPENDIENTES INT", "ya contiene la columna");
+        }
+
+        try {
+            db.execSQL(SidertTables.SidertEntry.ADD_ID_CAMPANA);
+        } catch (Exception e) {
+            Log.e("ADD TIPO_CAMPANA", "ya tiene la columna");
+        }
+
+        try {
+            db.execSQL(SidertTables.SidertEntry.ADD_ID_CAMPANA_REN);
+        } catch (Exception e) {
+            Log.e("ADD TIPO_CAMPANA_REN", " ya yiene la columna");
+        }
+
+        try {
+            db.execSQL(SidertTables.SidertEntry.ADD_ID_CAMPANA_GPO);
+        } catch (Exception e) {
+            Log.e("ADD TIPO_CAMPANA_GPO", "ya tiene la columna ");
+        }
+
+        try {
+            db.execSQL(SidertTables.SidertEntry.ADD_ID_CAMPANA_GPO_REN);
+        } catch (Exception e) {
+            Log.e("ADD TIPO_CAMPANA_GPO_REN", "ya tiene la columna");
+        }
+
+        try {
+            db.execSQL(SidertTables.SidertEntry.ADD_ID_CARTERAEN);
+        } catch (Exception e) {
+            Log.e("ADD_ID_CARTERAEN", "ya tiene la columna");
+        }
+
+        try {
+            db.execSQL(SidertTables.SidertEntry.ADD_TIPO_PRESTAMO);
+        } catch (Exception e) {
+            Log.e("ADD_TIPO_PRESTAMO", "ya contiene la columna");
+        }
+
+        try {
+            db.execSQL(SidertTables.SidertEntry.ADD_GRUPO_ID);
+        } catch (Exception e) {
+            Log.e("ADD_GRUPO_ID", "ya contiene la columna");
+        }
+
+        try {
+            db.execSQL(SidertTables.SidertEntry.ADD_COMENTARIO_NEGOCIO_IND);
+        } catch (Exception e) {
+            Log.e("COMENT_NEGOCIO_IND", "ya contiene la columna");
+        }
+
+        try {
+            db.execSQL(SidertTables.SidertEntry.ADD_COMENTARIO_REFERENCIA_IND);
+        } catch (Exception e) {
+            Log.e("COMENT_REFE_IND", "ya contiene la columna");
+        }
+
+        try {
+            db.execSQL(SidertTables.SidertEntry.ADD_COMENTARIO_CROQUIS_IND);
+        } catch (Exception e) {
+            Log.e("COMENT_CROQUIS_IND", "ya contiene la columna");
+        }
+
+        try {
+            db.execSQL(SidertTables.SidertEntry.ADD_COMENTARIO_NEGOCIO_IND_REN);
+        } catch (Exception e) {
+            Log.e("COMENT_NEGOCIO_IND", "ya contiene la columna");
+        }
+
+        try {
+            db.execSQL(SidertTables.SidertEntry.ADD_COMENTARIO_REFERENCIA_IND_REN);
+        } catch (Exception e) {
+            Log.e("COMENT_REFE_IND", "ya contiene la columna");
+        }
+
+        try {
+            db.execSQL(SidertTables.SidertEntry.ADD_COMENTARIO_CROQUIS_IND_REN);
+        } catch (Exception e) {
+            Log.e("COMENT_CROQUIS_IND", "ya contiene la columna");
+        }
+
+        try {
+            db.execSQL(SidertTables.SidertEntry.ADD_MONTO_PRESTAMOS);
+        } catch (Exception e) {
+            Log.e("MONTO_PRESTAMO", "ya contiene la columna");
+        }
+
+        try {
+            db.execSQL(SidertTables.SidertEntry.ADD_MONTO_AUTORIZADO);
+        } catch (Exception e) {
+            Log.e("MONTO_AUTORIZADO", "ya contiene la columna");
+        }
+
+        try {
+            db.execSQL(SidertTables.SidertEntry.ADD_MONTO_AUTORIZADO_GPO);
+        } catch (Exception e) {
+            Log.e("MONTO_AUTORIZADO_GPO", "ya contiene la columna");
+        }
+
+        try {
+            db.execSQL(SidertTables.SidertEntry.ADD_COSTO_CONSULTA);
+        } catch (Exception e) {
+            Log.e("COSTO_CONSULTA", "ya contiene la columna");
+        }
+
+        try {
+            db.execSQL(SidertTables.SidertEntry.ADD_PLAZO_AGF_CC);
+        } catch (Exception e) {
+            Log.e("ADD_PLAZO_AGF_CC", "ya contiene la columna");
+        }
+
+        try {
+            db.execSQL(SidertTables.SidertEntry.ADD_TOTAL_INTEGRANTES_AGF);
+        } catch (Exception e) {
+            Log.e("ADD_TOTAL_INTEGRANTES", "ya contiene la columna");
+        }
+
+        try {
+            db.execSQL(SidertTables.SidertEntry.ADD_TOTAL_INT_MANUAL_AGF);
+        } catch (Exception e) {
+            Log.e("ADD_TOTAL_INT_MANUAL", "ya contiene la columna");
+        }
+
+        try {
+            db.execSQL(SidertTables.SidertEntry.ADD_FECHA_ENTREGA_PRESTAMOS_AV);
+        } catch (Exception e) {
+            Log.e("ADD_FCHA_EGA_PMOS_AV", "ya contiene la columna");
+        }
+
+        try {
+            db.execSQL(SidertTables.SidertEntry.ADD_ESTATUS_PRESTAMO_PRESTAMOS_AV);
+        } catch (Exception e) {
+            Log.e("ADD_EST_PMO_PRMOS_AV", "ya contiene la columna");
+        }
+
+        try {
+            db.execSQL(SidertTables.SidertEntry.ADD_LOCATED_AT_DIRECCIONES);
+        } catch (Exception e) {
+            Log.e("ADD_LOCATEDAT_DIR", "ya contiene la columna");
+        }
+
+        try {
+            db.execSQL(SidertTables.SidertEntry.ADD_LOCATED_AT_DIRECCIONES_AUTO);
+        } catch (Exception e) {
+            Log.e("ADD_LOCATEDAT_DIR_AUTO", "ya contiene la columna");
+        }
+
+        try {
+            db.execSQL(SidertTables.SidertEntry.ADD_LOCATED_AT_DIRECCIONES_RENOV);
+        } catch (Exception e) {
+            Log.e("ADD_LOCATEDAT_DIR_RENOV", "ya contiene la columna");
+        }
+
+        try {
+            db.execSQL(SidertTables.SidertEntry.ADD_LATITUD_CLIENTE);
+        } catch (Exception e) {
+            Log.e("ADD_LATITUD_CLI", "ya contiene la columna");
+        }
+
+        try {
+            db.execSQL(SidertTables.SidertEntry.ADD_LONGITUD_CLIENTE);
+        } catch (Exception e) {
+            Log.e("ADD_LONGITUD_CLI", "ya contiene la columna");
+        }
+
+        try {
+            db.execSQL(SidertTables.SidertEntry.ADD_LOCATED_AT_CLIENTE);
+        } catch (Exception e) {
+            Log.e("ADD_LOCATEDAT_CLI", "ya contiene la columna");
+        }
+
+        try {
+            db.execSQL(SidertTables.SidertEntry.ADD_LATITUD_CLIENTE_AUTO);
+        } catch (Exception e) {
+            Log.e("ADD_LATITUD_CLI_AUTO", "ya contiene la columna");
+        }
+
+        try {
+            db.execSQL(SidertTables.SidertEntry.ADD_LONGITUD_CLIENTE_AUTO);
+        } catch (Exception e) {
+            Log.e("ADD_LONGITUD_CLI_AUTO", "ya contiene la columna");
+        }
+
+        try {
+            db.execSQL(SidertTables.SidertEntry.ADD_LOCATED_AT_CLIENTE_AUTO);
+        } catch (Exception e) {
+            Log.e("ADD_LOCATEDAT_CLI_AUTO", "ya contiene la columna");
+        }
+
+        try {
+            db.execSQL(SidertTables.SidertEntry.ADD_LATITUD_CLIENTE_RENOV);
+        } catch (Exception e) {
+            Log.e("ADD_LATITUD_CLIE_REN", "ya contiene la columna");
+        }
+
+        try {
+            db.execSQL(SidertTables.SidertEntry.ADD_LONGITUD_CLIENTE_RENOV);
+        } catch (Exception e) {
+            Log.e("ADD_LONGITUD_CLIE_REN", "ya contiene la columna");
+        }
+
+        try {
+            db.execSQL(SidertTables.SidertEntry.ADD_LOCATED_AT_CLIENTE_RENOV);
+        } catch (Exception e) {
+            Log.e("ADD_LOCATED_AT_CLIE_REN", "ya contiene la columna");
+        }
+
+        try {
+            db.execSQL(SidertTables.SidertEntry.ADD_LATITUD_AVAL);
+        } catch (Exception e) {
+            Log.e("ADD_LATITUD_AVAL", "ya contiene la columna");
+        }
+
+        try {
+            db.execSQL(SidertTables.SidertEntry.ADD_LONGITUD_AVAL);
+        } catch (Exception e) {
+            Log.e("ADD_LONGITUD_AVAL", "ya contiene la columna");
+        }
+
+        try {
+            db.execSQL(SidertTables.SidertEntry.ADD_LOCATED_AT_AVAL);
+        } catch (Exception e) {
+            Log.e("ADD_LOCATED_AT_AVAL", "ya contiene la columna");
+        }
+
+        try {
+            db.execSQL(SidertTables.SidertEntry.ADD_LATITUD_AVAL_AUTO);
+        } catch (Exception e) {
+            Log.e("ADD_LATITUD_AVAL_AUTO", "ya contiene la columna");
+        }
+
+        try {
+            db.execSQL(SidertTables.SidertEntry.ADD_LONGITUD_AVAL_AUTO);
+        } catch (Exception e) {
+            Log.e("ADD_LONGITUD_AVAL_AUTO", "ya contiene la columna");
+        }
+
+        try {
+            db.execSQL(SidertTables.SidertEntry.ADD_LOCATED_AT_AVAL_AUTO);
+        } catch (Exception e) {
+            Log.e("ADD_LOCATED_AT_AVAL_AU", "ya contiene la columna");
+        }
+
+        try {
+            db.execSQL(SidertTables.SidertEntry.ADD_LATITUD_AVAL_RENOV);
+        } catch (Exception e) {
+            Log.e("ADD_LATITUD_AVAL_RENOV", "ya contiene la columna");
+        }
+
+        try {
+            db.execSQL(SidertTables.SidertEntry.ADD_LONGITUD_AVAL_RENOV);
+        } catch (Exception e) {
+            Log.e("ADD_LONGITUD_AVAL_RENOV", "ya contiene la columna");
+        }
+
+        try {
+            db.execSQL(SidertTables.SidertEntry.ADD_LOCATED_AT_AVAL_RENOV);
+        } catch (Exception e) {
+            Log.e("ADD_LOCATED_AT_AVAL_REN", "ya contiene la columna");
+        }
+
+        try {
+            db.execSQL(SidertTables.SidertEntry.ADD_LOCATED_AT_NEG_INT);
+        } catch (Exception e) {
+            Log.e("ADD_LOCATED_AT_NEG_INT", "ya contiene la columna");
+        }
+
+        try {
+            db.execSQL(SidertTables.SidertEntry.ADD_LOCATED_AT_DOM_INT);
+        } catch (Exception e) {
+            Log.e("ADD_LOCATED_AT_NEG_INT", "ya contiene la columna");
+        }
+
+        try {
+            db.execSQL(SidertTables.SidertEntry.ADD_LATITUD_OD_INT);
+        } catch (Exception e) {
+            Log.e("ADD_LATITUD_OD_INT", "ya contiene la columna");
+        }
+
+        try {
+            db.execSQL(SidertTables.SidertEntry.ADD_LONGITUD_OD_INT);
+        } catch (Exception e) {
+            Log.e("ADD_LONGITUD_OD_INT", "ya contiene la columna");
+        }
+
+        try {
+            db.execSQL(SidertTables.SidertEntry.ADD_LOCATED_AT_OD_INT);
+        } catch (Exception e) {
+            Log.e("ADD_LOCATED_AT_OD_INT", "ya contiene la columna");
+        }
+
+        try {
+            db.execSQL(SidertTables.SidertEntry.ADD_LATITUD_OD_INT_REN);
+        } catch (Exception e) {
+            Log.e("ADD_LATITUD_OD_INT_REN", "ya contiene la columna");
+        }
+
+        try {
+            db.execSQL(SidertTables.SidertEntry.ADD_LONGITUD_OD_INT_REN);
+        } catch (Exception e) {
+            Log.e("ADD_LONGITUD_OD_INT_REN", "ya contiene la columna");
+        }
+
+        try {
+            db.execSQL(SidertTables.SidertEntry.ADD_LOCATED_AT_OD_INT_REN);
+        } catch (Exception e) {
+            Log.e("ADD_LOCATED_AT_ODINTREN", "ya contiene la columna");
+        }
+
+        try {
+            db.execSQL(SidertTables.SidertEntry.ADD_LOCATED_AT_NEG_INT_REN);
+        } catch (Exception e) {
+            Log.e("ADD_LOCATED_AT_NEGINREN", "ya contiene la columna");
+        }
+
+        try {
+            db.execSQL(SidertTables.SidertEntry.ADD_LOCATED_AT_DOM_INT_REN);
+        } catch (Exception e) {
+            Log.e("ADD_LOCATED_AT_DOMINREN", "ya contiene la columna");
+        }
+
+        try {
+            db.execSQL(SidertTables.SidertEntry.ADD_LATITUD_OD_INT_AUTO);
+        } catch (Exception e) {
+            Log.e("ADD_LATITUD_OD_INT_AUTO", "ya contiene la columna");
+        }
+
+        try {
+            db.execSQL(SidertTables.SidertEntry.ADD_LONGITUD_OD_INT_AUTO);
+        } catch (Exception e) {
+            Log.e("ADD_LONGITUD_OD_INTAUTO", "ya contiene la columna");
+        }
+
+        try {
+            db.execSQL(SidertTables.SidertEntry.ADD_LOCATED_AT_OD_INT_AUTO);
+        } catch (Exception e) {
+            Log.e("ADD_LOCATED_AT_ODINAUTO", "ya contiene la columna");
+        }
+
+        try {
+            db.execSQL(SidertTables.SidertEntry.ADD_LOCATED_AT_DOM_INT_AUTO);
+        } catch (Exception e) {
+            Log.e("ADD_LOCATED_AT_DOMINAU", "ya contiene la columna");
+        }
+
+        try {
+            db.execSQL(SidertTables.SidertEntry.ADD_LOCATED_AT_NEG_INT_AUTO);
+        } catch (Exception e) {
+            Log.e("ADD_LOCATED_AT_NEGINTAU", "ya contiene la columna");
+        }
+
+        try {
+            db.execSQL(SidertTables.SidertEntry.ADD_UBIC_DC_NEG_IND);
+        } catch (Exception e) {
+            Log.e("ADD_UBIC_DC_NEG_IND", "ya contiene la columna");
+        }
+
+        try {
+            db.execSQL(SidertTables.SidertEntry.ADD_UBIC_DC_NEG_IND_REN);
+        } catch (Exception e) {
+            Log.e("ADD_UBIC_DC_NEG_IND_REN", "ya contiene la columna");
+        }
+
+        try {
+            db.execSQL(SidertTables.SidertEntry.ADD_UBIC_DC_NEG_IND_AUT);
+        } catch (Exception e) {
+            Log.e("ADD_UBIC_DC_NEG_IND_AUT", "ya contiene la columna");
+        }
+
+        try {
+            db.execSQL(SidertTables.SidertEntry.ADD_TIENE_F_OD_INT);
+        } catch (Exception e) {
+            Log.e("ADD_TIENE_F_OD_INT", "ya contiene la columna");
+        }
+
+        try {
+            db.execSQL(SidertTables.SidertEntry.ADD_NOM_QF_OD_INT);
+        } catch (Exception e) {
+            Log.e("ADD_NOM_QF_OD_INT", "ya contiene la columna");
+        }
+
+        try {
+            db.execSQL(SidertTables.SidertEntry.ADD_TIENE_F_OD_INT_REN);
+        } catch (Exception e) {
+            Log.e("ADD_TIENE_F_OD_INT_REN", "ya contiene la columna");
+        }
+
+        try {
+            db.execSQL(SidertTables.SidertEntry.ADD_NOM_QF_OD_INT_REN);
+        } catch (Exception e) {
+            Log.e("ADD_NOM_QF_OD_INT_REN", "ya contiene la columna");
+        }
+
+        try {
+            db.execSQL(SidertTables.SidertEntry.ADD_TIENE_F_OD_INT_AUT);
+        } catch (Exception e) {
+            Log.e("ADD_TIENE_F_OD_INT_AUT", "ya contiene la columna");
+        }
+
+        try {
+            db.execSQL(SidertTables.SidertEntry.ADD_NOM_QF_OD_INT_AUT);
+        } catch (Exception e) {
+            Log.e("ADD_NOM_QF_OD_INT_AUT", "ya contiene la columna");
+        }
+
+        try {
+            db.execSQL(SidertTables.SidertEntry.ADD_TIENE_NEG_NEG_INT);
+        } catch (Exception e) {
+            Log.e("ADD_TIENE_NEG_NEG_INT", "ya contiene la columna");
+        }
+
+        try {
+            db.execSQL(SidertTables.SidertEntry.ADD_UBIC_DC_NEG_INT);
+        } catch (Exception e) {
+            Log.e("ADD_UBIC_DC_NEG_INT", "ya contiene la columna");
+        }
+
+        try {
+            db.execSQL(SidertTables.SidertEntry.ADD_TIENE_NEG_NEG_INT_REN);
+        } catch (Exception e) {
+            Log.e("ADD_TIENE_N_NEG_INT_REN", "ya contiene la columna");
+        }
+
+        try {
+            db.execSQL(SidertTables.SidertEntry.ADD_UBIC_DC_NEG_INT_REN);
+        } catch (Exception e) {
+            Log.e("ADD_UBIC_DC_NEG_INT_REN", "ya contiene la columna");
+        }
+
+        try {
+            db.execSQL(SidertTables.SidertEntry.ADD_TIENE_NEG_NEG_INT_AUT);
+        } catch (Exception e) {
+            Log.e("ADD_TIENE_N_NEG_INT_AUT", "ya contiene la columna");
+        }
+
+        try {
+            db.execSQL(SidertTables.SidertEntry.ADD_UBIC_DC_NEG_INT_AUT);
+        } catch (Exception e) {
+            Log.e("ADD_UBIC_DC_NEG_INT_AUT", "ya contiene la columna");
+        }
+
+        try {
+            db.execSQL(SidertTables.SidertEntry.ADD_CICLO_INT_GPO_REN);
+        } catch (Exception e) {
+            Log.e("ADD_CICLO_INT_GPO_REN", "ya contiene la columna");
+        }
+
+        try {
+            db.execSQL(SidertTables.SidertEntry.ADD_MONTO_ANT_INT_GPO_REN);
+        } catch (Exception e) {
+            Log.e("ADD_MTO_ANT_INT_GPO_REN", "ya contiene la columna");
+        }
+
+        try {
+            db.execSQL(SidertTables.SidertEntry.ADD_GRUPO_ID_VER_DOM);
+        } catch (Exception e) {
+            Log.e("ADD_GRUPO_ID_VER_DOM", "ya contiene la columna");
+        }
+
+        try {
+            db.execSQL(SidertTables.SidertEntry.ADD_GRUPO_NOM_VER_DOM);
+        } catch (Exception e) {
+            Log.e("ADD_GRUPO_NOM_VER_DOM", "ya contiene la columna");
+        }
+
+        try {
+            db.execSQL(SidertTables.SidertEntry.ADD_NO_SOL_VER_DOM);
+        } catch (Exception e) {
+            Log.e("ADD_NO_SOL_VER_DOM", "ya contiene la columna");
+        }
+
+        try {
+            db.execSQL(SidertTables.SidertEntry.ADD_MONTO_REFINANCIAR_IND);
+        } catch (Exception e) {
+            Log.e("ADD_MONTO_REFINANCIAR_IND", "ya contiene la columna");
+        }
+
+        try {
+            db.execSQL(SidertTables.SidertEntry.ADD_CARACT_DOM_CRO_IND);
+        } catch (Exception e) {
+            Log.e("ADD_CARACT_DOM_CRO_IND", "ya contiene la columna");
+        }
+
+        try {
+            db.execSQL(SidertTables.SidertEntry.ADD_INE_SELF_DOC_IND);
+        } catch (Exception e) {
+            Log.e("ADD_INE_SELF_DOC_IND", "ya contiene la columna");
+        }
+
+        try {
+            db.execSQL(SidertTables.SidertEntry.ADD_COM_GAR_DOC_IND);
+        } catch (Exception e) {
+            Log.e("ADD_COM_GAR_DOC_IND", "ya contiene la columna");
+        }
+
+        try {
+            db.execSQL(SidertTables.SidertEntry.ADD_INE_FRON_AVAL_DOC_IND);
+        } catch (Exception e) {
+            Log.e("ADD_INE_FRON_AVAL_DOC_IND", "ya contiene la columna");
+        }
+
+        try {
+            db.execSQL(SidertTables.SidertEntry.ADD_INE_REV_AVAL_DOC_IND);
+        } catch (Exception e) {
+            Log.e("ADD_INE_REV_AVAL_DOC_IND", "ya contiene la columna");
+        }
+
+        try {
+            db.execSQL(SidertTables.SidertEntry.ADD_CURP_AVAL_DOC_IND);
+        } catch (Exception e) {
+            Log.e("ADD_CURP_AVAL_DOC_IND", "ya contiene la columna");
+        }
+
+        try {
+            db.execSQL(SidertTables.SidertEntry.ADD_COM_DOM_AVAL_DOC_IND);
+        } catch (Exception e) {
+            Log.e("ADD_COM_DOM_AVAL_DOC_IND", "ya contiene la columna");
+        }
+
+        try {
+            db.execSQL(SidertTables.SidertEntry.ADD_MONTO_REFINANCIAR_IND_REN);
+        } catch (Exception e) {
+            Log.e("ADD_MONTO_REFINANCIAR_IND_REN", "ya contiene la columna");
+        }
+
+        try {
+            db.execSQL(SidertTables.SidertEntry.ADD_CARACT_DOM_CRO_IND_REN);
+        } catch (Exception e) {
+            Log.e("ADD_CARACT_DOM_CRO_IND_REN", "ya contiene la columna");
+        }
+
+        try {
+            db.execSQL(SidertTables.SidertEntry.ADD_INE_SELF_DOC_IND_REN);
+        } catch (Exception e) {
+            Log.e("ADD_INE_SELF_DOC_IND_REN", "ya contiene la columna");
+        }
+
+        try {
+            db.execSQL(SidertTables.SidertEntry.ADD_COM_GAR_DOC_IND_REN);
+        } catch (Exception e) {
+            Log.e("ADD_COM_GAR_DOC_IND_REN", "ya contiene la columna");
+        }
+
+        try {
+            db.execSQL(SidertTables.SidertEntry.ADD_INE_FRON_AVAL_DOC_IND_REN);
+        } catch (Exception e) {
+            Log.e("ADD_INE_FRON_AVAL_DOC_IND_REN", "ya contiene la columna");
+        }
+
+        try {
+            db.execSQL(SidertTables.SidertEntry.ADD_INE_REV_AVAL_DOC_IND_REN);
+        } catch (Exception e) {
+            Log.e("ADD_INE_REV_AVAL_DOC_IND_REN", "ya contiene la columna");
+        }
+
+        try {
+            db.execSQL(SidertTables.SidertEntry.ADD_CURP_AVAL_DOC_IND_REN);
+        } catch (Exception e) {
+            Log.e("ADD_CURP_AVAL_DOC_IND_REN", "ya contiene la columna");
+        }
+
+        try {
+            db.execSQL(SidertTables.SidertEntry.ADD_COM_DOM_AVAL_DOC_IND_REN);
+        } catch (Exception e) {
+            Log.e("ADD_COM_DOM_AVAL_DOC_IND_REN", "ya contiene la columna");
+        }
+
+        try {
+            db.execSQL(SidertTables.SidertEntry.ADD_MONTO_REFIN_INT);
+        } catch (Exception e) {
+            Log.e("ADD_MONTO_REFIN_INT", "ya contiene la columna");
+        }
+
+        try {
+            db.execSQL(SidertTables.SidertEntry.ADD_CARAC_DOM_INT);
+        } catch (Exception e) {
+            Log.e("ADD_CARAC_DOM_INT", "ya contiene la columna");
+        }
+
+        try {
+            db.execSQL(SidertTables.SidertEntry.ADD_INE_SELFIE_DOC_INT);
+        } catch (Exception e) {
+            Log.e("ADD_INE_SELFIE_DOC_INT", "ya contiene la columna");
+        }
+
+        try {
+            db.execSQL(SidertTables.SidertEntry.ADD_MONTO_REFIN_INT_REN);
+        } catch (Exception e) {
+            Log.e("ADD_MONTO_REFIN_INT_REN", "ya contiene la columna");
+        }
+
+        try {
+            db.execSQL(SidertTables.SidertEntry.ADD_CARAC_DOM_INT_REN);
+        } catch (Exception e) {
+            Log.e("ADD_CARAC_DOM_INT_REN", "ya contiene la columna");
+        }
+
+        try {
+            db.execSQL(SidertTables.SidertEntry.ADD_INE_SELFIE_DOC_INT_REN);
+        } catch (Exception e) {
+            Log.e("ADD_INE_SELFIE_DOC_INT_REN", "ya contiene la columna");
+        }
+
+        try {
+            db.execSQL(SidertTables.SidertEntry.ADD_PRESTAMO_ID_SOL_REN);
+        } catch (Exception e) {
+            Log.e("ADD_PRESTAMO_ID_SOL_REN", "ya contiene la columna");
+        }
+
+        try {
+            db.execSQL(SidertTables.SidertEntry.CREATE_TBL_DOCUMENTOS_CLIENTES);
+        } catch (Exception e) {
+            Log.e("CREATE_TBL_DOCUMENTOS_CLIENTES", "ya existe la tabla DOCUMENTOS_CLIENTES");
+        }
+
+
+    }
+
+    public void saveCatalogosCampanas(SQLiteDatabase db, HashMap<Integer, String> params) {
+        db.beginTransaction();
+
+        String sql = " INSERT INTO " + SidertTables.SidertEntry.TABLE_CATALOGOS_CAMP + " ( " +
+                " id_campana," +
+                " tipo_campana," +
+                " estatus) " +
+                " VALUES ( ?, ?, ?)";
+
+        SQLiteStatement pInsert = db.compileStatement(sql);
+        pInsert.bindString(1, params.get(0));
+        pInsert.bindString(2, params.get(1));
+        pInsert.bindString(3, params.get(2));
+
+        pInsert.execute();
+
+        db.setTransactionSuccessful();
+        db.endTransaction();
+    }
+
+    public void saveCatalogoEntregaCartera(SQLiteDatabase db, HashMap<Integer, String> params) {
+        db.beginTransaction();
+
+        String sql = " INSERT INTO " + SidertTables.SidertEntry.TABLE_CATALOGO_ENTREGA_CARTERA + " ( " +
+                " id_tipocartera, " +
+                " tipo_EntregaCartera, " +
+                " estatus)" +
+                " VALUES (?, ?, ?)";
+
+        SQLiteStatement pInsert = db.compileStatement(sql);
+        pInsert.bindString(1, params.get(0));
+        pInsert.bindString(2, params.get(1));
+        pInsert.bindString(3, params.get(2));
+
+        pInsert.execute();
+
+        db.setTransactionSuccessful();
+        db.endTransaction();
     }
 
     public void saveEstados(SQLiteDatabase db, HashMap<Integer, String> params) {
@@ -1207,7 +2235,7 @@ public class DBhelper extends SQLiteOpenHelper {
                 "monto, " +
                 "medio_pago, " +
                 "imprimir_recibo, " +
-                "folio, "+
+                "folio, " +
                 "evidencia, " +
                 "tipo_imagen, " +
                 "fecha_termino, " +
@@ -1243,25 +2271,25 @@ public class DBhelper extends SQLiteOpenHelper {
         db.beginTransaction();
         String sql = "INSERT INTO " + TBL_CONSULTA_CC + "(" +
                 "producto_credito," +
-                "monto_solicitado,"+
-                "primer_nombre,"+
+                "monto_solicitado," +
+                "primer_nombre," +
                 "segundo_nombre," +
-                "ap_paterno,"+
-                "ap_materno,"+
-                "fecha_nac,"+
-                "genero,"+
-                "estado_nac,"+
-                "curp,"+
-                "rfc,"+
-                "direccion,"+
-                "colonia,"+
-                "municipio,"+
-                "ciudad,"+
-                "estado,"+
-                "cp,"+
-                "fecha_termino,"+
-                "fecha_envio,"+
-                "estatus,"+
+                "ap_paterno," +
+                "ap_materno," +
+                "fecha_nac," +
+                "genero," +
+                "estado_nac," +
+                "curp," +
+                "rfc," +
+                "direccion," +
+                "colonia," +
+                "municipio," +
+                "ciudad," +
+                "estado," +
+                "cp," +
+                "fecha_termino," +
+                "fecha_envio," +
+                "estatus," +
                 "errores) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
         SQLiteStatement pInsert = db.compileStatement(sql);
         pInsert.bindString(1, params.get(0));                   //1  PRODUCTO
@@ -1306,7 +2334,6 @@ public class DBhelper extends SQLiteOpenHelper {
         pInsert.bindLong(1, Long.parseLong(params.get(0)));     //1  ID_LOCALIDAD
         pInsert.bindString(2, params.get(1));                   //2  NOMBRE
         pInsert.bindLong(3, Long.parseLong(params.get(2)));     //3  ID_MUNICIPIO
-
 
         pInsert.execute();
 
@@ -1353,8 +2380,8 @@ public class DBhelper extends SQLiteOpenHelper {
     public void saveCatalogos(String tbl, SQLiteDatabase db, HashMap<Integer, String> params) {
         db.beginTransaction();
         String sql = "INSERT INTO " + tbl + "(" +
-               "id, " +
-               "nombre) VALUES(?, ?)";
+                "id, " +
+                "nombre) VALUES(?, ?)";
         SQLiteStatement pInsert = db.compileStatement(sql);
         pInsert.bindLong(1, Long.parseLong(params.get(0)));     //ID       1
         pInsert.bindString(2, params.get(1));                   //NOMBRE   2
@@ -1411,7 +2438,7 @@ public class DBhelper extends SQLiteOpenHelper {
         db.beginTransaction();
 
         String tbl = TBL_DIRECCIONES;
-        switch (tipo){
+        switch (tipo) {
             case 2:
                 tbl = TBL_DIRECCIONES_REN;
                 break;
@@ -1518,7 +2545,9 @@ public class DBhelper extends SQLiteOpenHelper {
                 "fecha_fin_geo, " +
                 "fecha_envio_geo, " +
                 "estatus, " +
-                "clave) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                "clave," +
+                "id_tipocartera)" +
+                " VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         SQLiteStatement pInsert = db.compileStatement(sql);
         pInsert.bindString(1, params.get(0));                           //ID_CARTERA                 1
         pInsert.bindString(2, params.get(1));                           //NUM_SOLICITUD              2
@@ -1537,6 +2566,7 @@ public class DBhelper extends SQLiteOpenHelper {
         pInsert.bindString(15, params.get(14));                         //FECHA_ENVIO_GEO           15
         pInsert.bindLong(16, Integer.parseInt(params.get(15)));         //ESTATUS                   16
         pInsert.bindString(17, params.get(16));                         //CLAVE                     17
+        pInsert.bindString(18, params.get(17));
 
         pInsert.execute();
 
@@ -1726,10 +2756,8 @@ public class DBhelper extends SQLiteOpenHelper {
     }
 
     public void saveTrackerAsesor(SQLiteDatabase db, HashMap<Integer, String> params) {
-        Log.e("AQUI", "GUARDANDO TRACKER");
-        String tbl = TBL_TRACKER_ASESOR_T;
         db.beginTransaction();
-        String sql = "INSERT INTO " + tbl + "(" +
+        String sql = "INSERT INTO " + TBL_TRACKER_ASESOR_T + "(" +
                 "asesor_id, " +
                 "serie_id, " +
                 "nombre, " +
@@ -1791,16 +2819,29 @@ public class DBhelper extends SQLiteOpenHelper {
         db.endTransaction();
     }
 
+    public void saveCentroCost(SQLiteDatabase db, HashMap<Integer, String> params) {
+        db.beginTransaction();
+
+        String sql = " INSERT INTO " + TBL_CENTRO_COSTO + " ( " +
+                "centroCosto) " +
+                "VALUES (?)";
+        SQLiteStatement pInsert = db.compileStatement(sql);
+        pInsert.bindString(1, params.get(1));
+        pInsert.execute();
+        db.setTransactionSuccessful();
+        db.endTransaction();
+    }
+
+
     public Long saveSolicitudes(SQLiteDatabase db, HashMap<Integer, String> params, int tipo) {
         db.beginTransaction();
 
-        String tbl = (tipo == 1)?TBL_SOLICITUDES:TBL_SOLICITUDES_REN;
+        String tbl = (tipo == 1) ? TBL_SOLICITUDES : TBL_SOLICITUDES_REN;
 
         String sql = "";
         SQLiteStatement pInsert;
 
-        if(tipo != 1)
-        {
+        if (tipo != 1) {
             sql = "INSERT INTO " + tbl + " (" +
                     "vol_solicitud, " +
                     "usuario_id, " +
@@ -1828,9 +2869,7 @@ public class DBhelper extends SQLiteOpenHelper {
             pInsert.bindString(10, params.get(9));                      //FECHA CREADO
             pInsert.bindLong(11, Long.parseLong(params.get(10)));       //ESTATUS
             pInsert.bindLong(12, Long.parseLong(params.get(11)));       //PRESTAMO ID
-        }
-        else
-        {
+        } else {
             sql = "INSERT INTO " + tbl + " (" +
                     "vol_solicitud, " +
                     "usuario_id, " +
@@ -1936,7 +2975,7 @@ public class DBhelper extends SQLiteOpenHelper {
         return id;
     }
 
-    public void saveDatosCredito(SQLiteDatabase db, HashMap<Integer, String> params){
+    public void saveDatosCredito(SQLiteDatabase db, HashMap<Integer, String> params) {
         db.beginTransaction();
         String sql = "INSERT INTO " + TBL_CREDITO_IND + " (" +
                 "id_solicitud, " +
@@ -1968,7 +3007,31 @@ public class DBhelper extends SQLiteOpenHelper {
         Log.e("Registro", "Credito Ind");
     }
 
-    public void saveDatosCreditoRen(SQLiteDatabase db, HashMap<Integer, String> params){
+    public void saveDatosCreditoCampa(SQLiteDatabase db, HashMap<Integer, String> params) {
+        db.beginTransaction();
+
+        String sql = " INSERT INTO " + TBL_DATOS_CREDITO_CAMPANA + " ( " +
+                "id_solicitud," +
+                "id_orginacion," +
+                "id_campana," +
+                "tipo_campana," +
+                "nombre_refiero" +
+                ")" +
+                "VALUES ( ?, ?, ?, ?, ?)";
+        SQLiteStatement pInsert = db.compileStatement(sql);
+        pInsert.bindString(1, params.get(1));
+        pInsert.bindString(2, params.get(2));
+        pInsert.bindString(3, params.get(3));
+        pInsert.bindString(4, params.get(4));
+        pInsert.bindString(5, params.get(5));
+        pInsert.executeInsert();
+
+        db.setTransactionSuccessful();
+        db.endTransaction();
+        Log.e("REGISTRO COMPLETO: ", "SE REGISTRO LOS DATOS DEL CREDITO CON CAMPAÑA");
+    }
+
+    public void saveDatosCreditoRen(SQLiteDatabase db, HashMap<Integer, String> params) {
         db.beginTransaction();
         String sql = "INSERT INTO " + TBL_CREDITO_IND_REN + " (" +
                 "id_solicitud, " +
@@ -2010,7 +3073,7 @@ public class DBhelper extends SQLiteOpenHelper {
         Log.e("Registro", "Credito Ind");
     }
 
-    public void saveDatosCreditoAuto(SQLiteDatabase db, HashMap<Integer, String> params){
+    public void saveDatosCreditoAuto(SQLiteDatabase db, HashMap<Integer, String> params) {
         db.beginTransaction();
         String sql = "INSERT INTO " + TBL_CREDITO_IND_AUTO + " (" +
                 "id_solicitud, " +
@@ -2054,11 +3117,11 @@ public class DBhelper extends SQLiteOpenHelper {
         Log.e("Registro", "Credito Ind");
     }
 
-    public Long saveDatosPersonales (SQLiteDatabase db, HashMap<Integer, String> params, int tipo){
+    public Long saveDatosPersonales(SQLiteDatabase db, HashMap<Integer, String> params, int tipo) {
         db.beginTransaction();
 
         String tbl = TBL_CLIENTE_IND;
-        switch (tipo){
+        switch (tipo) {
             case 2:
                 tbl = TBL_CLIENTE_IND_REN;
                 break;
@@ -2069,15 +3132,15 @@ public class DBhelper extends SQLiteOpenHelper {
 
         String sql = "INSERT INTO " + tbl + " (" +
                 "id_solicitud, " + "nombre, " + "paterno, " + "materno, " +
-                "fecha_nacimiento, " + "edad, " + "genero, " +"estado_nacimiento, " +
+                "fecha_nacimiento, " + "edad, " + "genero, " + "estado_nacimiento, " +
                 "rfc, " + "curp, " + "curp_digito_veri, " +
                 "ocupacion, " + "actividad_economica, " + "tipo_identificacion, " +
                 "no_identificacion, " + "nivel_estudio, " + "estado_civil, " + "bienes, " +
                 "tipo_vivienda, " + "parentesco, " + "otro_tipo_vivienda, " + "direccion_id, " +
                 "tel_casa, " + "tel_celular, " + "tel_mensajes, " +
-                "tel_trabajo, " +  "tiempo_vivir_sitio, " +  "dependientes, " +
-                "medio_contacto, " + "estado_cuenta, " +  "email, " +  "foto_fachada, " +  "ref_domiciliaria, " +
-                "firma, " +  "estatus_rechazo, " +  "comentario_rechazo, " + "estatus_completado) " +
+                "tel_trabajo, " + "tiempo_vivir_sitio, " + "dependientes, " +
+                "medio_contacto, " + "estado_cuenta, " + "email, " + "foto_fachada, " + "ref_domiciliaria, " +
+                "firma, " + "estatus_rechazo, " + "comentario_rechazo, " + "estatus_completado) " +
                 "VALUES (?,?,?,?,?,?,?,?,?,?, ?,?,?,?,?,?,?,?,?,?, ?,?,?,?,?,?,?,?,?,?, ?,?,?,?,?,?,?)";
         SQLiteStatement pInsert = db.compileStatement(sql);
         pInsert.bindLong(1, Long.parseLong(params.get(0)));
@@ -2126,10 +3189,10 @@ public class DBhelper extends SQLiteOpenHelper {
         return id;
     }
 
-    public void saveDatosConyuge(SQLiteDatabase db, HashMap<Integer, String> params, int tipo){
+    public void saveDatosConyuge(SQLiteDatabase db, HashMap<Integer, String> params, int tipo) {
         db.beginTransaction();
         String tbl = TBL_CONYUGE_IND;
-        switch (tipo){
+        switch (tipo) {
             case 2:
                 tbl = TBL_CONYUGE_IND_REN;
                 break;
@@ -2171,7 +3234,7 @@ public class DBhelper extends SQLiteOpenHelper {
         Log.e("Registra", "Conyuge");
     }
 
-    public void saveCodigosOxxo(SQLiteDatabase db, HashMap<Integer, String> params){
+    public void saveCodigosOxxo(SQLiteDatabase db, HashMap<Integer, String> params) {
         db.beginTransaction();
         String sql = "INSERT INTO " + TBL_CODIGOS_OXXO + " (" +
                 "id, " +
@@ -2198,10 +3261,10 @@ public class DBhelper extends SQLiteOpenHelper {
         db.endTransaction();
     }
 
-    public void saveDatosEconomicos(SQLiteDatabase db, HashMap<Integer, String> params, int tipo){
+    public void saveDatosEconomicos(SQLiteDatabase db, HashMap<Integer, String> params, int tipo) {
         db.beginTransaction();
         String tbl = TBL_ECONOMICOS_IND;
-        switch (tipo){
+        switch (tipo) {
             case 2:
                 tbl = TBL_ECONOMICOS_IND_REN;
                 break;
@@ -2231,10 +3294,10 @@ public class DBhelper extends SQLiteOpenHelper {
         Log.e("Registra", "Datos economicos");
     }
 
-    public void saveDatosNegocio (SQLiteDatabase db, HashMap<Integer, String> params, int tipo){
+    public void saveDatosNegocio(SQLiteDatabase db, HashMap<Integer, String> params, int tipo) {
         db.beginTransaction();
         String tbl = TBL_NEGOCIO_IND;
-        switch (tipo){
+        switch (tipo) {
             case 2:
                 tbl = TBL_NEGOCIO_IND_REN;
                 break;
@@ -2245,7 +3308,7 @@ public class DBhelper extends SQLiteOpenHelper {
 
         String sql = "INSERT INTO " + tbl + " (" +
                 "id_solicitud, " + "nombre, " + "direccion_id, " + "ocupacion, " + "actividad_economica, " +
-                "destino_credito, " + "otro_destino, " + "antiguedad, "  + "ing_mensual, " + "ing_otros, " +
+                "destino_credito, " + "otro_destino, " + "antiguedad, " + "ing_mensual, " + "ing_otros, " +
                 "gasto_semanal, " + "gasto_agua, " + "gasto_luz, " + "gasto_telefono, " +
                 "gasto_renta, " + "gasto_otros, " + "capacidad_pago, " + "medio_pago, " +
                 "otro_medio_pago, " + "monto_maximo, " + "num_operacion_mensuales, " +
@@ -2287,10 +3350,10 @@ public class DBhelper extends SQLiteOpenHelper {
         Log.e("Registra", "Negocio");
     }
 
-    public void saveDatosAval (SQLiteDatabase db, HashMap<Integer, String> params, int tipo){
+    public void saveDatosAval(SQLiteDatabase db, HashMap<Integer, String> params, int tipo) {
         db.beginTransaction();
         String tbl = TBL_AVAL_IND;
-        switch (tipo){
+        switch (tipo) {
             case 2:
                 tbl = TBL_AVAL_IND_REN;
                 break;
@@ -2333,9 +3396,9 @@ public class DBhelper extends SQLiteOpenHelper {
                 "gasto_telefono, " +
                 "gasto_renta, " +
                 "gasto_otros, " +
-                "capacidad_pagos, "+
-                "medio_pago, "+
-                "otro_medio_pago, "+
+                "capacidad_pagos, " +
+                "medio_pago, " +
+                "otro_medio_pago, " +
                 "monto_maximo, " +
                 "horario_localizacion, " +
                 "activos_observables, " +
@@ -2348,7 +3411,7 @@ public class DBhelper extends SQLiteOpenHelper {
                 "ref_domiciliaria, " +
                 "firma, " +
                 "estatus_rechazo, " +
-                "comentario_rechazo, "  +
+                "comentario_rechazo, " +
                 "estatus_completado) " +
                 "VALUES (?,?,?,?,?,?,?,?,?,?, ?,?,?,?,?,?,?,?,?,?, ?,?,?,?,?,?,?,?,?,?, ?,?,?,?,?,?,?,?,?,?, ?,?,?,?,?,?,?,?,?,?, ?)";
         SQLiteStatement pInsert = db.compileStatement(sql);
@@ -2410,10 +3473,10 @@ public class DBhelper extends SQLiteOpenHelper {
         Log.e("Registra", "Aval");
     }
 
-    public void saveReferencia (SQLiteDatabase db, HashMap<Integer, String> params, int tipo){
+    public void saveReferencia(SQLiteDatabase db, HashMap<Integer, String> params, int tipo) {
         db.beginTransaction();
         String tbl = TBL_REFERENCIA_IND;
-        switch (tipo){
+        switch (tipo) {
             case 2:
                 tbl = TBL_REFERENCIA_IND_REN;
                 break;
@@ -2450,10 +3513,10 @@ public class DBhelper extends SQLiteOpenHelper {
         Log.e("Registra", "Referencia");
     }
 
-    public void saveCroquisInd (SQLiteDatabase db, HashMap<Integer, String> params, int tipo){
+    public void saveCroquisInd(SQLiteDatabase db, HashMap<Integer, String> params, int tipo) {
         db.beginTransaction();
         String tbl = TBL_CROQUIS_IND;
-        switch (tipo){
+        switch (tipo) {
             case 2:
                 tbl = TBL_CROQUIS_IND_REN;
                 break;
@@ -2487,10 +3550,10 @@ public class DBhelper extends SQLiteOpenHelper {
         Log.e("Registra", "Croquis");
     }
 
-    public void saveCroquisGpo (SQLiteDatabase db, HashMap<Integer, String> params, int tipo){
+    public void saveCroquisGpo(SQLiteDatabase db, HashMap<Integer, String> params, int tipo) {
         db.beginTransaction();
         String tbl = TBL_CROQUIS_GPO;
-        switch (tipo){
+        switch (tipo) {
             case 2:
                 tbl = TBL_CROQUIS_GPO_REN;
                 break;
@@ -2522,10 +3585,10 @@ public class DBhelper extends SQLiteOpenHelper {
         Log.e("Registra", "Croquis");
     }
 
-    public void savePoliticasInd (SQLiteDatabase db, HashMap<Integer, String> params, int tipo){
+    public void savePoliticasInd(SQLiteDatabase db, HashMap<Integer, String> params, int tipo) {
         db.beginTransaction();
         String tbl = TBL_POLITICAS_PLD_IND;
-        switch (tipo){
+        switch (tipo) {
             case 2:
                 tbl = TBL_POLITICAS_PLD_IND_REN;
                 break;
@@ -2553,10 +3616,10 @@ public class DBhelper extends SQLiteOpenHelper {
         Log.e("Registra", "Politicas");
     }
 
-    public void savePoliticasIntegrante (SQLiteDatabase db, HashMap<Integer, String> params, int tipo){
+    public void savePoliticasIntegrante(SQLiteDatabase db, HashMap<Integer, String> params, int tipo) {
         db.beginTransaction();
         String tbl = TBL_POLITICAS_PLD_INTEGRANTE;
-        switch (tipo){
+        switch (tipo) {
             case 2:
                 tbl = TBL_POLITICAS_PLD_INTEGRANTE_REN;
                 break;
@@ -2583,9 +3646,9 @@ public class DBhelper extends SQLiteOpenHelper {
         db.endTransaction();
     }
 
-    public Long saveDatosCreditoGpo(SQLiteDatabase db, HashMap<Integer, String> params, int tipo){
+    public Long saveDatosCreditoGpo(SQLiteDatabase db, HashMap<Integer, String> params, int tipo) {
         db.beginTransaction();
-        String tbl = (tipo == 1)?TBL_CREDITO_GPO:TBL_CREDITO_GPO_REN;
+        String tbl = (tipo == 1) ? TBL_CREDITO_GPO : TBL_CREDITO_GPO_REN;
         String sql = "INSERT INTO " + tbl + " (" +
                 "id_solicitud, " +
                 "nombre_grupo, " +
@@ -2612,9 +3675,9 @@ public class DBhelper extends SQLiteOpenHelper {
         return id;
     }
 
-    public Long saveDatosCreditoGpoRen(SQLiteDatabase db, HashMap<Integer, String> params, Integer tipo){
+    public Long saveDatosCreditoGpoRen(SQLiteDatabase db, HashMap<Integer, String> params, Integer tipo) {
         db.beginTransaction();
-        String tbl = (tipo == 1)?TBL_CREDITO_GPO_REN:TBL_CREDITO_GPO_AUTO;
+        String tbl = (tipo == 1) ? TBL_CREDITO_GPO_REN : TBL_CREDITO_GPO_AUTO;
         String sql = "INSERT INTO " + tbl + " (" +
                 "id_solicitud, " +
                 "nombre_grupo, " +
@@ -2647,10 +3710,10 @@ public class DBhelper extends SQLiteOpenHelper {
         return id;
     }
 
-    public Long saveIntegrantesGpo (SQLiteDatabase db, HashMap<Integer, String> params, int tipo){
+    public Long saveIntegrantesGpo(SQLiteDatabase db, HashMap<Integer, String> params, int tipo) {
         db.beginTransaction();
         String tbl = TBL_INTEGRANTES_GPO;
-        switch (tipo){
+        switch (tipo) {
             case 2:
                 tbl = TBL_INTEGRANTES_GPO_REN;
                 break;
@@ -2714,7 +3777,7 @@ public class DBhelper extends SQLiteOpenHelper {
         return id;
     }
 
-    public Long saveIntegrantesGpoRen (SQLiteDatabase db, HashMap<Integer, String> params){
+    public Long saveIntegrantesGpoRen(SQLiteDatabase db, HashMap<Integer, String> params) {
         db.beginTransaction();
         String sql = "INSERT INTO " + TBL_INTEGRANTES_GPO_REN + " (" +
                 "id_credito, " +
@@ -2781,7 +3844,7 @@ public class DBhelper extends SQLiteOpenHelper {
         return id;
     }
 
-    public void saveCargoIntegranteGpo (SQLiteDatabase db, Integer id_cargo, Integer id_integrante){
+    public void saveCargoIntegranteGpo(SQLiteDatabase db, Integer id_cargo, Integer id_integrante) {
         ContentValues cv = new ContentValues();
 
         cv.put("cargo", id_cargo);
@@ -2789,7 +3852,7 @@ public class DBhelper extends SQLiteOpenHelper {
         db.update(TBL_INTEGRANTES_GPO, cv, "id = ?", new String[]{String.valueOf(id_integrante)});
     }
 
-    public void saveCargoIntegranteGpoRen (SQLiteDatabase db, Integer id_cargo, Integer id_integrante){
+    public void saveCargoIntegranteGpoRen(SQLiteDatabase db, Integer id_cargo, Integer id_integrante) {
         ContentValues cv = new ContentValues();
 
         cv.put("cargo", id_cargo);
@@ -2797,10 +3860,10 @@ public class DBhelper extends SQLiteOpenHelper {
         db.update(TBL_INTEGRANTES_GPO_REN, cv, "id = ?", new String[]{String.valueOf(id_integrante)});
     }
 
-    public void saveDatosTelefonicos (SQLiteDatabase db, HashMap<Integer, String> params, int tipo){
+    public void saveDatosTelefonicos(SQLiteDatabase db, HashMap<Integer, String> params, int tipo) {
         db.beginTransaction();
         String tbl = TBL_TELEFONOS_INTEGRANTE;
-        switch (tipo){
+        switch (tipo) {
             case 2:
                 tbl = TBL_TELEFONOS_INTEGRANTE_REN;
                 break;
@@ -2831,10 +3894,10 @@ public class DBhelper extends SQLiteOpenHelper {
         db.endTransaction();
     }
 
-    public void saveDatosDomicilio (SQLiteDatabase db, HashMap<Integer, String> params, int tipo){
+    public void saveDatosDomicilio(SQLiteDatabase db, HashMap<Integer, String> params, int tipo) {
         db.beginTransaction();
         String tbl = TBL_DOMICILIO_INTEGRANTE;
-        switch (tipo){
+        switch (tipo) {
             case 2:
                 tbl = TBL_DOMICILIO_INTEGRANTE_REN;
                 break;
@@ -2897,10 +3960,10 @@ public class DBhelper extends SQLiteOpenHelper {
         db.endTransaction();
     }
 
-    public void saveDatosNegocioGpo (SQLiteDatabase db, HashMap<Integer, String> params, int tipo){
+    public void saveDatosNegocioGpo(SQLiteDatabase db, HashMap<Integer, String> params, int tipo) {
         db.beginTransaction();
         String tbl = TBL_NEGOCIO_INTEGRANTE;
-        switch (tipo){
+        switch (tipo) {
             case 2:
                 tbl = TBL_NEGOCIO_INTEGRANTE_REN;
                 break;
@@ -2987,10 +4050,10 @@ public class DBhelper extends SQLiteOpenHelper {
         db.endTransaction();
     }
 
-    public void saveDatosConyugeGpo (SQLiteDatabase db, HashMap<Integer, String> params, int tipo){
+    public void saveDatosConyugeGpo(SQLiteDatabase db, HashMap<Integer, String> params, int tipo) {
         db.beginTransaction();
         String tbl = TBL_CONYUGE_INTEGRANTE;
-        switch (tipo){
+        switch (tipo) {
             case 2:
                 tbl = TBL_CONYUGE_INTEGRANTE_REN;
                 break;
@@ -3016,7 +4079,7 @@ public class DBhelper extends SQLiteOpenHelper {
                 "localidad, " +
                 "municipio, " +
                 "estado, " +
-                "ingresos_mensual, "+
+                "ingresos_mensual, " +
                 "gasto_mensual, " +
                 "tel_celular, " +
                 "tel_trabajo, " +
@@ -3053,9 +4116,9 @@ public class DBhelper extends SQLiteOpenHelper {
         db.endTransaction();
     }
 
-    public void saveDatosOtrosGpo (SQLiteDatabase db, HashMap<Integer, String> params, int tipo){
+    public void saveDatosOtrosGpo(SQLiteDatabase db, HashMap<Integer, String> params, int tipo) {
         db.beginTransaction();
-        String tbl = (tipo == 1)?TBL_OTROS_DATOS_INTEGRANTE:TBL_OTROS_DATOS_INTEGRANTE_REN;
+        String tbl = (tipo == 1) ? TBL_OTROS_DATOS_INTEGRANTE : TBL_OTROS_DATOS_INTEGRANTE_REN;
 
         String sql = "INSERT INTO " + tbl + " (" +
                 "id_integrante, " +
@@ -3088,7 +4151,7 @@ public class DBhelper extends SQLiteOpenHelper {
         db.endTransaction();
     }
 
-    public void saveDatosOtrosGpoAuto (SQLiteDatabase db, HashMap<Integer, String> params){
+    public void saveDatosOtrosGpoAuto(SQLiteDatabase db, HashMap<Integer, String> params) {
         db.beginTransaction();
         String tbl = TBL_OTROS_DATOS_INTEGRANTE_AUTO;
 
@@ -3125,9 +4188,9 @@ public class DBhelper extends SQLiteOpenHelper {
         db.endTransaction();
     }
 
-    public void saveDocumentosClientes (SQLiteDatabase db,HashMap<Integer, String> params, int tipo){
+    public void saveDocumentosClientes(SQLiteDatabase db, HashMap<Integer, String> params, int tipo) {
         db.beginTransaction();
-        String tbl = (tipo == 1)?TBL_DOCUMENTOS:TBL_DOCUMENTOS_REN;
+        String tbl = (tipo == 1) ? TBL_DOCUMENTOS : TBL_DOCUMENTOS_REN;
         String sql = "INSERT INTO " + tbl + " (" +
                 "id_solicitud, " + "ine_frontal, " + "ine_reverso, " + "curp, " +
                 "comprobante, " + "codigo_barras, " + "firma_asesor, " + "estatus_completado) " +
@@ -3149,9 +4212,9 @@ public class DBhelper extends SQLiteOpenHelper {
         db.endTransaction();
     }
 
-    public void saveDocumentosIntegrante (SQLiteDatabase db, HashMap<Integer, String> params, int tipo){
+    public void saveDocumentosIntegrante(SQLiteDatabase db, HashMap<Integer, String> params, int tipo) {
         db.beginTransaction();
-        String tbl = (tipo == 1)?TBL_DOCUMENTOS_INTEGRANTE:TBL_DOCUMENTOS_INTEGRANTE_REN;
+        String tbl = (tipo == 1) ? TBL_DOCUMENTOS_INTEGRANTE : TBL_DOCUMENTOS_INTEGRANTE_REN;
         String sql = "INSERT INTO " + tbl + " (" +
                 "id_integrante, " +
                 "ine_frontal, " +
@@ -3175,7 +4238,7 @@ public class DBhelper extends SQLiteOpenHelper {
         db.endTransaction();
     }
 
-    public Long saveReporteSesiones(SQLiteDatabase db, HashMap<Integer, String> params){
+    public Long saveReporteSesiones(SQLiteDatabase db, HashMap<Integer, String> params) {
         db.beginTransaction();
         String sql = "INSERT INTO " + TBL_REPORTE_SESIONES + " (" +
                 "id, " +
@@ -3212,7 +4275,7 @@ public class DBhelper extends SQLiteOpenHelper {
         return id;
     }
 
-    public Long saveSucursales(SQLiteDatabase db, HashMap<Integer, String> params){
+    public Long saveSucursales(SQLiteDatabase db, HashMap<Integer, String> params) {
         db.beginTransaction();
         String sql = "INSERT INTO " + TBL_SUCURSALES + " (" +
                 "id, " +
@@ -3233,7 +4296,7 @@ public class DBhelper extends SQLiteOpenHelper {
         return id;
     }
 
-    public Long saveCarteraInd(SQLiteDatabase db, String table_name, HashMap<Integer, String> params){
+    public Long saveCarteraInd(SQLiteDatabase db, String table_name, HashMap<Integer, String> params) {
         db.beginTransaction();
         String sql = "INSERT INTO " + table_name + " (" +
                 "id_cartera, " +
@@ -3288,7 +4351,7 @@ public class DBhelper extends SQLiteOpenHelper {
         return id;
     }
 
-    public Long savePrestamosInd(SQLiteDatabase db, String table_name, HashMap<Integer, String> params){
+    public Long savePrestamosInd(SQLiteDatabase db, String table_name, HashMap<Integer, String> params) {
         db.beginTransaction();
         String sql = "INSERT INTO " + table_name + " (" +
                 "id_prestamo, " +
@@ -3330,7 +4393,7 @@ public class DBhelper extends SQLiteOpenHelper {
         return id;
     }
 
-    public Long savePrestamosGpo(SQLiteDatabase db, String table_name, HashMap<Integer, String> params){
+    public Long savePrestamosGpo(SQLiteDatabase db, String table_name, HashMap<Integer, String> params) {
         db.beginTransaction();
         String sql = "INSERT INTO " + table_name + " (" +
                 "id_prestamo, " +
@@ -3372,7 +4435,7 @@ public class DBhelper extends SQLiteOpenHelper {
         return id;
     }
 
-    public Long saveAmortizaciones(SQLiteDatabase db, String table_name, HashMap<Integer, String> params){
+    public Long saveAmortizaciones(SQLiteDatabase db, String table_name, HashMap<Integer, String> params) {
         db.beginTransaction();
         String sql = "INSERT INTO " + table_name + " (" +
                 "id_amortizacion, " +
@@ -3426,7 +4489,7 @@ public class DBhelper extends SQLiteOpenHelper {
         return id;
     }
 
-    public Long saveRespuestasInd(SQLiteDatabase db, String table_name, HashMap<Integer, String> params){
+    public Long saveRespuestasInd(SQLiteDatabase db, String table_name, HashMap<Integer, String> params) {
         db.beginTransaction();
         String sql = "INSERT INTO " + table_name + " (" +
                 "id_prestamo, " +
@@ -3498,9 +4561,9 @@ public class DBhelper extends SQLiteOpenHelper {
         return id;
     }
 
-    public Long saveRespuestasGpo(SQLiteDatabase db, HashMap<Integer, String> params){
+    public Long saveRespuestasGpo(SQLiteDatabase db, HashMap<Integer, String> params) {
         db.beginTransaction();
-        String tbl =  TBL_RESPUESTAS_GPO_T;
+        String tbl = TBL_RESPUESTAS_GPO_T;
 
         String sql = "INSERT INTO " + tbl + " (" +
                 "id_prestamo, " +
@@ -3574,7 +4637,7 @@ public class DBhelper extends SQLiteOpenHelper {
         return id;
     }
 
-    public Long saveRespuestasVencidasInd(SQLiteDatabase db, HashMap<Integer, String> params){
+    public Long saveRespuestasVencidasInd(SQLiteDatabase db, HashMap<Integer, String> params) {
         String tbl;
         tbl = TBL_RESPUESTAS_IND_V_T;
         db.beginTransaction();
@@ -3654,7 +4717,7 @@ public class DBhelper extends SQLiteOpenHelper {
         return id;
     }
 
-    public Long saveRespuestasVencidasInt(SQLiteDatabase db, HashMap<Integer, String> params){
+    public Long saveRespuestasVencidasInt(SQLiteDatabase db, HashMap<Integer, String> params) {
         String tbl;
         tbl = TBL_RESPUESTAS_INTEGRANTE_T;
         db.beginTransaction();
@@ -3734,7 +4797,7 @@ public class DBhelper extends SQLiteOpenHelper {
         return id;
     }
 
-    public Long savePagos(SQLiteDatabase db, String table_name, HashMap<Integer, String> params){
+    public Long savePagos(SQLiteDatabase db, String table_name, HashMap<Integer, String> params) {
         db.beginTransaction();
         String sql = "INSERT INTO " + table_name + " (" +
                 "id_prestamo, " +
@@ -3758,7 +4821,7 @@ public class DBhelper extends SQLiteOpenHelper {
         return id;
     }
 
-    public Long saveAval(SQLiteDatabase db, String table_name, HashMap<Integer, String> params){
+    public Long saveAval(SQLiteDatabase db, String table_name, HashMap<Integer, String> params) {
         db.beginTransaction();
         String sql = "INSERT INTO " + table_name + " (" +
                 "id_prestamo, " +
@@ -3786,7 +4849,7 @@ public class DBhelper extends SQLiteOpenHelper {
         return id;
     }
 
-    public Long saveMiembros(SQLiteDatabase db, HashMap<Integer, String> params){
+    public Long saveMiembros(SQLiteDatabase db, HashMap<Integer, String> params) {
         db.beginTransaction();
         String tbl = TBL_MIEMBROS_GPO_T;
 
@@ -3832,7 +4895,7 @@ public class DBhelper extends SQLiteOpenHelper {
         return id;
     }
 
-    public Long saveMiembrosPagos(SQLiteDatabase db, HashMap<Integer, String> params){
+    public Long saveMiembrosPagos(SQLiteDatabase db, HashMap<Integer, String> params) {
         db.beginTransaction();
         String tbl = TBL_MIEMBROS_PAGOS_T;
 
@@ -3864,7 +4927,7 @@ public class DBhelper extends SQLiteOpenHelper {
         return id;
     }
 
-    public Long saveCarteraGpo(SQLiteDatabase db, String table_name, HashMap<Integer, String> params){
+    public Long saveCarteraGpo(SQLiteDatabase db, String table_name, HashMap<Integer, String> params) {
         db.beginTransaction();
         String sql = "INSERT INTO " + table_name + " (" +
                 "id_cartera, " +
@@ -3914,7 +4977,7 @@ public class DBhelper extends SQLiteOpenHelper {
         return id;
     }
 
-    public Long saveSoporte(SQLiteDatabase db, HashMap<Integer, String> params){
+    public Long saveSoporte(SQLiteDatabase db, HashMap<Integer, String> params) {
         db.beginTransaction();
         String sql = "INSERT INTO " + TBL_SOPORTE + " (" +
                 "categoria_id, " +
@@ -3957,7 +5020,7 @@ public class DBhelper extends SQLiteOpenHelper {
         return id;
     }
 
-    public void saveBeneficiario(SQLiteDatabase db, HashMap<Integer, String> params){
+    public void saveBeneficiario(SQLiteDatabase db, HashMap<Integer, String> params) {
         db.beginTransaction();
 
         String sql = " INSERT INTO " + SidertTables.SidertEntry.TABLE_BENEFICIARIOS + " ( " +
@@ -3972,13 +5035,13 @@ public class DBhelper extends SQLiteOpenHelper {
                 " VALUES (?, ?, ? , ?, ?, ?, ?, ?) ";
 
         SQLiteStatement pInsert = db.compileStatement(sql);
-        pInsert.bindString(1,params.get(1));
-        pInsert.bindString(2,params.get(2));
-        pInsert.bindString(3,params.get(3));
-        pInsert.bindString(4,params.get(4));
-        pInsert.bindString(5,params.get(5));
-        pInsert.bindString(6,params.get(6));
-        pInsert.bindString(7,params.get(7));
+        pInsert.bindString(1, params.get(1));
+        pInsert.bindString(2, params.get(2));
+        pInsert.bindString(3, params.get(3));
+        pInsert.bindString(4, params.get(4));
+        pInsert.bindString(5, params.get(5));
+        pInsert.bindString(6, params.get(6));
+        pInsert.bindString(7, params.get(7));
         pInsert.bindString(8, params.get(8));
 
         pInsert.executeInsert();
@@ -3988,154 +5051,160 @@ public class DBhelper extends SQLiteOpenHelper {
 
     }
 
-    public void updateDatosBeneficiario(SQLiteDatabase db, HashMap<Integer,String> params){
+
+    public void saveSucursalLocalidad(SQLiteDatabase db, HashMap<Integer, String> params) {
+
         db.beginTransaction();
 
-        String sql = " INSERT INTO " + SidertTables.SidertEntry.TABLE_BENEFICIARIOS_GPO + " ( " +
-                " id_solicitud_integrante," +
-                " id_cliente ) " +
-                " VALUES ( ?, ?)";
-
+        String sql = "INSERT INTO " + SidertTables.SidertEntry.TABLE_SUCURSALES_LOCALIDADES + " ( " +
+                "id," +
+                "centroCosto," +
+                "id_municipio," +
+                "localidad," +
+                "colonia," +
+                "codigo_postal) " +
+                " VALUES ( ?, ?, ?, ?, ?, ?)";
         SQLiteStatement pInsert = db.compileStatement(sql);
+
         pInsert.bindString(1, params.get(1));
         pInsert.bindString(2, params.get(2));
-
-        pInsert.executeInsert();
-
+        pInsert.bindString(3, params.get(3));
+        pInsert.bindString(4, params.get(4));
+        pInsert.bindString(5, params.get(5));
+        pInsert.bindString(6, params.get(6));
+        Log.e("AQUI:", "DATOS SUCURSAL LOCALIDAD GUARDADOS");
+        pInsert.execute();
         db.setTransactionSuccessful();
         db.endTransaction();
     }
 
-    public void updateBeneficiario(SQLiteDatabase db, HashMap<Integer, String> params){
+    public void saveSucursalLocalidadA(SQLiteDatabase db, HashMap<Integer, String> params) {
+
         db.beginTransaction();
 
-        String sql = " UPDATE " + SidertTables.SidertEntry.TABLE_BENEFICIARIOS_GPO  +
-                " SET " +
-                " id_solicitud=?, " +
-                " id_solicitud_integrante=?, " +
-                " cliente_id=?, " +
-                " grupo_id=?, " +
-                " nombre=?, " +
-                " paterno=?, " +
-                " materno=?, " +
-                " parentesco=?, " +
-                " serieid=? " +
-                " where cliente_id = ? "
-                ;
+        String sql = "INSERT INTO " + SidertTables.SidertEntry.TABLE_SUCURSALES_LOCALIDADES + " ( " +
+                "centrocosto," +
+                "id_municipio," +
+                "id_localidad," +
+                "localidad) " +
+                " VALUES ( ?, ?, ?, ?)";
         SQLiteStatement pInsert = db.compileStatement(sql);
-        pInsert.bindString(1, params.get(1));
-        pInsert.bindString(2,params.get(2));
-        pInsert.bindString(3,params.get(3));
-        pInsert.bindString(4,params.get(4));
-        pInsert.bindString(5,params.get(5));
-        pInsert.bindString(6,params.get(6));
-        pInsert.bindString(7,params.get(7));
-        pInsert.bindString(8,params.get(8));
-        pInsert.bindString(9,params.get(9));
 
-        pInsert.executeInsert();
-
-        db.setTransactionSuccessful();
-        db.endTransaction();
-
-    }
-
-
-    public void saveBeneficiarioRenGpo(SQLiteDatabase db, HashMap<Integer,String> params){
-        db.beginTransaction();
-
-        String sql = " INSERT INTO " + SidertTables.SidertEntry.TABLE_BENEFICIARIOS_GPO + " ( " +
-                " id_solicitud, " +
-                " id_solicitud_integrante, " +
-                " cliente_id, " +
-                " grupo_id, " +
-                " nombre, " +
-                " materno, " +
-                " paterno, " +
-                " parentesco, " +
-                " serieid)" +
-                " VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?) ";
-
-        SQLiteStatement pInsert = db.compileStatement(sql);
-        pInsert.bindString(1, params.get(1));
-        pInsert.bindString(2,params.get(2));
-        pInsert.bindString(3,params.get(3));
-        pInsert.bindString(4,params.get(4));
-        pInsert.bindString(5,params.get(5));
-        pInsert.bindString(6,params.get(6));
-        pInsert.bindString(7,params.get(7));
-        pInsert.bindString(8,params.get(8));
-        pInsert.bindString(9,params.get(9));
-
-        pInsert.executeInsert();
-
+        pInsert.bindString(1, params.get(0));
+        pInsert.bindString(2, params.get(1));
+        pInsert.bindString(3, params.get(2));
+        pInsert.bindString(4, params.get(3));
+        Log.e("AQUI:", "DATOS SUCURSAL LOCALIDAD GUARDADOS");
+        pInsert.execute();
         db.setTransactionSuccessful();
         db.endTransaction();
     }
 
-    public Cursor getRecords(String table, String where, String order, String[] args){
+
+    public Cursor getRecords(String table, String where, String order, String[] args) {
         SQLiteDatabase db = this.getReadableDatabase();
         Log.v("SQL", "SELECT * FROM " + table + where + order);
-        Cursor res =  db.rawQuery( "SELECT * FROM " + table + where + order, args );
+        Cursor res = db.rawQuery("SELECT * FROM " + table + where + order, args);
         return res;
     }
 
-    public Cursor getBeneficiario(String table, String id_solicitud, String id_cliente){
+    public Cursor getRecordsData(String table, String where, String order, String[] args) {
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor res = db.rawQuery(" SELECT * FROM " + table + " WHERE id_solicitud="+id_solicitud + " AND id_cliente="+id_cliente  + " order by nombre asc ",null);
+        Log.v("SQL", "SELECT * FROM " + table + where + order);
+        Cursor res = db.rawQuery(" SELECT id, localidad FROM " + table + where + order, args);
         return res;
     }
 
-    public Cursor getBeneficiarioInd(String table, int id_solicitud, int id_originacion){
-        SQLiteDatabase db = this.getReadableDatabase();
-        Cursor res = db.rawQuery(" SELECT * FROM  " + table + " WHERE id_solicitud="+id_solicitud + " AND id_originacion="+id_originacion + " order by nombre asc ", null);
-        return  res;
-    }
-
-
-    public Cursor getBeneficiarioInd(String table, String id_solicitud){
-        SQLiteDatabase db = this.getReadableDatabase();
-        Cursor res = db.rawQuery( " SELECT * FROM " + table + " WHERE id_solicitud="+id_solicitud,null);
+    public Cursor getCatalogosCam(String table, String where, String[] args) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor res = db.rawQuery("SELECT COUNT(*) FROM " + table + where, args);
         return res;
     }
 
-    /** METODO DECREPETED */
-    public Cursor getBeneficiarioGpo(String table, String id_solicitud, String cliente_id){
-        SQLiteDatabase db = this.getReadableDatabase();
-        Cursor res = db.rawQuery(" SELECT * FROM " + table + " WHERE id_solicitud=" + id_solicitud + " AND cliente_id=" + cliente_id,null);
+    public Cursor getTipoCampana(String table, String where, String[] args) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor res = db.rawQuery("SELECT tipo_campana FROM " + table + where, args);
         return res;
     }
 
-    public Cursor getDireccionByCP (String cp){
-        SQLiteDatabase db = this.getReadableDatabase();
-        Cursor res =  db.rawQuery( "SELECT e.estado_id ,e.estado_nombre, e.pais_id, m.municipio_id, m.municipio_nombre, m.estado_id, c.colonia_id, c.colonia_nombre, c.cp, c.municipio_id FROM cat_colonias AS c INNER JOIN municipios AS m ON m.municipio_id = c.municipio_id INNER JOIN estados AS e ON e.estado_id = m.estado_id WHERE c.cp = "+cp, null);
+    public Cursor getLocalidades(String table, String where, String[] args) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor res = db.rawQuery("SELECT COUNT(*) FROM " + table + where, args);
         return res;
     }
 
-    public Cursor getOriginacionInd (String id_solicitud, boolean completado){
-        SQLiteDatabase db = this.getReadableDatabase();
-        String query = "SELECT cre.*, cli.*, dcli.*, cony.*, dcon.*, eco.*, neg.*, dneg.*, aval.*, daval.*, refe.*, doc.*, soli.estatus, soli.fecha_inicio, soli.fecha_termino, soli.id_originacion FROM "+TBL_SOLICITUDES+" AS soli " +
-                    "INNER JOIN " + TBL_CREDITO_IND + " AS cre ON soli.id_solicitud = cre.id_solicitud " +
-                    "INNER JOIN " + TBL_CLIENTE_IND + " AS cli ON soli.id_solicitud = cli.id_solicitud " +
-                    "INNER JOIN " + TBL_DIRECCIONES + " AS dcli ON cli.direccion_id = dcli.id_direccion AND dcli.tipo_direccion = 'CLIENTE' " +
-                    "INNER JOIN " + TBL_CONYUGE_IND + " AS cony ON soli.id_solicitud = cony.id_solicitud " +
-                    "INNER JOIN " + TBL_DIRECCIONES + " AS dcon ON cony.direccion_id = dcon.id_direccion AND dcon.tipo_direccion = 'CONYUGE' " +
-                    "INNER JOIN " + TBL_ECONOMICOS_IND + " AS eco ON soli.id_solicitud = eco.id_solicitud " +
-                    "INNER JOIN " + TBL_NEGOCIO_IND + " AS neg ON soli.id_solicitud = neg.id_solicitud " +
-                    "INNER JOIN " + TBL_DIRECCIONES + " AS dneg ON neg.direccion_id = dneg.id_direccion AND dneg.tipo_direccion = 'NEGOCIO' " +
-                    "INNER JOIN " + TBL_AVAL_IND + " AS aval ON soli.id_solicitud = aval.id_solicitud " +
-                    "INNER JOIN " + TBL_DIRECCIONES + " AS daval ON aval.direccion_id = daval.id_direccion AND daval.tipo_direccion = 'AVAL' " +
-                    "INNER JOIN " + TBL_REFERENCIA_IND + " AS refe ON soli.id_solicitud = refe.id_solicitud " +
-                    "INNER JOIN " + TBL_DOCUMENTOS + " AS doc ON soli.id_solicitud = doc.id_solicitud " +
-                    "WHERE soli.id_solicitud = "+id_solicitud + ((completado)?" AND soli.estatus = 1":"");
 
-        Cursor row =  db.rawQuery( query, null);
+    public Cursor getBeneficiario(String table, String id_solicitud, String id_cliente) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor res = db.rawQuery(" SELECT * FROM " + table + " WHERE id_solicitud=" + id_solicitud + " AND id_cliente=" + id_cliente + " order by nombre asc ", null);
+        return res;
+    }
+
+    public Cursor getBeneficiarioA(String table, String id_solicitud) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor res = db.rawQuery("SELECT * FROM " + table + " WHERE id_solicitud_integrante=" + id_solicitud + " order by nombre asc", null);
+        return res;
+    }
+
+    public Cursor getBeneficiarioRen(String table, String id_cliente) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor res = db.rawQuery("SELECT * FROM " + table + " WHERE id_cliente=" + id_cliente + " order by nombre asc", null);
+        return res;
+    }
+
+
+    public Cursor getBeneficiarioInd(String table, int id_solicitud, int id_originacion) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor res = db.rawQuery(" SELECT * FROM  " + table + " WHERE id_solicitud=" + id_solicitud + " AND id_originacion=" + id_originacion + " order by nombre asc ", null);
+        return res;
+    }
+
+
+    public Cursor getBeneficiarioIndA(String table, String id_solicitud) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor res = db.rawQuery(" SELECT * FROM " + table + " WHERE id_solicitud=" + id_solicitud, null);
+        return res;
+    }
+
+    /**
+     * METODO DECREPETED
+     */
+    public Cursor getBeneficiarioGpo(String table, String id_solicitud, String cliente_id) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor res = db.rawQuery(" SELECT * FROM " + table + " WHERE id_solicitud=" + id_solicitud + " AND cliente_id=" + cliente_id, null);
+        return res;
+    }
+
+    public Cursor getDireccionByCP(String cp) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor res = db.rawQuery("SELECT e.estado_id ,e.estado_nombre, e.pais_id, m.municipio_id, m.municipio_nombre, m.estado_id, c.colonia_id, c.colonia_nombre, c.cp, c.municipio_id FROM cat_colonias AS c INNER JOIN municipios AS m ON m.municipio_id = c.municipio_id INNER JOIN estados AS e ON e.estado_id = m.estado_id WHERE c.cp = " + cp, null);
+        return res;
+    }
+
+    public Cursor getOriginacionInd(String id_solicitud, boolean completado) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "SELECT cre.*, cli.*, dcli.*, cony.*, dcon.*, eco.*, neg.*, dneg.*, aval.*, daval.*, refe.*, doc.*, soli.estatus, soli.fecha_inicio, soli.fecha_termino, soli.id_originacion FROM " + TBL_SOLICITUDES + " AS soli " +
+                "INNER JOIN " + TBL_CREDITO_IND + " AS cre ON soli.id_solicitud = cre.id_solicitud " +
+                "INNER JOIN " + TBL_CLIENTE_IND + " AS cli ON soli.id_solicitud = cli.id_solicitud " +
+                "INNER JOIN " + TBL_DIRECCIONES + " AS dcli ON cli.direccion_id = dcli.id_direccion AND dcli.tipo_direccion = 'CLIENTE' " +
+                "INNER JOIN " + TBL_CONYUGE_IND + " AS cony ON soli.id_solicitud = cony.id_solicitud " +
+                "INNER JOIN " + TBL_DIRECCIONES + " AS dcon ON cony.direccion_id = dcon.id_direccion AND dcon.tipo_direccion = 'CONYUGE' " +
+                "INNER JOIN " + TBL_ECONOMICOS_IND + " AS eco ON soli.id_solicitud = eco.id_solicitud " +
+                "INNER JOIN " + TBL_NEGOCIO_IND + " AS neg ON soli.id_solicitud = neg.id_solicitud " +
+                "INNER JOIN " + TBL_DIRECCIONES + " AS dneg ON neg.direccion_id = dneg.id_direccion AND dneg.tipo_direccion = 'NEGOCIO' " +
+                "INNER JOIN " + TBL_AVAL_IND + " AS aval ON soli.id_solicitud = aval.id_solicitud " +
+                "INNER JOIN " + TBL_DIRECCIONES + " AS daval ON aval.direccion_id = daval.id_direccion AND daval.tipo_direccion = 'AVAL' " +
+                "INNER JOIN " + TBL_REFERENCIA_IND + " AS refe ON soli.id_solicitud = refe.id_solicitud " +
+                "INNER JOIN " + TBL_DOCUMENTOS + " AS doc ON soli.id_solicitud = doc.id_solicitud " +
+                "WHERE soli.id_solicitud = " + id_solicitud + ((completado) ? " AND soli.estatus = 1" : "");
+
+        Cursor row = db.rawQuery(query, null);
         return row;
     }
 
-    public Cursor getIntegranteOri (String id_credito, String id_integrante){
+    public Cursor getIntegranteOri(String id_credito, String id_integrante) {
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor res =  db.rawQuery( "SELECT i.*, t.*, d.*, n.*, c.*, o.*, docu.* FROM datos_integrantes_gpo_t AS i " +
+        Cursor res = db.rawQuery("SELECT i.*, t.*, d.*, n.*, c.*, o.*, docu.* FROM datos_integrantes_gpo_t AS i " +
                 "INNER JOIN telefonos_integrante_t AS t ON t.id_integrante = i.id " +
                 "INNER JOIN domicilio_integrante_t AS d ON d.id_integrante = i.id " +
                 "INNER JOIN negocio_integrante_t AS n ON n.id_integrante = i.id " +
@@ -4146,70 +5215,49 @@ public class DBhelper extends SQLiteOpenHelper {
         return res;
     }
 
-    public Cursor getCargoGrupo (String id_credito, int tipo){
-        String tbl = (tipo == 1)?TBL_INTEGRANTES_GPO:TBL_INTEGRANTES_GPO_REN;
+    public Cursor getCargoGrupo(String id_credito, int tipo) {
+        String tbl = (tipo == 1) ? TBL_INTEGRANTES_GPO : TBL_INTEGRANTES_GPO_REN;
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor res =  db.rawQuery( "SELECT DISTINCT (cargo) from "+ tbl +" WHERE id_credito = " + id_credito, null);
+        Cursor res = db.rawQuery("SELECT DISTINCT (cargo) from " + tbl + " WHERE id_credito = " + id_credito, null);
 
         return res;
     }
 
-    public Cursor customSelect (String table, String select, String where, String order, String[] args){
+    public Cursor customSelect(String table, String select, String where, String order, String[] args) {
         SQLiteDatabase db = this.getReadableDatabase();
         Log.v("SQLXXX", "SELECT " + select + " FROM " + table + where + order);
-        Cursor res =  db.rawQuery( "SELECT " + select + " FROM " + table + where + order, args );
+        Cursor res = db.rawQuery("SELECT " + select + " FROM " + table + where + order, args);
         return res;
     }
 
-    public Cursor getPagoRealizadoABC(String tableA,String select, String where, String args[]){
+    public Cursor selectNumCliente(String id_solicitud) {
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor res = db.rawQuery(" SELECT " + select + " FROM " +  tableA +  where, args);
+        Cursor res = db.rawQuery(" SELECT num_cliente FROM " + " tbl_credito_ind_ren " + " WHERE " + "id_solicitud=" + id_solicitud, null);
         return res;
     }
 
-    public Cursor deleteData(String tableA,String args[]){
+    public Cursor getPagoRealizadoABC(String tableA, String select, String where, String args[]) {
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor res = db.rawQuery(" DELETE FROM " + tableA,args);
+        Cursor res = db.rawQuery(" SELECT " + select + " FROM " + tableA + " WHERE " + where, args);
         return res;
     }
 
-    public Cursor validarEstatus(String table, String columna,String args[]){
+
+    public Cursor deletePrestamos(String num_cliente) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor res = db.rawQuery(" delete from tbl_prestamos_to_renovar where " + " cliente_id = " + num_cliente, null);
+        return res;
+    }
+
+    public Cursor deleteData(String tableA, String args[]) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor res = db.rawQuery(" DELETE FROM " + tableA, args);
+        return res;
+    }
+
+    public Cursor validarEstatus(String table, String columna, String args[]) {
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor res = db.rawQuery(" SELECT COUNT(*) FROM " + table + " WHERE " + columna, args);
         return res;
     }
-
-    public Cursor validarBeneficiario(String table,String where, String args[]){
-        SQLiteDatabase db = this.getReadableDatabase();
-        Cursor res = db.rawQuery(" SELECT COUNT(*) FROM " + table + " WHERE " + where, args);
-        return res;
-    }
-
-  /*  public Cursor validarBeneficairioGPO(String id_integrante, String args[]){
-        SQLiteDatabase db = this.getReadableDatabase();
-        Cursor res = db.rawQuery(" SELECT COUNT(*) FROM " + " tbl_datos_beneficiario_gpo " + " WHERE id_integrante="+id_integrante,args);
-        return res;
-    }*/
-
-   /* public Cursor simpleSelect(){
-        SQLiteDatabase db = this.getReadableDatabase();
-        String serie_id = "serie_id", tabla = "tbl_tracker_asesor_t";
-        Cursor res = db.rawQuery(" SELECT " + serie_id + " FROM " + tabla  + " WHERE _id = 1",null);
-        return res;
-    }*/
-
-
-  /*  public Cursor obtenerIdGrupal(Long id_solicitud, String args[]){
-        SQLiteDatabase db = this.getReadableDatabase();
-        Cursor res = db.rawQuery(" select grupo_id " + " from tbl_credito_gpo_ren"  + " WHERE id_solicitud = " + id_solicitud, args);
-        return res;
-    }*/
-
-    /*public Cursor obtenerIdCliente(Integer id_integrante,String args[]){
-        SQLiteDatabase db = this.getReadableDatabase();
-        Cursor res =  db.rawQuery(" SELECT cliente_id " + " FROM  tbl_integrantes_gpo_ren " + " WHERE  id="+id_integrante,args );
-        return  res;
-    }*/
-
-
 }

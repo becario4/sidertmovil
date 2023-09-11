@@ -3,6 +3,13 @@
     <string name="app_version">2.6.30</string>
     <string name="vol_solicitud">Vol.2020</string>
 
+    <string name="default_asesor"></string>
+    <string name="default_mac"></string>
+
+    <string name="api_url">https://126c-187-188-168-167.ngrok-free.app/</string>
+    <string name="api_user">androidapp</string>
+    <string name="api_password">m1*cR0w4V3-s</string>
+
     <string name="google_maps_key">AIzaSyDCoUCp1xuuyNTjYCZvqL6A8oBlSOo2B2A</string>
 
     <!-- TODO: Etiquetas del menú lateral -->
@@ -225,7 +232,7 @@
     <string name="cambio_tesorera">Monto que se debe regresar a la tesorera</string>
     <string name="total_billetes_monedas">Total de billetes y monedas</string>
     <string name="valor_pago_realizado">Valores del Pago Realizado</string>
-    <string name="copy_rigth">© 2021 Sidert. Derechos reservados.</string>
+    <string name="copy_rigth">© 2023 Sidert. Derechos reservados.</string>
 
     <string name="about_sidert">Somos una empresa orgullosamente veracruzana, constituida el 22 de Noviembre del año 2000. Actualmente operamos en el Estado de Veracruz y algunas regiones del sur de Puebla, con la Razón Social Servicios Integrales para el Desarrollo Rural del Trópico, S.A. de C.V., SOFOM, E.N.R. y la Marca Comercial “Microfinanciera SIDERT”, en el año 2001, nos convertimos en un organismo intermediario del fondo de financiamiento a mujeres rurales(FOMMUR), desde entonces y hasta finales del año 2007 se habían recibido ciclos con los cuales se habían beneficiado a más de 8,000 personas en el sector atendido, apoyando con microcréditos a las personas de escasos recursos.</string>
 
@@ -664,7 +671,7 @@ Usted puede consultar nuestro aviso de privacidad Detallado en nuestra página d
         <item>INDIVIDUALES</item>
         <item>GRUPALES</item>
     </string-array>
-    
+
     <string name="cargaCalcu">
         Obteniendo resultado...
     </string>
@@ -734,11 +741,19 @@ Usted puede consultar nuestro aviso de privacidad Detallado en nuestra página d
         <item>tb_tabla_test</item>
     </string-array>
 
-    <string-array name="tipo_familiar">
-
-
+    <string-array name="tipo_camppanas">
+        <item>RESCATE Y GANA</item>
+        <item>SUMA Y GANA</item>
     </string-array>
 
+    <string-array name="device_models">
+        <item>SM-A022M</item>
+        <item>SM-A127M</item>
+        <item>SM-S908E</item>
+        <item>SM-A045M</item>
+        <item>SM-A145M</item>
+        <item>SM-A325M</item>
+    </string-array>
 
 
 </resources>

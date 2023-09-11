@@ -1,5 +1,6 @@
 package com.sidert.sidertmovil.fragments.view_pager;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
@@ -92,11 +93,11 @@ public class geo_completadas_fragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_geo_pendientes, container,false);
         ctx = getContext();
         boostrap = (Home) getActivity();
-        session = new SessionManager(ctx);
+        session = SessionManager.getInstance(ctx);
 
         parent = (geolocalizacion_fragment) getParentFragment();
 
-        dBhelper = new DBhelper(ctx);
+        dBhelper = DBhelper.getInstance(ctx);
         db = dBhelper.getWritableDatabase();
 
         rvGeolocalizacion   = view.findViewById(R.id.rvGeolocalizacion);
@@ -277,6 +278,15 @@ public class geo_completadas_fragment extends Fragment {
     }
 
     private void Filtros (){
+
+        int sizeH = 900;
+        Activity activity = this.getActivity();
+        if (activity != null) {
+            View decorateView = activity.getWindow().getDecorView();
+            sizeH = (int) (decorateView.getHeight() / 2.0);
+        }
+
+
         DialogPlus filtros_dg = DialogPlus.newDialog(boostrap)
                 .setContentHolder(new ViewHolder(R.layout.sheet_dialog_filtros))
                 .setGravity(Gravity.TOP)
@@ -288,86 +298,76 @@ public class geo_completadas_fragment extends Fragment {
                         cont_filtros = 0;
                         HashMap<String, String> filtros = new HashMap<>();
                         InputMethodManager imm = (InputMethodManager)boostrap.getSystemService(Context.INPUT_METHOD_SERVICE);
-                        switch (view.getId()) {
-                            case R.id.btnFiltrar:
-                                if (!aetNombre.getText().toString().trim().isEmpty()){
-                                    filtros.put("nombre_c",aetNombre.getText().toString().trim());
-                                    cont_filtros += 1;
-                                    where = " AND nombre LIKE '%"+aetNombre.getText().toString().trim()+"%'";
-                                }
-                                else filtros.put("nombre_c","");
+                        int id = view.getId();
+                        if (id == R.id.btnFiltrar) {
+                            if (!aetNombre.getText().toString().trim().isEmpty()) {
+                                filtros.put("nombre_c", aetNombre.getText().toString().trim());
+                                cont_filtros += 1;
+                                where = " AND nombre LIKE '%" + aetNombre.getText().toString().trim() + "%'";
+                            } else filtros.put("nombre_c", "");
 
-                                if (!aetColonia.getText().toString().trim().isEmpty()) {
-                                    filtros.put("colonia_c",aetColonia.getText().toString().trim());
-                                    cont_filtros += 1;
-                                    where += " AND colonia LIKE '%" + aetColonia.getText().toString().trim() + "%'";
-                                }
-                                else filtros.put("colonia_c","");
+                            if (!aetColonia.getText().toString().trim().isEmpty()) {
+                                filtros.put("colonia_c", aetColonia.getText().toString().trim());
+                                cont_filtros += 1;
+                                where += " AND colonia LIKE '%" + aetColonia.getText().toString().trim() + "%'";
+                            } else filtros.put("colonia_c", "");
 
-                                if (!aetAsesor.getText().toString().trim().isEmpty()) {
-                                    filtros.put("asesor_c",aetAsesor.getText().toString().trim());
-                                    cont_filtros += 1;
-                                    where += " AND asesor_nombre LIKE '%" + aetAsesor.getText().toString().trim() + "%'";
-                                }
-                                else filtros.put("asesor_c","");
+                            if (!aetAsesor.getText().toString().trim().isEmpty()) {
+                                filtros.put("asesor_c", aetAsesor.getText().toString().trim());
+                                cont_filtros += 1;
+                                where += " AND asesor_nombre LIKE '%" + aetAsesor.getText().toString().trim() + "%'";
+                            } else filtros.put("asesor_c", "");
 
-                                if (cbInd.isChecked() && cbGpo.isChecked()){
-                                    filtros.put("individual_c","1");
-                                    filtros.put("grupal_c","1");
-                                    cont_filtros += 2;
-                                    where += " AND tipo_ficha IN (1,2)";
-                                }
-                                else if (cbInd.isChecked()){
-                                    filtros.put("individual_c","1");
-                                    filtros.put("grupal_c","0");
-                                    cont_filtros += 1;
-                                    where += " AND tipo_ficha = "+1;
-                                }
-                                else if (cbGpo.isChecked()){
-                                    filtros.put("individual_c","0");
-                                    filtros.put("grupal_c","1");
-                                    cont_filtros += 1;
-                                    where += " AND tipo_ficha = "+2;
-                                }else {
-                                    filtros.put("individual_c","0");
-                                    filtros.put("grupal_c","0");
-                                }
-                                filtros.put("contador_c", String.valueOf(cont_filtros));
-                                session.setFiltrosGeoComp(filtros);
+                            if (cbInd.isChecked() && cbGpo.isChecked()) {
+                                filtros.put("individual_c", "1");
+                                filtros.put("grupal_c", "1");
+                                cont_filtros += 2;
+                                where += " AND tipo_ficha IN (1,2)";
+                            } else if (cbInd.isChecked()) {
+                                filtros.put("individual_c", "1");
+                                filtros.put("grupal_c", "0");
+                                cont_filtros += 1;
+                                where += " AND tipo_ficha = " + 1;
+                            } else if (cbGpo.isChecked()) {
+                                filtros.put("individual_c", "0");
+                                filtros.put("grupal_c", "1");
+                                cont_filtros += 1;
+                                where += " AND tipo_ficha = " + 2;
+                            } else {
+                                filtros.put("individual_c", "0");
+                                filtros.put("grupal_c", "0");
+                            }
+                            filtros.put("contador_c", String.valueOf(cont_filtros));
+                            session.setFiltrosGeoComp(filtros);
 
-                                imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-                                if (where.length() > 0)
-                                    GetGeolocalizacion(" WHERE "+where.substring(5, where.length()));
-                                else
-                                    GetGeolocalizacion("");
-                                //adapter.UpdateData(_m_geolocalizacion);
-                                dialog.dismiss();
-
-                                break;
-                            case R.id.btnBorrarFiltros:
-
-                                cont_filtros = 0;
-                                filtros = new HashMap<>();
-                                filtros.put("nombre_c","");
-                                filtros.put("colonia_c","");
-                                filtros.put("asesor_c","");
-                                filtros.put("individual_c","0");
-                                filtros.put("grupal_c","0");
-                                filtros.put("contador_c", "0");
-
-                                session.setFiltrosGeoComp(filtros);
-                                imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                            if (where.length() > 0)
+                                GetGeolocalizacion(" WHERE " + where.substring(5, where.length()));
+                            else
                                 GetGeolocalizacion("");
-                                //adapter.UpdateData(_m_geolocalizacion);
-                                dialog.dismiss();
+                            //adapter.UpdateData(_m_geolocalizacion);
+                            dialog.dismiss();
+                        } else if (id == R.id.btnBorrarFiltros) {
+                            cont_filtros = 0;
+                            filtros = new HashMap<>();
+                            filtros.put("nombre_c", "");
+                            filtros.put("colonia_c", "");
+                            filtros.put("asesor_c", "");
+                            filtros.put("individual_c", "0");
+                            filtros.put("grupal_c", "0");
+                            filtros.put("contador_c", "0");
 
-                                break;
+                            session.setFiltrosGeoComp(filtros);
+                            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                            GetGeolocalizacion("");
+                            //adapter.UpdateData(_m_geolocalizacion);
+                            dialog.dismiss();
                         }
                         setupBadge();
 
                     }
                 })
-                .setExpanded(true, 900)  // This will enable the expand feature, (similar to android L share dialog)
+                .setExpanded(true, sizeH)  // This will enable the expand feature, (similar to android L share dialog)
                 .create();
         aetNombre   = filtros_dg.getHolderView().findViewById(R.id.aetNombre);
         aetColonia  = filtros_dg.getHolderView().findViewById(R.id.aetColonia);
@@ -490,13 +490,11 @@ public class geo_completadas_fragment extends Fragment {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.nvFiltro:
-                Filtros();
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
+        if (item.getItemId() == R.id.nvFiltro) {
+            Filtros();
+            return true;
         }
+        return super.onOptionsItemSelected(item);
     }
 
     private String[] RemoverRepetidos(List<String> nombres){

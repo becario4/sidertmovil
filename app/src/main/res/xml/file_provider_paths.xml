@@ -9,4 +9,12 @@
         name="Download"
         path="." />
 
+    <external-path name="external_files" path="." />
+
+    <external-files-path
+        name="imagenes"
+        path="Pictures"
+        />
+
+
 </paths>

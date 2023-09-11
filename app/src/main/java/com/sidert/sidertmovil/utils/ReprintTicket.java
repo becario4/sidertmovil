@@ -36,14 +36,32 @@ public class ReprintTicket {
     private SQLiteDatabase db;
     private SessionManager session;
 
-    public void WriteTicket (Context ctx, MReimpresion ticket) {
+
+    public void printTest(Context ctx) {
+        try {
+            posPtr = new ESCPOSPrinter();
+            Bitmap bm = BitmapFactory.decodeResource(ctx.getResources(), R.drawable.logo_impresion);
+            posPtr.printBitmap(bm, LKPrint.LK_ALIGNMENT_CENTER);
+            posPtr.printNormal(ESC + "|cA" + ESC + "|bC" + ESC + "|1C" + "Original");
+            dobleEspacio();
+            posPtr.printNormal(ESC + "|cA" + ESC + "|bC" + ESC + "|4C" + "HELLO WORLD!!");
+            dobleEspacio();
+            posPtr.printNormal(ESC + "|lA" + ESC + "|bC" + ESC + "|1C" + "Fecha y hora:" + Miscellaneous.ObtenerFecha(TIMESTAMP));
+            dobleEspacio();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    public void WriteTicket(Context ctx, MReimpresion ticket) {
         posPtr = new ESCPOSPrinter();
-        this.dBhelper = new DBhelper(ctx);
+        this.dBhelper = DBhelper.getInstance(ctx);
         db = dBhelper.getWritableDatabase();
-        session = new SessionManager(ctx);
+        session = SessionManager.getInstance(ctx);
 
         HashMap<Integer, String> params = new HashMap<>();
-        params.put(0,ticket.getNumeroPrestamo()+"-"+ticket.getIdGestion());
+        params.put(0, ticket.getNumeroPrestamo() + "-" + ticket.getIdGestion());
         params.put(1, ticket.getTipo_impresion());
         params.put(2, ticket.getFolio());
         params.put(3, ticket.getMonto());
@@ -66,7 +84,7 @@ public class ReprintTicket {
         FooterTicket(ticket);
     }
 
-    private void HeadTicket (Context ctx, MReimpresion ticket){
+    private void HeadTicket(Context ctx, MReimpresion ticket) {
         try {
             Bitmap bm;
             if (ticket.getTipoPrestamo().contains("VENCIDA"))
@@ -74,27 +92,26 @@ public class ReprintTicket {
             else
                 bm = BitmapFactory.decodeResource(ctx.getResources(), R.drawable.logo_impresion);
             posPtr.printBitmap(bm, LKPrint.LK_ALIGNMENT_CENTER);
-            if (ticket.getTipo_impresion().equals("O")){
+            if (ticket.getTipo_impresion().equals("O")) {
                 posPtr.printNormal(ESC + "|cA" + ESC + "|bC" + ESC + "|1C" + "Original");
 
-            }else{
+            } else {
                 posPtr.printNormal(ESC + "|cA" + ESC + "|bC" + ESC + "|1C" + "Copia");
             }
             dobleEspacio();
             posPtr.printNormal(ESC + "|cA" + ESC + "|bC" + ESC + "|4C" + "REIMPRESION");
             dobleEspacio();
-            posPtr.printNormal(ESC + "|lA" + ESC + "|bC" + ESC + "|1C" + "Fecha y hora:"+Miscellaneous.ObtenerFecha(TIMESTAMP));
+            posPtr.printNormal(ESC + "|lA" + ESC + "|bC" + ESC + "|1C" + "Fecha y hora:" + Miscellaneous.ObtenerFecha(TIMESTAMP));
             dobleEspacio();
 
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    private void BodyTicket (MReimpresion data){
+    private void BodyTicket(MReimpresion data) {
         try {
 
             if (data.getTipoPrestamo().contains("VENCIDA")) {
@@ -137,9 +154,8 @@ public class ReprintTicket {
                     //------------------------------------------------
                 }
 
-            }
-            else{
-                if (data.getTipoGestion().equals("INDIVIDUAL")){//individual vencida
+            } else {
+                if (data.getTipoGestion().equals("INDIVIDUAL")) {//individual vencida
                     nombreCampo = "Numero De Prestamo: ";
                     linea = line(nombreCampo, data.getNumeroPrestamo().trim());
                     posPtr.printNormal(ESC + "|lA" + ESC + "|bC" + ESC + "|1C" + linea + LF);
@@ -152,8 +168,7 @@ public class ReprintTicket {
                     nombreCampo = "Monto pago realizado: ";
                     linea = line(nombreCampo, money(String.valueOf(data.getMonto())).trim());
                     posPtr.printNormal(ESC + "|lA" + ESC + "|bC" + ESC + "|1C" + linea + LF);
-                }
-                else{ //Grupal vencida
+                } else { //Grupal vencida
                     nombreCampo = "Numero De Prestamo: ";
                     linea = line(nombreCampo, data.getNumeroPrestamo().trim());
                     posPtr.printNormal(ESC + "|lA" + ESC + "|bC" + ESC + "|1C" + linea + LF);
@@ -178,40 +193,36 @@ public class ReprintTicket {
         }
     }
 
-    private void FooterTicket(MReimpresion data){
+    private void FooterTicket(MReimpresion data) {
         try {
             dobleEspacio();
 
-            if (data.getTipoPrestamo().equals("VIGENTE") || data.getTipoPrestamo().equals("COBRANZA")){
-                if (data.getTipo_impresion().equals("O")){
+            if (data.getTipoPrestamo().equals("VIGENTE") || data.getTipoPrestamo().equals("COBRANZA")) {
+                if (data.getTipo_impresion().equals("O")) {
                     posPtr.printNormal(ESC + "|lA" + ESC + "|bC" + ESC + "|1C" + "Firma Asesor:");
                     dobleEspacio();
                     posPtr.printNormal(ESC + "|lA" + ESC + "|bC" + ESC + "|1C" + "________________________________");
                     posPtr.printNormal(ESC + "|lA" + ESC + "|bC" + ESC + "|1C" + replaceStr(data.getNombreAsesor().trim()));
-                }
-                else{
-                    String titleSignature = (data.getTipoGestion().equals("GRUPAL"))?"Firma Tesorero(a):":"Firma Cliente:";
+                } else {
+                    String titleSignature = (data.getTipoGestion().equals("GRUPAL")) ? "Firma Tesorero(a):" : "Firma Cliente:";
                     posPtr.printNormal(ESC + "|lA" + ESC + "|bC" + ESC + "|1C" + titleSignature);
                     dobleEspacio();
                     posPtr.printNormal(ESC + "|lA" + ESC + "|bC" + ESC + "|1C" + "________________________________");
                     posPtr.printNormal(ESC + "|lA" + ESC + "|bC" + ESC + "|1C" + replaceStr(data.getNombreFirma().trim()));
                 }
-            }
-            else{
-                if (data.getTipo_impresion().equals("O")){
+            } else {
+                if (data.getTipo_impresion().equals("O")) {
                     posPtr.printNormal(ESC + "|lA" + ESC + "|bC" + ESC + "|1C" + "Firma Gestor:");
                     dobleEspacio();
                     posPtr.printNormal(ESC + "|lA" + ESC + "|bC" + ESC + "|1C" + "________________________________");
                     posPtr.printNormal(ESC + "|lA" + ESC + "|bC" + ESC + "|1C" + replaceStr(data.getNombreAsesor().trim()));
-                }
-                else{
-                    if (data.getTipoPrestamo().equals("VENCIDA") && data .getTipoGestion().equals("INDIVIDUAL")){
+                } else {
+                    if (data.getTipoPrestamo().equals("VENCIDA") && data.getTipoGestion().equals("INDIVIDUAL")) {
                         posPtr.printNormal(ESC + "|lA" + ESC + "|bC" + ESC + "|1C" + "Firma Cliente:");
                         dobleEspacio();
                         posPtr.printNormal(ESC + "|lA" + ESC + "|bC" + ESC + "|1C" + "________________________________");
                         posPtr.printNormal(ESC + "|lA" + ESC + "|bC" + ESC + "|1C" + replaceStr(data.getNombreFirma().trim()));
-                    }
-                    else {
+                    } else {
                         posPtr.printNormal(ESC + "|lA" + ESC + "|bC" + ESC + "|1C" + "Firma Cliente:");
                         dobleEspacio();
                         posPtr.printNormal(ESC + "|lA" + ESC + "|bC" + ESC + "|1C" + "________________________________");
@@ -221,11 +232,10 @@ public class ReprintTicket {
                 }
             }
 
-            if (data.getTipoPrestamo().equals("VIGENTE") || data.getTipoPrestamo().equals("COBRANZA")){
-                linea = line("Folio: ", "RC"+data.getAsesorId()+"-"+(data.getFolio()));
-            }
-            else if (data.getTipoPrestamo().equals("VENCIDA")){
-                linea = line("Folio: ", "CV"+data.getAsesorId()+"-"+(data.getFolio()));
+            if (data.getTipoPrestamo().equals("VIGENTE") || data.getTipoPrestamo().equals("COBRANZA")) {
+                linea = line("Folio: ", "RC" + data.getAsesorId() + "-" + (data.getFolio()));
+            } else if (data.getTipoPrestamo().equals("VENCIDA")) {
+                linea = line("Folio: ", "CV" + data.getAsesorId() + "-" + (data.getFolio()));
             }
 
             dobleEspacio();
@@ -238,7 +248,7 @@ public class ReprintTicket {
                 URL url = null;
                 try {
                     //url = new  URL("http://sidert.ddns.net:83"+WebServicesRoutes.CONTROLLER_MOVIL+"pagos/"+AES.encrypt(data.getIdPrestamo()));
-                    url = new  URL(session.getDominio().get(0)+session.getDominio().get(1)+WebServicesRoutes.CONTROLLER_MOVIL+"pagos/"+AES.encrypt(data.getIdPrestamo()));
+                    url = new URL(session.getDominio() + WebServicesRoutes.CONTROLLER_MOVIL + "pagos/" + AES.encrypt(data.getIdPrestamo()));
                 } catch (MalformedURLException e) {
                     e.printStackTrace();
                 }
@@ -247,7 +257,7 @@ public class ReprintTicket {
 
                 posPtr.printNormal(ESC + "|lA" + ESC + "|bC" + ESC + "|1C" + "Escanea el codigo para ver tu   ");
                 posPtr.printNormal(ESC + "|lA" + ESC + "|bC" + ESC + "|1C" + "historial de pagos o ingresa al ");
-                posPtr.printNormal(ESC + "|lA" + ESC + "|bC" + ESC + "|1C" + "siguiente link: "+url.toString());
+                posPtr.printNormal(ESC + "|lA" + ESC + "|bC" + ESC + "|1C" + "siguiente link: " + url.toString());
 
                 dobleEspacio();
             }
@@ -270,26 +280,26 @@ public class ReprintTicket {
         return currency;
     }
 
-    private String line(String left, String rigth){
+    private String line(String left, String rigth) {
         int nCaracteres = left.length() + rigth.length();
         String result = left;
-        if(nCaracteres <= 32){
-            nCaracteres = 32-nCaracteres;
-            for(int i = 0; i < nCaracteres; i++){
+        if (nCaracteres <= 32) {
+            nCaracteres = 32 - nCaracteres;
+            for (int i = 0; i < nCaracteres; i++) {
                 result += " ";
             }
             result = result + rigth;
-        }else{
+        } else {
             String[] partes = rigth.split(" ");
             nCaracteres = result.length();
-            for(int i = 0; i < partes.length; i++){
+            for (int i = 0; i < partes.length; i++) {
                 nCaracteres = nCaracteres + partes[i].length();
-                if(nCaracteres < 32){
+                if (nCaracteres < 32) {
                     result += partes[i] + " ";
                     nCaracteres++;
-                }else{
+                } else {
                     nCaracteres = nCaracteres - partes[i].length();
-                    for(; nCaracteres < 32; nCaracteres++){
+                    for (; nCaracteres < 32; nCaracteres++) {
                         result += " ";
                     }
                     result += partes[i] + " ";
@@ -299,21 +309,21 @@ public class ReprintTicket {
         return result;
     }
 
-    private void dobleEspacio(){
+    private void dobleEspacio() {
         try {
-            posPtr.printNormal(""+LF + LF);
+            posPtr.printNormal("" + LF + LF);
 
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
     }
 
-    private String replaceStr (String str){
+    private String replaceStr(String str) {
         String[] value = {"Á", "É", "Í", "Ó", "Ú", "á", "é", "í", "ó", "ú", "Ñ", "ñ"};
-        String[] valueReplace = {"A", "E", "I", "O", "U", "a", "e", "i", "o", "u","N", "n"};
+        String[] valueReplace = {"A", "E", "I", "O", "U", "a", "e", "i", "o", "u", "N", "n"};
 
-        for (int i = 0; i < 12; i++){
-            str = str.replace(value[i],valueReplace[i]);
+        for (int i = 0; i < 12; i++) {
+            str = str.replace(value[i], valueReplace[i]);
         }
         return str;
     }

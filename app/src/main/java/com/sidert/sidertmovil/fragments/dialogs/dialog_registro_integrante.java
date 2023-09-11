@@ -83,10 +83,10 @@ public class dialog_registro_integrante extends DialogFragment {
 
         ctx         = getContext();
 
-        session     = new SessionManager(ctx);
+        session     = SessionManager.getInstance(ctx);
         validator   = new Validator();
         validatorTV = new ValidatorTextView();
-        dBhelper    = new DBhelper(ctx);
+        dBhelper    = DBhelper.getInstance(ctx);
         db          = dBhelper.getWritableDatabase();
 
         boostrap    = (AgregarIntegrante) getActivity();

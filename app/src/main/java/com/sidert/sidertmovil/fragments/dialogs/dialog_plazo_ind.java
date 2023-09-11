@@ -64,13 +64,13 @@ public class dialog_plazo_ind extends DialogFragment {
         View view = inflater.inflate(R.layout.popup_plazo_renovacion_ind, container, false);
 
         ctx = getContext();
-        dBhelper = new DBhelper(ctx);
+        dBhelper = DBhelper.getInstance(ctx);
         db = dBhelper.getWritableDatabase();
 
         _plazo = getResources().getStringArray(R.array.intervalo);
         _frecuencia = getResources().getStringArray(R.array.lapso_grupal);
 
-        session = new SessionManager(ctx);
+        session = SessionManager.getInstance(ctx);
 
         boostrap = (RenovacionCreditoInd) getActivity();
 

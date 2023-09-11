@@ -1,6 +1,7 @@
 package com.sidert.sidertmovil.activities;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 /*import androidx.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
@@ -82,229 +83,201 @@ public class GeolocalizacionGpo extends AppCompatActivity {
         @Override
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
             final Fragment current;
-            switch (item.getItemId()) {
-                case R.id.nvPresidente:
-                    /**Valida si estaba en otra vista y quiere cambiar a vista de presidente y hay datos pendiente de guardar*/
-                    current = getSupportFragmentManager().findFragmentById(R.id.flMain);
-                    if ((current instanceof geo_tesorera_fragment)){
-                        if (((geo_tesorera_fragment) current).flag_edit){
-                            if (((geo_tesorera_fragment) current).latLngUbicacion != null ||
-                                    !((geo_tesorera_fragment) current).etCodigoBarras.getText().toString().trim().isEmpty() ||
-                                    ((geo_tesorera_fragment) current).byteFotoFachada != null ||
-                                    !((geo_tesorera_fragment) current).etComentario.getText().toString().trim().isEmpty()){
-                                AlertDialog guardar_info_dlg = Popups.showDialogConfirm(ctx, Constants.question,
-                                        R.string.confirm_guardar, R.string.yes, new Popups.DialogMessage() {
-                                            @Override
-                                            public void OnClickListener(AlertDialog dialog) {
-                                                setFragment(NameFragments.GEO_PRESIDENTE, b);
-                                                dialog.dismiss();
+            int itemId = item.getItemId();
+            if (itemId == R.id.nvPresidente) {/**Valida si estaba en otra vista y quiere cambiar a vista de presidente y hay datos pendiente de guardar*/
+                current = getSupportFragmentManager().findFragmentById(R.id.flMain);
+                if ((current instanceof geo_tesorera_fragment)) {
+                    if (((geo_tesorera_fragment) current).flag_edit) {
+                        if (((geo_tesorera_fragment) current).latLngUbicacion != null ||
+                                !((geo_tesorera_fragment) current).etCodigoBarras.getText().toString().trim().isEmpty() ||
+                                ((geo_tesorera_fragment) current).byteFotoFachada != null ||
+                                !((geo_tesorera_fragment) current).etComentario.getText().toString().trim().isEmpty()) {
+                            AlertDialog guardar_info_dlg = Popups.showDialogConfirm(ctx, Constants.question,
+                                    R.string.confirm_guardar, R.string.yes, new Popups.DialogMessage() {
+                                        @Override
+                                        public void OnClickListener(AlertDialog dialog) {
+                                            setFragment(NameFragments.GEO_PRESIDENTE, b);
+                                            dialog.dismiss();
 
-                                            }
-                                        }, R.string.no, new Popups.DialogMessage() {
-                                            @Override
-                                            public void OnClickListener(AlertDialog dialog) {
-                                                nvMenu.setSelectedItemId(R.id.nvTesorera);
-                                                dialog.dismiss();
-                                            }
-                                        });
-                                Objects.requireNonNull(guardar_info_dlg.getWindow()).requestFeature(Window.FEATURE_NO_TITLE);
-                                guardar_info_dlg.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
-                                guardar_info_dlg.show();
-                            }
-                            else
-                                setFragment(NameFragments.GEO_PRESIDENTE, b);
-                        }
-                        else {
+                                        }
+                                    }, R.string.no, new Popups.DialogMessage() {
+                                        @Override
+                                        public void OnClickListener(AlertDialog dialog) {
+                                            nvMenu.setSelectedItemId(R.id.nvTesorera);
+                                            dialog.dismiss();
+                                        }
+                                    });
+                            Objects.requireNonNull(guardar_info_dlg.getWindow()).requestFeature(Window.FEATURE_NO_TITLE);
+                            guardar_info_dlg.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                            guardar_info_dlg.show();
+                        } else
                             setFragment(NameFragments.GEO_PRESIDENTE, b);
-                        }
+                    } else {
+                        setFragment(NameFragments.GEO_PRESIDENTE, b);
                     }
-                    else  if ((current instanceof geo_secretaria_fragment)){
-                        if (((geo_secretaria_fragment) current).flag_edit){
-                            if (((geo_secretaria_fragment) current).latLngUbicacion != null ||
-                                    !((geo_secretaria_fragment) current).etCodigoBarras.getText().toString().trim().isEmpty() ||
-                                    ((geo_secretaria_fragment) current).byteFotoFachada != null ||
-                                    !((geo_secretaria_fragment) current).etComentario.getText().toString().trim().isEmpty()){
-                                AlertDialog guardar_info_dlg = Popups.showDialogConfirm(ctx, Constants.question,
-                                        R.string.confirm_guardar, R.string.yes, new Popups.DialogMessage() {
-                                            @Override
-                                            public void OnClickListener(AlertDialog dialog) {
-                                                setFragment(NameFragments.GEO_PRESIDENTE, b);
-                                                dialog.dismiss();
+                } else if ((current instanceof geo_secretaria_fragment)) {
+                    if (((geo_secretaria_fragment) current).flag_edit) {
+                        if (((geo_secretaria_fragment) current).latLngUbicacion != null ||
+                                !((geo_secretaria_fragment) current).etCodigoBarras.getText().toString().trim().isEmpty() ||
+                                ((geo_secretaria_fragment) current).byteFotoFachada != null ||
+                                !((geo_secretaria_fragment) current).etComentario.getText().toString().trim().isEmpty()) {
+                            AlertDialog guardar_info_dlg = Popups.showDialogConfirm(ctx, Constants.question,
+                                    R.string.confirm_guardar, R.string.yes, new Popups.DialogMessage() {
+                                        @Override
+                                        public void OnClickListener(AlertDialog dialog) {
+                                            setFragment(NameFragments.GEO_PRESIDENTE, b);
+                                            dialog.dismiss();
 
-                                            }
-                                        }, R.string.no, new Popups.DialogMessage() {
-                                            @Override
-                                            public void OnClickListener(AlertDialog dialog) {
-                                                nvMenu.setSelectedItemId(R.id.nvSecretaria);
-                                                dialog.dismiss();
-                                            }
-                                        });
-                                Objects.requireNonNull(guardar_info_dlg.getWindow()).requestFeature(Window.FEATURE_NO_TITLE);
-                                guardar_info_dlg.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
-                                guardar_info_dlg.show();
-                            }
-                            else
-                                setFragment(NameFragments.GEO_PRESIDENTE, b);
-                        }
-                        else
+                                        }
+                                    }, R.string.no, new Popups.DialogMessage() {
+                                        @Override
+                                        public void OnClickListener(AlertDialog dialog) {
+                                            nvMenu.setSelectedItemId(R.id.nvSecretaria);
+                                            dialog.dismiss();
+                                        }
+                                    });
+                            Objects.requireNonNull(guardar_info_dlg.getWindow()).requestFeature(Window.FEATURE_NO_TITLE);
+                            guardar_info_dlg.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                            guardar_info_dlg.show();
+                        } else
                             setFragment(NameFragments.GEO_PRESIDENTE, b);
-                    }
-                    else if((current instanceof geo_miembros_fragment)){
+                    } else
                         setFragment(NameFragments.GEO_PRESIDENTE, b);
-                    }
-                    else
-                        setFragment(NameFragments.GEO_PRESIDENTE, b);
-                    break;
-                case R.id.nvTesorera:
-                    /**Valida si estaba en otra vista y quiere cambiar a vista de tesorera y hay datos pendiente de guardar*/
-                    current = getSupportFragmentManager().findFragmentById(R.id.flMain);
+                } else if ((current instanceof geo_miembros_fragment)) {
+                    setFragment(NameFragments.GEO_PRESIDENTE, b);
+                } else
+                    setFragment(NameFragments.GEO_PRESIDENTE, b);
+            } else if (itemId == R.id.nvTesorera) {/**Valida si estaba en otra vista y quiere cambiar a vista de tesorera y hay datos pendiente de guardar*/
+                current = getSupportFragmentManager().findFragmentById(R.id.flMain);
 
-                    if ((current instanceof geo_presidente_fragment)){
-                        if (((geo_presidente_fragment) current).flag_edit){
-                            if (((geo_presidente_fragment) current).latLngUbicacion != null ||
-                                    !((geo_presidente_fragment) current).etCodigoBarras.getText().toString().trim().isEmpty() ||
-                                    ((geo_presidente_fragment) current).byteFotoFachada != null ||
-                                    !((geo_presidente_fragment) current).etComentario.getText().toString().trim().isEmpty()){
-                                AlertDialog guardar_info_dlg = Popups.showDialogConfirm(ctx, Constants.question,
-                                        R.string.confirm_guardar, R.string.yes, new Popups.DialogMessage() {
-                                            @Override
-                                            public void OnClickListener(AlertDialog dialog) {
-                                                setFragment(NameFragments.GEO_TESORERA, b);
-                                                dialog.dismiss();
-                                            }
-                                        }, R.string.no, new Popups.DialogMessage() {
-                                            @Override
-                                            public void OnClickListener(AlertDialog dialog) {
-                                                nvMenu.setSelectedItemId(R.id.nvPresidente);
-                                                dialog.dismiss();
-                                            }
-                                        });
-                                Objects.requireNonNull(guardar_info_dlg.getWindow()).requestFeature(Window.FEATURE_NO_TITLE);
-                                guardar_info_dlg.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
-                                guardar_info_dlg.show();
-                            }
-                            else
-                                setFragment(NameFragments.GEO_TESORERA, b);
-
-                        }
-                        else {
+                if ((current instanceof geo_presidente_fragment)) {
+                    if (((geo_presidente_fragment) current).flag_edit) {
+                        if (((geo_presidente_fragment) current).latLngUbicacion != null ||
+                                !((geo_presidente_fragment) current).etCodigoBarras.getText().toString().trim().isEmpty() ||
+                                ((geo_presidente_fragment) current).byteFotoFachada != null ||
+                                !((geo_presidente_fragment) current).etComentario.getText().toString().trim().isEmpty()) {
+                            AlertDialog guardar_info_dlg = Popups.showDialogConfirm(ctx, Constants.question,
+                                    R.string.confirm_guardar, R.string.yes, new Popups.DialogMessage() {
+                                        @Override
+                                        public void OnClickListener(AlertDialog dialog) {
+                                            setFragment(NameFragments.GEO_TESORERA, b);
+                                            dialog.dismiss();
+                                        }
+                                    }, R.string.no, new Popups.DialogMessage() {
+                                        @Override
+                                        public void OnClickListener(AlertDialog dialog) {
+                                            nvMenu.setSelectedItemId(R.id.nvPresidente);
+                                            dialog.dismiss();
+                                        }
+                                    });
+                            Objects.requireNonNull(guardar_info_dlg.getWindow()).requestFeature(Window.FEATURE_NO_TITLE);
+                            guardar_info_dlg.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                            guardar_info_dlg.show();
+                        } else
                             setFragment(NameFragments.GEO_TESORERA, b);
-                        }
-                    }
-                    else  if ((current instanceof geo_secretaria_fragment)){
-                        if (((geo_secretaria_fragment) current).flag_edit){
-                            if (((geo_secretaria_fragment) current).latLngUbicacion != null ||
-                                    !((geo_secretaria_fragment) current).etCodigoBarras.getText().toString().trim().isEmpty() ||
-                                    ((geo_secretaria_fragment) current).byteFotoFachada != null ||
-                                    !((geo_secretaria_fragment) current).etComentario.getText().toString().trim().isEmpty()){
-                                AlertDialog guardar_info_dlg = Popups.showDialogConfirm(ctx, Constants.question,
-                                        R.string.confirm_guardar, R.string.yes, new Popups.DialogMessage() {
-                                            @Override
-                                            public void OnClickListener(AlertDialog dialog) {
-                                                setFragment(NameFragments.GEO_TESORERA, b);
-                                                dialog.dismiss();
 
-                                            }
-                                        }, R.string.no, new Popups.DialogMessage() {
-                                            @Override
-                                            public void OnClickListener(AlertDialog dialog) {
-                                                nvMenu.setSelectedItemId(R.id.nvSecretaria);
-                                                dialog.dismiss();
-                                            }
-                                        });
-                                Objects.requireNonNull(guardar_info_dlg.getWindow()).requestFeature(Window.FEATURE_NO_TITLE);
-                                guardar_info_dlg.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
-                                guardar_info_dlg.show();
-                            }
-                            else
-                                setFragment(NameFragments.GEO_TESORERA, b);
-                        }
-                        else
-                            setFragment(NameFragments.GEO_TESORERA, b);
-                    }
-                    else if((current instanceof geo_miembros_fragment)){
-                        setFragment(NameFragments.GEO_PRESIDENTE, b);
-                    }
-                    else
+                    } else {
                         setFragment(NameFragments.GEO_TESORERA, b);
-                    break;
-                case R.id.nvSecretaria:
-                    /**Valida si estaba en otra vista y quiere cambiar a vista de secretaria y hay datos pendiente de guardar*/
-                    current = getSupportFragmentManager().findFragmentById(R.id.flMain);
-
-                    if ((current instanceof geo_presidente_fragment)){
-                        if (((geo_presidente_fragment) current).flag_edit){
-                            if (((geo_presidente_fragment) current).latLngUbicacion != null ||
-                                    !((geo_presidente_fragment) current).etCodigoBarras.getText().toString().trim().isEmpty() ||
-                                    ((geo_presidente_fragment) current).byteFotoFachada != null ||
-                                    !((geo_presidente_fragment) current).etComentario.getText().toString().trim().isEmpty()){
-                                AlertDialog guardar_info_dlg = Popups.showDialogConfirm(ctx, Constants.question,
-                                        R.string.confirm_guardar, R.string.yes, new Popups.DialogMessage() {
-                                            @Override
-                                            public void OnClickListener(AlertDialog dialog) {
-                                                setFragment(NameFragments.GEO_SECRETARIA, b);
-                                                dialog.dismiss();
-                                            }
-                                        }, R.string.no, new Popups.DialogMessage() {
-                                            @Override
-                                            public void OnClickListener(AlertDialog dialog) {
-                                                nvMenu.setSelectedItemId(R.id.nvPresidente);
-                                                dialog.dismiss();
-                                            }
-                                        });
-                                Objects.requireNonNull(guardar_info_dlg.getWindow()).requestFeature(Window.FEATURE_NO_TITLE);
-                                guardar_info_dlg.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
-                                guardar_info_dlg.show();
-                            }
-                            else
-                                setFragment(NameFragments.GEO_SECRETARIA, b);
-
-                        }
-                        else {
-                            setFragment(NameFragments.GEO_SECRETARIA, b);
-                        }
                     }
-                    else  if ((current instanceof geo_tesorera_fragment)) {
-                        if (((geo_tesorera_fragment) current).flag_edit) {
-                            if (((geo_tesorera_fragment) current).latLngUbicacion != null ||
-                                    !((geo_tesorera_fragment) current).etCodigoBarras.getText().toString().trim().isEmpty() ||
-                                    ((geo_tesorera_fragment) current).byteFotoFachada != null ||
-                                    !((geo_tesorera_fragment) current).etComentario.getText().toString().trim().isEmpty()){
-                                AlertDialog guardar_info_dlg = Popups.showDialogConfirm(ctx, Constants.question,
-                                        R.string.confirm_guardar, R.string.yes, new Popups.DialogMessage() {
-                                            @Override
-                                            public void OnClickListener(AlertDialog dialog) {
-                                                setFragment(NameFragments.GEO_SECRETARIA, b);
-                                                dialog.dismiss();
+                } else if ((current instanceof geo_secretaria_fragment)) {
+                    if (((geo_secretaria_fragment) current).flag_edit) {
+                        if (((geo_secretaria_fragment) current).latLngUbicacion != null ||
+                                !((geo_secretaria_fragment) current).etCodigoBarras.getText().toString().trim().isEmpty() ||
+                                ((geo_secretaria_fragment) current).byteFotoFachada != null ||
+                                !((geo_secretaria_fragment) current).etComentario.getText().toString().trim().isEmpty()) {
+                            AlertDialog guardar_info_dlg = Popups.showDialogConfirm(ctx, Constants.question,
+                                    R.string.confirm_guardar, R.string.yes, new Popups.DialogMessage() {
+                                        @Override
+                                        public void OnClickListener(AlertDialog dialog) {
+                                            setFragment(NameFragments.GEO_TESORERA, b);
+                                            dialog.dismiss();
 
-                                            }
-                                        }, R.string.no, new Popups.DialogMessage() {
-                                            @Override
-                                            public void OnClickListener(AlertDialog dialog) {
-                                                nvMenu.setSelectedItemId(R.id.nvTesorera);
-                                                dialog.dismiss();
-                                            }
-                                        });
-                                Objects.requireNonNull(guardar_info_dlg.getWindow()).requestFeature(Window.FEATURE_NO_TITLE);
-                                guardar_info_dlg.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
-                                guardar_info_dlg.show();
-                            }
-                            else
-                                setFragment(NameFragments.GEO_SECRETARIA, b);
+                                        }
+                                    }, R.string.no, new Popups.DialogMessage() {
+                                        @Override
+                                        public void OnClickListener(AlertDialog dialog) {
+                                            nvMenu.setSelectedItemId(R.id.nvSecretaria);
+                                            dialog.dismiss();
+                                        }
+                                    });
+                            Objects.requireNonNull(guardar_info_dlg.getWindow()).requestFeature(Window.FEATURE_NO_TITLE);
+                            guardar_info_dlg.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                            guardar_info_dlg.show();
+                        } else
+                            setFragment(NameFragments.GEO_TESORERA, b);
+                    } else
+                        setFragment(NameFragments.GEO_TESORERA, b);
+                } else if ((current instanceof geo_miembros_fragment)) {
+                    setFragment(NameFragments.GEO_PRESIDENTE, b);
+                } else
+                    setFragment(NameFragments.GEO_TESORERA, b);
+            } else if (itemId == R.id.nvSecretaria) {/**Valida si estaba en otra vista y quiere cambiar a vista de secretaria y hay datos pendiente de guardar*/
+                current = getSupportFragmentManager().findFragmentById(R.id.flMain);
 
+                if ((current instanceof geo_presidente_fragment)) {
+                    if (((geo_presidente_fragment) current).flag_edit) {
+                        if (((geo_presidente_fragment) current).latLngUbicacion != null ||
+                                !((geo_presidente_fragment) current).etCodigoBarras.getText().toString().trim().isEmpty() ||
+                                ((geo_presidente_fragment) current).byteFotoFachada != null ||
+                                !((geo_presidente_fragment) current).etComentario.getText().toString().trim().isEmpty()) {
+                            AlertDialog guardar_info_dlg = Popups.showDialogConfirm(ctx, Constants.question,
+                                    R.string.confirm_guardar, R.string.yes, new Popups.DialogMessage() {
+                                        @Override
+                                        public void OnClickListener(AlertDialog dialog) {
+                                            setFragment(NameFragments.GEO_SECRETARIA, b);
+                                            dialog.dismiss();
+                                        }
+                                    }, R.string.no, new Popups.DialogMessage() {
+                                        @Override
+                                        public void OnClickListener(AlertDialog dialog) {
+                                            nvMenu.setSelectedItemId(R.id.nvPresidente);
+                                            dialog.dismiss();
+                                        }
+                                    });
+                            Objects.requireNonNull(guardar_info_dlg.getWindow()).requestFeature(Window.FEATURE_NO_TITLE);
+                            guardar_info_dlg.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                            guardar_info_dlg.show();
                         } else
                             setFragment(NameFragments.GEO_SECRETARIA, b);
-                    }
-                    else if((current instanceof geo_miembros_fragment)){
-                        setFragment(NameFragments.GEO_PRESIDENTE, b);
-                    }
-                    else
+
+                    } else {
                         setFragment(NameFragments.GEO_SECRETARIA, b);
-                    break;
-                case R.id.nvIntegrantes:
-                    /**Manda a lista de integrantes*/
-                    setFragment(NameFragments.GEO_MIEMBROS, b);
-                    break;
+                    }
+                } else if ((current instanceof geo_tesorera_fragment)) {
+                    if (((geo_tesorera_fragment) current).flag_edit) {
+                        if (((geo_tesorera_fragment) current).latLngUbicacion != null ||
+                                !((geo_tesorera_fragment) current).etCodigoBarras.getText().toString().trim().isEmpty() ||
+                                ((geo_tesorera_fragment) current).byteFotoFachada != null ||
+                                !((geo_tesorera_fragment) current).etComentario.getText().toString().trim().isEmpty()) {
+                            AlertDialog guardar_info_dlg = Popups.showDialogConfirm(ctx, Constants.question,
+                                    R.string.confirm_guardar, R.string.yes, new Popups.DialogMessage() {
+                                        @Override
+                                        public void OnClickListener(AlertDialog dialog) {
+                                            setFragment(NameFragments.GEO_SECRETARIA, b);
+                                            dialog.dismiss();
+
+                                        }
+                                    }, R.string.no, new Popups.DialogMessage() {
+                                        @Override
+                                        public void OnClickListener(AlertDialog dialog) {
+                                            nvMenu.setSelectedItemId(R.id.nvTesorera);
+                                            dialog.dismiss();
+                                        }
+                                    });
+                            Objects.requireNonNull(guardar_info_dlg.getWindow()).requestFeature(Window.FEATURE_NO_TITLE);
+                            guardar_info_dlg.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                            guardar_info_dlg.show();
+                        } else
+                            setFragment(NameFragments.GEO_SECRETARIA, b);
+
+                    } else
+                        setFragment(NameFragments.GEO_SECRETARIA, b);
+                } else if ((current instanceof geo_miembros_fragment)) {
+                    setFragment(NameFragments.GEO_PRESIDENTE, b);
+                } else
+                    setFragment(NameFragments.GEO_SECRETARIA, b);
+            } else if (itemId == R.id.nvIntegrantes) {/**Manda a lista de integrantes*/
+                setFragment(NameFragments.GEO_MIEMBROS, b);
             }
             return true;
         }
@@ -316,45 +289,38 @@ public class GeolocalizacionGpo extends AppCompatActivity {
         FragmentManager manager = getSupportFragmentManager();
         FragmentTransaction transaction = manager.beginTransaction();
         String tokenFragment = "";
-        switch (fragment) {
-            case NameFragments.GEO_PRESIDENTE:
-                if (!(current instanceof geo_presidente_fragment)){
-                    geo_presidente_fragment presidente = new geo_presidente_fragment();
-                    presidente.setArguments(extras);
-                    transaction.replace(R.id.flMain, presidente, NameFragments.GEO_PRESIDENTE);
-                    tokenFragment = NameFragments.GEO_PRESIDENTE;
-                } else
-                    return;
-                break;
-            case NameFragments.GEO_TESORERA:
-                if (!(current instanceof geo_tesorera_fragment)){
-                    geo_tesorera_fragment tesorera = new geo_tesorera_fragment();
-                    tesorera.setArguments(extras);
-                    transaction.replace(R.id.flMain, tesorera, NameFragments.GEO_TESORERA);
-                    tokenFragment = NameFragments.GEO_TESORERA;
-                } else
-                    return;
-
-                break;
-            case NameFragments.GEO_SECRETARIA:
-                if (!(current instanceof geo_secretaria_fragment)){
-                    geo_secretaria_fragment secretaria = new geo_secretaria_fragment();
-                    secretaria.setArguments(extras);
-                    transaction.replace(R.id.flMain, secretaria, NameFragments.GEO_AVAL);
-                    tokenFragment = NameFragments.GEO_SECRETARIA;
-                } else
-                    return;
-                break;
-            case NameFragments.GEO_MIEMBROS:
-                if (!(current instanceof geo_miembros_fragment)){
-                    geo_miembros_fragment miembros = new geo_miembros_fragment();
-                    miembros.setArguments(extras);
-                    transaction.replace(R.id.flMain, miembros, NameFragments.GEO_MIEMBROS);
-                    tokenFragment = NameFragments.GEO_MIEMBROS;
-                } else
-                    return;
-                break;
-
+        if (fragment.equals(NameFragments.GEO_PRESIDENTE)) {
+            if (!(current instanceof geo_presidente_fragment)) {
+                geo_presidente_fragment presidente = new geo_presidente_fragment();
+                presidente.setArguments(extras);
+                transaction.replace(R.id.flMain, presidente, NameFragments.GEO_PRESIDENTE);
+                tokenFragment = NameFragments.GEO_PRESIDENTE;
+            } else
+                return;
+        } else if (fragment.equals(NameFragments.GEO_TESORERA)) {
+            if (!(current instanceof geo_tesorera_fragment)) {
+                geo_tesorera_fragment tesorera = new geo_tesorera_fragment();
+                tesorera.setArguments(extras);
+                transaction.replace(R.id.flMain, tesorera, NameFragments.GEO_TESORERA);
+                tokenFragment = NameFragments.GEO_TESORERA;
+            } else
+                return;
+        } else if (fragment.equals(NameFragments.GEO_SECRETARIA)) {
+            if (!(current instanceof geo_secretaria_fragment)) {
+                geo_secretaria_fragment secretaria = new geo_secretaria_fragment();
+                secretaria.setArguments(extras);
+                transaction.replace(R.id.flMain, secretaria, NameFragments.GEO_AVAL);
+                tokenFragment = NameFragments.GEO_SECRETARIA;
+            } else
+                return;
+        } else if (fragment.equals(NameFragments.GEO_MIEMBROS)) {
+            if (!(current instanceof geo_miembros_fragment)) {
+                geo_miembros_fragment miembros = new geo_miembros_fragment();
+                miembros.setArguments(extras);
+                transaction.replace(R.id.flMain, miembros, NameFragments.GEO_MIEMBROS);
+                tokenFragment = NameFragments.GEO_MIEMBROS;
+            } else
+                return;
         }
 
         if(!tokenFragment.equals(NameFragments.GEO_PRESIDENTE) && !tokenFragment.equals(NameFragments.GEO_TESORERA) && !tokenFragment.equals(NameFragments.GEO_SECRETARIA) && !tokenFragment.equals(NameFragments.GEO_MIEMBROS)) {

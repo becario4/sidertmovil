@@ -12,16 +12,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RectF;
 import android.graphics.drawable.ColorDrawable;
-//import android.support.design.widget.FloatingActionButton;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
-
-import androidx.core.content.ContextCompat;
-import androidx.recyclerview.widget.ItemTouchHelper;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.appcompat.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -64,19 +55,18 @@ import com.sidert.sidertmovil.models.solicitudes.solicitudgpo.renovacion.Politic
 import com.sidert.sidertmovil.models.solicitudes.solicitudgpo.renovacion.PoliticaPldIntegranteRenDao;
 import com.sidert.sidertmovil.models.solicitudes.solicitudgpo.renovacion.TelefonoIntegranteRen;
 import com.sidert.sidertmovil.models.solicitudes.solicitudgpo.renovacion.TelefonoIntegranteRenDao;
-import com.sidert.sidertmovil.models.solicitudes.solicitudind.originacion.Beneficiario;
-import com.sidert.sidertmovil.services.beneficiario.BeneficiarioService;
 import com.sidert.sidertmovil.services.permiso.IPermisoService;
 import com.sidert.sidertmovil.services.solicitud.solicitudgpo.SolicitudGpoService;
-import com.sidert.sidertmovil.utils.Constants;
 import com.sidert.sidertmovil.utils.DatosCompartidos;
 import com.sidert.sidertmovil.utils.ManagerInterface;
 import com.sidert.sidertmovil.utils.Miscellaneous;
 import com.sidert.sidertmovil.utils.NameFragments;
 import com.sidert.sidertmovil.utils.Popups;
 import com.sidert.sidertmovil.utils.RetrofitClient;
-import com.sidert.sidertmovil.utils.Servicios_Sincronizado;
 import com.sidert.sidertmovil.utils.SessionManager;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -84,7 +74,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 
-import static com.sidert.sidertmovil.utils.Constants.CONTROLLER_API;;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.ItemTouchHelper;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
 import static com.sidert.sidertmovil.utils.Constants.CONTROLLER_SOLICITUDES;
 import static com.sidert.sidertmovil.utils.Constants.ES_RENOVACION;
 import static com.sidert.sidertmovil.utils.Constants.ID_SOLICITUD;
@@ -92,7 +92,8 @@ import static com.sidert.sidertmovil.utils.Constants.REQUEST_CODE_ADD_INTEGRANTE
 import static com.sidert.sidertmovil.utils.Constants.TBL_CONYUGE_INTEGRANTE_REN;
 import static com.sidert.sidertmovil.utils.Constants.TBL_CREDITO_GPO_REN;
 import static com.sidert.sidertmovil.utils.Constants.TBL_CROQUIS_GPO_REN;
-import static com.sidert.sidertmovil.utils.Constants.TBL_DATOS_BENEFICIARIO;
+import static com.sidert.sidertmovil.utils.Constants.TBL_DATOS_BENEFICIARIO_GPO_REN;
+import static com.sidert.sidertmovil.utils.Constants.TBL_DATOS_CREDITO_CAMPANA_GPO;
 import static com.sidert.sidertmovil.utils.Constants.TBL_DOCUMENTOS_INTEGRANTE_REN;
 import static com.sidert.sidertmovil.utils.Constants.TBL_DOMICILIO_INTEGRANTE_REN;
 import static com.sidert.sidertmovil.utils.Constants.TBL_INTEGRANTES_GPO_REN;
@@ -104,14 +105,11 @@ import static com.sidert.sidertmovil.utils.Constants.TBL_TELEFONOS_INTEGRANTE_RE
 import static com.sidert.sidertmovil.utils.Constants.question;
 import static com.sidert.sidertmovil.utils.Constants.warning;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
+;
 
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-
-/**Clase para mostrar los datos del credito grupal y de integrantes*/
+/**
+ * Clase para mostrar los datos del credito grupal y de integrantes
+ */
 public class RenovacionCreditoGpo extends AppCompatActivity implements dialog_renovacion_gpo.OnCompleteListener {
 
     private Context ctx;
@@ -157,7 +155,7 @@ public class RenovacionCreditoGpo extends AppCompatActivity implements dialog_re
 
         ctx = this;
 
-        dBhelper = new DBhelper(ctx);
+        dBhelper = DBhelper.getInstance(ctx);
         db = dBhelper.getWritableDatabase();
 
         TBmain = findViewById(R.id.TBmain);
@@ -176,41 +174,39 @@ public class RenovacionCreditoGpo extends AppCompatActivity implements dialog_re
         //Intent intent = new Intent(ctx, RenovarIntegrante.class);
 
         /**Validacion para saber si tendra que abrir el dialog de datos del credito*/
-        if (getIntent().getBooleanExtra("is_new",true)) {
-            is_edit = true;
-            is_new = true;
-            nombre_gpo = getIntent().getStringExtra("nombre");
-            id_solicitud = Long.parseLong(getIntent().getStringExtra("id_solicitud"));
-            TBmain.setSubtitle(nombre_gpo);
-            /**Funcion para abrir un dialogFragment para completar los datos del credito*/
-            openInfoOriginacion();
+        Intent intent = this.getIntent();
+        if (intent != null) {
+            is_new = intent.getBooleanExtra("is_new", true);
+            is_edit = is_new;
+
+            String solicitudIdStr = intent.getStringExtra("id_solicitud");
+            solicitudIdStr = (solicitudIdStr != null) ? solicitudIdStr.trim() : "";
+            if (!solicitudIdStr.isEmpty()) {
+                id_solicitud = Long.parseLong(solicitudIdStr);
+                Cursor row = dBhelper.getRecords(TBL_CREDITO_GPO_REN, " WHERE id_solicitud = ?", "", new String[]{String.valueOf(id_solicitud)});
+                row.moveToFirst();
+                id_credito = Long.parseLong(row.getString(0));
+                String sdato1 = row.getString(1);
+                TBmain.setSubtitle(row.getString(2));
+                row.close();
+
+                if (is_new) {
+                    nombre_gpo = intent.getStringExtra("nombre");
+                    TBmain.setSubtitle(nombre_gpo);
+                    openInfoOriginacion();
+                }
+
+                initComponents(sdato1);
+                DatosCompartidos.getInstance().setId_solicitud(id_solicitud);
+                DatosCompartidos.getInstance().setCredito_id(id_credito);
+            }
         }
-        else{/**En caso de que ya habian guardado los datos del credito*/
-            is_new = false;
-            /**Obtiene datos que se mandaron entre clases para variable globañ*/
-            id_solicitud = Long.parseLong(getIntent().getStringExtra("id_solicitud"));
-
-            /**Obtiene el id de los datos del credito porque con ese ID se relacionan los integrantes*/
-            Cursor row = dBhelper.getRecords(TBL_CREDITO_GPO_REN, " WHERE id_solicitud = ?", "", new String[]{String.valueOf(id_solicitud)});
-            row.moveToFirst();
-            id_credito = Long.parseLong(row.getString(0));
-            String sdato1 = row.getString(1);
-            TBmain.setSubtitle(row.getString(2));
-            row.close();
-            /**Funcion para obtener los integrantes*/
-
-            initComponents(sdato1);
-        }
-        DatosCompartidos.getInstance().setId_solicitud(id_solicitud);
-        DatosCompartidos.getInstance().setCredito_id(id_credito);
-       // Intent intent = new Intent(ctx, RenovarIntegrante.class);
-       // intent.putExtra("id_solicitud", String.valueOf(id_solicitud));
-       // startActivity(intent);
-
     }
 
 
-    /**Evento para abrir un dialogFragment para mostrar los datos del credito */
+    /**
+     * Evento para abrir un dialogFragment para mostrar los datos del credito
+     */
     private View.OnClickListener tvInfoCredito_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -218,7 +214,9 @@ public class RenovacionCreditoGpo extends AppCompatActivity implements dialog_re
         }
     };
 
-    /**Evento para agregar un nuevo integrante*/
+    /**
+     * Evento para agregar un nuevo integrante
+     */
     private View.OnClickListener fabAgregar_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -231,13 +229,14 @@ public class RenovacionCreditoGpo extends AppCompatActivity implements dialog_re
                 i_renovar_integrante.putExtra("id_credito", String.valueOf(id_credito));
                 i_renovar_integrante.putExtra("periodicidad", Miscellaneous.GetPeriodicidad(periodicidad));
                 startActivityForResult(i_renovar_integrante, REQUEST_CODE_ADD_INTEGRANTE);
-            }
-            else
+            } else
                 Toast.makeText(ctx, "Ha superado el límite de integrantes por grupo", Toast.LENGTH_SHORT).show();
         }
     };
 
-    /**Funcion para abrir un dialogFrament para mostrar o editar datos del credito*/
+    /**
+     * Funcion para abrir un dialogFrament para mostrar o editar datos del credito
+     */
     private void openInfoOriginacion() {
         dialog_renovacion_gpo renovacion_gpo = new dialog_renovacion_gpo();
         renovacion_gpo.setCancelable(false);
@@ -254,8 +253,7 @@ public class RenovacionCreditoGpo extends AppCompatActivity implements dialog_re
             b.putString("observaciones", observaciones);
             b.putString("id_solicitud", String.valueOf(id_solicitud));
             renovacion_gpo.setArguments(b);
-        }
-        else {/**Datos para saber que tiene que agregar los datos del credito*/
+        } else {/**Datos para saber que tiene que agregar los datos del credito*/
             b.putBoolean("is_edit", true);
             b.putString("nombre", nombre_gpo);
             b.putString("id_solicitud", String.valueOf(id_solicitud));
@@ -264,8 +262,10 @@ public class RenovacionCreditoGpo extends AppCompatActivity implements dialog_re
         renovacion_gpo.show(getSupportFragmentManager(), NameFragments.DIALOGORIGINACIONGPO);
     }
 
-    /**Funcion para obtener datos del credito*/
-    private void initComponents(String idSolicitud){
+    /**
+     * Funcion para obtener datos del credito
+     */
+    private void initComponents(String idSolicitud) {
         String sql = "" +
                 "SELECT c.*, s.estatus " +
                 "FROM " + TBL_CREDITO_GPO_REN + " AS c " +
@@ -273,7 +273,7 @@ public class RenovacionCreditoGpo extends AppCompatActivity implements dialog_re
                 "WHERE c.id_solicitud = ?";
         Cursor row = db.rawQuery(sql, new String[]{idSolicitud});
         //Cursor row = dBhelper.getRecords(TBL_CREDITO_GPO, " WHERE id_solicitud = ?", "",new String[]{idSolicitud});
-        row .moveToFirst();
+        row.moveToFirst();
         id_credito = row.getInt(0);
         nombre_gpo = row.getString(2);
         plazo = row.getString(3);
@@ -290,14 +290,14 @@ public class RenovacionCreditoGpo extends AppCompatActivity implements dialog_re
 
         /**Obtiene los integrantes relacionados con el id del credito*/
         Cursor row_integrantes = dBhelper.getRecords(TBL_INTEGRANTES_GPO_REN, " WHERE id_credito = ?", " ORDER BY nombre ASC", new String[]{String.valueOf(id_credito)});
-        if (row_integrantes.getCount() > 0){
+        if (row_integrantes.getCount() > 0) {
             row_integrantes.moveToFirst();
-            ArrayList<HashMap<Integer,String>> data = new ArrayList<>();
-            for(int i = 0; i < row_integrantes.getCount(); i++){
+            ArrayList<HashMap<Integer, String>> data = new ArrayList<>();
+            for (int i = 0; i < row_integrantes.getCount(); i++) {
                 HashMap<Integer, String> item = new HashMap();
-                Log.e("id"+i, row_integrantes.getString(21));
-                item.put(0,row_integrantes.getString(0));
-                String nombre = row_integrantes.getString(3) + " " +row_integrantes.getString(4) + " " + row_integrantes.getString(5);
+                Log.e("id" + i, row_integrantes.getString(21));
+                item.put(0, row_integrantes.getString(0));
+                String nombre = row_integrantes.getString(3) + " " + row_integrantes.getString(4) + " " + row_integrantes.getString(5);
                 item.put(1, nombre.trim().toUpperCase());
                 item.put(2, "2");
                 item.put(3, row_integrantes.getString(21));
@@ -311,17 +311,14 @@ public class RenovacionCreditoGpo extends AppCompatActivity implements dialog_re
             }
 
             /**Agrega los integrantes al adaptador*/
-            adapter = new adapter_originacion(ctx, data, new adapter_originacion.Event() {
-                @Override
-                public void FichaOnClick(HashMap<Integer, String> item) {
-                    Intent i_integrante = new Intent(ctx, RenovarIntegrante.class);
-                    i_integrante.putExtra("is_new", false);
-                    i_integrante.putExtra("id_integrante", item.get(0));
-                    i_integrante.putExtra("id_credito", item.get(6));
-                    i_integrante.putExtra("periodicidad", Miscellaneous.GetPeriodicidad(periodicidad));
-                    i_integrante.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                    startActivity(i_integrante);
-                }
+            adapter = new adapter_originacion(ctx, data, item -> {
+                Intent i_integrante = new Intent(ctx, RenovarIntegrante.class);
+                i_integrante.putExtra("is_new", false);
+                i_integrante.putExtra("id_integrante", item.get(0));
+                i_integrante.putExtra("id_credito", item.get(6));
+                i_integrante.putExtra("periodicidad", Miscellaneous.GetPeriodicidad(periodicidad));
+                i_integrante.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(i_integrante);
             });
 
             rvIntegrantes.setAdapter(adapter);
@@ -331,13 +328,15 @@ public class RenovacionCreditoGpo extends AppCompatActivity implements dialog_re
 
     }
 
-    /**Funcion para mostrar u ocultar le menu*/
+    /**
+     * Funcion para mostrar u ocultar le menu
+     */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_enviar_datos, menu);
         //if (!is_edit) {
-            menu.getItem(MENU_INDEX_ENVIAR).setVisible(is_edit);
+        menu.getItem(MENU_INDEX_ENVIAR).setVisible(is_edit);
         //}
 
         SolicitudRenDao solicitudRenDao = new SolicitudRenDao(ctx);
@@ -346,9 +345,7 @@ public class RenovacionCreditoGpo extends AppCompatActivity implements dialog_re
         if (TBmain.getMenu().size() > 1) {
             if (solicitudRen != null && solicitudRen.getEstatus() > 1) {
                 TBmain.getMenu().getItem(MENU_INDEX_UPDATE_ESTATUS).setVisible(true);
-            }
-            else
-            {
+            } else {
                 TBmain.getMenu().getItem(MENU_INDEX_UPDATE_ESTATUS).setVisible(false);
             }
         }
@@ -360,34 +357,30 @@ public class RenovacionCreditoGpo extends AppCompatActivity implements dialog_re
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                finish();
-                break;
-            case R.id.devmode:
-                enviarJSONObjects();
-                //senDataBeneficiarioRen(id_solicitud);
-                break;
-            case R.id.desbloquear:
-                if (modoSuperUsuario) {
-                    desactivarModoSuper();
-                    deshabilitarSolicitud();
-                }
-                else activarModoSuper();
-                break;
-            case R.id.updateEstatus:
-                obtenerEstatusSolicitud();
-                break;
-            case R.id.enviar:
-                sendSolicitud();
-                //senDataBeneficiarioRen(id_solicitud);
-                break;
+        int itemId = item.getItemId();
+        if (itemId == android.R.id.home) {
+            finish();
+        } else if (itemId == R.id.devmode) {
+            enviarJSONObjects();
+            //senDataBeneficiarioRen(id_solicitud);
+        } else if (itemId == R.id.desbloquear) {
+            if (modoSuperUsuario) {
+                desactivarModoSuper();
+                deshabilitarSolicitud();
+            } else activarModoSuper();
+        } else if (itemId == R.id.updateEstatus) {
+            obtenerEstatusSolicitud();
+        } else if (itemId == R.id.enviar) {
+            sendSolicitud();
+            //senDataBeneficiarioRen(id_solicitud);
         }
         return super.onOptionsItemSelected(item);
     }
 
-    /**Funcion mostrar un mensaje dinamico*/
-    private void Mensaje(String mess){
+    /**
+     * Funcion mostrar un mensaje dinamico
+     */
+    private void Mensaje(String mess) {
         final AlertDialog solicitud;
         solicitud = Popups.showDialogMessage(ctx, warning,
                 mess, R.string.accept, new Popups.DialogMessage() {
@@ -401,14 +394,8 @@ public class RenovacionCreditoGpo extends AppCompatActivity implements dialog_re
         solicitud.show();
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        initComponents(String.valueOf(id_solicitud));
-    }
-
     private void initSwipe() {
-        ItemTouchHelper.SimpleCallback simpleCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT|ItemTouchHelper.LEFT) {
+        ItemTouchHelper.SimpleCallback simpleCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT | ItemTouchHelper.LEFT) {
             @Override
             public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
                 return false;
@@ -417,7 +404,7 @@ public class RenovacionCreditoGpo extends AppCompatActivity implements dialog_re
             @Override
             public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
                 int position = viewHolder.getAdapterPosition();
-                if (direction == ItemTouchHelper.RIGHT){
+                if (direction == ItemTouchHelper.RIGHT) {
                     BorrarSolicitud(adapter.getItem(position).get(0), position);
                 } else {
                     BorrarSolicitud(adapter.getItem(position).get(0), position);
@@ -427,24 +414,24 @@ public class RenovacionCreditoGpo extends AppCompatActivity implements dialog_re
             @Override
             public void onChildDraw(Canvas c, RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
                 Bitmap icon;
-                if(actionState == ItemTouchHelper.ACTION_STATE_SWIPE){
+                if (actionState == ItemTouchHelper.ACTION_STATE_SWIPE) {
                     View itemView = viewHolder.itemView;
-                    float height  = (float) itemView.getBottom() - (float) itemView.getTop();
-                    float width   = height /4;
-                    if(dX > 0){
+                    float height = (float) itemView.getBottom() - (float) itemView.getTop();
+                    float width = height / 4;
+                    if (dX > 0) {
                         p.setColor(Color.RED);
-                        RectF background = new RectF((float) itemView.getLeft(), (float) itemView.getTop(), dX,(float) itemView.getBottom());
-                        c.drawRect(background,p);
+                        RectF background = new RectF((float) itemView.getLeft(), (float) itemView.getTop(), dX, (float) itemView.getBottom());
+                        c.drawRect(background, p);
                         icon = BitmapFactory.decodeResource(getResources(), R.drawable.ic_delete_forever);
-                        RectF icon_dest = new RectF((float) itemView.getLeft() + width ,(float) itemView.getTop() + width,(float) itemView.getLeft()+ 3*width,(float)itemView.getBottom() - width);
-                        c.drawBitmap(icon,null,icon_dest,p);
+                        RectF icon_dest = new RectF((float) itemView.getLeft() + width, (float) itemView.getTop() + width, (float) itemView.getLeft() + 3 * width, (float) itemView.getBottom() - width);
+                        c.drawBitmap(icon, null, icon_dest, p);
                     } else {
                         p.setColor(Color.RED);
-                        RectF background = new RectF((float) itemView.getRight() + dX, (float) itemView.getTop(),(float) itemView.getRight(), (float) itemView.getBottom());
-                        c.drawRect(background,p);
+                        RectF background = new RectF((float) itemView.getRight() + dX, (float) itemView.getTop(), (float) itemView.getRight(), (float) itemView.getBottom());
+                        c.drawRect(background, p);
                         icon = BitmapFactory.decodeResource(getResources(), R.drawable.ic_delete_forever);
-                        RectF icon_dest = new RectF((float) itemView.getRight() - 3*width ,(float) itemView.getTop() + width,(float) itemView.getRight() - width,(float)itemView.getBottom() - width);
-                        c.drawBitmap(icon,null,icon_dest,p);
+                        RectF icon_dest = new RectF((float) itemView.getRight() - 3 * width, (float) itemView.getTop() + width, (float) itemView.getRight() - width, (float) itemView.getBottom() - width);
+                        c.drawBitmap(icon, null, icon_dest, p);
                     }
                 }
                 super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
@@ -454,56 +441,60 @@ public class RenovacionCreditoGpo extends AppCompatActivity implements dialog_re
         helper.attachToRecyclerView(rvIntegrantes);
     }
 
-    private void BorrarSolicitud (final String id_integrante, final int position){
+    private void BorrarSolicitud(final String id_integrante, final int position) {
         AlertDialog borrar_soli_dlg = Popups.showDialogConfirm(ctx, question,
-            R.string.borrar_solicitud, R.string.yes, new Popups.DialogMessage() {
-                @Override
-                public void OnClickListener(AlertDialog dialog) {
-                    AlertDialog confirm_borrar_soli_dlg = Popups.showDialogConfirm(ctx, question,
-                            R.string.confirm_borrar_solicitud, R.string.yes, new Popups.DialogMessage() {
-                                @Override
-                                public void OnClickListener(AlertDialog dialog) {
+                R.string.borrar_solicitud, R.string.yes, new Popups.DialogMessage() {
+                    @Override
+                    public void OnClickListener(AlertDialog dialog) {
+                        AlertDialog confirm_borrar_soli_dlg = Popups.showDialogConfirm(ctx, question,
+                                R.string.confirm_borrar_solicitud, R.string.yes, new Popups.DialogMessage() {
+                                    @Override
+                                    public void OnClickListener(AlertDialog dialog) {
 
-                                    db.delete(TBL_INTEGRANTES_GPO_REN, "id = ?", new String[]{id_integrante});
-                                    db.delete(TBL_TELEFONOS_INTEGRANTE_REN, "id_integrante = ?", new String[]{id_integrante});
-                                    db.delete(TBL_DOMICILIO_INTEGRANTE_REN, "id_integrante = ?", new String[]{id_integrante});
-                                    db.delete(TBL_NEGOCIO_INTEGRANTE_REN, "id_integrante = ?", new String[]{id_integrante});
-                                    db.delete(TBL_CONYUGE_INTEGRANTE_REN, "id_integrante = ?", new String[]{id_integrante});
-                                    db.delete(TBL_OTROS_DATOS_INTEGRANTE_REN, "id_integrante = ?", new String[]{id_integrante});
-                                    db.delete(TBL_CROQUIS_GPO_REN, "id_integrante = ?", new String[]{id_integrante});
-                                    db.delete(TBL_POLITICAS_PLD_INTEGRANTE_REN, "id_integrante = ?", new String[]{id_integrante});
-                                    db.delete(TBL_DOCUMENTOS_INTEGRANTE_REN, "id_integrante = ?", new String[]{id_integrante});
+                                        db.delete(TBL_INTEGRANTES_GPO_REN, "id = ?", new String[]{id_integrante});
+                                        db.delete(TBL_TELEFONOS_INTEGRANTE_REN, "id_integrante = ?", new String[]{id_integrante});
+                                        db.delete(TBL_DOMICILIO_INTEGRANTE_REN, "id_integrante = ?", new String[]{id_integrante});
+                                        db.delete(TBL_NEGOCIO_INTEGRANTE_REN, "id_integrante = ?", new String[]{id_integrante});
+                                        db.delete(TBL_CONYUGE_INTEGRANTE_REN, "id_integrante = ?", new String[]{id_integrante});
+                                        db.delete(TBL_OTROS_DATOS_INTEGRANTE_REN, "id_integrante = ?", new String[]{id_integrante});
+                                        db.delete(TBL_CROQUIS_GPO_REN, "id_integrante = ?", new String[]{id_integrante});
+                                        db.delete(TBL_POLITICAS_PLD_INTEGRANTE_REN, "id_integrante = ?", new String[]{id_integrante});
+                                        db.delete(TBL_DOCUMENTOS_INTEGRANTE_REN, "id_integrante = ?", new String[]{id_integrante});
+                                        db.delete(TBL_DATOS_BENEFICIARIO_GPO_REN, "id_integrante = ?", new String[]{id_integrante});
+                                        db.delete(TBL_DATOS_CREDITO_CAMPANA_GPO, "id_integrante = ?", new String[]{id_integrante});
 
-                                    adapter.removeItem(position);
-                                    dialog.dismiss();
+                                        adapter.removeItem(position);
+                                        dialog.dismiss();
 
-                                }
-                            }, R.string.no, new Popups.DialogMessage() {
-                                @Override
-                                public void OnClickListener(AlertDialog dialog) {
-                                    adapter.notifyDataSetChanged();
-                                    dialog.dismiss();
-                                }
-                            });
-                    Objects.requireNonNull(confirm_borrar_soli_dlg.getWindow()).requestFeature(Window.FEATURE_NO_TITLE);
-                    confirm_borrar_soli_dlg.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
-                    confirm_borrar_soli_dlg.show();
-                    dialog.dismiss();
+                                    }
+                                }, R.string.no, new Popups.DialogMessage() {
+                                    @Override
+                                    public void OnClickListener(AlertDialog dialog) {
+                                        adapter.notifyDataSetChanged();
+                                        dialog.dismiss();
+                                    }
+                                });
+                        Objects.requireNonNull(confirm_borrar_soli_dlg.getWindow()).requestFeature(Window.FEATURE_NO_TITLE);
+                        confirm_borrar_soli_dlg.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+                        confirm_borrar_soli_dlg.show();
+                        dialog.dismiss();
 
-                }
-            }, R.string.no, new Popups.DialogMessage() {
-                @Override
-                public void OnClickListener(AlertDialog dialog) {
-                    adapter.notifyDataSetChanged();
-                    dialog.dismiss();
-                }
-            });
+                    }
+                }, R.string.no, new Popups.DialogMessage() {
+                    @Override
+                    public void OnClickListener(AlertDialog dialog) {
+                        adapter.notifyDataSetChanged();
+                        dialog.dismiss();
+                    }
+                });
         Objects.requireNonNull(borrar_soli_dlg.getWindow()).requestFeature(Window.FEATURE_NO_TITLE);
         borrar_soli_dlg.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
         borrar_soli_dlg.show();
     }
 
-    /**Funcion que recibe los datos del credito del dialogFragment*/
+    /**
+     * Funcion que recibe los datos del credito del dialogFragment
+     */
     @Override
     public void onComplete(String plazo, String periodicidad, String fecha, String dia, String hora, String observaciones, Boolean isEdit) {
         if (plazo != null && periodicidad != null) {/**Si el usuario guardo los datos del credito podrá continuar con el registro de integrantes*/
@@ -517,19 +508,17 @@ public class RenovacionCreditoGpo extends AppCompatActivity implements dialog_re
             this.observaciones = observaciones;
             is_edit = isEdit;
 
-        }
-        else if (plazo == null ) {/**En caso de no guardar los datos del credito se cierra la vista*/
+        } else if (plazo == null) {/**En caso de no guardar los datos del credito se cierra la vista*/
             finish();
         }
     }
 
-    private void activarModoSuper()
-    {
+    private void activarModoSuper() {
         final AlertDialog loadingDesbloqueo = Popups.showLoadingDialog(ctx, R.string.please_wait, R.string.loading_info);
         loadingDesbloqueo.show();
 
-        SessionManager session = new SessionManager(ctx);
-        IPermisoService permisoService = new RetrofitClient().newInstance(ctx).create(IPermisoService.class);
+        SessionManager session = SessionManager.getInstance(ctx);
+        IPermisoService permisoService = RetrofitClient.newInstance(ctx).create(IPermisoService.class);
         Call<PermisoResponse> call = permisoService.isSuperEnabled("Bearer " + session.getUser().get(7));
 
         call.enqueue(new Callback<PermisoResponse>() {
@@ -573,42 +562,38 @@ public class RenovacionCreditoGpo extends AppCompatActivity implements dialog_re
         });
     }
 
-    private void desactivarModoSuper()
-    {
+    private void desactivarModoSuper() {
         modoSuperUsuario = false;
         deshabilitarCampos();
         TBmain.getMenu().getItem(MENU_INDEX_DESBLOQUEAR).setIcon(ContextCompat.getDrawable(ctx, R.drawable.ic_baseline_lock_24_white));
         TBmain.getMenu().getItem(MENU_INDEX_DEVMODE).setVisible(modoSuperUsuario);
     }
 
-    private void habilitarCampos()
-    {
+    private void habilitarCampos() {
         TBmain.getMenu().getItem(MENU_INDEX_ENVIAR).setVisible(true);
         TBmain.getMenu().getItem(MENU_INDEX_UPDATE_ESTATUS).setVisible(false);
     }
 
-    private void deshabilitarCampos()
-    {
+    private void deshabilitarCampos() {
         SolicitudRenDao solicitudRenDao = new SolicitudRenDao(ctx);
         SolicitudRen solicitudRen = solicitudRenDao.findByIdSolicitud(Integer.valueOf(String.valueOf(id_solicitud)));
 
         if (solicitudRen != null && solicitudRen.getEstatus() > 1) {
             if (TBmain.getMenu().size() > 1)
                 TBmain.getMenu().getItem(MENU_INDEX_UPDATE_ESTATUS).setVisible(true);
-        }
-        else {
+        } else {
             if (TBmain.getMenu().size() > 1)
                 TBmain.getMenu().getItem(MENU_INDEX_UPDATE_ESTATUS).setVisible(false);
         }
 
         if (!is_edit) {
-            if(TBmain.getMenu().size() > 0) TBmain.getMenu().getItem(MENU_INDEX_ENVIAR).setVisible(false);
+            if (TBmain.getMenu().size() > 0)
+                TBmain.getMenu().getItem(MENU_INDEX_ENVIAR).setVisible(false);
             fabAgregar.hide();
         }
     }
 
-    private boolean habilitarSolicitud()
-    {
+    private boolean habilitarSolicitud() {
         boolean solicitudActivada = false;
 
         if (id_solicitud <= 0) return solicitudActivada;
@@ -620,15 +605,12 @@ public class RenovacionCreditoGpo extends AppCompatActivity implements dialog_re
             CreditoGpoRenDao creditoGpoRenDao = new CreditoGpoRenDao(ctx);
             CreditoGpoRen creditoGpoRen = creditoGpoRenDao.findByIdSolicitud(solicitudRen.getIdSolicitud());
 
-            if(creditoGpoRen != null)
-            {
+            if (creditoGpoRen != null) {
                 IntegranteGpoRenDao integranteGpoRenDao = new IntegranteGpoRenDao(ctx);
                 List<IntegranteGpoRen> integranteGpoRenList = integranteGpoRenDao.findAllByIdCredito(creditoGpoRen.getId());
 
-                if(integranteGpoRenList.size() > 0)
-                {
-                    for(IntegranteGpoRen iGpoRen : integranteGpoRenList)
-                    {
+                if (integranteGpoRenList.size() > 0) {
+                    for (IntegranteGpoRen iGpoRen : integranteGpoRenList) {
                         iGpoRen.setEstatusCompletado(0);
                         iGpoRen.setEstatusRechazo(0);
                         integranteGpoRenDao.updateEstatus(iGpoRen);
@@ -645,8 +627,7 @@ public class RenovacionCreditoGpo extends AppCompatActivity implements dialog_re
         return solicitudActivada;
     }
 
-    private boolean deshabilitarSolicitud()
-    {
+    private boolean deshabilitarSolicitud() {
         TBmain.getMenu().getItem(MENU_INDEX_ENVIAR).setVisible(false);
         boolean solicitudBloqueada = false;
 
@@ -659,15 +640,12 @@ public class RenovacionCreditoGpo extends AppCompatActivity implements dialog_re
             CreditoGpoRenDao creditoGpoRenDao = new CreditoGpoRenDao(ctx);
             CreditoGpoRen creditoGpoRen = creditoGpoRenDao.findByIdSolicitud(solicitudRen.getIdSolicitud());
 
-            if(creditoGpoRen != null)
-            {
+            if (creditoGpoRen != null) {
                 IntegranteGpoRenDao integranteGpoRenDao = new IntegranteGpoRenDao(ctx);
                 List<IntegranteGpoRen> integranteGpoRenList = integranteGpoRenDao.findAllByIdCredito(creditoGpoRen.getId());
 
-                if(integranteGpoRenList.size() > 0)
-                {
-                    for(IntegranteGpoRen iGpoRen : integranteGpoRenList)
-                    {
+                if (integranteGpoRenList.size() > 0) {
+                    for (IntegranteGpoRen iGpoRen : integranteGpoRenList) {
                         iGpoRen.setEstatusCompletado(2);
                         iGpoRen.setEstatusRechazo(0);
                         integranteGpoRenDao.updateEstatus(iGpoRen);
@@ -684,22 +662,19 @@ public class RenovacionCreditoGpo extends AppCompatActivity implements dialog_re
         return solicitudBloqueada;
     }
 
-    private void enviarJSONObjects()
-    {
+    private void enviarJSONObjects() {
         JSONObject json_solicitud = new JSONObject();
         SolicitudRenDao solicitudRenDao = new SolicitudRenDao(ctx);
         SolicitudRen solicitudRen = solicitudRenDao.findByIdSolicitud(Integer.valueOf(String.valueOf(id_solicitud)));
 
-        if(solicitudRen != null)
-        {
+        if (solicitudRen != null) {
             try {
                 json_solicitud.put(SolicitudRen.TBL, solicitudRen);
 
                 CreditoGpoRenDao creditoGpoRenDao = new CreditoGpoRenDao(ctx);
                 CreditoGpoRen creditoGpoRen = creditoGpoRenDao.findByIdSolicitud(solicitudRen.getIdSolicitud());
 
-                if(creditoGpoRen != null)
-                {
+                if (creditoGpoRen != null) {
                     json_solicitud.put(CreditoGpoRen.TBL, creditoGpoRen);
 
                     IntegranteGpoRenDao integranteGpoRenDao = new IntegranteGpoRenDao(ctx);
@@ -707,44 +682,50 @@ public class RenovacionCreditoGpo extends AppCompatActivity implements dialog_re
 
                     JSONArray json_integrantes = new JSONArray();
 
-                    if(integranteGpoRenList.size() > 0)
-                    {
-                        for(IntegranteGpoRen iGpoRen : integranteGpoRenList)
-                        {
+                    if (integranteGpoRenList.size() > 0) {
+                        for (IntegranteGpoRen iGpoRen : integranteGpoRenList) {
                             JSONObject json_integrante = new JSONObject();
                             json_integrante.put(IntegranteGpoRen.TBL, iGpoRen);
 
                             TelefonoIntegranteRenDao telefonoIntegranteRenDao = new TelefonoIntegranteRenDao(ctx);
                             TelefonoIntegranteRen telefonoIntegranteRen = telefonoIntegranteRenDao.findByIdIntegrante(iGpoRen.getId());
-                            if(telefonoIntegranteRen != null) json_integrante.put(TelefonoIntegranteRen.TBL, telefonoIntegranteRen);
+                            if (telefonoIntegranteRen != null)
+                                json_integrante.put(TelefonoIntegranteRen.TBL, telefonoIntegranteRen);
 
                             DomicilioIntegranteRenDao domicilioIntegranteRenDao = new DomicilioIntegranteRenDao(ctx);
                             DomicilioIntegranteRen domicilioIntegranteRen = domicilioIntegranteRenDao.findByIdIntegrante(Long.valueOf(iGpoRen.getId()));
-                            if(domicilioIntegranteRen != null) json_integrante.put(DomicilioIntegranteRen.TBL, domicilioIntegranteRen);
+                            if (domicilioIntegranteRen != null)
+                                json_integrante.put(DomicilioIntegranteRen.TBL, domicilioIntegranteRen);
 
                             NegocioIntegranteRenDao negocioIntegranteRenDao = new NegocioIntegranteRenDao(ctx);
                             NegocioIntegranteRen negocioIntegranteRen = negocioIntegranteRenDao.findByIdIntegrante(iGpoRen.getId());
-                            if(negocioIntegranteRen != null) json_integrante.put(NegocioIntegranteRen.TBL, negocioIntegranteRen);
+                            if (negocioIntegranteRen != null)
+                                json_integrante.put(NegocioIntegranteRen.TBL, negocioIntegranteRen);
 
                             ConyugueIntegranteRenDao conyugueIntegranteRenDao = new ConyugueIntegranteRenDao(ctx);
                             ConyugueIntegranteRen conyugueIntegranteRen = conyugueIntegranteRenDao.findByIdIntegrante(iGpoRen.getId());
-                            if(conyugueIntegranteRen != null) json_integrante.put(ConyugueIntegranteRen.TBL, conyugueIntegranteRenDao);
+                            if (conyugueIntegranteRen != null)
+                                json_integrante.put(ConyugueIntegranteRen.TBL, conyugueIntegranteRenDao);
 
                             OtrosDatosIntegranteRenDao otrosDatosIntegranteRenDao = new OtrosDatosIntegranteRenDao(ctx);
                             OtrosDatosIntegranteRen otrosDatosIntegranteRen = otrosDatosIntegranteRenDao.findByIdIntegrante(iGpoRen.getId());
-                            if(otrosDatosIntegranteRen != null) json_integrante.put(OtrosDatosIntegranteRen.TBL, otrosDatosIntegranteRen);
+                            if (otrosDatosIntegranteRen != null)
+                                json_integrante.put(OtrosDatosIntegranteRen.TBL, otrosDatosIntegranteRen);
 
                             CroquisIntegranteRenDao croquisDao = new CroquisIntegranteRenDao(ctx);
                             CroquisIntegranteRen croquis = croquisDao.findByIdIntegrante(iGpoRen.getId());
-                            if(croquis != null) json_integrante.put(CroquisIntegranteRen.TBL, croquis);
+                            if (croquis != null)
+                                json_integrante.put(CroquisIntegranteRen.TBL, croquis);
 
                             PoliticaPldIntegranteRenDao politicaPldIntegranteRenDao = new PoliticaPldIntegranteRenDao(ctx);
                             PoliticaPldIntegranteRen politicaPldIntegranteRen = politicaPldIntegranteRenDao.findByIdIntegrante(iGpoRen.getId());
-                            if(politicaPldIntegranteRen != null) json_integrante.put(politicaPldIntegranteRen.TBL, politicaPldIntegranteRen);
+                            if (politicaPldIntegranteRen != null)
+                                json_integrante.put(politicaPldIntegranteRen.TBL, politicaPldIntegranteRen);
 
                             DocumentoIntegranteRenDao documentoIntegranteRenDao = new DocumentoIntegranteRenDao(ctx);
                             DocumentoIntegranteRen documentoIntegranteRen = documentoIntegranteRenDao.findByIdIntegrante(iGpoRen.getId());
-                            if(documentoIntegranteRen != null) json_integrante.put(DocumentoIntegranteRen.TBL, documentoIntegranteRen);
+                            if (documentoIntegranteRen != null)
+                                json_integrante.put(DocumentoIntegranteRen.TBL, documentoIntegranteRen);
 
                             json_integrantes.put(json_integrante);
                         }
@@ -752,20 +733,19 @@ public class RenovacionCreditoGpo extends AppCompatActivity implements dialog_re
                         json_solicitud.put("integrantes", json_integrantes);
                     }
                 }
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 e.printStackTrace();
                 Toast.makeText(ctx, e.getMessage(), Toast.LENGTH_SHORT).show();
             }
 
-            SessionManager session = new SessionManager(ctx);
+            SessionManager session = SessionManager.getInstance(ctx);
 
             Log.e("AQUI", new Gson().toJson(json_solicitud));
 
             final AlertDialog loadingSendData = Popups.showLoadingDialog(ctx, R.string.please_wait, R.string.loading_info);
             loadingSendData.show();
 
-            SolicitudGpoService solicitudGpoService = new RetrofitClient().newInstance(ctx).create(SolicitudGpoService.class);
+            SolicitudGpoService solicitudGpoService = RetrofitClient.newInstance(ctx).create(SolicitudGpoService.class);
             Call<ApiResponse> call = solicitudGpoService.jsonRenovacionGpo("Bearer " + session.getUser().get(7), new Gson().toJson(json_solicitud));
 
             call.enqueue(new Callback<ApiResponse>() {
@@ -802,10 +782,8 @@ public class RenovacionCreditoGpo extends AppCompatActivity implements dialog_re
         }
     }
 
-    private void sendSolicitud()
-    {
-        if(esSolicitudValida())
-        {
+    private void sendSolicitud() {
+        if (esSolicitudValida()) {
             ContentValues cv = new ContentValues();
             cv.put("estatus_completado", 1);
 
@@ -815,7 +793,7 @@ public class RenovacionCreditoGpo extends AppCompatActivity implements dialog_re
             cv_solicitud.put("estatus", 1);
             cv_solicitud.put("fecha_termino", Miscellaneous.ObtenerFecha("timestamp"));
 
-            db.update(TBL_SOLICITUDES_REN, cv_solicitud, "id_solicitud = ?" , new String[]{String.valueOf(id_solicitud)});
+            db.update(TBL_SOLICITUDES_REN, cv_solicitud, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
 
             dialog_sending_solicitud_grupal dialogSendSI = new dialog_sending_solicitud_grupal();
             Bundle b = new Bundle();
@@ -827,47 +805,41 @@ public class RenovacionCreditoGpo extends AppCompatActivity implements dialog_re
         }
     }
 
-    private boolean esSolicitudValida()
-    {
+    private boolean esSolicitudValida() {
         boolean flag = false;
 
         Cursor row_credito = dBhelper.getRecords(TBL_INTEGRANTES_GPO_REN, " WHERE id_credito = ?", "", new String[]{String.valueOf(id_credito)});
 
-        if (row_credito.getCount() > 3){
+        if (row_credito.getCount() > 3) {
             Cursor row_cargo = dBhelper.customSelect(TBL_INTEGRANTES_GPO_REN, "DISTINCT (cargo)", " WHERE id_credito = ? AND cargo <> 4", "", new String[]{String.valueOf(id_credito)});
 
-            if (row_cargo.getCount() == 3){
-                Cursor row_reunion = dBhelper.customSelect(TBL_OTROS_DATOS_INTEGRANTE_REN + " AS o", "casa_reunion", " INNER JOIN " + TBL_CREDITO_GPO_REN + " AS c ON c.id = i.id_credito INNER JOIN "+TBL_INTEGRANTES_GPO_REN + " AS i ON i.id = o.id_integrante WHERE c.id = ? AND o.casa_reunion = 1", "", new String[]{String.valueOf(id_credito)});
-                Cursor row_total = dBhelper.customSelect(TBL_INTEGRANTES_GPO_REN , "SUM (CASE WHEN estatus_completado = 1 THEN 1 ELSE 0 END) AS completadas, SUM (CASE WHEN estatus_completado = 0 THEN 1 ELSE 0 END) AS pendientes", " WHERE id_credito = ?"," GROUP BY id_credito", new String[]{String.valueOf(id_credito)});
+            if (row_cargo.getCount() == 3) {
+                Cursor row_reunion = dBhelper.customSelect(TBL_OTROS_DATOS_INTEGRANTE_REN + " AS o", "casa_reunion", " INNER JOIN " + TBL_CREDITO_GPO_REN + " AS c ON c.id = i.id_credito INNER JOIN " + TBL_INTEGRANTES_GPO_REN + " AS i ON i.id = o.id_integrante WHERE c.id = ? AND o.casa_reunion = 1", "", new String[]{String.valueOf(id_credito)});
+                Cursor row_total = dBhelper.customSelect(TBL_INTEGRANTES_GPO_REN, "SUM (CASE WHEN estatus_completado = 1 THEN 1 ELSE 0 END) AS completadas, SUM (CASE WHEN estatus_completado = 0 THEN 1 ELSE 0 END) AS pendientes", " WHERE id_credito = ?", " GROUP BY id_credito", new String[]{String.valueOf(id_credito)});
                 row_total.moveToFirst();
 
-                if (row_total.getInt(1) == 0){
+                if (row_total.getInt(1) == 0) {
                     flag = true;
-                }
-                else
+                } else
                     Mensaje("Existen integrantes pedientes por guardar");
-            }
-            else
+            } else
                 Mensaje("Falta elegir al comité del grupo");
-        }
-        else
+        } else
             Mensaje("No cuenta con la cantidad de integrantes para formar un grupo");
 
         return flag;
     }
 
-    private void obtenerEstatusSolicitud()
-    {
+    private void obtenerEstatusSolicitud() {
         final AlertDialog loadingEstatus = Popups.showLoadingDialog(ctx, R.string.please_wait, R.string.loading_info);
         loadingEstatus.show();
 
         SolicitudRenDao solicitudRenDao = new SolicitudRenDao(ctx);
         SolicitudRen solicitudRen = solicitudRenDao.findByIdSolicitud(Integer.valueOf(String.valueOf(id_solicitud)));
 
-        if(solicitudRen != null && solicitudRen.getEstatus() > 1)
-        {
-            SessionManager session = new SessionManager(ctx);
-            SolicitudGpoService solicitudGpoService = new RetrofitClient().newInstance(ctx).create(SolicitudGpoService.class);
+        if (solicitudRen != null && solicitudRen.getEstatus() > 1) {
+            SessionManager session = SessionManager.getInstance(ctx);
+            SolicitudGpoService solicitudGpoService = RetrofitClient.newInstance(ctx).create(SolicitudGpoService.class);
             Call<List<SolicitudDetalleEstatusGpo>> call = solicitudGpoService.showEstatusSolicitudes("Bearer " + session.getUser().get(7));
 
             call.enqueue(new Callback<List<SolicitudDetalleEstatusGpo>>() {
@@ -888,15 +860,17 @@ public class RenovacionCreditoGpo extends AppCompatActivity implements dialog_re
 
                                     integrante = integranteDao.findByIdSolicitudIntegrante(se.getIdSolicitudIntegrante());
 
-                                    if(integrante != null) credito = creditoDao.findById(integrante.getIdCredito());
-                                    if(credito != null) solicitudTemp = solicitudRenDao.findByIdSolicitud(credito.getIdSolicitud());
+                                    if (integrante != null)
+                                        credito = creditoDao.findById(integrante.getIdCredito());
+                                    if (credito != null)
+                                        solicitudTemp = solicitudRenDao.findByIdSolicitud(credito.getIdSolicitud());
 
-                                    if(solicitudTemp != null ){
+                                    if (solicitudTemp != null) {
                                         solicitudTemp.setIdOriginacion(se.getId());
                                         solicitudRenDao.updateEstatus(solicitudTemp);
                                     }
 
-                                    if(solicitudTemp != null && Integer.compare(solicitudTemp.getIdSolicitud(), solicitudRen.getIdSolicitud()) == 0) {
+                                    if (solicitudTemp != null && Integer.compare(solicitudTemp.getIdSolicitud(), solicitudRen.getIdSolicitud()) == 0) {
                                         String comentario = "";
 
                                         if (se.getSolicitudEstadoIdIntegrante() == 1) {
@@ -909,8 +883,10 @@ public class RenovacionCreditoGpo extends AppCompatActivity implements dialog_re
 
                                         Log.e("AQUI REN", String.valueOf(se.getId()));
 
-                                        if(se.getSolicitudEstadoIdSolicitud() == 2) solicitudRen.setEstatus(5);
-                                        if(se.getSolicitudEstadoIdSolicitud() == 3) solicitudRen.setEstatus(3);
+                                        if (se.getSolicitudEstadoIdSolicitud() == 2)
+                                            solicitudRen.setEstatus(5);
+                                        if (se.getSolicitudEstadoIdSolicitud() == 3)
+                                            solicitudRen.setEstatus(3);
 
                                         integrante.setComentarioRechazo(comentario);
                                         integranteDao.updateEstatus(integrante);
@@ -938,13 +914,12 @@ public class RenovacionCreditoGpo extends AppCompatActivity implements dialog_re
         }
     }
 
-    private void obtenerRechazo(AlertDialog alert, SolicitudRen solicitud)
-    {
-        SessionManager session = new SessionManager(ctx);
+    private void obtenerRechazo(AlertDialog alert, SolicitudRen solicitud) {
+        SessionManager session = SessionManager.getInstance(ctx);
         SolicitudRenDao solicitudRenDao = new SolicitudRenDao(ctx);
 
-        ManagerInterface api = new RetrofitClient().generalRF(CONTROLLER_SOLICITUDES, ctx).create(ManagerInterface.class);
-        Call<List<MSolicitudRechazoGpo>> call = api.getSolicitudRechazoGpo("Bearer "+ session.getUser().get(7));
+        ManagerInterface api = RetrofitClient.generalRF(CONTROLLER_SOLICITUDES, ctx).create(ManagerInterface.class);
+        Call<List<MSolicitudRechazoGpo>> call = api.getSolicitudRechazoGpo("Bearer " + session.getUser().get(7));
 
         call.enqueue(new Callback<List<MSolicitudRechazoGpo>>() {
             @Override
@@ -968,8 +943,10 @@ public class RenovacionCreditoGpo extends AppCompatActivity implements dialog_re
 
                                 integrante = integranteDao.findByIdSolicitudIntegrante(item.getIdSolicitudIntegrante());
 
-                                if(integrante != null) credito = creditoDao.findById(integrante.getIdCredito());
-                                if(credito != null) solicitudTemp = solicitudRenDao.findByIdSolicitud(credito.getIdSolicitud());
+                                if (integrante != null)
+                                    credito = creditoDao.findById(integrante.getIdCredito());
+                                if (credito != null)
+                                    solicitudTemp = solicitudRenDao.findByIdSolicitud(credito.getIdSolicitud());
 
                                 if (item.getTipoSolicitud() != 1 && solicitudTemp != null && Integer.compare(solicitudTemp.getIdSolicitud(), solicitud.getIdSolicitud()) == 0) {
                                     sql = "SELECT " +
@@ -1082,8 +1059,7 @@ public class RenovacionCreditoGpo extends AppCompatActivity implements dialog_re
             }
 
             @Override
-            public void onFailure(Call<List<MSolicitudRechazoGpo>> call, Throwable t)
-            {
+            public void onFailure(Call<List<MSolicitudRechazoGpo>> call, Throwable t) {
                 Log.e("ERROR ", t.getMessage());
                 alert.dismiss();
             }

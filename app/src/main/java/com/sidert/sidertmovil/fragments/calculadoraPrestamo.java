@@ -144,7 +144,7 @@ public class calculadoraPrestamo extends Fragment {
         boostrap.setTitle("Calculadora Prestamos");
         boostrap.invalidateOptionsMenu();
 
-        session = new SessionManager(ctx);
+        session = SessionManager.getInstance(ctx);
 
         //getSucursalIdA();
 
@@ -171,7 +171,7 @@ public class calculadoraPrestamo extends Fragment {
 
         //Casteo de los textView clientes nuevos - Individuales y grupales
         suucursalCosto = v.findViewById(R.id.txtSucursalCosto);
-        SessionManager sen = new SessionManager(ctx);
+        SessionManager sen = SessionManager.getInstance(ctx);
         try {
             getSucursalA(sen);
         } catch (JSONException e) {
@@ -594,7 +594,7 @@ public class calculadoraPrestamo extends Fragment {
                 if (objetos.equals("centrocosto_id") || objetos != null) {
                     suucursalCosto.setText(data);
                 } else
-                    suucursalCosto.setText("NEL PRRO");
+                    suucursalCosto.setText("NULL");
             }
         }
 
@@ -624,22 +624,8 @@ public class calculadoraPrestamo extends Fragment {
         }
 
         public void ServicioWebCalculos(int idSucursal, String idProducto, String tipoCliente, String monto, int plazo, int periodo) {
-           /*String base_url = "http://sidert.ddns.net:83/api/movil/";
-
-            final OkHttpClient okHttpClient = new OkHttpClient.Builder()
-                    .connectTimeout(120, TimeUnit.SECONDS)
-                    .readTimeout(120, TimeUnit.SECONDS)
-                    .build();
-
-            Retrofit retrofit = null;
-
-            retrofit = new Retrofit.Builder()
-                    .addConverterFactory(GsonConverterFactory.create())
-                    .baseUrl(base_url)
-                    .client(okHttpClient)
-                    .build();*/
-
-            CalculadoraApiService api = new RetrofitClient().generalRF(CONTROLLER_MOVIL, ctx).create(CalculadoraApiService.class);
+            
+            CalculadoraApiService api = RetrofitClient.generalRF(CONTROLLER_MOVIL, ctx).create(CalculadoraApiService.class);
             //"Bearer "+ session.getUser().get(7)
             Call<Calculadora> call = api.setCalcularPresupuesto(idSucursal, idProducto, tipoCliente, monto, plazo, periodo);
             call.enqueue(new Callback<Calculadora>() {

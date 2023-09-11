@@ -48,7 +48,7 @@ public class cvi_pagos_fragment extends Fragment {
         ctx     = getContext();
         parent  = (VencidaIndividual) getActivity();
 
-        dBhelper = new DBhelper(ctx);
+        dBhelper = DBhelper.getInstance(ctx);
 
         rgHistorialPagos    = view.findViewById(R.id.rgHistorialPagos);
         rvPagos             = view.findViewById(R.id.rvPagosCiente);
@@ -61,13 +61,10 @@ public class cvi_pagos_fragment extends Fragment {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 rvPagos.setAdapter(null);
-                switch (checkedId){
-                    case R.id.rbTablaPagos:
-                        GetPagos();
-                        break;
-                    case R.id.rbReporteOmega:
-                        GetAmortiz();
-                        break;
+                if (checkedId == R.id.rbTablaPagos) {
+                    GetPagos();
+                } else if (checkedId == R.id.rbReporteOmega) {
+                    GetAmortiz();
                 }
             }
         });

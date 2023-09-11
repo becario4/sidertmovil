@@ -3,6 +3,7 @@ package com.sidert.sidertmovil.fragments;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -52,10 +53,12 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.sidert.sidertmovil.R;
 import com.sidert.sidertmovil.activities.CameraVertical;
+import com.sidert.sidertmovil.activities.Catalogos;
 import com.sidert.sidertmovil.activities.GeolocalizacionGpo;
 import com.sidert.sidertmovil.activities.LectorCodigoBarras;
 import com.sidert.sidertmovil.activities.VerImagen;
 import com.sidert.sidertmovil.database.DBhelper;
+import com.sidert.sidertmovil.models.ModeloCatalogoGral;
 import com.sidert.sidertmovil.utils.CanvasCustom;
 import com.sidert.sidertmovil.utils.Constants;
 import com.sidert.sidertmovil.utils.Miscellaneous;
@@ -75,11 +78,17 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Objects;
 
+import static com.sidert.sidertmovil.utils.Constants.CARTERAEN;
+import static com.sidert.sidertmovil.utils.Constants.CATALOGO;
 import static com.sidert.sidertmovil.utils.Constants.FORMAT_TIMESTAMP;
+import static com.sidert.sidertmovil.utils.Constants.ITEM;
+import static com.sidert.sidertmovil.utils.Constants.REQUEST_CODE;
+import static com.sidert.sidertmovil.utils.Constants.REQUEST_CODE_CARTERAEN;
 import static com.sidert.sidertmovil.utils.Constants.TBL_GEO_RESPUESTAS_T;
 import static com.sidert.sidertmovil.utils.Constants.TBL_MIEMBROS_GPO_T;
 import static com.sidert.sidertmovil.utils.Constants.TBL_PRESTAMOS_GPO_T;
 import static com.sidert.sidertmovil.utils.Constants.TIMESTAMP;
+import static com.sidert.sidertmovil.utils.Constants.TITULO;
 
 public class geo_secretaria_fragment extends Fragment {
 
@@ -87,6 +96,7 @@ public class geo_secretaria_fragment extends Fragment {
     private GeolocalizacionGpo boostrap;
     private TextView tvMapa;
     private TextView tvDireccionCap;
+    private TextView txtCarteraEnSecretaria;
     private EditText etNombre;
     public EditText etCodigoBarras;
     private EditText etDireccion;
@@ -136,7 +146,7 @@ public class geo_secretaria_fragment extends Fragment {
         ctx = getContext();
         boostrap = (GeolocalizacionGpo) getActivity();
 
-        dBhelper = new DBhelper(ctx);
+        dBhelper = DBhelper.getInstance(ctx);
         db = dBhelper.getWritableDatabase();
 
         tvMapa          = view.findViewById(R.id.tvMapa);
@@ -155,6 +165,9 @@ public class geo_secretaria_fragment extends Fragment {
         ibUbicacion = view.findViewById(R.id.ibUbicacion);
         ibCodigoBarras = view.findViewById(R.id.ibCodigoBarras);
         ibFotoFachada = view.findViewById(R.id.ibFotoFachada);
+
+        txtCarteraEnSecretaria = view.findViewById(R.id.txtCarteraEnSecretaria);
+
         ibGaleriaFachada = view.findViewById(R.id.ibGaleriaFachada);
 
         ivFotoFachada = view.findViewById(R.id.ivFotoFachada);
@@ -185,10 +198,12 @@ public class geo_secretaria_fragment extends Fragment {
 
         ibUbicacion.setOnClickListener(ibUbicacion_OnClick);
         ibCodigoBarras.setOnClickListener(ibCodigoBarras_OnClick);
+        txtCarteraEnSecretaria.setOnClickListener(txtCarteraEnSecretaria_OnClick);
         ibFotoFachada.setOnClickListener(ibFotoFachada_OnClick);
         ibGaleriaFachada.setOnClickListener(ibGaleriaFachada_OnClick);
         ivFotoFachada.setOnClickListener(ivFotoFachada_OnClick);
         btnGuardar.setOnClickListener(btnGuardar_OnClick);
+
 
 
         mapUbicacion.getMapAsync(new OnMapReadyCallback() {
@@ -249,6 +264,7 @@ public class geo_secretaria_fragment extends Fragment {
 
     }
 
+
     private View.OnClickListener ibUbicacion_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -259,6 +275,21 @@ public class geo_secretaria_fragment extends Fragment {
                 ObtenerUbicacion();
         }
     };
+
+
+    private View.OnClickListener txtCarteraEnSecretaria_OnClick = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+
+            Intent i_carteraEn = new Intent(ctx, Catalogos.class);
+            i_carteraEn.putExtra(TITULO,Miscellaneous.ucFirst(CARTERAEN));
+            i_carteraEn.putExtra(CATALOGO,CARTERAEN);
+            i_carteraEn.putExtra(REQUEST_CODE,REQUEST_CODE_CARTERAEN);
+            startActivityForResult(i_carteraEn,REQUEST_CODE_CARTERAEN);
+
+        }
+    };
+
 
     private View.OnClickListener ibCodigoBarras_OnClick = new View.OnClickListener() {
         @Override
@@ -277,27 +308,19 @@ public class geo_secretaria_fragment extends Fragment {
         }
     };
 
-    private View.OnClickListener ibGaleriaFachada_OnClick = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            /**Valida si tiene los permisos de escritura y lectura de almacenamiento*/
-            if (ContextCompat.checkSelfPermission(ctx, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
-                    || ContextCompat.checkSelfPermission(ctx,Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED){
-                requestPermissions(new String[] {Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE}, 123);
-            } else {
-                int compress = 10;/**Porcentaje de calidad de imagen de salida*/
-                if( Build.MANUFACTURER.toUpperCase().equals("SAMSUNG"))/**Valida si es de un samsung para subir un poco la calidad*/
-                    compress = 40;
+    private final View.OnClickListener ibGaleriaFachada_OnClick = ignored -> {
+        String model = Build.MANUFACTURER;
+        int compress = 10;
 
-                /**Libreria para recortar imagenes*/
-                CropImage.activity()
-                        .setAutoZoomEnabled(true)
-                        .setMinCropWindowSize(3000,4000)
-                        .setOutputCompressQuality(compress)
-                        .start(ctx, geo_secretaria_fragment.this);
-            }
-
+        if (model != null && model.equalsIgnoreCase("SAMSUNG")) {
+            compress = 40;
         }
+
+        CropImage.activity()
+                .setAutoZoomEnabled(true)
+                .setMinCropWindowSize(3000, 4000)
+                .setOutputCompressQuality(compress)
+                .start(ctx, this);
     };
 
     private View.OnClickListener ivFotoFachada_OnClick = new View.OnClickListener() {
@@ -498,6 +521,23 @@ public class geo_secretaria_fragment extends Fragment {
                     }
                 }
                 break;
+
+            case REQUEST_CODE_CARTERAEN:
+                if(resultCode == REQUEST_CODE_CARTERAEN){
+                    if(data != null){
+                        Integer id_carteraEn = 0;
+                        ContentValues cv = new ContentValues();
+                        txtCarteraEnSecretaria.setError(null);
+                        txtCarteraEnSecretaria.setText(((ModeloCatalogoGral) data.getSerializableExtra(ITEM)).getNombre());
+                        id_carteraEn = Miscellaneous.selectCampana(ctx,Miscellaneous.GetStr(txtCarteraEnSecretaria));
+
+                    }
+                }else{
+                    txtCarteraEnSecretaria.setText(" ");
+                    Toast.makeText(ctx, "ESTE CAMPO ES REQUERIDO",Toast.LENGTH_SHORT).show();
+                }
+                break;
+
             case Constants.REQUEST_CODE_CAMARA_FACHADA:
                 if (resultCode == Activity.RESULT_OK){
                     if (data != null){
@@ -585,6 +625,7 @@ public class geo_secretaria_fragment extends Fragment {
             params.put(14, "");
             params.put(15, "0");
             params.put(16, cliente_clv);
+            params.put(17, String.valueOf(Miscellaneous.selectCarteraEn(ctx,Miscellaneous.GetStr(txtCarteraEnSecretaria))));
 
             if (isSave)
                 dBhelper.saveGeoRespuestas(db, params);
@@ -659,6 +700,9 @@ public class geo_secretaria_fragment extends Fragment {
             llFechaFinalizacion.setVisibility(View.VISIBLE);
             llFechaEnvio.setVisibility(View.VISIBLE);
             btnGuardar.setVisibility(View.GONE);
+            txtCarteraEnSecretaria.setText(Miscellaneous.tipoEntregaCartera(ctx,row.getString(18)));
+            txtCarteraEnSecretaria.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked));
+            txtCarteraEnSecretaria.setEnabled(false);
 
         }
     }

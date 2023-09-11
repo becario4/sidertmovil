@@ -10,6 +10,9 @@ import com.sidert.sidertmovil.database.DBhelper;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.sidert.sidertmovil.utils.Constants.TBL_DATOS_BENEFICIARIO_GPO;
+import static com.sidert.sidertmovil.utils.Constants.TBL_DATOS_BENEFICIARIO_GPO_REN;
+import static com.sidert.sidertmovil.utils.Constants.TBL_DATOS_CREDITO_CAMPANA_GPO;
 import static com.sidert.sidertmovil.utils.Constants.TBL_INTEGRANTES_GPO;
 
 public class IntegranteGpoDao {
@@ -17,7 +20,7 @@ public class IntegranteGpoDao {
     final SQLiteDatabase db;
 
     public IntegranteGpoDao(Context ctx){
-        this.dbHelper = new DBhelper(ctx);
+        this.dbHelper = DBhelper.getInstance(ctx);
         this.db = dbHelper.getWritableDatabase();
     }
 
@@ -129,7 +132,6 @@ public class IntegranteGpoDao {
     public void updateEstatus(IntegranteGpo integrante)
     {
         ContentValues cv = new ContentValues();
-
         //cv.put("estatus_completado", integrante.getEstatusCompletado());
         cv.put("comentario_rechazo", integrante.getComentarioRechazo());
         db.update(TBL_INTEGRANTES_GPO, cv, "id = ?", new String[]{String.valueOf(integrante.getId())});
@@ -141,14 +143,36 @@ public class IntegranteGpoDao {
 
         cv.put("estatus_completado", integrante.getEstatusCompletado());
         db.update(TBL_INTEGRANTES_GPO, cv, "id = ?", new String[]{String.valueOf(integrante.getId())});
+
     }
 
-    public void setCompletado(IntegranteGpo integranteGpo, Integer idSolicitud)
+    public void setCompletado(IntegranteGpo integranteGpo, Integer idSolicitud, Integer id_grupo,Integer id_cliente)
     {
         ContentValues cv = new ContentValues();
         cv.put("id_solicitud_integrante", idSolicitud);
         cv.put("estatus_completado",2);
         db.update(TBL_INTEGRANTES_GPO, cv, "id = ?", new String[]{String.valueOf(integranteGpo.getId())});
+
+        ContentValues cv1 = new ContentValues();
+        cv1.put("id_solicitud_integrante", idSolicitud);
+        cv1.put("id_grupo",id_grupo);
+        cv1.put("id_cliente",id_cliente);
+        db.update(TBL_DATOS_BENEFICIARIO_GPO,cv1,"id_integrante = ?", new String[]{String.valueOf(integranteGpo.getId())});
+
+        ContentValues cv2 = new ContentValues();
+        cv2.put("id_solicitud_integrante", idSolicitud);
+        db.update(TBL_DATOS_BENEFICIARIO_GPO_REN,cv2,"id_integrante = ?", new String[]{String.valueOf(integranteGpo.getId())});
+
+        ContentValues cv3 = new ContentValues();
+        cv3.put("id_originacion",idSolicitud);
+        db.update(TBL_DATOS_CREDITO_CAMPANA_GPO, cv3,"id_solicitud = ?", new String[]{String.valueOf(integranteGpo.getId())});
+
+
+
+
+
+
+
     }
 
 }

@@ -8,6 +8,7 @@
 
     <!--  Selfie INE  -->
     <LinearLayout
+        android:id="@+id/llIneSelfieGpo"
         android:layout_marginTop="15dp"
         android:orientation="vertical"
         android:layout_width="match_parent"
@@ -49,6 +50,7 @@
 
     <!--  Fotografía del INE/IFE Frontal  -->
     <LinearLayout
+        android:id="@+id/llIneFrontalGpo"
         android:layout_marginTop="15dp"
         android:orientation="vertical"
         android:layout_width="match_parent"
@@ -90,6 +92,7 @@
 
     <!--  Fotografía del INE/IFE Reverso  -->
     <LinearLayout
+        android:id="@+id/llIneReversoGpo"
         android:layout_marginTop="15dp"
         android:orientation="vertical"
         android:layout_width="match_parent"
@@ -218,7 +221,7 @@
         android:layout_height="wrap_content">
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/btnRegresar6"
+            android:id="@+id/btnRegresarGpoDocumentos"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"

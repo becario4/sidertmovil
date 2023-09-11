@@ -98,7 +98,7 @@ public class dialog_mailbox extends DialogFragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         validator = new Validator();
-        session = new SessionManager(ctx);
+        session = SessionManager.getInstance(ctx);
         calendar = Calendar.getInstance();
 
         today = sdf.format(calendar.getTime());
@@ -226,7 +226,7 @@ public class dialog_mailbox extends DialogFragment {
 
 
 
-            ManagerInterface api = new RetrofitClient().generalRF(CONTROLLER_MOVIL, ctx).create(ManagerInterface.class);
+            ManagerInterface api = RetrofitClient.generalRF(CONTROLLER_MOVIL, ctx).create(ManagerInterface.class);
 
             MailBoxPLD obj = new MailBoxPLD("",
                     sdf.format(calendar.getTime()),

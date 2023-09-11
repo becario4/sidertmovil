@@ -92,9 +92,9 @@ public class RecuperacionIndividual extends AppCompatActivity {
         setContentView(R.layout.activity_recuperacion_individual);
         ctx             = this;
 
-        session = new SessionManager(ctx);
+        session = SessionManager.getInstance(ctx);
 
-        dBhelper = new DBhelper(ctx);
+        dBhelper = DBhelper.getInstance(ctx);
         db = dBhelper.getWritableDatabase();
         TBmain          = findViewById(R.id.TBmain);
 
@@ -218,17 +218,13 @@ public class RecuperacionIndividual extends AppCompatActivity {
     private BottomNavigationView.OnNavigationItemSelectedListener nvMenu_onClick = new BottomNavigationView.OnNavigationItemSelectedListener() {
         @Override
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-            switch (item.getItemId()) {
-                case R.id.nvDatos:
-                    setFragment(DETALLE_IND, null);
-                    break;
-                case R.id.nvGestion:
-                    setFragment(RECUPERACION_IND, null);
-                    break;
-                case R.id.nvReporte:
-                    setFragment(REPORTE_PAGOS_IND, null);
-                    break;
-
+            int itemId = item.getItemId();
+            if (itemId == R.id.nvDatos) {
+                setFragment(DETALLE_IND, null);
+            } else if (itemId == R.id.nvGestion) {
+                setFragment(RECUPERACION_IND, null);
+            } else if (itemId == R.id.nvReporte) {
+                setFragment(REPORTE_PAGOS_IND, null);
             }
             return true;
         }

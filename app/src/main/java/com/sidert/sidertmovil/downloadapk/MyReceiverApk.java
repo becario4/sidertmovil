@@ -9,24 +9,20 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.Cursor;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Environment;
-//import android.support.v4.content.FileProvider;
-import androidx.appcompat.app.AlertDialog;
-import androidx.core.content.FileProvider;
-
 import android.util.Log;
 import android.webkit.MimeTypeMap;
 import android.webkit.URLUtil;
 
-import com.sidert.sidertmovil.BuildConfig;
 import com.sidert.sidertmovil.R;
 import com.sidert.sidertmovil.utils.Miscellaneous;
 import com.sidert.sidertmovil.utils.Popups;
 
 import java.io.File;
 
-import static android.provider.MediaStore.MediaColumns.MIME_TYPE;
+import androidx.appcompat.app.AlertDialog;
+import androidx.core.content.FileProvider;
+
 import static com.sidert.sidertmovil.utils.Constants.TIMESTAMP;
 
 public class MyReceiverApk extends BroadcastReceiver {
@@ -73,8 +69,7 @@ public class MyReceiverApk extends BroadcastReceiver {
                         File file = new File(path, apkName[7]);
 
 
-                        Uri apkUri = FileProvider.getUriForFile(ctx,
-                                BuildConfig.APPLICATION_ID + ".downloadapk.MyReceiverApk", file);
+                        Uri apkUri = FileProvider.getUriForFile(ctx,"sidertmovil.downloadapk.MyReceiverApk", file);
 
                         Intent prompInstall = new Intent(Intent.ACTION_VIEW);
                         prompInstall.setData(apkUri);

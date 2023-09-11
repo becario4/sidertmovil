@@ -69,12 +69,12 @@ public class VerificacionDomiciliariaActivity extends AppCompatActivity {
     private String[] nombresVerGes;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState){
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.view_verificacion_domiciliaria);
 
         ctx = this;
-        session = new SessionManager(ctx);
+        session = SessionManager.getInstance(ctx);
 
         verificacionDao = new VerificacionDomiciliariaDao(ctx);
 
@@ -111,20 +111,18 @@ public class VerificacionDomiciliariaActivity extends AppCompatActivity {
 
     }
 
-    protected void getDisponibles()
-    {
+    protected void getDisponibles() {
 
         String nombreGrupo = session.getFiltrosVerDom().get(1);
         String nombreCliente = session.getFiltrosVerDom().get(0);
         String banderaIndividual = session.getFiltrosVerDom().get(2);
-        String banderaGrupal     = session.getFiltrosVerDom().get(3);
-        String[] filters         = new String[]{nombreGrupo, nombreCliente, banderaIndividual, banderaGrupal};
+        String banderaGrupal = session.getFiltrosVerDom().get(3);
+        String[] filters = new String[]{nombreGrupo, nombreCliente, banderaIndividual, banderaGrupal};
         List<VerificacionDomiciliaria> verificaciones = verificacionDao.findDisponibles(filters);
 
         rvPreview.setAdapter(null);
 
-        if(verificaciones.size() > 0)
-        {
+        if (verificaciones.size() > 0) {
             VerificacionDomiciliariaAdapter adapter = new VerificacionDomiciliariaAdapter(ctx, verificaciones, verificacion -> {
                 Intent intentVerDom = new Intent(ctx, GestionVerificacionDomiciliariaActivity.class);
                 intentVerDom.putExtra("ver_dom", verificacion);
@@ -136,23 +134,21 @@ public class VerificacionDomiciliariaActivity extends AppCompatActivity {
         }
     }
 
-    protected void getGestionados()
-    {
-        String nombreGrupo       = session.getFiltrosGesVerDom().get(1);
-        String nombreCliente     = session.getFiltrosGesVerDom().get(0);
+    protected void getGestionados() {
+        String nombreGrupo = session.getFiltrosGesVerDom().get(1);
+        String nombreCliente = session.getFiltrosGesVerDom().get(0);
         String banderaIndividual = session.getFiltrosGesVerDom().get(2);
-        String banderaGrupal     = session.getFiltrosGesVerDom().get(3);
+        String banderaGrupal = session.getFiltrosGesVerDom().get(3);
         Log.e("AQUI PRESTAMO:", "-" + nombreGrupo + "-");
         Log.e("AQUI PRESTAMO:", "-" + nombreCliente + "-");
         Log.e("AQUI PRESTAMO:", "-" + banderaIndividual + "-");
         Log.e("AQUI PRESTAMO:", "-" + banderaGrupal + "-");
-        String[] filters         = new String[]{nombreGrupo, nombreCliente, banderaIndividual, banderaGrupal};
+        String[] filters = new String[]{nombreGrupo, nombreCliente, banderaIndividual, banderaGrupal};
         List<VerificacionDomiciliaria> verificaciones = verificacionDao.findGestionadas(filters);
 
         rvPreview.setAdapter(null);
 
-        if(verificaciones.size() > 0)
-        {
+        if (verificaciones.size() > 0) {
             VerificacionDomiciliariaAdapter adapter = new VerificacionDomiciliariaAdapter(ctx, verificaciones, verificacion -> {
                 Intent intentVerDom = new Intent(ctx, GestionVerificacionDomiciliariaActivity.class);
                 intentVerDom.putExtra("ver_dom", verificacion);
@@ -164,21 +160,17 @@ public class VerificacionDomiciliariaActivity extends AppCompatActivity {
         }
     }
 
-    private void getClientesDisponibles()
-    {
+    private void getClientesDisponibles() {
         List<String> nombres = verificacionDao.showNombresDisponibles();
 
-        if(nombres.size() > 0)
-        {
+        if (nombres.size() > 0) {
             nombresVerDis = new String[nombres.size()];
 
-            for(int i = 0; i < nombres.size(); i++)
-            {
+            for (int i = 0; i < nombres.size(); i++) {
                 nombresVerDis[i] = nombres.get(i);
             }
 
-        }
-        else {
+        } else {
             nombresVerDis = new String[1];
             nombresVerDis[0] = "";
         }
@@ -186,21 +178,17 @@ public class VerificacionDomiciliariaActivity extends AppCompatActivity {
         adapterNombresVerDis = new ArrayAdapter<>(ctx, R.layout.custom_list_item, R.id.text_view_list_item, nombresVerDis);
     }
 
-    private void getClientesGestionados()
-    {
+    private void getClientesGestionados() {
         List<String> nombres = verificacionDao.showNombresGestionados();
 
-        if(nombres.size() > 0)
-        {
+        if (nombres.size() > 0) {
             nombresVerGes = new String[nombres.size()];
-            for(int i = 0; i < nombres.size(); i++)
-            {
+            for (int i = 0; i < nombres.size(); i++) {
                 Log.e("AQUI NOMBRE", nombres.get(i));
                 nombresVerGes[i] = nombres.get(i);
             }
 
-        }
-        else {
+        } else {
             nombresVerGes = new String[1];
             nombresVerGes[0] = "";
         }
@@ -209,66 +197,63 @@ public class VerificacionDomiciliariaActivity extends AppCompatActivity {
     }
 
     @SuppressLint("ClickableViewAccessibility")
-    private void Filtros (){
+    private void Filtros() {
         int view = 0;
-        int sizeH = 0;
 
-        switch (iTipoSeccion){
+        View decorateView = this.getWindow().getDecorView();
+        int sizeH = (int) (decorateView.getHeight() / 2.0);
+
+        switch (iTipoSeccion) {
             case 1:
-                sizeH = 600;
                 view = R.layout.sheet_dialog_filtros_verificaciones_domiciliarias;
                 break;
             case 2:
-                sizeH = 600;
                 view = R.layout.sheet_dialog_filtros_gestiones_ver_dom;
                 break;
         }
 
         DialogPlus filtros_dg = DialogPlus.newDialog(ctx)
-            .setContentHolder(new ViewHolder(view))
-            .setGravity(Gravity.TOP)
-            .setPadding(20,40,20,10)
-            .setOnClickListener(new OnClickListener() {
+                .setContentHolder(new ViewHolder(view))
+                .setGravity(Gravity.TOP)
+                .setPadding(20, 40, 20, 10)
+                .setOnClickListener(new OnClickListener() {
 
-                @Override
-                public void onClick(DialogPlus dialog, View view) {
-                    String where             = "";
-                    cont_filtros_ver_dis = 0;
-                    cont_filtros_ver_ges   = 0;
-                    HashMap<String, String> filtros = new HashMap<>();
-                    InputMethodManager imm = (InputMethodManager)ctx.getSystemService(Context.INPUT_METHOD_SERVICE);
+                    @Override
+                    public void onClick(DialogPlus dialog, View view) {
+                        String where = "";
+                        cont_filtros_ver_dis = 0;
+                        cont_filtros_ver_ges = 0;
+                        HashMap<String, String> filtros = new HashMap<>();
+                        InputMethodManager imm = (InputMethodManager) ctx.getSystemService(Context.INPUT_METHOD_SERVICE);
 
-                    switch (view.getId()) {
-                        case R.id.btnFiltrar:
-                            switch (iTipoSeccion){
+                        int id = view.getId();
+                        if (id == R.id.btnFiltrar) {
+                            switch (iTipoSeccion) {
                                 case 1:
-                                    if (!acNombreVerDis.getText().toString().trim().isEmpty()){
+                                    if (!acNombreVerDis.getText().toString().trim().isEmpty()) {
                                         filtros.put("ver_dom_cliente_nombre", acNombreVerDis.getText().toString().trim());
                                         filtros.put("ver_dom_grupo_nombre", acNombreVerDis.getText().toString().trim());
                                         cont_filtros_ver_dis += 1;
-                                    }
-                                    else {
+                                    } else {
                                         filtros.put("ver_dom_cliente_nombre", "");
                                         filtros.put("ver_dom_grupo_nombre", "");
                                     }
 
-                                    if (cbGpoVerDis.isChecked() && cbIndVerDis.isChecked()){
-                                        filtros.put("ver_dom_flag_ind","1");
-                                        filtros.put("ver_dom_flag_gru","1");
+                                    if (cbGpoVerDis.isChecked() && cbIndVerDis.isChecked()) {
+                                        filtros.put("ver_dom_flag_ind", "1");
+                                        filtros.put("ver_dom_flag_gru", "1");
                                         cont_filtros_ver_dis += 2;
-                                    }
-                                    else if (cbIndVerDis.isChecked()){
-                                        filtros.put("ver_dom_flag_ind","1");
-                                        filtros.put("ver_dom_flag_gru","0");
+                                    } else if (cbIndVerDis.isChecked()) {
+                                        filtros.put("ver_dom_flag_ind", "1");
+                                        filtros.put("ver_dom_flag_gru", "0");
                                         cont_filtros_ver_dis += 1;
-                                    }
-                                    else if (cbGpoVerDis.isChecked()){
-                                        filtros.put("ver_dom_flag_ind","0");
-                                        filtros.put("ver_dom_flag_gru","1");
+                                    } else if (cbGpoVerDis.isChecked()) {
+                                        filtros.put("ver_dom_flag_ind", "0");
+                                        filtros.put("ver_dom_flag_gru", "1");
                                         cont_filtros_ver_dis += 1;
-                                    }else {
-                                        filtros.put("ver_dom_flag_ind","0");
-                                        filtros.put("ver_dom_flag_gru","0");
+                                    } else {
+                                        filtros.put("ver_dom_flag_ind", "0");
+                                        filtros.put("ver_dom_flag_gru", "0");
                                     }
 
                                     filtros.put("contador_ver_dis", String.valueOf(cont_filtros_ver_dis));
@@ -280,33 +265,30 @@ public class VerificacionDomiciliariaActivity extends AppCompatActivity {
 
                                     break;
                                 case 2:
-                                    if (!acNombreVerGes.getText().toString().trim().isEmpty()){
+                                    if (!acNombreVerGes.getText().toString().trim().isEmpty()) {
                                         filtros.put("ges_ver_dom_cliente_nombre", acNombreVerGes.getText().toString().trim());
                                         filtros.put("ges_ver_dom_grupo_nombre", acNombreVerGes.getText().toString().trim());
                                         cont_filtros_ver_ges += 1;
-                                    }
-                                    else {
+                                    } else {
                                         filtros.put("ges_ver_dom_cliente_nombre", "");
                                         filtros.put("ges_ver_dom_grupo_nombre", "");
                                     }
 
-                                    if (cbGpoVerGes.isChecked() && cbIndVerGes.isChecked()){
-                                        filtros.put("ges_ver_dom_flag_ind","1");
-                                        filtros.put("ges_ver_dom_flag_gru","1");
+                                    if (cbGpoVerGes.isChecked() && cbIndVerGes.isChecked()) {
+                                        filtros.put("ges_ver_dom_flag_ind", "1");
+                                        filtros.put("ges_ver_dom_flag_gru", "1");
                                         cont_filtros_ver_ges += 2;
-                                    }
-                                    else if (cbIndVerGes.isChecked()){
-                                        filtros.put("ges_ver_dom_flag_ind","1");
-                                        filtros.put("ges_ver_dom_flag_gru","0");
+                                    } else if (cbIndVerGes.isChecked()) {
+                                        filtros.put("ges_ver_dom_flag_ind", "1");
+                                        filtros.put("ges_ver_dom_flag_gru", "0");
                                         cont_filtros_ver_ges += 1;
-                                    }
-                                    else if (cbGpoVerGes.isChecked()){
-                                        filtros.put("ges_ver_dom_flag_ind","0");
-                                        filtros.put("ges_ver_dom_flag_gru","1");
+                                    } else if (cbGpoVerGes.isChecked()) {
+                                        filtros.put("ges_ver_dom_flag_ind", "0");
+                                        filtros.put("ges_ver_dom_flag_gru", "1");
                                         cont_filtros_ver_ges += 1;
-                                    }else {
-                                        filtros.put("ges_ver_dom_flag_ind","0");
-                                        filtros.put("ges_ver_dom_flag_gru","0");
+                                    } else {
+                                        filtros.put("ges_ver_dom_flag_ind", "0");
+                                        filtros.put("ges_ver_dom_flag_gru", "0");
                                     }
 
                                     filtros.put("ges_contador_ver_dis", String.valueOf(cont_filtros_ver_ges));
@@ -320,66 +302,63 @@ public class VerificacionDomiciliariaActivity extends AppCompatActivity {
                             }
 
                             dialog.dismiss();
-                            break;
+                        } else if (id == R.id.btnBorrar) {
+                            switch (iTipoSeccion) {
+                                case 1:
+                                    cbIndVerDis.setChecked(false);
+                                    cbGpoVerDis.setChecked(false);
+                                    acNombreVerDis.setText("");
+                                    acNombreVerDis.setAdapter(adapterNombresVerDis);
+                                    cont_filtros_ver_dis = 0;
 
-                        case R.id.btnBorrar:
-                                switch (iTipoSeccion){
-                                    case 1:
-                                        cbIndVerDis.setChecked(false);
-                                        cbGpoVerDis.setChecked(false);
-                                        acNombreVerDis.setText("");
-                                        acNombreVerDis.setAdapter(adapterNombresVerDis);
-                                        cont_filtros_ver_dis = 0;
+                                    filtros = new HashMap<>();
+                                    filtros.put("ver_dom_cliente_nombre", "");
+                                    filtros.put("ver_dom_grupo_nombre", "");
+                                    filtros.put("ver_dom_flag_ind", "0");
+                                    filtros.put("ver_dom_flag_gru", "0");
+                                    filtros.put("contador_ver_dis", "0");
+                                    session.setFiltrosVerDom(filtros);
 
-                                        filtros = new HashMap<>();
-                                        filtros.put("ver_dom_cliente_nombre","");
-                                        filtros.put("ver_dom_grupo_nombre","");
-                                        filtros.put("ver_dom_flag_ind","0");
-                                        filtros.put("ver_dom_flag_gru", "0");
-                                        filtros.put("contador_ver_dis", "0");
-                                        session.setFiltrosVerDom(filtros);
+                                    imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
 
-                                        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                                    getDisponibles();
+                                    acNombreVerDis.setAdapter(adapterNombresVerDis);
 
-                                        getDisponibles();
-                                        acNombreVerDis.setAdapter(adapterNombresVerDis);
+                                    break;
+                                case 2:
+                                    cbIndVerGes.setChecked(false);
+                                    cbGpoVerGes.setChecked(false);
+                                    acNombreVerGes.setText("");
+                                    acNombreVerGes.setAdapter(adapterNombresVerGes);
+                                    cont_filtros_ver_ges = 0;
 
-                                        break;
-                                    case 2:
-                                        cbIndVerGes.setChecked(false);
-                                        cbGpoVerGes.setChecked(false);
-                                        acNombreVerGes.setText("");
-                                        acNombreVerGes.setAdapter(adapterNombresVerGes);
-                                        cont_filtros_ver_ges = 0;
+                                    filtros = new HashMap<>();
+                                    filtros.put("ges_ver_dom_cliente_nombre", "");
+                                    filtros.put("ges_ver_dom_grupo_nombre", "");
+                                    filtros.put("ges_ver_dom_flag_ind", "0");
+                                    filtros.put("ges_ver_dom_flag_gru", "0");
+                                    filtros.put("ges_contador_ver_dis", "0");
+                                    session.setFiltrosGesVerDom(filtros);
 
-                                        filtros = new HashMap<>();
-                                        filtros.put("ges_ver_dom_cliente_nombre","");
-                                        filtros.put("ges_ver_dom_grupo_nombre","");
-                                        filtros.put("ges_ver_dom_flag_ind","0");
-                                        filtros.put("ges_ver_dom_flag_gru", "0");
-                                        filtros.put("ges_contador_ver_dis", "0");
-                                        session.setFiltrosGesVerDom(filtros);
+                                    imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
 
-                                        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                                    getGestionados();
+                                    acNombreVerGes.setAdapter(adapterNombresVerGes);
 
-                                        getGestionados();
-                                        acNombreVerGes.setAdapter(adapterNombresVerGes);
-
-                                        break;
-                                }
-                                break;
+                                    break;
+                            }
                         }
                         setupBadge();
                     }
-            })
-            .setExpanded(true, sizeH)
-            .create();
+                })
+                .setExpanded(true, sizeH)
+                .create();
 
-        switch (iTipoSeccion){
+        switch (iTipoSeccion) {
             case 1:
                 acNombreVerDis = filtros_dg.getHolderView().findViewById(R.id.aetNombre);
-                cbIndVerDis    = filtros_dg.getHolderView().findViewById(R.id.cbInd);
-                cbGpoVerDis    = filtros_dg.getHolderView().findViewById(R.id.cbGpo);
+                cbIndVerDis = filtros_dg.getHolderView().findViewById(R.id.cbInd);
+                cbGpoVerDis = filtros_dg.getHolderView().findViewById(R.id.cbGpo);
 
                 acNombreVerDis.setAdapter(adapterNombresVerDis);
 
@@ -392,23 +371,23 @@ public class VerificacionDomiciliariaActivity extends AppCompatActivity {
                     }
                 });
 
-                if (!session.getFiltrosVerDom().get(0).isEmpty()){
+                if (!session.getFiltrosVerDom().get(0).isEmpty()) {
                     acNombreVerDis.setText(session.getFiltrosVerDom().get(0));
                 }
 
-                if (session.getFiltrosVerDom().get(2).equals("1")){
+                if (session.getFiltrosVerDom().get(2).equals("1")) {
                     cbIndVerDis.setChecked(true);
                 }
 
-                if (session.getFiltrosVerDom().get(3).equals("1")){
+                if (session.getFiltrosVerDom().get(3).equals("1")) {
                     cbGpoVerDis.setChecked(true);
                 }
 
                 break;
             case 2:
                 acNombreVerGes = filtros_dg.getHolderView().findViewById(R.id.aetNombre);
-                cbIndVerGes    = filtros_dg.getHolderView().findViewById(R.id.cbInd);
-                cbGpoVerGes    = filtros_dg.getHolderView().findViewById(R.id.cbGpo);
+                cbIndVerGes = filtros_dg.getHolderView().findViewById(R.id.cbInd);
+                cbGpoVerGes = filtros_dg.getHolderView().findViewById(R.id.cbGpo);
 
                 acNombreVerGes.setAdapter(adapterNombresVerGes);
 
@@ -421,15 +400,15 @@ public class VerificacionDomiciliariaActivity extends AppCompatActivity {
                     }
                 });
 
-                if (!session.getFiltrosGesVerDom().get(0).isEmpty()){
+                if (!session.getFiltrosGesVerDom().get(0).isEmpty()) {
                     acNombreVerGes.setText(session.getFiltrosGesVerDom().get(0));
                 }
 
-                if (session.getFiltrosGesVerDom().get(2).equals("1")){
+                if (session.getFiltrosGesVerDom().get(2).equals("1")) {
                     cbIndVerGes.setChecked(true);
                 }
 
-                if (session.getFiltrosGesVerDom().get(3).equals("1")){
+                if (session.getFiltrosGesVerDom().get(3).equals("1")) {
                     cbGpoVerGes.setChecked(true);
                 }
 
@@ -441,7 +420,7 @@ public class VerificacionDomiciliariaActivity extends AppCompatActivity {
     }
 
     private void setupBadge() {
-        switch (iTipoSeccion){
+        switch (iTipoSeccion) {
             case 1:
                 if (tvContFiltros != null) {
                     tvContFiltros.setText(String.valueOf(session.getFiltrosVerDom().get(4)));
@@ -478,17 +457,14 @@ public class VerificacionDomiciliariaActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                finish();
-                break;
-            case R.id.nvFiltro:
-                Filtros();
-                break;
-            case R.id.nvInfo:
-                Intent intentResumen = new Intent(ctx, ResumenActivity.class);
-                startActivity(intentResumen);
-                break;
+        int itemId = item.getItemId();
+        if (itemId == android.R.id.home) {
+            finish();
+        } else if (itemId == R.id.nvFiltro) {
+            Filtros();
+        } else if (itemId == R.id.nvInfo) {
+            Intent intentResumen = new Intent(ctx, ResumenActivity.class);
+            startActivity(intentResumen);
         }
         return super.onOptionsItemSelected(item);
     }
@@ -497,8 +473,7 @@ public class VerificacionDomiciliariaActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
-        switch (iTipoSeccion)
-        {
+        switch (iTipoSeccion) {
             case 1:
                 getClientesDisponibles();
                 rbDisponibles.setChecked(true);

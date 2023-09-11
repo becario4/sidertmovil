@@ -1,37 +1,28 @@
 package com.sidert.sidertmovil.utils;
 
 
-import android.app.job.JobInfo;
-import android.app.job.JobScheduler;
-import android.content.ContentValues;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Color;
 import android.location.Address;
 import android.location.Geocoder;
 import android.net.Uri;
-import android.os.Environment;
 import android.provider.MediaStore;
-import android.telecom.ConnectionService;
 import android.telephony.SmsManager;
 import android.util.Base64;
 import android.util.Log;
+import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
-/*import com.bitly.Bitly;
-import com.bitly.Error;
-import com.bitly.Response;*/
+import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.sidert.sidertmovil.database.DBhelper;
-import com.sidert.sidertmovil.models.ModeloColonia;
-import com.sidert.sidertmovil.models.ModeloEstados;
-import com.sidert.sidertmovil.models.ModeloGeolocalizacion;
-import com.sidert.sidertmovil.models.ModeloMunicipio;
-import com.sidert.sidertmovil.models.ModeloOcupaciones;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -41,7 +32,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -56,14 +46,14 @@ import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import static com.sidert.sidertmovil.utils.Constants.COLONIAS;
 import static com.sidert.sidertmovil.utils.Constants.ESTADOS;
@@ -75,24 +65,30 @@ import static com.sidert.sidertmovil.utils.Constants.MUNICIPIOS;
 import static com.sidert.sidertmovil.utils.Constants.OCUPACIONES;
 import static com.sidert.sidertmovil.utils.Constants.SECTORES;
 import static com.sidert.sidertmovil.utils.Constants.TBL_ARQUEO_CAJA_T;
+import static com.sidert.sidertmovil.utils.Constants.TBL_CATALOGOS_CAMPANAS;
+import static com.sidert.sidertmovil.utils.Constants.TBL_CREDITO_IND_REN;
+import static com.sidert.sidertmovil.utils.Constants.TBL_DATOS_ENTREGA_CARTERA;
 import static com.sidert.sidertmovil.utils.Constants.TBL_DESTINOS_CREDITO;
 import static com.sidert.sidertmovil.utils.Constants.TBL_ESTADOS_CIVILES;
 import static com.sidert.sidertmovil.utils.Constants.TBL_IDENTIFICACIONES_TIPO;
 import static com.sidert.sidertmovil.utils.Constants.TBL_MEDIOS_CONTACTO;
 import static com.sidert.sidertmovil.utils.Constants.TBL_MEDIOS_PAGO_ORI;
-import static com.sidert.sidertmovil.utils.Constants.TBL_MIEMBROS_PAGOS;
 import static com.sidert.sidertmovil.utils.Constants.TBL_MIEMBROS_PAGOS_T;
 import static com.sidert.sidertmovil.utils.Constants.TBL_NIVELES_ESTUDIOS;
 import static com.sidert.sidertmovil.utils.Constants.TBL_PARENTESCOS;
 import static com.sidert.sidertmovil.utils.Constants.TBL_RECIBOS_AGF_CC;
 import static com.sidert.sidertmovil.utils.Constants.TBL_RECUPERACION_RECIBOS_CC;
-import static com.sidert.sidertmovil.utils.Constants.TBL_TRACKER_ASESOR_T;
 import static com.sidert.sidertmovil.utils.Constants.TBL_VIVIENDA_TIPOS;
 import static com.sidert.sidertmovil.utils.Constants.TIMESTAMP;
 
 
-public class Miscellaneous {
-    private DBhelper dBhelper;
+public class Miscellaneous extends AppCompatActivity {
+
+    static {
+        GSON = new GsonBuilder().create();
+    }
+
+    private static final Gson GSON;
 
     /*Validación de que no sea null ni vacio y colocar primera leta mayúscula*/
     public static String ucFirst(String str) {
@@ -442,6 +438,31 @@ public class Miscellaneous {
         int year = fechaActual.get(Calendar.YEAR) - fechaNacimiento.get(Calendar.YEAR);
         int mes = fechaActual.get(Calendar.MONTH) - fechaNacimiento.get(Calendar.MONTH);
         int dia = fechaActual.get(Calendar.DATE) - fechaNacimiento.get(Calendar.DATE);
+        if(mes<0 || (mes==0 && dia<0)){
+            year--;
+        }
+
+        return String.valueOf(year);
+    }
+
+
+    public static String GetEdad2 (String fecha_nac){
+        Date fechaNac=null;
+        try {
+            fechaNac = new SimpleDateFormat("yyyy-MM-dd").parse(fecha_nac);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        Calendar fechaActual = Calendar.getInstance();
+        Calendar fechaNacimiento = Calendar.getInstance();
+        fechaNacimiento.setTime(fechaNac);
+
+        int dia = fechaActual.get(Calendar.DATE) - fechaNacimiento.get(Calendar.DATE);
+        int mes = fechaActual.get(Calendar.MONTH) - fechaNacimiento.get(Calendar.MONTH);
+        int year = fechaActual.get(Calendar.YEAR) - fechaNacimiento.get(Calendar.YEAR);
+
+
         if(mes<0 || (mes==0 && dia<0)){
             year--;
         }
@@ -1510,23 +1531,21 @@ public class Miscellaneous {
     }
 
     public static String ConvertToJson (Object obj){
-        Log.v("JsonConvert", new GsonBuilder().create().toJson(obj));
-        return new GsonBuilder().create().toJson(obj);
+        Log.v("JsonConvert", GSON.toJson(obj));
+        return GSON.toJson(obj);
     }
 
     /*Obtiene el texto de los edittext y textview*/
-    public static String GetStr(Object obj){
-        String txt = ((Object)obj).getClass().getSimpleName();
-        if (((Object)obj).getClass().getSimpleName().contains("EditText")){
-            txt = ((EditText)obj).getText().toString().trim().toUpperCase();
+    public static String GetStr(Object obj) {
+        String stringvalue;
+        if (obj instanceof EditText) {
+            stringvalue = ((EditText) obj).getText().toString();
+        } else if (obj instanceof TextView) {
+            stringvalue = ((TextView) obj).getText().toString();
+        } else {
+            stringvalue = (String) obj;
         }
-        else if (((Object)obj).getClass().getSimpleName().contains("TextView")){
-            txt = ((TextView)obj).getText().toString().trim().toUpperCase();
-        }
-        else{
-            txt = ((String)obj).trim().toUpperCase();
-        }
-        return txt;
+        return stringvalue.trim().toUpperCase();
     }
 
     public static boolean ValidTextView (TextView tv){
@@ -1591,9 +1610,78 @@ public class Miscellaneous {
         return codigoEstado;
     }
 
+    public static Integer selectCampana(Context ctx ,String campana){
+        Integer id_campana = 0;
+
+        DBhelper dBhelper = DBhelper.getInstance(ctx);
+        SQLiteDatabase db = dBhelper.getWritableDatabase();
+
+        String sql = "Select id_campana from " + TBL_CATALOGOS_CAMPANAS + " WHERE tipo_campana = ?";
+        Cursor row = db.rawQuery(sql,new String[]{String.valueOf(campana)});
+
+        if(row.getCount()>0){
+            row.moveToFirst();
+            id_campana = Integer.parseInt(row.getString(0).trim().toUpperCase());
+        }
+        row.close();
+        return id_campana;
+    }
+
+    public static Integer selectCarteraEn(Context ctx, String carteraEn){
+        Integer id_carteraEn = 0;
+
+        DBhelper dBhelper = DBhelper.getInstance(ctx);
+        SQLiteDatabase db = dBhelper.getWritableDatabase();
+
+        String sql = " SELECT id_tipocartera from " + TBL_DATOS_ENTREGA_CARTERA + " WHERE tipo_EntregaCartera = ?";
+
+        Cursor row = db.rawQuery(sql, new String[]{String.valueOf(carteraEn)});
+
+        if(row.getCount()>0){
+            row.moveToFirst();
+            id_carteraEn = Integer.parseInt(row.getString(0).trim().toUpperCase());
+        }
+        row.close();
+        return id_carteraEn;
+    }
+
+    public static String tipoCampana(Context ctx, String id_campana){
+        String tipo_campana=" ";
+
+        DBhelper dBhelper = DBhelper.getInstance(ctx);
+        SQLiteDatabase db = dBhelper.getWritableDatabase();
+
+        String sql = " SELECT tipo_campana from " + TBL_CATALOGOS_CAMPANAS + " WHERE id_campana = ?";
+        Cursor row = db.rawQuery(sql,new String[]{String.valueOf(id_campana)});
+
+        if(row.getCount()>0){
+            row.moveToFirst();
+            tipo_campana = row.getString(0).trim().toUpperCase();
+        }
+        row.close();
+        return tipo_campana;
+    }
+    public static String tipoEntregaCartera(Context ctx, String id_entregaCartera){
+        String tipo_entregaCa = " ";
+
+        DBhelper dBhelper = DBhelper.getInstance(ctx);
+        SQLiteDatabase db = dBhelper.getWritableDatabase();
+
+        String sql = " SELECT tipo_EntregaCartera from " + TBL_DATOS_ENTREGA_CARTERA + " WHERE id_tipocartera = ?";
+        Cursor row = db.rawQuery(sql,new String[]{String.valueOf(id_entregaCartera)});
+
+        if(row.getCount()>0){
+            row.moveToFirst();
+            tipo_entregaCa = row.getString(0).trim().toUpperCase();
+        }
+        row.close();
+        return tipo_entregaCa;
+    }
+
+
     public static String GetColonia(Context ctx, int id){
         String colonia = "";
-        DBhelper dBhelper = new DBhelper(ctx);
+        DBhelper dBhelper = DBhelper.getInstance(ctx);
         SQLiteDatabase db = dBhelper.getWritableDatabase();
 
         String sql = "SELECT colonia_nombre FROM " + COLONIAS + " WHERE colonia_id = ?";
@@ -1611,7 +1699,7 @@ public class Miscellaneous {
 
     public static String GetLocalidad(Context ctx, int id){
         String localidad = "";
-        DBhelper dBhelper = new DBhelper(ctx);
+        DBhelper dBhelper = DBhelper.getInstance(ctx);
         SQLiteDatabase db = dBhelper.getWritableDatabase();
 
         String sql = "SELECT nombre FROM " + LOCALIDADES + " WHERE id_localidad = ?";
@@ -1629,7 +1717,7 @@ public class Miscellaneous {
 
     public static String GetMunicipio(Context ctx, int id){
         String municipio = "";
-        DBhelper dBhelper = new DBhelper(ctx);
+        DBhelper dBhelper = DBhelper.getInstance(ctx);
         SQLiteDatabase db = dBhelper.getWritableDatabase();
 
         String sql = "SELECT municipio_nombre FROM " + MUNICIPIOS + " WHERE municipio_id = ?";
@@ -1647,7 +1735,7 @@ public class Miscellaneous {
 
     public static String GetEstado(Context ctx, int id){
         String estado = "";
-        DBhelper dBhelper = new DBhelper(ctx);
+        DBhelper dBhelper = DBhelper.getInstance(ctx);
         SQLiteDatabase db = dBhelper.getWritableDatabase();
 
         String sql = "SELECT estado_nombre FROM " + ESTADOS + " WHERE estado_id = ?";
@@ -1665,7 +1753,7 @@ public class Miscellaneous {
 
     public static String GetOcupacion(Context ctx, int id){
         String ocupacion = "";
-        DBhelper dBhelper = new DBhelper(ctx);
+        DBhelper dBhelper = DBhelper.getInstance(ctx);
         SQLiteDatabase db = dBhelper.getWritableDatabase();
 
         String sql = "SELECT ocupacion_nombre FROM " + OCUPACIONES + " WHERE ocupacion_id = ?";
@@ -1683,7 +1771,7 @@ public class Miscellaneous {
 
     public static String GetSector(Context ctx, int id){
         String ocupacion = "";
-        DBhelper dBhelper = new DBhelper(ctx);
+        DBhelper dBhelper = DBhelper.getInstance(ctx);
         SQLiteDatabase db = dBhelper.getWritableDatabase();
 
         String sql = "SELECT sector_nombre FROM " + OCUPACIONES + " AS o INNER JOIN " + SECTORES + " AS s ON s.sector_id = o.sector_id WHERE o.ocupacion_id = ?";
@@ -1701,7 +1789,7 @@ public class Miscellaneous {
 
     public static String GetEstudio(Context ctx, int id){
         String estudio = "";
-        DBhelper dBhelper = new DBhelper(ctx);
+        DBhelper dBhelper = DBhelper.getInstance(ctx);
         SQLiteDatabase db = dBhelper.getWritableDatabase();
 
         String sql = "SELECT nombre FROM " + TBL_NIVELES_ESTUDIOS + " WHERE id = ?";
@@ -1719,7 +1807,7 @@ public class Miscellaneous {
 
     public static String GetParentesco(Context ctx, int id){
         String parentesco = "";
-        DBhelper dBhelper = new DBhelper(ctx);
+        DBhelper dBhelper = DBhelper.getInstance(ctx);
         SQLiteDatabase db = dBhelper.getWritableDatabase();
 
         String sql = "SELECT nombre FROM " + TBL_PARENTESCOS + " WHERE id = ?";
@@ -1737,7 +1825,7 @@ public class Miscellaneous {
 
     public static String GetEstadoCivil(Context ctx, int id){
         String estadoCivil = "";
-        DBhelper dBhelper = new DBhelper(ctx);
+        DBhelper dBhelper = DBhelper.getInstance(ctx);
         SQLiteDatabase db = dBhelper.getWritableDatabase();
 
         String sql = "SELECT nombre FROM " + TBL_ESTADOS_CIVILES + " WHERE id = ?";
@@ -1754,7 +1842,7 @@ public class Miscellaneous {
 
     public static String GetTipoIdentificacion(Context ctx, int id){
         String tipoIdentificacion = "";
-        DBhelper dBhelper = new DBhelper(ctx);
+        DBhelper dBhelper = DBhelper.getInstance(ctx);
         SQLiteDatabase db = dBhelper.getWritableDatabase();
 
         String sql = "SELECT nombre FROM " + TBL_IDENTIFICACIONES_TIPO + " WHERE id = ?";
@@ -1771,7 +1859,7 @@ public class Miscellaneous {
 
     public static String GetMediosPagoSoli(Context ctx, String ids){
         String mediosPago = "";
-        DBhelper dBhelper = new DBhelper(ctx);
+        DBhelper dBhelper = DBhelper.getInstance(ctx);
         SQLiteDatabase db = dBhelper.getWritableDatabase();
         String sql = "SELECT nombre FROM " + TBL_MEDIOS_PAGO_ORI + " WHERE id IN ("+ids+")";
         Cursor r = db.rawQuery(sql, null);
@@ -1795,7 +1883,7 @@ public class Miscellaneous {
 
     public static String GetViviendaTipo(Context ctx, int id){
         String viviendaTipo = "";
-        DBhelper dBhelper = new DBhelper(ctx);
+        DBhelper dBhelper = DBhelper.getInstance(ctx);
         SQLiteDatabase db = dBhelper.getWritableDatabase();
 
         String sql = "SELECT nombre FROM " + TBL_VIVIENDA_TIPOS + " WHERE id = ?";
@@ -1812,7 +1900,7 @@ public class Miscellaneous {
 
     public static String GetMedioContacto(Context ctx, int id){
         String medioContacto = "";
-        DBhelper dBhelper = new DBhelper(ctx);
+        DBhelper dBhelper = DBhelper.getInstance(ctx);
         SQLiteDatabase db = dBhelper.getWritableDatabase();
 
         String sql = "SELECT nombre FROM " + TBL_MEDIOS_CONTACTO + " WHERE id = ?";
@@ -1829,7 +1917,7 @@ public class Miscellaneous {
 
     public static String GetDestinoCredito(Context ctx, int id){
         String medioContacto = "";
-        DBhelper dBhelper = new DBhelper(ctx);
+        DBhelper dBhelper = DBhelper.getInstance(ctx);
         SQLiteDatabase db = dBhelper.getWritableDatabase();
 
         String sql = "SELECT nombre FROM " + TBL_DESTINOS_CREDITO + " WHERE id = ?";
@@ -1858,7 +1946,7 @@ public class Miscellaneous {
 
     public static JSONObject RowTOJson (Cursor row, Context ctx){
         JSONObject json_respuesta = new JSONObject();
-        DBhelper dBhelper = new DBhelper(ctx);
+        DBhelper dBhelper = DBhelper.getInstance(ctx);
         DecimalFormatSymbols symbols = new DecimalFormatSymbols(Locale.US);
         DecimalFormat nFormat = new DecimalFormat("#,##0.00", symbols);
 
@@ -2410,7 +2498,7 @@ public class Miscellaneous {
 
     public static String[] GetNivelesEstudio(Context ctx){
         String[] estudios = {};
-        DBhelper dBhelper = new DBhelper(ctx);
+        DBhelper dBhelper = DBhelper.getInstance(ctx);
         SQLiteDatabase db = dBhelper.getWritableDatabase();
 
         String sql = "SELECT * FROM " + TBL_NIVELES_ESTUDIOS;
@@ -2431,7 +2519,7 @@ public class Miscellaneous {
 
     public static String[] GetEstadoCiviles(Context ctx){
         String[] civiles = {};
-        DBhelper dBhelper = new DBhelper(ctx);
+        DBhelper dBhelper = DBhelper.getInstance(ctx);
         SQLiteDatabase db = dBhelper.getWritableDatabase();
 
         String sql = "SELECT * FROM " + TBL_ESTADOS_CIVILES;
@@ -2451,7 +2539,7 @@ public class Miscellaneous {
 
     public static String[] GetMediosPagoOri(Context ctx){
         String[] medios_pago = {};
-        DBhelper dBhelper = new DBhelper(ctx);
+        DBhelper dBhelper = DBhelper.getInstance(ctx);
         SQLiteDatabase db = dBhelper.getWritableDatabase();
 
         String sql = "SELECT * FROM " + TBL_MEDIOS_PAGO_ORI;
@@ -2471,7 +2559,7 @@ public class Miscellaneous {
 
     public static String[] GetParentesco(Context ctx, String condicion){
         String[] parentesco = {};
-        DBhelper dBhelper = new DBhelper(ctx);
+        DBhelper dBhelper = DBhelper.getInstance(ctx);
         SQLiteDatabase db = dBhelper.getWritableDatabase();
 
         String where = "";
@@ -2495,7 +2583,7 @@ public class Miscellaneous {
 
     public static String[] GetIdentificacion(Context ctx){
         String[] identificaciones = {};
-        DBhelper dBhelper = new DBhelper(ctx);
+        DBhelper dBhelper = DBhelper.getInstance(ctx);
         SQLiteDatabase db = dBhelper.getWritableDatabase();
 
         String sql = "SELECT * FROM " + TBL_IDENTIFICACIONES_TIPO;
@@ -2515,7 +2603,7 @@ public class Miscellaneous {
 
     public static String[] GetViviendaTipos(Context ctx){
         String[] viviendaTipos = {};
-        DBhelper dBhelper = new DBhelper(ctx);
+        DBhelper dBhelper = DBhelper.getInstance(ctx);
         SQLiteDatabase db = dBhelper.getWritableDatabase();
 
         String sql = "SELECT * FROM " + TBL_VIVIENDA_TIPOS;
@@ -2535,7 +2623,7 @@ public class Miscellaneous {
 
     public static String[] GetMediosContacto(Context ctx){
         String[] mediosContacto = {};
-        DBhelper dBhelper = new DBhelper(ctx);
+        DBhelper dBhelper = DBhelper.getInstance(ctx);
         SQLiteDatabase db = dBhelper.getWritableDatabase();
 
         String sql = "SELECT * FROM " + TBL_MEDIOS_CONTACTO;
@@ -2555,7 +2643,7 @@ public class Miscellaneous {
 
     public static String[] GetDestinosCredito(Context ctx){
         String[] destinosCredito = {};
-        DBhelper dBhelper = new DBhelper(ctx);
+        DBhelper dBhelper = DBhelper.getInstance(ctx);
         SQLiteDatabase db = dBhelper.getWritableDatabase();
 
         String sql = "SELECT * FROM " + TBL_DESTINOS_CREDITO;
@@ -2572,6 +2660,21 @@ public class Miscellaneous {
         row.close();
         return destinosCredito;
     }
+
+    public static int obtenerNumCliente(String id_solicitud, Context ctx){
+        DBhelper dBhelper = DBhelper.getInstance(ctx);
+        SQLiteDatabase db = dBhelper.getWritableDatabase();
+        String sql = "SELECT num_cliente FROM " + TBL_CREDITO_IND_REN + " WHERE id_solicitud="+id_solicitud;
+        @SuppressLint("Recycle") Cursor dato = db.rawQuery(sql, null);
+        int aux = 0;
+        if(dato.getCount() > 0){
+            dato.moveToFirst();
+            aux = dato.getInt(0);
+        }
+        return aux;
+    }
+
+
 
     public static String EncodePassword(String password) {
         String passEncryp = Base64.encodeToString(password.getBytes(), Base64.DEFAULT);
@@ -2608,10 +2711,11 @@ public class Miscellaneous {
             Log.e("Mess", "Error al enviar mensaje");
         }
     }
-    public static void SendMess(Context ctx, final String prestamoId, final String phone, final String nombre, final String monto, final String fecha, final String folio,SessionManager session){
+
+    public static void SendMess(Context ctx, final String prestamoId, final String phone, final String nombre, final String monto, final String fecha, final String folio, SessionManager session) {
         URL url = null;
         try {
-            url = new  URL(session.getDominio().get(0)+session.getDominio().get(1)+WebServicesRoutes.CONTROLLER_MOVIL+"pagos/"+AES.encrypt(prestamoId));
+            url = new URL(session.getDominio() + WebServicesRoutes.CONTROLLER_MOVIL + "pagos/" + AES.encrypt(prestamoId));
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
@@ -2655,7 +2759,7 @@ public class Miscellaneous {
         String tablaCheck = tabla;
         int status = 1;
         Cursor dato;
-        DBhelper dBhelper = new DBhelper(ctx);
+        DBhelper dBhelper = DBhelper.getInstance(ctx);
 
         /*if(tablaCheck.contains("tb_tabla_test")){
             dato = dBhelper.validarEstatus("tb_tabla_test", "estatus=?",new String[]{String.valueOf(status)});
@@ -2690,76 +2794,63 @@ public class Miscellaneous {
         return respuesta;
     }
 
-    public ArrayList<String> arrayList;
-
-    /*public static int obtenerSerieAsesor(Context ctx){
-        int serieId = 0;
-        Cursor datos;
-        DBhelper dBhelper = new DBhelper(ctx);
-        datos = dBhelper.simpleSelect();
-
-        if(datos != null && datos.moveToFirst() == true){
-
-            do{
-                for(int i=0;i<datos.getCount();i++){
-                    serieId = datos.getInt(0);
-                }
-
-            }while (datos.moveToNext());
+    public static byte[] etiquetasIne(Bitmap img,Context ctx){
+        Bitmap imagen = img;
+        byte byteImagenes [] = new byte[0];
+        Context ctx1 = null;
+        int tipoImg = 2;
+        String currentDateTimeString = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss").format(Calendar.getInstance().getTime());
+        int imgIneWidth = imagen.getWidth();
+        int imgIneHeight = imagen.getHeight();
+        if(imgIneWidth <= 0 || imgIneHeight <= 0){
+            return byteImagenes;
         }
-        return  serieId;
-    }*/
+        float marginInCm = 0.5f;
+        float dpi = ctx.getResources().getDisplayMetrics().densityDpi;
+        float marginInPx = marginInCm * dpi / 2.54f;
+        int backgroundWidth = (int) (imgIneWidth + 2 * marginInPx);
+        int backgroundHeight = (int) (imgIneHeight + 2 * marginInPx);
+        Bitmap backgroundBitMap = Bitmap.createBitmap(backgroundWidth, backgroundHeight, imagen.getConfig());
+        Canvas canvasBackground = new Canvas(backgroundBitMap);
+        canvasBackground.drawColor(Color.LTGRAY);
+        Bitmap resultBitmap = Bitmap.createBitmap(backgroundWidth, backgroundHeight, imagen.getConfig());
+        Canvas canvasResult = new Canvas(resultBitmap);
+        canvasResult.drawBitmap(backgroundBitMap, 0, 0, null);
+        canvasResult.drawBitmap(imagen, marginInPx, marginInPx, null);
+        CanvasCustom2 customCanvas = new CanvasCustom2(ctx, currentDateTimeString, tipoImg);
+        customCanvas.draw(canvasResult);
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        resultBitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+        byteImagenes =  baos.toByteArray();
+        return byteImagenes;
+    }
 
-  /*  public static String obtenerGrupoId(Long id_solicitud,Context ctx){
-        String grupo_id = " ";
-        Cursor datos;
-        DBhelper dBhelper = new DBhelper(ctx);
-        datos = dBhelper.obtenerIdGrupal(id_solicitud,null);
+    public static byte[] etiquetasFotoNormales(byte[] imagen, Context ctx) {
+        byte imagenResultado[] = imagen;
+        Bitmap imgBitmap = null;
+        View vCanvas = null;
+        Bitmap bitmap = null;
+        Bitmap.Config config = null;
+        Canvas canvas = null;
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
-        if (datos != null && datos.getCount() > 0) {
-            datos.moveToFirst();
-            grupo_id = datos.getString(0);
-            datos.close();
-        }
-        return grupo_id;
-    }*/
+        vCanvas = new CanvasCustom2(ctx, new SimpleDateFormat(FORMAT_TIMESTAMP).format(Calendar.getInstance().getTime()),1);
+        bitmap = BitmapFactory.decodeByteArray(imagenResultado, 0, imagenResultado.length);
 
-   /* public static int obtenerClienteId(Integer id_integrante, Context ctx){
-        int id_cliente = 0;
-        Cursor n;
-        DBhelper dBhelper = new DBhelper(ctx);
+        config = bitmap.getConfig();
 
-        n = dBhelper.obtenerIdCliente(id_integrante,null);
+        imgBitmap = Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(), config);
+        canvas = new Canvas(imgBitmap);
+        canvas.drawBitmap(bitmap, 0, 0, null);
 
-        if(n != null && n.getCount()>0){
-            n.moveToFirst();
-            id_cliente = n.getInt(0);
-            n.close();
-        }
+        vCanvas.draw(canvas);
 
-        return  id_cliente;
-    }*/
+        imgBitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
 
-   /* public static boolean validarBeneficiario(Integer id_integrante, Context ctx){
-        boolean status = false;
-        Cursor datos;
-        DBhelper dBhelper = new DBhelper(ctx);
-        int dato=0;
+        imagenResultado = baos.toByteArray();
 
-        datos = dBhelper.validarBeneficairioGPO(String.valueOf(id_integrante),null);
+        return imagenResultado;
+    }
 
-        if(datos.getCount()>0){
-            datos.moveToFirst();
-            dato = datos.getInt(0);
-        }
-
-        if(dato >= 1){
-            status = true;
-        }else{
-            status = false;
-        }
-
-        return status;
-    }*/
 
 }

@@ -31,6 +31,8 @@ public class WebServicesRoutes {
     public final static String CONTROLLER_DESCARGARGUIA = "/api/movil/descargarFile/";
     public final static String CONTROLLER_BENEFICIARIO  = "/api/movil/beneficiario";
     public final static String CONTROLLER_BENEFICIARIO_GPO = "/api/movil/beneficiario_gpo";
+    public final static String CONTROLLER_DATOS_CAMPANA_IND = "/api/solicitudes/creditos/datosCampana";
+
 
 
     //public final static String BASE_URL = DOMAIN + PORT;
@@ -100,7 +102,9 @@ public class WebServicesRoutes {
     public final static String WS_GET_NIVELES_ESTUDIOS      = "GetNivelesEstudios"; //Obtiene el catálogo de los niveles de estudios
     public final static String WS_GET_MEDIOS_PAGO_ORIG      = "GetMediosPagoOriginacion"; //Obtiene el catálogo de los medios de pagos de originación
     public final static String WS_GET_PARENTESCOS           = "GetParentescos"; //Obtiene el catálogo de los parentescos
-
-
+    public final static String CONTROLLER_CATALOGOS_CAMP    = "GetCampanas";
+    public final static String WS_GET_LOCALIDADES           = "GetLocalidades";
+    public final static String WS_GET_LOCALIDADES2          = "GetLocalidad";
+    public final static String WS_GET_SUCURSALES_LOCALIDADES= "GetSucursalLocalidad";
 
 }

@@ -1,0 +1,355 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <application
+        android:name=".SidertMovilApplication"
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher_foreground"
+        android:label="@string/app_name"
+        android:requestLegacyExternalStorage="true"
+        android:screenOrientation="portrait"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme"
+        android:usesCleartextTraffic="true">
+
+        <activity
+            android:name=".ui.SplashSidertActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".ui.LoginActivity"
+            android:exported="true"
+            android:screenOrientation="portrait" />
+
+        <activity
+            android:name=".ui.DescargaDatosActivity"
+            android:screenOrientation="portrait" />
+
+        <activity
+            android:name=".ui.MainV2Activity"
+            android:screenOrientation="portrait" />
+
+        <activity
+            android:name="com.sidert.sidertmovil.activities.EligeImpresora"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="com.sidert.sidertmovil.views.pdfreader.PdfReaderActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="com.sidert.sidertmovil.activities.CobrosCC"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="com.sidert.sidertmovil.activities.ConsultadosCC"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="com.sidert.sidertmovil.views.circulocredito.CirculoCreditoActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="com.sidert.sidertmovil.activities.ConsultarCC"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="com.sidert.sidertmovil.activities.FormularioCC"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="com.sidert.sidertmovil.views.originacion.SolicitudIntegrante"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="com.sidert.sidertmovil.views.solicitudesautorizadas.SolicitudGpo"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="com.sidert.sidertmovil.views.solicitudesautorizadas.SolicitudInd"
+            android:configChanges="orientation|keyboardHidden"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="com.sidert.sidertmovil.views.solicitudesautorizadas.Solicitudes"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="com.sidert.sidertmovil.views.apoyogastosfunerarios.ResumenActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="com.sidert.sidertmovil.views.apoyogastosfunerarios.ReciboActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="com.sidert.sidertmovil.views.renovacion.RenovarIntegrante"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="com.sidert.sidertmovil.views.renovacion.RenovacionCreditoGpo"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="com.sidert.sidertmovil.views.renovacion.RenovacionCreditoInd"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="com.sidert.sidertmovil.views.renovacion.RenovacionCredito"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="com.sidert.sidertmovil.activities.ResumenImpresiones"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="com.sidert.sidertmovil.activities.SolicitudTicket"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="com.sidert.sidertmovil.activities.GenerarCurp"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="com.sidert.sidertmovil.activities.CodigosOxxo"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="com.sidert.sidertmovil.activities.ReporteInicioSesion"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="com.sidert.sidertmovil.activities.MisCierresDeDia"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="com.sidert.sidertmovil.activities.CierreDeDia"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="com.sidert.sidertmovil.activities.VencidaIntegrante"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="com.sidert.sidertmovil.activities.VencidaGrupal"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="com.sidert.sidertmovil.activities.VencidaIndividual"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="com.sidert.sidertmovil.activities.ResumenCartera"
+            android:screenOrientation="portrait" />
+
+        <activity
+            android:name="com.sidert.sidertmovil.activities.GeoIntegrante"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="com.sidert.sidertmovil.activities.TrackerAsesor"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="com.sidert.sidertmovil.activities.Integrantes"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="com.sidert.sidertmovil.activities.ComunicadoCovid"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="com.sidert.sidertmovil.activities.VistaGestion"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="com.sidert.sidertmovil.activities.Gestionadas"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="com.sidert.sidertmovil.activities.PrestamosClientes"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="com.sidert.sidertmovil.activities.FormatoRecibos"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="com.sidert.sidertmovil.views.apoyogastosfunerarios.ApoyoGastosFunerariosActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="com.sidert.sidertmovil.activities.CameraActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="com.sidert.sidertmovil.activities.Catalogos"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="com.sidert.sidertmovil.views.originacion.AgregarIntegrante"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="com.sidert.sidertmovil.activities.ResumenGeo"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="com.sidert.sidertmovil.activities.Configuracion"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="com.sidert.sidertmovil.views.originacion.SolicitudCreditoGpo"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="com.sidert.sidertmovil.views.originacion.SolicitudCreditoInd"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="com.sidert.sidertmovil.activities.VerImagen"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="com.sidert.sidertmovil.activities.GeolocalizacionGpo"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="com.sidert.sidertmovil.activities.GeolocalizacionInd"
+            android:screenOrientation="portrait" />
+
+        <activity
+            android:name="com.sidert.sidertmovil.views.originacion.SolicitudCredito"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="com.sidert.sidertmovil.activities.ResumenIntegrantes"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="com.sidert.sidertmovil.activities.AcercaDe"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="com.sidert.sidertmovil.activities.ArqueoDeCaja"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="com.sidert.sidertmovil.activities.PrintSeewoo"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="com.sidert.sidertmovil.activities.Perfil"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="com.sidert.sidertmovil.activities.CameraVertical"
+            android:configChanges="orientation|keyboardHidden"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="com.sidert.sidertmovil.activities.RecuperacionGrupal"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize" />
+
+        <activity
+            android:name="com.sidert.sidertmovil.Home"
+            android:exported="true"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize">
+            <!--intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter-->
+        </activity>
+
+
+        <activity
+            android:name="com.sidert.sidertmovil.activities.RecuperacionIndividual"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize" />
+
+        <activity
+            android:name="com.sidert.sidertmovil.activities.IntegrantesGpo"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name="com.sidert.sidertmovil.activities.VistaPreviaGestion"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name="com.sidert.sidertmovil.activities.CapturarFirma"
+            android:screenOrientation="landscape" />
+        <activity
+            android:name="com.sidert.sidertmovil.views.verificaciondomiciliaria.VerificacionDomiciliariaActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="com.sidert.sidertmovil.views.verificaciondomiciliaria.GestionVerificacionDomiciliariaActivity"
+            android:screenOrientation="portrait" />
+
+
+        <activity
+            android:name="com.sidert.sidertmovil.activities.LectorCodigoBarras"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="com.theartofdev.edmodo.cropper.CropImageActivity"
+            android:theme="@style/Base.Theme.AppCompat"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name="com.sidert.sidertmovil.views.expedientes.DocumentosIntegranteActivity"
+            android:screenOrientation="portrait"
+            tools:ignore="MissingClass" />
+
+        <activity
+            android:name="com.yalantis.ucrop.UCropActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
+
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="@string/google_maps_key" />
+        <!--
+<meta-data
+            android:name="io.fabric.ApiKey"
+            android:value="8cdad640a3aa65dfc6901d05d34be391c20a6ed8" />
+        -->
+        <meta-data
+            android:name="firebase_crashlytics_collection_enabled"
+            android:value="true" />
+
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="com.sidert.sidertmovil.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true"
+            android:screenOrientation="portrait">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_provider_paths" />
+        </provider>
+
+        <receiver
+            android:name="com.sidert.sidertmovil.AlarmaManager.AlarmaTrackerReciver"
+            android:exported="true"
+            android:permission="android.permission.RECEIVE_BOOT_COMPLETED">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
+
+        <service
+            android:name="com.sidert.sidertmovil.utils.MyFirebaseMessagingService"
+            android:exported="true"
+            android:stopWithTask="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+
+        <service
+            android:name="com.sidert.sidertmovil.utils.MyFireBaseInstanceIDService"
+            android:exported="true"
+            tools:ignore="Instantiatable">
+            <intent-filter>
+                <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
+            </intent-filter>
+        </service>
+
+        <uses-library
+            android:name="org.apache.http.legacy"
+            android:required="false" />
+
+    </application>
+
+    <uses-feature android:name="android.hardware.camera2.full" />
+    <uses-feature
+        android:name="android.hardware.telephony"
+        android:required="true" />
+
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="true" />
+    <uses-feature android:name="android.hardware.bluetooth" />
+
+    <uses-permission
+        android:name="android.permission.READ_PRIVILEGED_PHONE_STATE"
+        tools:ignore="ProtectedPermissions" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+    <uses-permission android:name="android.permission.BLUETOOTH_SCAN" />
+    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
+
+    <uses-permission android:name="android.permission.CALL_PHONE" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.FLASHLIGHT" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_MEDIA_LOCATION" />
+    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
+
+    <uses-permission android:name="android.permission.SEND_SMS" />
+</manifest>

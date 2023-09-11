@@ -1,5 +1,6 @@
 package com.sidert.sidertmovil.models.solicitudes.solicitudind.originacion;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -16,7 +17,7 @@ public class CreditoIndDao {
 
     public CreditoIndDao(Context ctx)
     {
-        this.dBhelper = new DBhelper(ctx);
+        this.dBhelper = DBhelper.getInstance(ctx);
         this.db = dBhelper.getWritableDatabase();
     }
 
@@ -88,6 +89,7 @@ public class CreditoIndDao {
         return creditosInd;
     }
 
+    @SuppressLint("Range")
     private void Fill(Cursor row, CreditoInd creditoInd)
     {
         try
@@ -104,7 +106,7 @@ public class CreditoIndDao {
             creditoInd.setClasificacionRiesgo(row.getString(row.getColumnIndex(creditoInd.COL_CLASIFICACION_RIESGO)));
             creditoInd.setEstatusCompletado(row.getInt(row.getColumnIndex(creditoInd.COL_ESTATUS_COMPLETADO)));
             creditoInd.setMontoRefinanciar(row.getString(row.getColumnIndex(creditoInd.COL_MONTO_REFINANCIAR)));
-
+            creditoInd.setId_campana(row.getInt(row.getColumnIndex(creditoInd.COL_ID_CAMPANA)));
         }
         catch(Exception ex)
         {

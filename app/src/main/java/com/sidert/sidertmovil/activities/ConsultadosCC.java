@@ -64,7 +64,7 @@ public class ConsultadosCC extends AppCompatActivity {
 
         ctx = this;
 
-        dBhelper = new DBhelper(ctx);
+        dBhelper = DBhelper.getInstance(ctx);
         db = dBhelper.getWritableDatabase();
 
         tbMain           = findViewById(R.id.tbMain);
@@ -179,21 +179,18 @@ public class ConsultadosCC extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                finish();
-                break;
-            case R.id.actualizar:
-                /**Envia las consulta que estan en pendiente de envio*/
-                String sql = "SELECT * FROM " + TBL_CONSULTA_CC + " WHERE estatus = ?";
-                Cursor r = db.rawQuery(sql, new String[]{"0"});
-                if (r.getCount() > 0){
-                    Servicios_Sincronizado ss = new Servicios_Sincronizado();
-                    ss.SendConsultaCC(ctx, true);
-                }
-                r.close();
-                initComponets();
-                break;
+        int itemId = item.getItemId();
+        if (itemId == android.R.id.home) {
+            finish();
+        } else if (itemId == R.id.actualizar) {/**Envia las consulta que estan en pendiente de envio*/
+            String sql = "SELECT * FROM " + TBL_CONSULTA_CC + " WHERE estatus = ?";
+            Cursor r = db.rawQuery(sql, new String[]{"0"});
+            if (r.getCount() > 0) {
+                Servicios_Sincronizado ss = new Servicios_Sincronizado();
+                ss.SendConsultaCC(ctx, true);
+            }
+            r.close();
+            initComponets();
         }
 
         return super.onOptionsItemSelected(item);

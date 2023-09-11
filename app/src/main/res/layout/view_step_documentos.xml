@@ -6,8 +6,51 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
+    <!--  Selfie INE  -->
+    <LinearLayout
+        android:id="@+id/llineSelfieInd"
+        android:layout_marginTop="15dp"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:id="@+id/tvIneSelfie"
+            android:textColor="@android:color/black"
+            android:text="Fotografía del cliente con su INE/IFE"
+            android:layout_weight="1"
+            android:focusable="false"
+            android:textSize="@dimen/labelsize"
+            android:focusableInTouchMode="false"
+            android:background="@android:color/white"
+            style="@android:style/Widget.EditText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <ImageButton
+                android:id="@+id/ibIneSelfie"
+                android:layout_width="match_parent"
+                android:contentDescription="Selfie INE/IFE"
+                android:layout_height="50dp"
+                android:layout_gravity="center_horizontal"
+                android:background="@drawable/round_corner_blue"
+                android:paddingTop="3dp"
+                android:paddingBottom="3dp"
+                android:src="@drawable/ic_camera_white" />
+            <ImageView
+                android:id="@+id/ivIneSelfie"
+                android:contentDescription="Selfie INE/IFE"
+                android:visibility="gone"
+                android:layout_width="match_parent"
+                android:layout_height="200dp" />
+        </LinearLayout>
+    </LinearLayout>
+
     <!--  Fotografía del INE/IFE Frontal  -->
     <LinearLayout
+        android:id="@+id/llineFrotalInd"
         android:layout_marginTop="15dp"
         android:orientation="vertical"
         android:layout_width="match_parent"
@@ -49,6 +92,7 @@
 
     <!--  Fotografía del INE/IFE Reverso  -->
     <LinearLayout
+        android:id="@+id/llineReversoInd"
         android:layout_marginTop="15dp"
         android:orientation="vertical"
         android:layout_width="match_parent"
@@ -88,46 +132,7 @@
         </LinearLayout>
     </LinearLayout>
 
-    <!--  Selfie INE  -->
-    <LinearLayout
-        android:layout_marginTop="15dp"
-        android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <TextView
-            android:id="@+id/tvIneSelfie"
-            android:textColor="@android:color/black"
-            android:text="Fotografía del cliente con su INE/IFE"
-            android:layout_weight="1"
-            android:focusable="false"
-            android:textSize="@dimen/labelsize"
-            android:focusableInTouchMode="false"
-            android:background="@android:color/white"
-            style="@android:style/Widget.EditText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-        <LinearLayout
-            android:orientation="vertical"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-            <ImageButton
-                android:id="@+id/ibIneSelfie"
-                android:layout_width="match_parent"
-                android:contentDescription="Selfie INE/IFE"
-                android:layout_height="50dp"
-                android:layout_gravity="center_horizontal"
-                android:background="@drawable/round_corner_blue"
-                android:paddingTop="3dp"
-                android:paddingBottom="3dp"
-                android:src="@drawable/ic_camera_white" />
-            <ImageView
-                android:id="@+id/ivIneSelfie"
-                android:contentDescription="Selfie INE/IFE"
-                android:visibility="gone"
-                android:layout_width="match_parent"
-                android:layout_height="200dp" />
-        </LinearLayout>
-    </LinearLayout>
+
 
     <!--  Fotografía del CURP  -->
     <LinearLayout
@@ -299,7 +304,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
         <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/btnRegresar9"
+            android:id="@+id/btnRegresarDatosDocumentosInd"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/ic_regresar"

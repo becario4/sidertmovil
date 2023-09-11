@@ -13,7 +13,7 @@ import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 
 public class ClienteRen implements Serializable {
-    public final static String TBL                         = "tbl_cliente_ind_ren";
+    public final static String TBL = "tbl_cliente_ind_ren";
 
     @SerializedName("id_cliente")
     @Expose

@@ -51,6 +51,12 @@ import com.sidert.sidertmovil.models.ModeloMunicipio;
 import com.sidert.sidertmovil.models.ModeloOcupaciones;
 import com.sidert.sidertmovil.models.ModeloResSaveGeo;
 import com.sidert.sidertmovil.models.ModeloSectores;
+import com.sidert.sidertmovil.models.catalogos.Campanas;
+import com.sidert.sidertmovil.models.catalogos.Localidad;
+import com.sidert.sidertmovil.models.catalogos.SucursalesLocalidades;
+import com.sidert.sidertmovil.models.datosCampañas.datoCampana;
+import com.sidert.sidertmovil.models.datosCampañas.datosCampanaGpo;
+import com.sidert.sidertmovil.models.datosCampañas.datosCampanaGpoRen;
 
 import java.util.List;
 
@@ -332,6 +338,9 @@ public interface ManagerInterface {
     Call<List<MPrestamoGpoRes>> getPrestamosGpo(@Path("id_grupo") int id_grupo,
                                              @Header("Authorization") String barer_token);
 
+    @GET(WebServicesRoutes.CONTROLLER_CATALOGOS_CAMP)
+    Call<List<Campanas>>obtenerCatalogos();
+
     @Headers({
             "Accept: application/json",
             "Content-Type: application/json"
@@ -397,7 +406,8 @@ public interface ManagerInterface {
                                       @Part("fecha_gestion_fin") RequestBody fecha_gestion_fin,
                                       @Part("fecha_dispositivo") RequestBody fecha_dispositivo,
                                       @Part("fecha_envio") RequestBody fecha_envio,
-                                      @Part MultipartBody.Part foto_fachada);
+                                      @Part MultipartBody.Part foto_fachada,
+                                      @Part("id_tipocartera")RequestBody id_tipocartera);
 
     @Multipart
     @POST(WebServicesRoutes.WS_POST_SOLICITUD_CANCELAR)
@@ -445,6 +455,7 @@ public interface ManagerInterface {
                                             @Part("fecha_gestion_inicio") RequestBody fecha_inicio,
                                             @Part("fecha_gestion_fin") RequestBody fecha_gestion_fin,
                                             @Part("fecha_envio") RequestBody fecha_envio,
+                                            @Part("id_tipocartera") RequestBody id_tipocartera,
                                             @Part MultipartBody.Part foto_fachada);
 
     @Multipart
@@ -524,10 +535,42 @@ public interface ManagerInterface {
                                       @Part("fecha_envio") RequestBody fechaEnvio,
                                       @Part MultipartBody.Part fotografia);
 
+
     @Headers({
             "Accept: application/json",
             "Content-Type: application/json"
     })
+    @POST("/api/solicitudes/creditos/datosCampana")
+    Call<datoCampana> saveCreditoCampana(@Header("Authorization") String barer_token,
+                                         @Query("id_originacion") Long id_originacion,
+                                         @Query("id_campana") Integer id_campana,
+                                         @Query("tipo_campana") String tipo_campana,
+                                         @Query("nombre_refiero") String nombre_refiero);
+
+    @Headers({
+            "Accept: application/json",
+            "Content-Type: application/json"
+    })
+    @POST("/api/solicitudes/creditos/datosCampanaGpo")
+    Call<datosCampanaGpo> saveCreditoCampanaGpo(@Header("Authorization") String barer_token,
+                                                      @Query("id_originacion") Long id_originacion,
+                                                      @Query("id_campana") Integer id_campana,
+                                                      @Query("tipo_campana") String tipo_campana,
+                                                      @Query("nombre_refiero") String nombre_refiero);
+
+
+    @Headers({
+            "Accept: application/json",
+            "Content-Type: application/json"
+    })
+    @POST("/api/solicitudes/creditos/datosCampanaGpo")
+    Call<datosCampanaGpoRen> saveCreditoCampanaGpoRen(@Header("Authorization") String barer_token,
+                                                      @Query("id_originacion") Long id_originacion,
+                                                      @Query("id_campana") Integer id_campana,
+                                                      @Query("tipo_campana") String tipo_campana,
+                                                      @Query("nombre_refiero") String nombre_refiero);
+
+
     @GET(WebServicesRoutes.WS_GET_ESTADOS)
     Call<List<ModeloEstados>> getEstados(@Header("Authorization") String barer_token);
 
@@ -537,6 +580,7 @@ public interface ManagerInterface {
     })
     @GET(WebServicesRoutes.WS_GET_MUNICIPIOS)
     Call<List<ModeloMunicipio>> getMunicipios(@Header("Authorization") String barer_token);
+
 
     @Headers({
             "Accept: application/json",
@@ -629,5 +673,17 @@ public interface ManagerInterface {
     })
     @GET(WebServicesRoutes.WS_GET_PARENTESCOS)
     Call<List<MCatalogo>> getParentesco(@Header("Authorization") String barer_token);
+
+
+    @GET(WebServicesRoutes.WS_GET_LOCALIDADES)
+    Call<List<Localidad>>getLocalidades();
+
+    @GET(WebServicesRoutes.WS_GET_LOCALIDADES2)
+    Call<List<Localidad>>getLocalidad(@Query("municipio_id") String municipio_id);
+
+    @GET(WebServicesRoutes.WS_GET_SUCURSALES_LOCALIDADES)
+    Call<List<SucursalesLocalidades>>getSucursalLocalidades(@Query("centroCosto")Integer centroCosto);
+
+
 
 }

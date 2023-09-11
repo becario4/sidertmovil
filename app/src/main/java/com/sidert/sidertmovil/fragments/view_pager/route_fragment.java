@@ -2,11 +2,13 @@ package com.sidert.sidertmovil.fragments.view_pager;
 
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 /*import androidx.annotation.Nullable;
@@ -114,11 +116,11 @@ public class route_fragment extends Fragment {
         ctx = getContext();
         boostrap = (Home) getActivity();
 
-        session = new SessionManager(ctx);
+        session = SessionManager.getInstance(ctx);
 
         parent = (orders_fragment) getParentFragment();
 
-        dBhelper = new DBhelper(ctx);
+        dBhelper = DBhelper.getInstance(ctx);
         db = dBhelper.getWritableDatabase();
 
         rvFichas = v.findViewById(R.id.rvFichas);
@@ -348,48 +350,54 @@ public class route_fragment extends Fragment {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.nvFiltro:/**Cuando seleccioan el menu Filtro*/
-                Filtros();
-                return true;
-            case R.id.nvInfo:/**Cuando seleccioan el menu Información*/
-                Intent i_resumen = new Intent(boostrap, ResumenCartera.class);
-                startActivity(i_resumen);
-                return true;
-            case R.id.nvSynchronized:/**Cuando seleccioan el menu Sincronizar*/
-                /**Valida que tenga conexión a internet*/
-                if (NetworkStatus.haveNetworkConnection(ctx)) {
-                    /**Ejecuta funcion para enviar solo gestiones contestadas*/
-                    Servicios_Sincronizado ss = new Servicios_Sincronizado();
-                    ss.SaveRespuestaGestion(boostrap, true);
-                }
-                else{
-                    /**Mensaje cuando tratan de sincronizar y no tienen internet*/
-                    final AlertDialog error_network = Popups.showDialogMessage(boostrap, Constants.not_network,
-                            R.string.not_network, R.string.accept, new Popups.DialogMessage() {
-                                @Override
-                                public void OnClickListener(AlertDialog dialog) {
-                                    dialog.dismiss();
-                                }
-                            });
-                    Objects.requireNonNull(error_network.getWindow()).requestFeature(Window.FEATURE_NO_TITLE);
-                    error_network.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
-                    error_network.show();
-                }
-                return true;
-            case R.id.nvCierreDia:/**Cuando seleccioan el menu Cierre de dia*/
-                Intent i_cierre_dia = new Intent(ctx, MisCierresDeDia.class);
-                startActivity(i_cierre_dia);
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
+        int itemId = item.getItemId();
+        if (itemId == R.id.nvFiltro) {/**Cuando seleccioan el menu Filtro*/
+            Filtros();
+            return true;
+        } else if (itemId == R.id.nvInfo) {/**Cuando seleccioan el menu Información*/
+            Intent i_resumen = new Intent(boostrap, ResumenCartera.class);
+            startActivity(i_resumen);
+            return true;
+        } else if (itemId == R.id.nvSynchronized) {/**Cuando seleccioan el menu Sincronizar*/
+            /**Valida que tenga conexión a internet*/
+            if (NetworkStatus.haveNetworkConnection(ctx)) {
+                /**Ejecuta funcion para enviar solo gestiones contestadas*/
+                Servicios_Sincronizado ss = new Servicios_Sincronizado();
+                ss.SaveRespuestaGestion(boostrap, true);
+            } else {
+                /**Mensaje cuando tratan de sincronizar y no tienen internet*/
+                final AlertDialog error_network = Popups.showDialogMessage(boostrap, Constants.not_network,
+                        R.string.not_network, R.string.accept, new Popups.DialogMessage() {
+                            @Override
+                            public void OnClickListener(AlertDialog dialog) {
+                                dialog.dismiss();
+                            }
+                        });
+                Objects.requireNonNull(error_network.getWindow()).requestFeature(Window.FEATURE_NO_TITLE);
+                error_network.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                error_network.show();
+            }
+            return true;
+        } else if (itemId == R.id.nvCierreDia) {/**Cuando seleccioan el menu Cierre de dia*/
+            Intent i_cierre_dia = new Intent(ctx, MisCierresDeDia.class);
+            startActivity(i_cierre_dia);
+            return true;
         }
+        return super.onOptionsItemSelected(item);
     }
 
     /**Funcion para mostrar la vista de filtros*/
     @SuppressLint("ClickableViewAccessibility")
     private void Filtros (){
         /**Se crea un nuevo dialogo con su configuracion de mostrar arriba y el padding*/
+
+        int sizeH = 900;
+        Activity activity = this.getActivity();
+        if (activity != null) {
+            View decorateView = activity.getWindow().getDecorView();
+            sizeH = (int) (decorateView.getHeight() / 1.5);
+        }
+
         DialogPlus filtros_dg = DialogPlus.newDialog(boostrap)
                 .setContentHolder(new ViewHolder(R.layout.sheet_dialog_filtros_cartera))
                 .setGravity(Gravity.TOP)
@@ -402,162 +410,158 @@ public class route_fragment extends Fragment {
                         HashMap<String, String> filtros = new HashMap<>();
                         InputMethodManager imm = (InputMethodManager)boostrap.getSystemService(Context.INPUT_METHOD_SERVICE);
                         /**Se valida que boton fue selecionado si Borrar filtros o Filtrar*/
-                        switch (view.getId()) {
-                            case R.id.btnFiltrar:/**Seleccionaron Filtrar*/
-                                /**Se valida si el campo de nombre contiene algun valor*/
-                                if (!aetNombre.getText().toString().trim().isEmpty()){
-                                    /**va agregando en el map el valor del campo nombre para guardarlo despues en variable de sesion*/
-                                    filtros.put("nombre_cartera_r",aetNombre.getText().toString().trim());
-                                    /**Aumenta el contador */
-                                    cont_filtros += 1;
-                                    /**Va creando el condicional para filtrar en la obtencion de cartera por nombre cliente/grupo*/
-                                    where = " AND nombre LIKE '%"+aetNombre.getText().toString().trim()+"%'";
-                                }
-                                /**Cuando esta vacio el campo solo guarda en el map vacio en nombre*/
-                                else filtros.put("nombre_cartera_r","");
+                        int id = view.getId();
+                        if (id == R.id.btnFiltrar) {/**Seleccionaron Filtrar*/
+                            /**Se valida si el campo de nombre contiene algun valor*/
+                            if (!aetNombre.getText().toString().trim().isEmpty()) {
+                                /**va agregando en el map el valor del campo nombre para guardarlo despues en variable de sesion*/
+                                filtros.put("nombre_cartera_r", aetNombre.getText().toString().trim());
+                                /**Aumenta el contador */
+                                cont_filtros += 1;
+                                /**Va creando el condicional para filtrar en la obtencion de cartera por nombre cliente/grupo*/
+                                where = " AND nombre LIKE '%" + aetNombre.getText().toString().trim() + "%'";
+                            }
+                            /**Cuando esta vacio el campo solo guarda en el map vacio en nombre*/
+                            else filtros.put("nombre_cartera_r", "");
 
-                                /**Se valida si el campo de Dia de la semana contiene algun valor*/
-                                if (!aetDia.getText().toString().trim().isEmpty()) {
-                                    /**va agregando en el map el valor del campo dia para guardarlo despues en variable de sesion*/
-                                    filtros.put("dia_semana_r",aetDia.getText().toString().trim());
-                                    /**Aumenta el contador */
-                                    cont_filtros += 1;
-                                    /**Va agregando el condicional para filtrar en la obtencion de cartera por dia*/
-                                    where += " AND dia LIKE '%" + aetDia.getText().toString().trim() + "%'";
-                                }
-                                /**Cuando esta vacio el campo solo guarda en el map vacio en dia semana*/
-                                else filtros.put("dia_semana_r","");
+                            /**Se valida si el campo de Dia de la semana contiene algun valor*/
+                            if (!aetDia.getText().toString().trim().isEmpty()) {
+                                /**va agregando en el map el valor del campo dia para guardarlo despues en variable de sesion*/
+                                filtros.put("dia_semana_r", aetDia.getText().toString().trim());
+                                /**Aumenta el contador */
+                                cont_filtros += 1;
+                                /**Va agregando el condicional para filtrar en la obtencion de cartera por dia*/
+                                where += " AND dia LIKE '%" + aetDia.getText().toString().trim() + "%'";
+                            }
+                            /**Cuando esta vacio el campo solo guarda en el map vacio en dia semana*/
+                            else filtros.put("dia_semana_r", "");
 
-                                /**Se valida si el campo de Colonia contiene algun valor*/
-                                if (!aetColonia.getText().toString().trim().isEmpty()) {
-                                    /**va agregando en el map el valor del campo colonia para guardarlo despues en variable de sesion*/
-                                    filtros.put("colonia_cartera_r",aetColonia.getText().toString().trim());
-                                    /**Aumenta el contador */
-                                    cont_filtros += 1;
-                                    /**Va agregando el condicional para filtrar en la obtencion de cartera por colonia*/
-                                    where += " AND colonia LIKE '%" + aetColonia.getText().toString().trim() + "%'";
-                                }
-                                /**Cuando esta vacio el campo solo guarda en el map vacio en colonia*/
-                                else filtros.put("colonia_cartera_r","");
+                            /**Se valida si el campo de Colonia contiene algun valor*/
+                            if (!aetColonia.getText().toString().trim().isEmpty()) {
+                                /**va agregando en el map el valor del campo colonia para guardarlo despues en variable de sesion*/
+                                filtros.put("colonia_cartera_r", aetColonia.getText().toString().trim());
+                                /**Aumenta el contador */
+                                cont_filtros += 1;
+                                /**Va agregando el condicional para filtrar en la obtencion de cartera por colonia*/
+                                where += " AND colonia LIKE '%" + aetColonia.getText().toString().trim() + "%'";
+                            }
+                            /**Cuando esta vacio el campo solo guarda en el map vacio en colonia*/
+                            else filtros.put("colonia_cartera_r", "");
 
-                                /**Si el valor del selector (spinner) es diferente de vacio*/
-                                if (!spAsesor.getSelectedItem().toString().trim().isEmpty()) {
-                                    /**va agregando en el map el valor del campo asesor para guardarlo despues en variable de sesion*/
-                                    filtros.put("asesor_cartera_r",spAsesor.getSelectedItemPosition()+"");
-                                    /**Aumenta el contador */
-                                    cont_filtros += 1;
-                                    /**Va agregando el condicional para filtrar en la obtencion de cartera por asesor*/
-                                    where += " AND asesor_nombre LIKE '%" + spAsesor.getSelectedItem().toString().trim() + "%'";
-                                }
-                                /**Cuando esta vacio el campo solo guarda en el map vacio en asesor*/
-                                else filtros.put("asesor_cartera_r","0");
+                            /**Si el valor del selector (spinner) es diferente de vacio*/
+                            if (!spAsesor.getSelectedItem().toString().trim().isEmpty()) {
+                                /**va agregando en el map el valor del campo asesor para guardarlo despues en variable de sesion*/
+                                filtros.put("asesor_cartera_r", spAsesor.getSelectedItemPosition() + "");
+                                /**Aumenta el contador */
+                                cont_filtros += 1;
+                                /**Va agregando el condicional para filtrar en la obtencion de cartera por asesor*/
+                                where += " AND asesor_nombre LIKE '%" + spAsesor.getSelectedItem().toString().trim() + "%'";
+                            }
+                            /**Cuando esta vacio el campo solo guarda en el map vacio en asesor*/
+                            else filtros.put("asesor_cartera_r", "0");
 
-                                /**Valida si los checklist de individual y grupal esten seleccionados*/
-                                if (cbInd.isChecked() && cbGpo.isChecked()){
-                                    /**va agregando en el map el valor del campo tipo cartera para guardarlo despues en variable de sesion*/
-                                    filtros.put("tipo_cartera_ind_r","1");
-                                    filtros.put("tipo_cartera_gpo_r","1");
-                                    /**Aumenta el contador aqui en 2 porque son 2 filtros*/
-                                    cont_filtros += 2;
-                                    /**Va agregando el condicional para filtrar en la obtencion de cartera por tipo*/
-                                    where += " AND tipo IN ('INDIVIDUAL','GRUPAL')";
-                                }
-                                /**Valida si solo el checklist de individual esta seleccionado*/
-                                else if (cbInd.isChecked()){
-                                    /**va agregando en el map el valor del campo tipo cartera para guardarlo despues en variable de sesion*/
-                                    filtros.put("tipo_cartera_ind_r","1");
-                                    filtros.put("tipo_cartera_gpo_r","0");
-                                    /**Aumenta el contador en 1 porque solo aplica un filtro*/
-                                    cont_filtros += 1;
-                                    /**Va agregando el condicional para filtrar en la obtencion de cartera por tipo*/
-                                    where += " AND tipo = 'INDIVIDUAL'";
-                                }
-                                /**Valida si solo el checklist de grupal esta seleccionado*/
-                                else if (cbGpo.isChecked()){
-                                    /**va agregando en el map el valor del campo tipo cartera para guardarlo despues en variable de sesion*/
-                                    filtros.put("tipo_cartera_ind_r","0");
-                                    filtros.put("tipo_cartera_gpo_r","1");
-                                    /**Aumenta el contador en 1 porque solo aplica un filtro*/
-                                    cont_filtros += 1;
-                                    /**Va agregando el condicional para filtrar en la obtencion de cartera por tipo*/
-                                    where += " AND tipo = 'GRUPAL'";
-                                }else {
-                                    /**Cuando no ha seleccionado ningun checklist solo guarda en el map vacio en tipos*/
-                                    filtros.put("tipo_cartera_ind_r","0");
-                                    filtros.put("tipo_cartera_gpo_r","0");
-                                }
+                            /**Valida si los checklist de individual y grupal esten seleccionados*/
+                            if (cbInd.isChecked() && cbGpo.isChecked()) {
+                                /**va agregando en el map el valor del campo tipo cartera para guardarlo despues en variable de sesion*/
+                                filtros.put("tipo_cartera_ind_r", "1");
+                                filtros.put("tipo_cartera_gpo_r", "1");
+                                /**Aumenta el contador aqui en 2 porque son 2 filtros*/
+                                cont_filtros += 2;
+                                /**Va agregando el condicional para filtrar en la obtencion de cartera por tipo*/
+                                where += " AND tipo IN ('INDIVIDUAL','GRUPAL')";
+                            }
+                            /**Valida si solo el checklist de individual esta seleccionado*/
+                            else if (cbInd.isChecked()) {
+                                /**va agregando en el map el valor del campo tipo cartera para guardarlo despues en variable de sesion*/
+                                filtros.put("tipo_cartera_ind_r", "1");
+                                filtros.put("tipo_cartera_gpo_r", "0");
+                                /**Aumenta el contador en 1 porque solo aplica un filtro*/
+                                cont_filtros += 1;
+                                /**Va agregando el condicional para filtrar en la obtencion de cartera por tipo*/
+                                where += " AND tipo = 'INDIVIDUAL'";
+                            }
+                            /**Valida si solo el checklist de grupal esta seleccionado*/
+                            else if (cbGpo.isChecked()) {
+                                /**va agregando en el map el valor del campo tipo cartera para guardarlo despues en variable de sesion*/
+                                filtros.put("tipo_cartera_ind_r", "0");
+                                filtros.put("tipo_cartera_gpo_r", "1");
+                                /**Aumenta el contador en 1 porque solo aplica un filtro*/
+                                cont_filtros += 1;
+                                /**Va agregando el condicional para filtrar en la obtencion de cartera por tipo*/
+                                where += " AND tipo = 'GRUPAL'";
+                            } else {
+                                /**Cuando no ha seleccionado ningun checklist solo guarda en el map vacio en tipos*/
+                                filtros.put("tipo_cartera_ind_r", "0");
+                                filtros.put("tipo_cartera_gpo_r", "0");
+                            }
 
-                                /**Valida si el check de parciales esta seleccioanado para saber si tiene gestiones parciales*/
-                                if (cbParcial.isChecked()){
-                                    /**va agregando en el map el valor del campo parcial cartera para guardarlo despues en variable de sesion*/
-                                    filtros.put("parcial_cartera_r","1");
-                                    /**Aumenta el contador*/
-                                    cont_filtros += 1;
-                                    /**Va agregando el condicional para filtrar en la obtencion de cartera por gestiones parciales*/
-                                    where += " AND parcial = '0'";
-                                }else {
-                                    /**Cuando no ha seleccionado el checklist solo guarda en el map vacio en parcial*/
-                                    filtros.put("parcial_cartera_r","0");
-                                }
+                            /**Valida si el check de parciales esta seleccioanado para saber si tiene gestiones parciales*/
+                            if (cbParcial.isChecked()) {
+                                /**va agregando en el map el valor del campo parcial cartera para guardarlo despues en variable de sesion*/
+                                filtros.put("parcial_cartera_r", "1");
+                                /**Aumenta el contador*/
+                                cont_filtros += 1;
+                                /**Va agregando el condicional para filtrar en la obtencion de cartera por gestiones parciales*/
+                                where += " AND parcial = '0'";
+                            } else {
+                                /**Cuando no ha seleccionado el checklist solo guarda en el map vacio en parcial*/
+                                filtros.put("parcial_cartera_r", "0");
+                            }
 
-                                /**Agrega el contador al map para ser guardado en variable de sesion*/
-                                filtros.put("contador_cartera_r", String.valueOf(cont_filtros));
-                                /**Colocar el map de filtros en variable de sesion*/
-                                session.setFiltrosCarteraRuta(filtros);
+                            /**Agrega el contador al map para ser guardado en variable de sesion*/
+                            filtros.put("contador_cartera_r", String.valueOf(cont_filtros));
+                            /**Colocar el map de filtros en variable de sesion*/
+                            session.setFiltrosCarteraRuta(filtros);
 
-                                /**Oculta el teclado virtual*/
-                                imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-                                Log.e("where",where);
-                                /**Si la variable where (condicional) su tamaño es mayor a 4 le antepone la palabra WHERE para la consulta*/
-                                if (where.length() > 4)
-                                    GetCartera("WHERE" + where.substring(4));
-                                else {/**No seleccionó ningun filtro se hace la consulta sin condiciones*/
-                                    GetCartera("");
-                                }
-                                /**cierra la ventana de filtros*/
-                                dialog.dismiss();
-
-                                break;
-                            case R.id.btnBorrarFiltros:/**cuando selecciona borrar filtros*/
-                                /**Limpia todas las variables*/
-                                cbInd.setChecked(false);
-                                cbGpo.setChecked(false);
-                                cbParcial.setChecked(false);
-                                aetNombre.setText("");
-                                aetDia.setText("");
-                                aetColonia.setText("");
-                                spAsesor.setSelection(0);
-                                cont_filtros = 0;
-                                /**Crea el map para variables de sesion en filtros de cartera*/
-                                filtros = new HashMap<>();
-                                filtros.put("nombre_cartera_r","");
-                                filtros.put("dia_semana_r","");
-                                filtros.put("colonia_carteta_r","");
-                                filtros.put("asesor_cartera_r","0");
-                                filtros.put("tipo_cartera_ind_r","0");
-                                filtros.put("tipo_cartera_gpo_r","0");
-                                filtros.put("parcial_cartera_r","0");
-                                filtros.put("contador_cartera_r", "0");
-                                /**Coloca el map en variables de sesion*/
-                                session.setFiltrosCarteraRuta(filtros);
-
-                                /**Oculta el teclado virtual*/
-                                imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-                                /**Obtiene la cartera de la fichas sin ningun filtro*/
+                            /**Oculta el teclado virtual*/
+                            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                            Log.e("where", where);
+                            /**Si la variable where (condicional) su tamaño es mayor a 4 le antepone la palabra WHERE para la consulta*/
+                            if (where.length() > 4)
+                                GetCartera("WHERE" + where.substring(4));
+                            else {/**No seleccionó ningun filtro se hace la consulta sin condiciones*/
                                 GetCartera("");
+                            }
+                            /**cierra la ventana de filtros*/
+                            dialog.dismiss();
+                        } else if (id == R.id.btnBorrarFiltros) {/**cuando selecciona borrar filtros*/
+                            /**Limpia todas las variables*/
+                            cbInd.setChecked(false);
+                            cbGpo.setChecked(false);
+                            cbParcial.setChecked(false);
+                            aetNombre.setText("");
+                            aetDia.setText("");
+                            aetColonia.setText("");
+                            spAsesor.setSelection(0);
+                            cont_filtros = 0;
+                            /**Crea el map para variables de sesion en filtros de cartera*/
+                            filtros = new HashMap<>();
+                            filtros.put("nombre_cartera_r", "");
+                            filtros.put("dia_semana_r", "");
+                            filtros.put("colonia_carteta_r", "");
+                            filtros.put("asesor_cartera_r", "0");
+                            filtros.put("tipo_cartera_ind_r", "0");
+                            filtros.put("tipo_cartera_gpo_r", "0");
+                            filtros.put("parcial_cartera_r", "0");
+                            filtros.put("contador_cartera_r", "0");
+                            /**Coloca el map en variables de sesion*/
+                            session.setFiltrosCarteraRuta(filtros);
 
-                                aetNombre.setAdapter(adapterNombre);
-                                aetDia.setAdapter(adapterDia);
-                                aetColonia.setAdapter(adapterColonia);
-                                spAsesor.setAdapter(adapterAsesor);
+                            /**Oculta el teclado virtual*/
+                            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                            /**Obtiene la cartera de la fichas sin ningun filtro*/
+                            GetCartera("");
 
-                                break;
+                            aetNombre.setAdapter(adapterNombre);
+                            aetDia.setAdapter(adapterDia);
+                            aetColonia.setAdapter(adapterColonia);
+                            spAsesor.setAdapter(adapterAsesor);
                         }
                         setupBadge();
 
                     }
                 })
-                .setExpanded(true, 1000)
+                .setExpanded(true, sizeH)
                 .create();
         /**Declaracion de variables con la vista XML*/
         aetNombre   = filtros_dg.getHolderView().findViewById(R.id.aetNombre);

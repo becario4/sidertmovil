@@ -85,7 +85,7 @@ public class cvg_detalle_fragment extends Fragment {
 
         ctx                      = getContext();
 
-        dBhelper                 = new DBhelper(ctx);
+        dBhelper                 = DBhelper.getInstance(ctx);
 
         parent                   = (VencidaGrupal) getActivity();
         etNumeroPrestamo         = view.findViewById(R.id.etNumeroPrestamo);

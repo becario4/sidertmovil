@@ -108,7 +108,7 @@ public class ConsultarCC extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_consultar_c_c);
         ctx = this;
-        dBhelper         = new DBhelper(ctx);
+        dBhelper         = DBhelper.getInstance(ctx);
         db               = dBhelper.getWritableDatabase();
         tbMain           = findViewById(R.id.tbMain);
         rbPendientes     = findViewById(R.id.rbPendientes);

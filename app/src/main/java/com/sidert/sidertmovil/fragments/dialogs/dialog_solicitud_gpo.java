@@ -48,10 +48,10 @@ public class dialog_solicitud_gpo extends DialogFragment {
 
         ctx = getContext();
 
-        dBhelper = new DBhelper(ctx);
+        dBhelper = DBhelper.getInstance(ctx);
         db = dBhelper.getWritableDatabase();
 
-        session = new SessionManager(ctx);
+        session = SessionManager.getInstance(ctx);
         boostrap = (SolicitudGpo) getActivity();
         etNombre = view.findViewById(R.id.etNombreGpo);
         tvPlazo = view.findViewById(R.id.tvPlazo);

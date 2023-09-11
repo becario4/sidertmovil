@@ -277,6 +277,61 @@
             android:layout_height="@dimen/et_height" />
     </LinearLayout>
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:orientation="vertical"
+        android:visibility="visible">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Tipo de campaña"
+            android:textColor="@android:color/black" />
+
+        <TextView
+            android:id="@+id/txtCampanaGpo"
+            android:layout_width="match_parent"
+            android:layout_height="31dp"
+            android:background="@drawable/et_rounded_edges"
+            android:inputType="textCapCharacters"
+            android:textSize="17sp"
+            android:padding="5dp"
+            android:gravity="center_vertical"
+            android:maxLength="80"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:textColor="@drawable/edit_text_selector" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:orientation="vertical"
+        android:visibility="visible">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Nombre del que refirio"
+            android:textColor="@android:color/black" />
+
+        <EditText
+            android:id="@+id/txtNombreRefieroGpo"
+            android:layout_width="match_parent"
+            android:layout_height="35dp"
+            android:background="@drawable/et_rounded_edges"
+            android:maxLength="80"
+            android:gravity="center_vertical"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:textColor="@color/black"
+            android:textSize="17sp" />
+    </LinearLayout>
+
     <RelativeLayout
         android:layout_marginTop="10dp"
         android:orientation="horizontal"
@@ -290,12 +345,12 @@
             android:layout_marginLeft="20dp"
             android:layout_alignParentLeft="true"/>-->
         <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/btnContinuar5"
+            android:id="@+id/btnContinuarDatosCredito"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_continuar"
+            android:layout_alignParentRight="true"
             android:layout_marginTop="10dp"
             android:layout_marginRight="20dp"
-            android:layout_alignParentRight="true"/>
+            android:src="@drawable/ic_continuar" />
     </RelativeLayout>
 </LinearLayout>

@@ -49,7 +49,7 @@ public class geo_miembros_fragment extends Fragment {
 
         ctx = getContext();
 
-        dbHelper = new DBhelper(ctx);
+        dbHelper = DBhelper.getInstance(ctx);
         db = dbHelper.getWritableDatabase();
 
         boostrap = (GeolocalizacionGpo) getActivity();

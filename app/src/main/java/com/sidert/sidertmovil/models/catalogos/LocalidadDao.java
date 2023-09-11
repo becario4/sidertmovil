@@ -17,7 +17,7 @@ public class LocalidadDao {
 
     public LocalidadDao(Context ctx)
     {
-        this.dbHelper = new DBhelper(ctx);
+        this.dbHelper = DBhelper.getInstance(ctx);
         this.db = dbHelper.getWritableDatabase();
     }
 
@@ -31,7 +31,7 @@ public class LocalidadDao {
         db.beginTransaction();
 
         sql = "INSERT INTO " + tbl_localidades + "( " +
-                "id_localidad," +
+                "id," +
                 "nombre," +
                 "id_municipio" +
                 ") VALUES(?, ?, ?)";
@@ -48,11 +48,6 @@ public class LocalidadDao {
         db.endTransaction();
 
         return id;
-    }
-
-    public void update(int id, Localidad localidad)
-    {
-
     }
 
     public List<Localidad> findAll()

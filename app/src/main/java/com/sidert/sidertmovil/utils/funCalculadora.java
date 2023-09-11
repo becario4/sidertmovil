@@ -73,13 +73,21 @@ public class funCalculadora {
                 plazoA = 36;
             }else if(periodo.equals("SEMANAL") && plazo.equals("12 MESES")){
                 plazoA = 48;
-            }else if(periodo.equals("CATORCENAL") || periodo.equals("QUINCENAL") && plazo.equals("4 MESES")){
+            }else if(periodo.contains("CATORCENAL")  && plazo.equals("4 MESES")){
                 plazoA = 8;
-            }else if(periodo.equals("CATORCENAL") || periodo.equals("QUINCENAL") && plazo.equals("6 MESES")){
+            }else if(periodo.contains("CATORCENAL")  && plazo.equals("6 MESES")){
                 plazoA = 12;
-            }else if(periodo.equals("CATORCENAL") || periodo.equals("QUINCENAL") && plazo.equals("9 MESES")){
+            }else if(periodo.contains("CATORCENAL")  && plazo.equals("9 MESES")){
                 plazoA = 18;
-            }else if(periodo.equals("CATORCENAL") || periodo.equals("QUINCENAL") && plazo.equals("12 MESES")){
+            }else if(periodo.contains("CATORCENAL")  && plazo.equals("12 MESES")){
+                plazoA = 24;
+            } else if(periodo.equals("QUINCENAL") && plazo.equals("4 MESES")){
+                plazoA = 8;
+            }else if( periodo.equals("QUINCENAL") && plazo.equals("6 MESES")){
+                plazoA = 12;
+            }else if(periodo.equals("QUINCENAL") && plazo.equals("9 MESES")){
+                plazoA = 18;
+            }else if( periodo.equals("QUINCENAL") && plazo.equals("12 MESES")){
                 plazoA = 24;
             }else if(periodo.equals("MENSUAL") && plazo.equals("4 MESES")){
                 plazoA = 4;
@@ -103,11 +111,17 @@ public class funCalculadora {
                 amortizacionA = 20;
             }else if(periodo.equals("SEMANAL") && plazo.equals("24 SEMANAS")){
                 amortizacionA = 24;
-            }else if(periodo.equals("CATORCENAL") || periodo.equals("QUINCENAL")  && plazo.equals("8 CATORCENAS") || plazo.equals("8 QUINCENAS")){
+            }else if(periodo.equals("CATORCENAL") && plazo.equals("8 CATORCENAS")){
                 amortizacionA = 8;
-            }else if(periodo.equals("CATORCENAL") || periodo.equals("QUINCENAL") && plazo.equals("10 CATORCENAS") || plazo.equals("10 QUINCENAS")){
+            }else if(periodo.equals("CATORCENAL") && plazo.equals("10 CATORCENAS")){
                 amortizacionA = 10;
-            }else if(periodo.equals("CATORCENAL") || periodo.equals("QUINCENAL") && plazo.equals("12 CATORCENAS") || plazo.equals("12 QUINCENAS")){
+            }else if(periodo.equals("CATORCENAL") && plazo.equals("12 CATORCENAS")) {
+                amortizacionA = 12;
+            } else if(periodo.equals("QUINCENAL")  && plazo.equals("8 QUINCENAS")){
+                amortizacionA = 8;
+            }else if(periodo.equals("QUINCENAL") && plazo.equals("10 QUINCENAS")){
+                amortizacionA = 10;
+            }else if(periodo.equals("QUINCENAL") && plazo.equals("12 QUINCENAS")){
                 amortizacionA =12;
             }else if(periodo.equals("MENSUAL") && plazo.equals("6 MESES")){
                 amortizacionA = 6;

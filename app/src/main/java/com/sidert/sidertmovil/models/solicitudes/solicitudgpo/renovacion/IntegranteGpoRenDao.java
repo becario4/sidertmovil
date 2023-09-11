@@ -10,6 +10,8 @@ import com.sidert.sidertmovil.database.DBhelper;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.sidert.sidertmovil.utils.Constants.TBL_DATOS_BENEFICIARIO_GPO;
+import static com.sidert.sidertmovil.utils.Constants.TBL_DATOS_CREDITO_CAMPANA_GPO_REN;
 import static com.sidert.sidertmovil.utils.Constants.TBL_INTEGRANTES_GPO_REN;
 
 public class IntegranteGpoRenDao {
@@ -17,7 +19,7 @@ public class IntegranteGpoRenDao {
     final SQLiteDatabase db;
 
     public IntegranteGpoRenDao(Context ctx){
-        this.dbHelper = new DBhelper(ctx);
+        this.dbHelper = DBhelper.getInstance(ctx);
         this.db = dbHelper.getWritableDatabase();
     }
 
@@ -218,5 +220,14 @@ public class IntegranteGpoRenDao {
         cv.put("id_solicitud_integrante", idSolicitud);
         cv.put("estatus_completado",2);
         db.update(TBL_INTEGRANTES_GPO_REN, cv, "id = ?", new String[]{String.valueOf(integranteGpoRen.getId())});
+
+        ContentValues cv1 = new ContentValues();
+        cv1.put("id_solicitud_integrante", idSolicitud);
+        db.update(TBL_DATOS_BENEFICIARIO_GPO, cv1, "id_integrante = ? ", new String[]{String.valueOf(integranteGpoRen.getId())});
+
+        ContentValues cv2 = new ContentValues();
+        cv2.put("id_originacion", idSolicitud);
+        db.update(TBL_DATOS_CREDITO_CAMPANA_GPO_REN,cv2,"id_solicitud = ?", new String[]{String.valueOf(integranteGpoRen.getId())});
+
     }
 }

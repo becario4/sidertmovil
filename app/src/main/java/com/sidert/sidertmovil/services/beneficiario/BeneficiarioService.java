@@ -1,3 +1,4 @@
+
 package com.sidert.sidertmovil.services.beneficiario;
 
 import android.content.Intent;
@@ -10,10 +11,12 @@ import java.util.List;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
+import retrofit2.http.Header;
 import retrofit2.http.Headers;
 import retrofit2.http.Multipart;
 import retrofit2.http.POST;
 import retrofit2.http.Part;
+import retrofit2.http.Path;
 import retrofit2.http.Query;
 
 public interface BeneficiarioService {
@@ -21,8 +24,9 @@ public interface BeneficiarioService {
             "Accept: application/json",
             "Content-Type: application/json"
     })
-    @GET("/api/solicitudes/creditos/beneficiario?")
+    @POST("/api/solicitudes/creditos/beneficiario?")
     Call<Beneficiario> senDataBeneficiario(
+            @Header("Authorization") String barer_token,
             @Query("solicitud_id") Integer id_solicitud,
             @Query("cliente_id") Integer cliente_id,
             @Query("grupo_id") Integer grupo_id,
@@ -32,17 +36,4 @@ public interface BeneficiarioService {
             @Query("parentesco") String parentesco,
             @Query("serie_id") Integer serieid
             );
-
-    @POST("/api/solicitudes/creditos/beneficiario_gpo?")
-    Call<Beneficiario>senDataBeneficiarioGpo(
-            @Query("solicitud_id") Integer id_solicitud,
-            @Query("cliente_id") Integer cliente_id,
-            @Query("grupo_id") Integer grupo_id,
-            @Query("nombre") String nombreBeneficiario,
-            @Query("paterno") String apellidoPaterno,
-            @Query("materno") String apellidoMaterno,
-            @Query("parentesco") String parentesco,
-            @Query("serie_id") Integer serieid
-    );
-
 }

@@ -15,7 +15,6 @@ public interface DocumentoClienteService {
             "Accept: application/json",
             "Content-Type: application/json"
     })
-
     @GET("/api/movil/documentos")
     Call<List<DocumentoCliente>> show(
         @Query("prestamo_id") Integer prestamoId,

@@ -3,6 +3,7 @@ package com.sidert.sidertmovil.fragments;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -17,6 +18,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+
 import androidx.annotation.Nullable;
 /*import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;*/
@@ -52,10 +54,12 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.sidert.sidertmovil.R;
 import com.sidert.sidertmovil.activities.CameraVertical;
+import com.sidert.sidertmovil.activities.Catalogos;
 import com.sidert.sidertmovil.activities.GeolocalizacionInd;
 import com.sidert.sidertmovil.activities.LectorCodigoBarras;
 import com.sidert.sidertmovil.activities.VerImagen;
 import com.sidert.sidertmovil.database.DBhelper;
+import com.sidert.sidertmovil.models.ModeloCatalogoGral;
 import com.sidert.sidertmovil.utils.CanvasCustom;
 import com.sidert.sidertmovil.utils.Constants;
 import com.sidert.sidertmovil.utils.Miscellaneous;
@@ -73,11 +77,17 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Objects;
 
+import static com.sidert.sidertmovil.utils.Constants.CARTERAEN;
+import static com.sidert.sidertmovil.utils.Constants.CATALOGO;
 import static com.sidert.sidertmovil.utils.Constants.FORMAT_TIMESTAMP;
+import static com.sidert.sidertmovil.utils.Constants.ITEM;
+import static com.sidert.sidertmovil.utils.Constants.REQUEST_CODE;
+import static com.sidert.sidertmovil.utils.Constants.REQUEST_CODE_CARTERAEN;
 import static com.sidert.sidertmovil.utils.Constants.TBL_CARTERA_IND_T;
 import static com.sidert.sidertmovil.utils.Constants.TBL_GEO_RESPUESTAS_T;
 import static com.sidert.sidertmovil.utils.Constants.TBL_PRESTAMOS_IND_T;
 import static com.sidert.sidertmovil.utils.Constants.TIMESTAMP;
+import static com.sidert.sidertmovil.utils.Constants.TITULO;
 
 
 public class geo_negocio_fragment extends Fragment {
@@ -92,6 +102,7 @@ public class geo_negocio_fragment extends Fragment {
     private EditText etDireccionCap;
     private EditText etFechaFinalizacion;
     private EditText etFechaEnvio;
+    private TextView txtCarteraEnNegocio;
     private ImageButton ibUbicacion;
     private ImageButton ibCodigoBarras;
     private ImageButton ibFotoFachada;
@@ -129,33 +140,35 @@ public class geo_negocio_fragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-       View view = inflater.inflate(R.layout.fragment_geo_negocio, container, false);
+        View view = inflater.inflate(R.layout.fragment_geo_negocio, container, false);
         ctx = getContext();
         boostrap = (GeolocalizacionInd) getActivity();
 
-        dBhelper = new DBhelper(ctx);
+        dBhelper = DBhelper.getInstance(ctx);
         db = dBhelper.getWritableDatabase();
 
-        tvMapa          = view.findViewById(R.id.tvMapa);
-        tvDireccionCap  = view.findViewById(R.id.tvDireccionCap);
+        tvMapa = view.findViewById(R.id.tvMapa);
+        tvDireccionCap = view.findViewById(R.id.tvDireccionCap);
 
         etNombre = view.findViewById(R.id.etNombre);
         etCodigoBarras = view.findViewById(R.id.etCodigoBarras);
 
-        etComentario   = view.findViewById(R.id.etComentario);
+        etComentario = view.findViewById(R.id.etComentario);
         etDireccionCap = view.findViewById(R.id.etDireccionCap);
 
         etFechaFinalizacion = view.findViewById(R.id.etFechaFinalizacion);
-        etFechaEnvio        = view.findViewById(R.id.etFechaEnvio);
+        etFechaEnvio = view.findViewById(R.id.etFechaEnvio);
 
         ibUbicacion = view.findViewById(R.id.ibUbicacion);
         ibCodigoBarras = view.findViewById(R.id.ibCodigoBarras);
         ibFotoFachada = view.findViewById(R.id.ibFotoFachada);
         ibGaleriaFachada = view.findViewById(R.id.ibGaleriaFachada);
 
+        txtCarteraEnNegocio = view.findViewById(R.id.txtCarteraEnNegocio);
+
         ivFotoFachada = view.findViewById(R.id.ivFotoFachada);
 
-        pbLoading       = view.findViewById(R.id.pbLoading);
+        pbLoading = view.findViewById(R.id.pbLoading);
 
         mapUbicacion = view.findViewById(R.id.mapUbicacion);
 
@@ -171,7 +184,7 @@ public class geo_negocio_fragment extends Fragment {
 
         initComponents();
 
-       return view;
+        return view;
     }
 
     @Override
@@ -181,6 +194,7 @@ public class geo_negocio_fragment extends Fragment {
         ibUbicacion.setOnClickListener(ibUbicacion_OnClick);
         ibCodigoBarras.setOnClickListener(ibCodigoBarras_OnClick);
         ibFotoFachada.setOnClickListener(ibFotoFachada_OnClick);
+        txtCarteraEnNegocio.setOnClickListener(txtCarteraEnNegocio_OnClick);
         ibGaleriaFachada.setOnClickListener(ibGaleriaFachada_OnClick);
         ivFotoFachada.setOnClickListener(ivFotoFachada_OnClick);
         btnGuardar.setOnClickListener(btnGuardar_OnClick);
@@ -192,7 +206,7 @@ public class geo_negocio_fragment extends Fragment {
                 googleMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
                     @Override
                     public void onMapClick(LatLng latLng) {
-                        if(flag_edit) {
+                        if (flag_edit) {
                             final AlertDialog ubicacion_dlg = Popups.showDialogConfirm(ctx, Constants.question,
                                     R.string.capturar_nueva_ubicacion, R.string.ubicacion, new Popups.DialogMessage() {
                                         @Override
@@ -214,13 +228,12 @@ public class geo_negocio_fragment extends Fragment {
                             Objects.requireNonNull(ubicacion_dlg.getWindow()).requestFeature(Window.FEATURE_NO_TITLE);
                             ubicacion_dlg.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
                             ubicacion_dlg.show();
-                        }
-                        else{
+                        } else {
                             final AlertDialog ubicacion_dlg = Popups.showDialogConfirm(ctx, Constants.question,
                                     R.string.ver_en_maps, R.string.ver_maps, new Popups.DialogMessage() {
                                         @Override
                                         public void OnClickListener(AlertDialog dialog) {
-                                            Intent i_maps = new Intent(android.content.Intent.ACTION_VIEW, Uri.parse("geo:"+latLngUbicacion.latitude+","+latLngUbicacion.longitude+"?z=16&q="+latLngUbicacion.latitude+","+latLngUbicacion.longitude+"()"));
+                                            Intent i_maps = new Intent(android.content.Intent.ACTION_VIEW, Uri.parse("geo:" + latLngUbicacion.latitude + "," + latLngUbicacion.longitude + "?z=16&q=" + latLngUbicacion.latitude + "," + latLngUbicacion.longitude + "()"));
                                             i_maps.setClassName("com.google.android.apps.maps", "com.google.android.maps.MapsActivity");
                                             startActivity(i_maps);
                                             dialog.dismiss();
@@ -243,6 +256,18 @@ public class geo_negocio_fragment extends Fragment {
         });
 
     }
+
+    private View.OnClickListener txtCarteraEnNegocio_OnClick = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+
+            Intent i_carteraEn = new Intent(ctx, Catalogos.class);
+            i_carteraEn.putExtra(TITULO, Miscellaneous.ucFirst(CARTERAEN));
+            i_carteraEn.putExtra(CATALOGO, CARTERAEN);
+            i_carteraEn.putExtra(REQUEST_CODE, REQUEST_CODE_CARTERAEN);
+            startActivityForResult(i_carteraEn, REQUEST_CODE_CARTERAEN);
+        }
+    };
 
     private View.OnClickListener ibUbicacion_OnClick = new View.OnClickListener() {
         @Override
@@ -272,27 +297,19 @@ public class geo_negocio_fragment extends Fragment {
         }
     };
 
-    private View.OnClickListener ibGaleriaFachada_OnClick = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            /**Valida si tiene los permisos de escritura y lectura de almacenamiento*/
-            if (ContextCompat.checkSelfPermission(ctx, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
-                    || ContextCompat.checkSelfPermission(ctx,Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED){
-                requestPermissions(new String[] {Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE}, 123);
-            } else {
-                int compress = 10;/**Porcentaje de calidad de imagen de salida*/
-                if( Build.MANUFACTURER.toUpperCase().equals("SAMSUNG"))/**Valida si es de un samsung para subir un poco la calidad*/
-                    compress = 40;
+    private final View.OnClickListener ibGaleriaFachada_OnClick = ignored -> {
+        String model = Build.MANUFACTURER;
+        int compress = 10;
 
-                /**Libreria para recortar imagenes*/
-                CropImage.activity()
-                        .setAutoZoomEnabled(true)
-                        .setMinCropWindowSize(3000,4000)
-                        .setOutputCompressQuality(compress)
-                        .start(ctx, geo_negocio_fragment.this);
-            }
-
+        if (model != null && model.equalsIgnoreCase("SAMSUNG")) {
+            compress = 40;
         }
+
+        CropImage.activity()
+                .setAutoZoomEnabled(true)
+                .setMinCropWindowSize(3000, 4000)
+                .setOutputCompressQuality(compress)
+                .start(ctx, this);
     };
 
     private View.OnClickListener ivFotoFachada_OnClick = new View.OnClickListener() {
@@ -314,11 +331,11 @@ public class geo_negocio_fragment extends Fragment {
                             @Override
                             public void OnClickListener(AlertDialog dialog) {
                                 int compress = 10;
-                                if( Build.MANUFACTURER.toUpperCase().equals("SAMSUNG"))
+                                if (Build.MANUFACTURER.toUpperCase().equals("SAMSUNG"))
                                     compress = 40;
                                 CropImage.activity()
                                         .setAutoZoomEnabled(true)
-                                        .setMinCropWindowSize(3000,4000)
+                                        .setMinCropWindowSize(3000, 4000)
                                         .setOutputCompressQuality(compress)
                                         .start(ctx, geo_negocio_fragment.this);
                                 dialog.dismiss();
@@ -333,8 +350,7 @@ public class geo_negocio_fragment extends Fragment {
                 evidencia_dlg.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
                 evidencia_dlg.show();
 
-            }
-            else {
+            } else {
                 final AlertDialog fachada_dlg = Popups.showDialogConfirm(ctx, Constants.question,
                         R.string.ver_fotografia, R.string.ver_imagen, new Popups.DialogMessage() {
                             @Override
@@ -366,7 +382,7 @@ public class geo_negocio_fragment extends Fragment {
     };
 
     //===================== Listener GPS  =======================================================
-    private void ObtenerUbicacion (){
+    private void ObtenerUbicacion() {
         pbLoading.setVisibility(View.VISIBLE);
         ibUbicacion.setEnabled(false);
         locationManager = (LocationManager) boostrap.getSystemService(Context.LOCATION_SERVICE);
@@ -376,18 +392,17 @@ public class geo_negocio_fragment extends Fragment {
             public void onComplete(String latitud, String longitud) {
 
                 ibUbicacion.setEnabled(true);
-                if (!latitud.isEmpty() && !longitud.isEmpty()){
+                if (!latitud.isEmpty() && !longitud.isEmpty()) {
                     mapUbicacion.setVisibility(View.VISIBLE);
                     ColocarUbicacionGestion(Double.parseDouble(latitud), Double.parseDouble(longitud));
-                }
-                else{
+                } else {
                     pbLoading.setVisibility(View.GONE);
                     Toast.makeText(ctx, getResources().getString(R.string.no_ubicacion), Toast.LENGTH_SHORT).show();
                 }
                 myHandler.removeCallbacksAndMessages(null);
 
                 flagUbicacion = true;
-                if (flagUbicacion){
+                if (flagUbicacion) {
                     CancelUbicacion();
                 }
             }
@@ -400,13 +415,12 @@ public class geo_negocio_fragment extends Fragment {
         if (NetworkStatus.haveNetworkConnection(ctx)) {
             Log.e("Proveedor", "RED");
             provider = LocationManager.NETWORK_PROVIDER;
-        }
-        else {
+        } else {
             Log.e("Proveedor", "GPS");
             provider = LocationManager.GPS_PROVIDER;
         }
 
-        locationManager.requestSingleUpdate(provider, locationListener,null);
+        locationManager.requestSingleUpdate(provider, locationListener, null);
 
         myHandler.postDelayed(new Runnable() {
             public void run() {
@@ -423,7 +437,7 @@ public class geo_negocio_fragment extends Fragment {
         }, 60000);
     }
 
-    private void ColocarUbicacionGestion (final double lat, final double lon){
+    private void ColocarUbicacionGestion(final double lat, final double lon) {
         mapUbicacion.onResume();
         try {
             MapsInitializer.initialize(boostrap.getApplicationContext());
@@ -446,13 +460,13 @@ public class geo_negocio_fragment extends Fragment {
                 mMap.getUiSettings().setAllGesturesEnabled(false);
                 mMap.getUiSettings().setMapToolbarEnabled(false);
 
-                addMarker(lat,lon);
+                addMarker(lat, lon);
 
             }
         });
     }
 
-    private void addMarker (double lat, double lng){
+    private void addMarker(double lat, double lng) {
         if (flag_edit)
             etDireccionCap.setText(Miscellaneous.ObtenerDireccion(ctx, lat, lng));
         else
@@ -460,10 +474,10 @@ public class geo_negocio_fragment extends Fragment {
         etDireccionCap.setVisibility(View.VISIBLE);
         tvDireccionCap.setVisibility(View.VISIBLE);
         tvDireccionCap.setTextColor(getResources().getColor(R.color.black));
-        LatLng coordenadas = new LatLng(lat,lng);
+        LatLng coordenadas = new LatLng(lat, lng);
         latLngUbicacion = coordenadas;
         //LatLng coordenada = new LatLng(19.201745,-96.162134);
-        CameraUpdate ubication = CameraUpdateFactory.newLatLngZoom(coordenadas,17);
+        CameraUpdate ubication = CameraUpdateFactory.newLatLngZoom(coordenadas, 17);
 
         mMap.clear();
         mMap.addMarker(new MarkerOptions()
@@ -476,7 +490,7 @@ public class geo_negocio_fragment extends Fragment {
         ibUbicacion.setVisibility(View.GONE);
     }
 
-    private void CancelUbicacion (){
+    private void CancelUbicacion() {
         if (flagUbicacion)
             locationManager.removeUpdates(locationListener);
     }
@@ -486,18 +500,18 @@ public class geo_negocio_fragment extends Fragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        switch (requestCode){
+        switch (requestCode) {
             case Constants.REQUEST_CODE_CODEBARS:
-                if (resultCode == boostrap.RESULT_OK){
-                    if (data != null){
+                if (resultCode == boostrap.RESULT_OK) {
+                    if (data != null) {
                         etCodigoBarras.setVisibility(View.VISIBLE);
                         etCodigoBarras.setText(data.getStringExtra(Constants.CODEBARS));
                     }
                 }
                 break;
             case Constants.REQUEST_CODE_CAMARA_FACHADA:
-                if (resultCode == Activity.RESULT_OK){
-                    if (data != null){
+                if (resultCode == Activity.RESULT_OK) {
+                    if (data != null) {
                         ibFotoFachada.setVisibility(View.GONE);
                         ibGaleriaFachada.setVisibility(View.GONE);
                         ivFotoFachada.setVisibility(View.VISIBLE);
@@ -506,8 +520,25 @@ public class geo_negocio_fragment extends Fragment {
                     }
                 }
                 break;
+
+            case REQUEST_CODE_CARTERAEN:
+                if (resultCode == REQUEST_CODE_CARTERAEN) {
+                    if (data != null) {
+                        Integer id_carteraEn = 0;
+                        ContentValues cv = new ContentValues();
+                        txtCarteraEnNegocio.setError(null);
+                        txtCarteraEnNegocio.setText(((ModeloCatalogoGral) data.getSerializableExtra(ITEM)).getNombre());
+                        id_carteraEn = Miscellaneous.selectCampana(ctx, Miscellaneous.GetStr(txtCarteraEnNegocio));
+                    }
+                } else {
+                    txtCarteraEnNegocio.setText(" ");
+                    Toast.makeText(ctx, "ESTE CAMPO ES REQUERIDO", Toast.LENGTH_SHORT).show();
+                }
+                break;
+
+
             case CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE:/**Recibe el archivo a adjuntar*/
-                if (data != null){/**Valida que se esté recibiendo el archivo*/
+                if (data != null) {/**Valida que se esté recibiendo el archivo*/
                     try {
                         Log.e("AQUI", "CROP IMAGE");
                         CropImage.ActivityResult result = CropImage.getActivityResult(data);
@@ -545,7 +576,7 @@ public class geo_negocio_fragment extends Fragment {
                         /**Coloca la imagen en el contededor del imageView*/
                         Glide.with(ctx).load(baos.toByteArray()).centerCrop().into(ivFotoFachada);
 
-                    }catch (Exception e){
+                    } catch (Exception e) {
                         /**En caso de que haya adjuntado un archivo  con diferente formato al JPEG*/
                         AlertDialog success = Popups.showDialogMessage(ctx, "", R.string.error_image, R.string.accept, dialog -> dialog.dismiss());
                         success.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
@@ -558,11 +589,11 @@ public class geo_negocio_fragment extends Fragment {
         }
     }
 
-    private void SendMessError (String mess){
+    private void SendMessError(String mess) {
         Toast.makeText(ctx, mess, Toast.LENGTH_SHORT).show();
     }
 
-    public void GuardarGeo () {
+    public void GuardarGeo() {
 
         try {
             HashMap<Integer, String> params = new HashMap<>();
@@ -573,8 +604,8 @@ public class geo_negocio_fragment extends Fragment {
             params.put(4, "0");
             params.put(5, etNombre.getText().toString().trim().toUpperCase());
             params.put(6, "");
-            params.put(7, ((isUbicacion)?"0":String.valueOf(latLngUbicacion.latitude)));
-            params.put(8, ((isUbicacion)?"0":String.valueOf(latLngUbicacion.longitude)));
+            params.put(7, ((isUbicacion) ? "0" : String.valueOf(latLngUbicacion.latitude)));
+            params.put(8, ((isUbicacion) ? "0" : String.valueOf(latLngUbicacion.longitude)));
             params.put(9, etDireccionCap.getText().toString().trim().toUpperCase());
             params.put(10, etCodigoBarras.getText().toString().trim());
             params.put(11, Miscellaneous.save(byteFotoFachada, 1));
@@ -583,6 +614,7 @@ public class geo_negocio_fragment extends Fragment {
             params.put(14, "");
             params.put(15, "0");
             params.put(16, "0");
+            params.put(17, String.valueOf(Miscellaneous.selectCarteraEn(ctx, Miscellaneous.GetStr(txtCarteraEnNegocio))));
 
             if (isSave)
                 dBhelper.saveGeoRespuestas(db, params);
@@ -596,10 +628,9 @@ public class geo_negocio_fragment extends Fragment {
         servicios.SaveGeolocalizacion(ctx, false);
         initComponents();
 
-
     }
 
-    private void initComponents (){
+    private void initComponents() {
         Cursor row;
 
         String sql = "SELECT c.id_cartera FROM " + TBL_CARTERA_IND_T + " AS c LEFT JOIN " + TBL_PRESTAMOS_IND_T + " AS p ON p.id_cliente = c.id_cartera WHERE c.num_solicitud = ?";
@@ -614,11 +645,11 @@ public class geo_negocio_fragment extends Fragment {
 
         row.close();
 
-        sql = "SELECT * FROM " + TBL_GEO_RESPUESTAS_T +" WHERE id_cartera = ? AND tipo_ficha = 1 AND tipo_geolocalizacion = 'NEGOCIO'";
+        sql = "SELECT * FROM " + TBL_GEO_RESPUESTAS_T + " WHERE id_cartera = ? AND tipo_ficha = 1 AND tipo_geolocalizacion = 'NEGOCIO'";
 
         row = db.rawQuery(sql, new String[]{id_cartera});
 
-        if (row.getCount() > 0){
+        if (row.getCount() > 0) {
             row.moveToFirst();
             flag_edit = false;
 
@@ -626,7 +657,7 @@ public class geo_negocio_fragment extends Fragment {
             etNombre.setText(row.getString(6));
             etNombre.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked));
             direccion = row.getString(10);
-            if (row.getDouble(8) == 0 && row.getDouble(9) == 0){
+            if (row.getDouble(8) == 0 && row.getDouble(9) == 0) {
                 ibUbicacion.setVisibility(View.GONE);
                 tvMapa.setVisibility(View.GONE);
                 tvDireccionCap.setTextColor(getResources().getColor(R.color.black));
@@ -634,8 +665,7 @@ public class geo_negocio_fragment extends Fragment {
                 tvDireccionCap.setVisibility(View.VISIBLE);
                 etDireccionCap.setText(direccion);
                 etDireccionCap.setVisibility(View.VISIBLE);
-            }
-            else {
+            } else {
                 mapUbicacion.setVisibility(View.VISIBLE);
                 ColocarUbicacionGestion(row.getDouble(8), row.getDouble(9));
             }
@@ -645,9 +675,9 @@ public class geo_negocio_fragment extends Fragment {
             etCodigoBarras.setText(row.getString(11));
             etCodigoBarras.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked));
             ibFotoFachada.setVisibility(View.GONE);
-            File fachadaFile = new File(Constants.ROOT_PATH + "Fachada/"+row.getString(12));
+            File fachadaFile = new File(Constants.ROOT_PATH + "Fachada/" + row.getString(12));
             Uri uriFachada = Uri.fromFile(fachadaFile);
-            byteFotoFachada = Miscellaneous.getBytesUri(ctx, uriFachada,0);
+            byteFotoFachada = Miscellaneous.getBytesUri(ctx, uriFachada, 0);
             Glide.with(ctx).load(uriFachada).into(ivFotoFachada);
             ivFotoFachada.setVisibility(View.VISIBLE);
             etComentario.setText(row.getString(13));
@@ -656,8 +686,11 @@ public class geo_negocio_fragment extends Fragment {
             llFechaFinalizacion.setVisibility(View.VISIBLE);
             llFechaEnvio.setVisibility(View.VISIBLE);
             etFechaFinalizacion.setText(row.getString(14));
-            etFechaEnvio.setText((!row.getString(15).isEmpty())?row.getString(15):"Pendiente por enviar");
+            etFechaEnvio.setText((!row.getString(15).isEmpty()) ? row.getString(15) : "Pendiente por enviar");
             btnGuardar.setVisibility(View.GONE);
+            txtCarteraEnNegocio.setText(Miscellaneous.tipoEntregaCartera(ctx, row.getString(18)));
+            txtCarteraEnNegocio.setBackground(getResources().getDrawable(R.drawable.bkg_rounded_edges_blocked));
+            txtCarteraEnNegocio.setEnabled(false);
 
         }
     }

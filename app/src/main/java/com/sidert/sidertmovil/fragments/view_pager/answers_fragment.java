@@ -2,10 +2,12 @@ package com.sidert.sidertmovil.fragments.view_pager;
 
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import androidx.annotation.Nullable;
@@ -95,9 +97,9 @@ public class answers_fragment extends Fragment {
         ctx = getContext();
         boostrap = (Home) getActivity();
 
-        session = new SessionManager(ctx);
+        session = SessionManager.getInstance(ctx);
 
-        dBhelper = new DBhelper(ctx);
+        dBhelper = DBhelper.getInstance(ctx);
         db = dBhelper.getWritableDatabase();
 
         rvFichas = view.findViewById(R.id.rvFichas);
@@ -206,6 +208,15 @@ public class answers_fragment extends Fragment {
 
     /**Funcion para mostrar la vista de filtros*/
     private void Filtros (){
+
+        int sizeH = 900;
+        Activity activity = this.getActivity();
+        if (activity != null) {
+            View decorateView = activity.getWindow().getDecorView();
+            sizeH = (int) (decorateView.getHeight() / 2.0);
+        }
+
+
         /**Se crea un nuevo dialogo con su configuracion de mostrar arriba y el padding*/
         DialogPlus filtros_dg = DialogPlus.newDialog(boostrap)
                 .setContentHolder(new ViewHolder(R.layout.sheet_dialog_filtros_contestadas))
@@ -219,145 +230,141 @@ public class answers_fragment extends Fragment {
                         HashMap<String, String> filtros = new HashMap<>();
                         InputMethodManager imm = (InputMethodManager)boostrap.getSystemService(Context.INPUT_METHOD_SERVICE);
                         /**Se valida que boton fue selecionado si Borrar filtros o Filtrar*/
-                        switch (view.getId()) {
-                            case R.id.btnFiltrar:/**Seleccionaron Filtrar*/
-                                /**Se valida si el campo de nombre contiene algun valor*/
-                                if (!aetNombre.getText().toString().trim().isEmpty()){
-                                    /**va agregando en el map el valor del campo nombre para guardarlo despues en variable de sesion*/
-                                    filtros.put("nombre_cartera_c",aetNombre.getText().toString().trim());
-                                    /**Aumenta el contador */
-                                    cont_filtros += 1;
-                                    /**Va creando el condicional para filtrar en la obtencion de cartera por nombre cliente/grupo*/
-                                    where = " AND nombre LIKE '%"+aetNombre.getText().toString().trim()+"%'";
-                                }
-                                /**Cuando esta vacio el campo solo guarda en el map vacio en nombre*/
-                                else filtros.put("nombre_cartera_c","");
+                        int id = view.getId();
+                        if (id == R.id.btnFiltrar) {/**Seleccionaron Filtrar*/
+                            /**Se valida si el campo de nombre contiene algun valor*/
+                            if (!aetNombre.getText().toString().trim().isEmpty()) {
+                                /**va agregando en el map el valor del campo nombre para guardarlo despues en variable de sesion*/
+                                filtros.put("nombre_cartera_c", aetNombre.getText().toString().trim());
+                                /**Aumenta el contador */
+                                cont_filtros += 1;
+                                /**Va creando el condicional para filtrar en la obtencion de cartera por nombre cliente/grupo*/
+                                where = " AND nombre LIKE '%" + aetNombre.getText().toString().trim() + "%'";
+                            }
+                            /**Cuando esta vacio el campo solo guarda en el map vacio en nombre*/
+                            else filtros.put("nombre_cartera_c", "");
 
-                                /**Valida si los checklist de individual y grupal esten seleccionados*/
-                                if (cbInd.isChecked() && cbGpo.isChecked()){
-                                    /**va agregando en el map el valor del campo tipo cartera para guardarlo despues en variable de sesion*/
-                                    filtros.put("tipo_cartera_ind_c","1");
-                                    filtros.put("tipo_cartera_gpo_c","1");
-                                    /**Aumenta el contador aqui en 2 porque son 2 filtros*/
-                                    cont_filtros += 2;
-                                    /**Va agregando el condicional para filtrar en la obtencion de cartera por tipo*/
-                                    where += " AND tipo_ficha IN ('INDIVIDUAL','GRUPAL')";
-                                }
-                                /**Valida si solo el checklist de individual esta seleccionado*/
-                                else if (cbInd.isChecked()){
-                                    /**va agregando en el map el valor del campo tipo cartera para guardarlo despues en variable de sesion*/
-                                    filtros.put("tipo_cartera_ind_c","1");
-                                    filtros.put("tipo_cartera_gpo_c","0");
-                                    /**Aumenta el contador*/
-                                    cont_filtros += 1;
-                                    /**Va agregando el condicional para filtrar en la obtencion de cartera por tipo*/
-                                    where += " AND tipo_ficha = 'INDIVIDUAL'";
-                                }
-                                /**Valida si solo el checklist de grupal esta seleccionado*/
-                                else if (cbGpo.isChecked()){
-                                    /**va agregando en el map el valor del campo tipo cartera para guardarlo despues en variable de sesion*/
-                                    filtros.put("tipo_cartera_ind_c","0");
-                                    filtros.put("tipo_cartera_gpo_c","1");
-                                    /**Aumenta el contador*/
-                                    cont_filtros += 1;
-                                    /**Va agregando el condicional para filtrar en la obtencion de cartera por tipo*/
-                                    where += " AND tipo_ficha = 'GRUPAL'";
-                                }else {
-                                    /**Cuando no ha seleccionado ningun checklist solo guarda en el map vacio en tipos*/
-                                    filtros.put("tipo_cartera_ind_c","0");
-                                    filtros.put("tipo_cartera_gpo_c","0");
-                                }
+                            /**Valida si los checklist de individual y grupal esten seleccionados*/
+                            if (cbInd.isChecked() && cbGpo.isChecked()) {
+                                /**va agregando en el map el valor del campo tipo cartera para guardarlo despues en variable de sesion*/
+                                filtros.put("tipo_cartera_ind_c", "1");
+                                filtros.put("tipo_cartera_gpo_c", "1");
+                                /**Aumenta el contador aqui en 2 porque son 2 filtros*/
+                                cont_filtros += 2;
+                                /**Va agregando el condicional para filtrar en la obtencion de cartera por tipo*/
+                                where += " AND tipo_ficha IN ('INDIVIDUAL','GRUPAL')";
+                            }
+                            /**Valida si solo el checklist de individual esta seleccionado*/
+                            else if (cbInd.isChecked()) {
+                                /**va agregando en el map el valor del campo tipo cartera para guardarlo despues en variable de sesion*/
+                                filtros.put("tipo_cartera_ind_c", "1");
+                                filtros.put("tipo_cartera_gpo_c", "0");
+                                /**Aumenta el contador*/
+                                cont_filtros += 1;
+                                /**Va agregando el condicional para filtrar en la obtencion de cartera por tipo*/
+                                where += " AND tipo_ficha = 'INDIVIDUAL'";
+                            }
+                            /**Valida si solo el checklist de grupal esta seleccionado*/
+                            else if (cbGpo.isChecked()) {
+                                /**va agregando en el map el valor del campo tipo cartera para guardarlo despues en variable de sesion*/
+                                filtros.put("tipo_cartera_ind_c", "0");
+                                filtros.put("tipo_cartera_gpo_c", "1");
+                                /**Aumenta el contador*/
+                                cont_filtros += 1;
+                                /**Va agregando el condicional para filtrar en la obtencion de cartera por tipo*/
+                                where += " AND tipo_ficha = 'GRUPAL'";
+                            } else {
+                                /**Cuando no ha seleccionado ningun checklist solo guarda en el map vacio en tipos*/
+                                filtros.put("tipo_cartera_ind_c", "0");
+                                filtros.put("tipo_cartera_gpo_c", "0");
+                            }
 
-                                /**Valida si los checklist de Enviadas y Pendiente de envio esten seleccionados*/
-                                if (cbEnv.isChecked() && cbPen.isChecked()){
-                                    /**va agregando en el map el valor del campo estatus ficha para guardarlo despues en variable de sesion*/
-                                    filtros.put("estatus_ficha_env_c","1");
-                                    filtros.put("estatus_ficha_pen_c","1");
-                                    /**Aumenta el contador aqui en 2 porque son 2 filtros*/
-                                    cont_filtros += 2;
-                                    /**Va agregando el condicional para filtrar en la obtencion de gestiones por estatus de envio y pendiente*/
-                                    where += " AND estatus_ficha IN ('1','2')";
-                                }
-                                /**Valida si seleccino checklist de Enviadas */
-                                else if (cbEnv.isChecked()){
-                                    /**va agregando en el map el valor del campo estatus ficha para guardarlo despues en variable de sesion*/
-                                    filtros.put("estatus_ficha_env_c","1");
-                                    filtros.put("estatus_ficha_pen_c","0");
-                                    /**Aumenta el contador*/
-                                    cont_filtros += 1;
-                                    /**Va agregando el condicional para filtrar en la obtencion de gestiones por estatus de envio*/
-                                    where += " AND estatus_ficha = '2'";
-                                }
-                                /**Valida si seleccino checklist de Enviadas */
-                                else if (cbPen.isChecked()){
-                                    /**va agregando en el map el valor del campo estatus ficha para guardarlo despues en variable de sesion*/
-                                    filtros.put("estatus_ficha_env_c","0");
-                                    filtros.put("estatus_ficha_pen_c","1");
-                                    /**Aumenta el contador*/
-                                    cont_filtros += 1;
-                                    /**Va agregando el condicional para filtrar en la obtencion de gestiones por estatus de pendiente*/
-                                    where += " AND estatus_ficha = '1'";
-                                }else {
-                                    /**Cuando no ha seleccionado ningun checklist solo guarda en el map vacio en tipos*/
-                                    filtros.put("estatus_ficha_env_c","0");
-                                    filtros.put("estatus_ficha_pen_c","0");
-                                }
+                            /**Valida si los checklist de Enviadas y Pendiente de envio esten seleccionados*/
+                            if (cbEnv.isChecked() && cbPen.isChecked()) {
+                                /**va agregando en el map el valor del campo estatus ficha para guardarlo despues en variable de sesion*/
+                                filtros.put("estatus_ficha_env_c", "1");
+                                filtros.put("estatus_ficha_pen_c", "1");
+                                /**Aumenta el contador aqui en 2 porque son 2 filtros*/
+                                cont_filtros += 2;
+                                /**Va agregando el condicional para filtrar en la obtencion de gestiones por estatus de envio y pendiente*/
+                                where += " AND estatus_ficha IN ('1','2')";
+                            }
+                            /**Valida si seleccino checklist de Enviadas */
+                            else if (cbEnv.isChecked()) {
+                                /**va agregando en el map el valor del campo estatus ficha para guardarlo despues en variable de sesion*/
+                                filtros.put("estatus_ficha_env_c", "1");
+                                filtros.put("estatus_ficha_pen_c", "0");
+                                /**Aumenta el contador*/
+                                cont_filtros += 1;
+                                /**Va agregando el condicional para filtrar en la obtencion de gestiones por estatus de envio*/
+                                where += " AND estatus_ficha = '2'";
+                            }
+                            /**Valida si seleccino checklist de Enviadas */
+                            else if (cbPen.isChecked()) {
+                                /**va agregando en el map el valor del campo estatus ficha para guardarlo despues en variable de sesion*/
+                                filtros.put("estatus_ficha_env_c", "0");
+                                filtros.put("estatus_ficha_pen_c", "1");
+                                /**Aumenta el contador*/
+                                cont_filtros += 1;
+                                /**Va agregando el condicional para filtrar en la obtencion de gestiones por estatus de pendiente*/
+                                where += " AND estatus_ficha = '1'";
+                            } else {
+                                /**Cuando no ha seleccionado ningun checklist solo guarda en el map vacio en tipos*/
+                                filtros.put("estatus_ficha_env_c", "0");
+                                filtros.put("estatus_ficha_pen_c", "0");
+                            }
 
-                                /**Agrega el contador al map para ser guardado en variable de sesion*/
-                                filtros.put("contador_cartera_c", String.valueOf(cont_filtros));
-                                /**Colocar el map de filtros en variable de sesion*/
-                                session.setFiltrosCarteraContestadas(filtros);
+                            /**Agrega el contador al map para ser guardado en variable de sesion*/
+                            filtros.put("contador_cartera_c", String.valueOf(cont_filtros));
+                            /**Colocar el map de filtros en variable de sesion*/
+                            session.setFiltrosCarteraContestadas(filtros);
 
-                                /**Oculta el teclado virtual*/
-                                imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-                                Log.e("where",where);
-                                /**Si la variable where (condicional) su tamaño es mayor a 4 le antepone la palabra WHERE para la consulta*/
-                                if (where.length() > 4) {
-                                    GetCartera(" WHERE" + where.substring(4));
-                                }
-                                else {
-                                    /**No seleccionó ningun filtro se hace la consulta sin condiciones*/
-                                    GetCartera("");
-                                }
-
-                                /**cierra la ventana de filtros*/
-                                dialog.dismiss();
-
-                                break;
-                            case R.id.btnBorrarFiltros: /**cuando selecciona borrar filtros**/
-                                /**Limpia todas las variables*/
-                                cbInd.setChecked(false);
-                                cbGpo.setChecked(false);
-                                cbEnv.setChecked(false);
-                                cbPen.setChecked(false);
-                                aetNombre.setText("");
-
-                                cont_filtros = 0;
-                                /**Crea el map para variables de sesion en filtros de cartera*/
-                                filtros = new HashMap<>();
-                                filtros.put("nombre_cartera_c","");
-                                filtros.put("tipo_cartera_ind_c","0");
-                                filtros.put("tipo_cartera_gpo_c","0");
-                                filtros.put("estatus_ficha_env_c","0");
-                                filtros.put("estatus_ficha_pen_c","0");
-                                filtros.put("contador_cartera_c", "0");
-                                /**Coloca el map en variables de sesion*/
-                                session.setFiltrosCarteraContestadas(filtros);
-
-                                /**Oculta el teclado virtual*/
-                                imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-                                /**Obtiene las gestiones contestadas sin ningun filtro*/
+                            /**Oculta el teclado virtual*/
+                            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                            Log.e("where", where);
+                            /**Si la variable where (condicional) su tamaño es mayor a 4 le antepone la palabra WHERE para la consulta*/
+                            if (where.length() > 4) {
+                                GetCartera(" WHERE" + where.substring(4));
+                            } else {
+                                /**No seleccionó ningun filtro se hace la consulta sin condiciones*/
                                 GetCartera("");
+                            }
 
-                                aetNombre.setAdapter(adapterNombre);
-                                //dialog.dismiss();
-                                break;
+                            /**cierra la ventana de filtros*/
+                            dialog.dismiss();
+                        } else if (id == R.id.btnBorrarFiltros) {/**cuando selecciona borrar filtros**/
+                            /**Limpia todas las variables*/
+                            cbInd.setChecked(false);
+                            cbGpo.setChecked(false);
+                            cbEnv.setChecked(false);
+                            cbPen.setChecked(false);
+                            aetNombre.setText("");
+
+                            cont_filtros = 0;
+                            /**Crea el map para variables de sesion en filtros de cartera*/
+                            filtros = new HashMap<>();
+                            filtros.put("nombre_cartera_c", "");
+                            filtros.put("tipo_cartera_ind_c", "0");
+                            filtros.put("tipo_cartera_gpo_c", "0");
+                            filtros.put("estatus_ficha_env_c", "0");
+                            filtros.put("estatus_ficha_pen_c", "0");
+                            filtros.put("contador_cartera_c", "0");
+                            /**Coloca el map en variables de sesion*/
+                            session.setFiltrosCarteraContestadas(filtros);
+
+                            /**Oculta el teclado virtual*/
+                            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                            /**Obtiene las gestiones contestadas sin ningun filtro*/
+                            GetCartera("");
+
+                            aetNombre.setAdapter(adapterNombre);
+                            //dialog.dismiss();
                         }
                         setupBadge();
 
                     }
                 })
-                .setExpanded(true, 900)
+                .setExpanded(true, sizeH)
                 .create();
         /**Declaracion de variables con la vista XML*/
         aetNombre   = filtros_dg.getHolderView().findViewById(R.id.aetNombre);
@@ -482,43 +489,41 @@ public class answers_fragment extends Fragment {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.nvFiltro:/**Cuando seleccioan el menu Filtro*/
-                Filtros();
-                return true;
-            case R.id.nvInfo:/**Cuando seleccioan el menu Información*/
-                //Toast.makeText(ctx, "Estamos trabajando . . .", Toast.LENGTH_SHORT).show();
-                Intent i_resumen = new Intent(boostrap, ResumenCartera.class);
-                startActivity(i_resumen);
-                return true;
-            case R.id.nvSynchronized:/**Cuando seleccioan el menu Sincronizar*/
-                /**Valida que tenga conexión a internet*/
-                if (NetworkStatus.haveNetworkConnection(ctx)) {
-                    /**Ejecuta funcion para enviar solo gestiones contestadas*/
-                    Servicios_Sincronizado ss = new Servicios_Sincronizado();
-                    ss.SaveRespuestaGestion(boostrap, true);
-                }
-                else{
-                    /**Mensaje cuando tratan de sincronizar y no tienen internet*/
-                    final AlertDialog error_network = Popups.showDialogMessage(boostrap, Constants.not_network,
-                            R.string.not_network, R.string.accept, new Popups.DialogMessage() {
-                                @Override
-                                public void OnClickListener(AlertDialog dialog) {
-                                    dialog.dismiss();
-                                }
-                            });
-                    error_network.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
-                    error_network.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
-                    error_network.show();
-                }
-                return true;
-            case R.id.nvCierreDia:/**Cuando seleccioan el menu Cierre de dia*/
-                Intent i_cierre_dia = new Intent(ctx, MisCierresDeDia.class);
-                startActivity(i_cierre_dia);
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
+        int itemId = item.getItemId();
+        if (itemId == R.id.nvFiltro) {/**Cuando seleccioan el menu Filtro*/
+            Filtros();
+            return true;
+        } else if (itemId == R.id.nvInfo) {/**Cuando seleccioan el menu Información*/
+            //Toast.makeText(ctx, "Estamos trabajando . . .", Toast.LENGTH_SHORT).show();
+            Intent i_resumen = new Intent(boostrap, ResumenCartera.class);
+            startActivity(i_resumen);
+            return true;
+        } else if (itemId == R.id.nvSynchronized) {/**Cuando seleccioan el menu Sincronizar*/
+            /**Valida que tenga conexión a internet*/
+            if (NetworkStatus.haveNetworkConnection(ctx)) {
+                /**Ejecuta funcion para enviar solo gestiones contestadas*/
+                Servicios_Sincronizado ss = new Servicios_Sincronizado();
+                ss.SaveRespuestaGestion(boostrap, true);
+            } else {
+                /**Mensaje cuando tratan de sincronizar y no tienen internet*/
+                final AlertDialog error_network = Popups.showDialogMessage(boostrap, Constants.not_network,
+                        R.string.not_network, R.string.accept, new Popups.DialogMessage() {
+                            @Override
+                            public void OnClickListener(AlertDialog dialog) {
+                                dialog.dismiss();
+                            }
+                        });
+                error_network.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+                error_network.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                error_network.show();
+            }
+            return true;
+        } else if (itemId == R.id.nvCierreDia) {/**Cuando seleccioan el menu Cierre de dia*/
+            Intent i_cierre_dia = new Intent(ctx, MisCierresDeDia.class);
+            startActivity(i_cierre_dia);
+            return true;
         }
+        return super.onOptionsItemSelected(item);
     }
 
     /**Metodo que se ejecuta en automatico cada vez que entra a la vista y comienza a obtener

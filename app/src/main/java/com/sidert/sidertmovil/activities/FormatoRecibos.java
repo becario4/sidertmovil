@@ -146,10 +146,10 @@ public class FormatoRecibos extends AppCompatActivity implements IOCallBack {
 
         ctx = this;
         mFormatoRecibos = this;
-        dBhelper = new DBhelper(ctx);
+        dBhelper = DBhelper.getInstance(ctx);
         db = dBhelper.getWritableDatabase();
 
-        session = new SessionManager(ctx);
+        session = SessionManager.getInstance(ctx);
 
         Toolbar tbMain              = findViewById(R.id.tbMain);
 

@@ -82,10 +82,10 @@ public class dialog_renovar_integrante extends DialogFragment {
 
         ctx         = getContext();
 
-        session     = new SessionManager(ctx);
+        session     = SessionManager.getInstance(ctx);
         validator   = new Validator();
         validatorTV = new ValidatorTextView();
-        dBhelper    = new DBhelper(ctx);
+        dBhelper    = DBhelper.getInstance(ctx);
         db          = dBhelper.getWritableDatabase();
 
         boostrap    = (RenovarIntegrante) getActivity();
@@ -120,8 +120,6 @@ public class dialog_renovar_integrante extends DialogFragment {
             etNombre.setEnabled(false);
             etPaterno.setEnabled(false);
             etMaterno.setEnabled(false);
-
-
         }
 
         tvCargo.setOnClickListener(tvCargo_OnClick);

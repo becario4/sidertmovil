@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 /*import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
@@ -80,7 +81,7 @@ public class IntegrantesGpo extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_integrantes_gpo);
         ctx = this;
-        dBhelper = new DBhelper(ctx);
+        dBhelper = DBhelper.getInstance(ctx);
         db = dBhelper.getWritableDatabase();
         Toolbar tbMain = findViewById(R.id.tbMain);
 
@@ -153,28 +154,85 @@ public class IntegrantesGpo extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case  R.id.save:
-            case android.R.id.home:/**Si selecciono guardar o salir se valida los pagos para guardarlos*/
-                /**Funcion para realizar la suma de todos los pagos que hicieron los integrantes*/
-                SumarPagos();
+        int itemId = item.getItemId();
+        if (itemId == R.id.save || itemId == android.R.id.home) {/**Si selecciono guardar o salir se valida los pagos para guardarlos*/
+            /**Funcion para realizar la suma de todos los pagos que hicieron los integrantes*/
+            SumarPagos();
 
-                /**Si flag es true es porque esta haciendo la gestion si es false es porque ya guardo la gestion
-                 * y que sea diferente a tipo de prestamo VENCIDA porque ellos pagan por individual*/
-                if (flag && !tipo_cartera.contains("VENCIDA")) {
+            /**Si flag es true es porque esta haciendo la gestion si es false es porque ya guardo la gestion
+             * y que sea diferente a tipo de prestamo VENCIDA porque ellos pagan por individual*/
+            if (flag && !tipo_cartera.contains("VENCIDA")) {
+                final double finalTotal = total;
+                /**Mensaje de confirmacion para saber si se van a guardar los pagos*/
+                final AlertDialog confirm_dlg = Popups.showDialogConfirm(IntegrantesGpo.this, Constants.question,
+                        R.string.guardar_cambios, R.string.accept, new Popups.DialogMessage() {
+                            @Override
+                            public void OnClickListener(AlertDialog dialog) {
+                                for (int i = 0; i < integrantePagos.size(); i++) {
+                                    ContentValues cv = new ContentValues();
+                                    cv.put("pago_realizado", integrantePagos.get(i).getPagoRealizado());
+                                    cv.put("adelanto", integrantePagos.get(i).getAdelanto());
+                                    cv.put("solidario", integrantePagos.get(i).getSolidario());
+                                    cv.put("pago_requerido", (integrantePagos.get(i).isPagoRequerido()) ? "1" : "0");
+
+                                    db.update(TBL_MIEMBROS_PAGOS_T, cv, "id_gestion = ? AND id_integrante = ? AND id_prestamo = ?", new String[]{integrantePagos.get(i).getIdGestion(), integrantePagos.get(i).getIdIntegrante(), integrantePagos.get(i).getIdPrestamo()});
+                                }
+                                Intent i_resumen_int = new Intent(IntegrantesGpo.this, ResumenIntegrantes.class);
+                                i_resumen_int.putExtra(ID_PRESTAMO, id_prestamo);
+                                i_resumen_int.putExtra(ID_GESTION, id_gestion);
+                                i_resumen_int.putExtra(TOTAL, String.valueOf(finalTotal));
+                                startActivityForResult(i_resumen_int, REQUEST_CODE_RESUMEN_INTEGRANTES_GPO);
+                                dialog.dismiss();
+
+                            }
+                        }, R.string.cancel, new Popups.DialogMessage() {
+                            @Override
+                            public void OnClickListener(AlertDialog dialog) {
+                                finish();
+                                dialog.dismiss();
+                            }
+                        });
+                confirm_dlg.setCancelable(true);
+                confirm_dlg.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+                confirm_dlg.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                confirm_dlg.show();
+            } else if (flag && tipo_cartera.contains("VENCIDA")) {
+                int count = 0;
+                for (int x = 0; x < integrantePagos.size(); x++) {
+                    double pago = 0;
+                    try {
+                        pago = Double.parseDouble(integrantePagos.get(x).getPagoRealizado());
+                    } catch (NumberFormatException e) {
+                        pago = 0;
+                    }
+                    if (pago > 0) {
+                        count += 1;
+                    }
+                }
+
+                if (count > 1) {
+                    final AlertDialog mess_dlg = Popups.showDialogMessage(IntegrantesGpo.this, "default", R.string.mess_integrantes_cv, R.string.accept, new Popups.DialogMessage() {
+                        @Override
+                        public void OnClickListener(AlertDialog dg) {
+                            dg.dismiss();
+                        }
+                    });
+                    mess_dlg.setCancelable(true);
+                    mess_dlg.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+                    mess_dlg.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                    mess_dlg.show();
+                } else {
                     final double finalTotal = total;
-                    /**Mensaje de confirmacion para saber si se van a guardar los pagos*/
                     final AlertDialog confirm_dlg = Popups.showDialogConfirm(IntegrantesGpo.this, Constants.question,
                             R.string.guardar_cambios, R.string.accept, new Popups.DialogMessage() {
                                 @Override
                                 public void OnClickListener(AlertDialog dialog) {
-                                    for(int i = 0; i < integrantePagos.size(); i++){
+                                    for (int i = 0; i < integrantePagos.size(); i++) {
                                         ContentValues cv = new ContentValues();
                                         cv.put("pago_realizado", integrantePagos.get(i).getPagoRealizado());
                                         cv.put("adelanto", integrantePagos.get(i).getAdelanto());
                                         cv.put("solidario", integrantePagos.get(i).getSolidario());
-                                        cv.put("pago_requerido", (integrantePagos.get(i).isPagoRequerido())?"1":"0");
-
+                                        cv.put("pago_requerido", (integrantePagos.get(i).isPagoRequerido()) ? "1" : "0");
                                         db.update(TBL_MIEMBROS_PAGOS_T, cv, "id_gestion = ? AND id_integrante = ? AND id_prestamo = ?", new String[]{integrantePagos.get(i).getIdGestion(), integrantePagos.get(i).getIdIntegrante(), integrantePagos.get(i).getIdPrestamo()});
                                     }
                                     Intent i_resumen_int = new Intent(IntegrantesGpo.this, ResumenIntegrantes.class);
@@ -194,75 +252,12 @@ public class IntegrantesGpo extends AppCompatActivity {
                             });
                     confirm_dlg.setCancelable(true);
                     confirm_dlg.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
-                    confirm_dlg.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+                    confirm_dlg.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
                     confirm_dlg.show();
                 }
-                else if (flag && tipo_cartera.contains("VENCIDA")){
-                    int count = 0;
-                    for (int x = 0; x < integrantePagos.size(); x++){
-                        double pago = 0;
-                        try{
-                            pago = Double.parseDouble(integrantePagos.get(x).getPagoRealizado());
-                        }catch (NumberFormatException e){
-                            pago = 0;
-                        }
-                        if (pago > 0){
-                            count += 1;
-                        }
-                    }
 
-                    if (count > 1){
-                        final AlertDialog mess_dlg = Popups.showDialogMessage(IntegrantesGpo.this, "default", R.string.mess_integrantes_cv, R.string.accept, new Popups.DialogMessage() {
-                            @Override
-                            public void OnClickListener(AlertDialog dg) {
-                                dg.dismiss();
-                            }
-                        });
-                        mess_dlg.setCancelable(true);
-                        mess_dlg.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
-                        mess_dlg.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
-                        mess_dlg.show();
-                    }else{
-                        final double finalTotal = total;
-                        final AlertDialog confirm_dlg = Popups.showDialogConfirm(IntegrantesGpo.this, Constants.question,
-                                R.string.guardar_cambios, R.string.accept, new Popups.DialogMessage() {
-                                    @Override
-                                    public void OnClickListener(AlertDialog dialog) {
-                                        for(int i = 0; i < integrantePagos.size(); i++){
-                                            ContentValues cv = new ContentValues();
-                                            cv.put("pago_realizado", integrantePagos.get(i).getPagoRealizado());
-                                            cv.put("adelanto", integrantePagos.get(i).getAdelanto());
-                                            cv.put("solidario", integrantePagos.get(i).getSolidario());
-                                            cv.put("pago_requerido", (integrantePagos.get(i).isPagoRequerido())?"1":"0");
-                                            db.update(TBL_MIEMBROS_PAGOS_T, cv, "id_gestion = ? AND id_integrante = ? AND id_prestamo = ?", new String[]{integrantePagos.get(i).getIdGestion(), integrantePagos.get(i).getIdIntegrante(), integrantePagos.get(i).getIdPrestamo()});
-                                        }
-                                        Intent i_resumen_int = new Intent(IntegrantesGpo.this, ResumenIntegrantes.class);
-                                        i_resumen_int.putExtra(ID_PRESTAMO, id_prestamo);
-                                        i_resumen_int.putExtra(ID_GESTION, id_gestion);
-                                        i_resumen_int.putExtra(TOTAL, String.valueOf(finalTotal));
-                                        startActivityForResult(i_resumen_int, REQUEST_CODE_RESUMEN_INTEGRANTES_GPO);
-                                        dialog.dismiss();
-
-                                    }
-                                }, R.string.cancel, new Popups.DialogMessage() {
-                                    @Override
-                                    public void OnClickListener(AlertDialog dialog) {
-                                        finish();
-                                        dialog.dismiss();
-                                    }
-                                });
-                        confirm_dlg.setCancelable(true);
-                        confirm_dlg.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
-                        confirm_dlg.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
-                        confirm_dlg.show();
-                    }
-
-                }
-                else
-                    finish();
-
-                break;
-
+            } else
+                finish();
         }
         return super.onOptionsItemSelected(item);
     }

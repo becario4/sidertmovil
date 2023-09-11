@@ -17,6 +17,15 @@ public class MResSaveSolicitud implements Serializable {
     @Expose
     private Integer idSolicitud;
 
+    @SerializedName("id_grupo")
+    @Expose
+    private Integer id_grupo;
+
+    @SerializedName("id_cliente")
+    @Expose
+    private Integer id_cliente;
+
+
     public String getMensaje() {
         return mensaje;
     }
@@ -39,5 +48,21 @@ public class MResSaveSolicitud implements Serializable {
 
     public void setIdSolicitud(Integer idSolicitud) {
         this.idSolicitud = idSolicitud;
+    }
+
+    public Integer getId_grupo() {
+        return id_grupo;
+    }
+
+    public void setId_grupo(Integer id_grupo) {
+        this.id_grupo = id_grupo;
+    }
+
+    public Integer getId_cliente() {
+        return id_cliente;
+    }
+
+    public void setId_cliente(Integer id_cliente) {
+        this.id_cliente = id_cliente;
     }
 }

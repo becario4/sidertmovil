@@ -96,6 +96,7 @@ import static com.sidert.sidertmovil.utils.Constants.TBL_CREDITO_GPO;
 import static com.sidert.sidertmovil.utils.Constants.TBL_CROQUIS_GPO;
 import static com.sidert.sidertmovil.utils.Constants.TBL_DATOS_BENEFICIARIO;
 import static com.sidert.sidertmovil.utils.Constants.TBL_DATOS_BENEFICIARIO_GPO;
+import static com.sidert.sidertmovil.utils.Constants.TBL_DATOS_CREDITO_CAMPANA_GPO;
 import static com.sidert.sidertmovil.utils.Constants.TBL_DOCUMENTOS_INTEGRANTE;
 import static com.sidert.sidertmovil.utils.Constants.TBL_DOMICILIO_INTEGRANTE;
 import static com.sidert.sidertmovil.utils.Constants.TBL_INTEGRANTES_GPO;
@@ -161,7 +162,7 @@ public class SolicitudCreditoGpo extends AppCompatActivity implements dialog_ori
 
         ctx = this;
 
-        dBhelper = new DBhelper(ctx);
+        dBhelper = DBhelper.getInstance(ctx);
         db = dBhelper.getWritableDatabase();
 
         TBmain = findViewById(R.id.TBmain);
@@ -374,6 +375,7 @@ public class SolicitudCreditoGpo extends AppCompatActivity implements dialog_ori
                                         db.delete(TBL_POLITICAS_PLD_INTEGRANTE, "id_integrante = ?", new String[]{id_integrante});
                                         db.delete(TBL_DOCUMENTOS_INTEGRANTE, "id_integrante = ?", new String[]{id_integrante});
                                         db.delete(TBL_DATOS_BENEFICIARIO_GPO, "id_integrante = ?", new String[]{id_integrante});
+                                        db.delete(TBL_DATOS_CREDITO_CAMPANA_GPO,"id_solicitud = ?", new String[]{id_integrante});
 
                                         adapter.removeItem(position);
                                         dialog.dismiss();
@@ -434,27 +436,21 @@ public class SolicitudCreditoGpo extends AppCompatActivity implements dialog_ori
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                break;
-            case R.id.devmode:
-                enviarJSONObjects();
-                //senDataBeneficiarioRen(id_solicitud);
-                break;
-            case R.id.desbloquear:
-                if (modoSuperUsuario) {
-                    desactivarModoSuper();
-                    deshabilitarSolicitud();
-                }
-                else activarModoSuper();
-                break;
-            case R.id.updateEstatus:
-                obtenerEstatusSolicitud();
-                break;
-            case R.id.enviar:
-                sendSolicitud();
-                //senDataBeneficiarioRen(id_solicitud);
-                break;
+        int itemId = item.getItemId();
+        if (itemId == android.R.id.home) {
+        } else if (itemId == R.id.devmode) {
+            enviarJSONObjects();
+            //senDataBeneficiarioRen(id_solicitud);
+        } else if (itemId == R.id.desbloquear) {
+            if (modoSuperUsuario) {
+                desactivarModoSuper();
+                deshabilitarSolicitud();
+            } else activarModoSuper();
+        } else if (itemId == R.id.updateEstatus) {
+            obtenerEstatusSolicitud();
+        } else if (itemId == R.id.enviar) {
+            sendSolicitud();
+            //senDataBeneficiarioRen(id_solicitud);
         }
         return super.onOptionsItemSelected(item);
     }
@@ -504,8 +500,8 @@ public class SolicitudCreditoGpo extends AppCompatActivity implements dialog_ori
         final AlertDialog loadingDesbloqueo = Popups.showLoadingDialog(ctx, R.string.please_wait, R.string.loading_info);
         loadingDesbloqueo.show();
 
-        SessionManager session = new SessionManager(ctx);
-        IPermisoService permisoService = new RetrofitClient().newInstance(ctx).create(IPermisoService.class);
+        SessionManager session = SessionManager.getInstance(ctx);
+        IPermisoService permisoService = RetrofitClient.newInstance(ctx).create(IPermisoService.class);
         Call<PermisoResponse> call = permisoService.isSuperEnabled("Bearer " + session.getUser().get(7));
 
         call.enqueue(new Callback<PermisoResponse>() {
@@ -734,13 +730,13 @@ public class SolicitudCreditoGpo extends AppCompatActivity implements dialog_ori
                 Toast.makeText(ctx, e.getMessage(), Toast.LENGTH_SHORT).show();
             }
 
-            SessionManager session = new SessionManager(ctx);
+            SessionManager session = SessionManager.getInstance(ctx);
             Log.e("AQUI", new Gson().toJson(json_solicitud));
 
             final AlertDialog loadingSendData = Popups.showLoadingDialog(ctx, R.string.please_wait, R.string.loading_info);
             loadingSendData.show();
 
-            SolicitudGpoService solicitudGpoService = new RetrofitClient().newInstance(ctx).create(SolicitudGpoService.class);
+            SolicitudGpoService solicitudGpoService = RetrofitClient.newInstance(ctx).create(SolicitudGpoService.class);
             Call<ApiResponse> call = solicitudGpoService.jsonOriginacionGpo("Bearer " + session.getUser().get(7), new Gson().toJson(json_solicitud));
 
             call.enqueue(new Callback<ApiResponse>() {
@@ -803,8 +799,6 @@ public class SolicitudCreditoGpo extends AppCompatActivity implements dialog_ori
         }
     }
 
-
-
     private boolean esSolicitudValida()
     {
         boolean flag = false;
@@ -846,8 +840,8 @@ public class SolicitudCreditoGpo extends AppCompatActivity implements dialog_ori
 
         if (solicitud != null && solicitud.getEstatus() > 1)
         {
-            SessionManager session = new SessionManager(ctx);
-            SolicitudGpoService solicitudGpoService = new RetrofitClient().newInstance(ctx).create(SolicitudGpoService.class);
+            SessionManager session = SessionManager.getInstance(ctx);
+            SolicitudGpoService solicitudGpoService = RetrofitClient.newInstance(ctx).create(SolicitudGpoService.class);
             Call<List<SolicitudDetalleEstatusGpo>> call = solicitudGpoService.showEstatusSolicitudes("Bearer " + session.getUser().get(7));
 
             call.enqueue(new Callback<List<SolicitudDetalleEstatusGpo>>() {
@@ -923,10 +917,10 @@ public class SolicitudCreditoGpo extends AppCompatActivity implements dialog_ori
 
     private void obtenerRechazo(AlertDialog alert, Solicitud solicitud)
     {
-        SessionManager session = new SessionManager(ctx);
+        SessionManager session = SessionManager.getInstance(ctx);
         SolicitudDao solicitudDao = new SolicitudDao(ctx);
 
-        ManagerInterface api = new RetrofitClient().generalRF(CONTROLLER_SOLICITUDES, ctx).create(ManagerInterface.class);
+        ManagerInterface api = RetrofitClient.generalRF(CONTROLLER_SOLICITUDES, ctx).create(ManagerInterface.class);
         Call<List<MSolicitudRechazoGpo>> call = api.getSolicitudRechazoGpo("Bearer "+ session.getUser().get(7));
 
         call.enqueue(new Callback<List<MSolicitudRechazoGpo>>() {
