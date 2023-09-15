@@ -1,7 +1,5 @@
 package com.sidert.sidertmovil.models.solicitudes.solicitudind.originacion;
 
-import static java.lang.Long.getLong;
-
 import android.database.Cursor;
 
 import com.google.gson.annotations.Expose;

@@ -1,10 +1,8 @@
 package com.sidert.sidertmovil.fragments.dialogs;
 
-import android.content.ContentValues;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -15,13 +13,12 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.gson.Gson;
 import com.sidert.sidertmovil.R;
 import com.sidert.sidertmovil.database.DBhelper;
-import com.sidert.sidertmovil.models.ApiResponse;
 import com.sidert.sidertmovil.models.MResSaveSolicitud;
 import com.sidert.sidertmovil.models.catalogos.MedioPagoDao;
 import com.sidert.sidertmovil.models.datosCampañas.datoCampana;
+import com.sidert.sidertmovil.models.dto.BeneficiarioDto;
 import com.sidert.sidertmovil.models.solicitudes.Solicitud;
 import com.sidert.sidertmovil.models.solicitudes.SolicitudDao;
 import com.sidert.sidertmovil.models.solicitudes.SolicitudRen;
@@ -29,7 +26,6 @@ import com.sidert.sidertmovil.models.solicitudes.SolicitudRenDao;
 import com.sidert.sidertmovil.models.solicitudes.solicitudind.originacion.Aval;
 import com.sidert.sidertmovil.models.solicitudes.solicitudind.originacion.AvalDao;
 import com.sidert.sidertmovil.models.solicitudes.solicitudind.originacion.Beneficiario;
-import com.sidert.sidertmovil.models.solicitudes.solicitudind.originacion.BeneficiarioDao;
 import com.sidert.sidertmovil.models.solicitudes.solicitudind.originacion.Cliente;
 import com.sidert.sidertmovil.models.solicitudes.solicitudind.originacion.ClienteDao;
 import com.sidert.sidertmovil.models.solicitudes.solicitudind.originacion.Conyugue;
@@ -78,41 +74,23 @@ import com.sidert.sidertmovil.utils.ManagerInterface;
 import com.sidert.sidertmovil.utils.Miscellaneous;
 import com.sidert.sidertmovil.utils.RetrofitClient;
 import com.sidert.sidertmovil.utils.SessionManager;
-import com.sidert.sidertmovil.views.originacion.SolicitudCreditoInd;
-import com.sidert.sidertmovil.views.solicitudesautorizadas.SolicitudInd;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
+import java.util.Map;
 
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 import okhttp3.MultipartBody;
-import okhttp3.OkHttpClient;
 import okhttp3.RequestBody;
-import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
+import timber.log.Timber;
 
 import static com.sidert.sidertmovil.utils.Constants.*;
-import static com.sidert.sidertmovil.utils.Constants.K_ACTIVOS_OBSERVABLES;
-import static com.sidert.sidertmovil.utils.Constants.K_AVAL_LATITUD;
-import static com.sidert.sidertmovil.utils.Constants.K_AVAL_LOCATED_AT;
-import static com.sidert.sidertmovil.utils.Constants.K_AVAL_LONGITUD;
-import static com.sidert.sidertmovil.utils.Constants.K_CARACTERISTICAS_DOMICILIO;
-import static com.sidert.sidertmovil.utils.Constants.K_HORA_LOCALIZACION;
-import static com.sidert.sidertmovil.utils.Constants.K_NOMBRE_NEGOCIO;
-import static com.sidert.sidertmovil.utils.Constants.K_NOMBRE_TITULAR;
-import static com.sidert.sidertmovil.utils.Constants.K_PARENTESCO_TITULAR;
-import static com.sidert.sidertmovil.utils.Constants.K_SOLICITANTE_AVAL;
-import static com.sidert.sidertmovil.utils.Constants.K_TIENE_NEGOCIO;
 
 public class dialog_sending_solicitud_individual extends DialogFragment {
     private Context ctx;
@@ -222,8 +200,8 @@ public class dialog_sending_solicitud_individual extends DialogFragment {
                 MultipartBody.Part ine_reverso_aval = documentoRen.getIneReversoAvalMBPart();
                 MultipartBody.Part curp_aval = documentoRen.getCurpAvalMBPart();
                 MultipartBody.Part comprobante_aval = documentoRen.getComprobanteDomicilioAvalMBPart();
-                RequestBody solicitudBody = RequestBody.create(MultipartBody.FORM, json_solicitud.toString());
-                RequestBody solicitudIdBody = RequestBody.create(MultipartBody.FORM, String.valueOf(solicitudRen.getIdOriginacion()));
+                RequestBody solicitudBody = RequestBody.create(json_solicitud.toString(), MultipartBody.FORM);
+                RequestBody solicitudIdBody = RequestBody.create(String.valueOf(solicitudRen.getIdOriginacion()), MultipartBody.FORM);
 
                 /*Log.e("fachada_cliente", fachada_cliente.body().toString());
                 Log.e("firma_cliente", firma_cliente.body().toString());
@@ -294,7 +272,7 @@ public class dialog_sending_solicitud_individual extends DialogFragment {
                                 solicitudRenDao.updateIdClienteRenInd(res, solicitudRen);
                                 solicitudRenDao.solicitudEnviada(solicitudRen);
                                 enviarDatosCampana(solicitudRen.getIdSolicitud());
-                                obtenerDatosBeneficiarioRen(solicitudRen.getIdSolicitud(), solicitudRen.getIdOriginacion());
+                                obtenerDatosBeneficiarioRen(solicitudRen.getIdSolicitud());
                                 Toast.makeText(ctx, "¡Solicitud enviada!", Toast.LENGTH_LONG).show();
                                 getActivity().finish();
                                 break;
@@ -432,7 +410,7 @@ public class dialog_sending_solicitud_individual extends DialogFragment {
                                 solicitud.setIdOriginacion(res.getIdSolicitud());
                                 solicitudDao.solicitudEnviada(solicitud, res);
                                 enviarDatosCampana(solicitud.getIdSolicitud());
-                                obtenerDatosBeneficiario(solicitud.getIdSolicitud(), solicitud.getIdOriginacion());
+                                obtenerDatosBeneficiario(solicitud.getIdSolicitud());
 
                                 Toast.makeText(ctx, "¡Solicitud enviada!", Toast.LENGTH_LONG).show();
                                 getActivity().finish();
@@ -1209,116 +1187,99 @@ public class dialog_sending_solicitud_individual extends DialogFragment {
         json_solicitud.put(K_SOLICITANTE_DOCUMENTOS, json_documentos);
     }
 
-    public void obtenerDatosBeneficiario(int id_solicitud, int id_originacion) {
+    @SuppressLint("Range")
+    public void obtenerDatosBeneficiario(int id_solicitud) {
         DBhelper dBhelper = DBhelper.getInstance(ctx);
-
-        Beneficiario ben = new Beneficiario();
-
+        BeneficiarioDto beneficiarioDto = null;
         Cursor row = dBhelper.getBeneficiarioIndA(TBL_DATOS_BENEFICIARIO, String.valueOf(id_solicitud));
 
-        if (row.getCount() > 0) {
-            row.moveToFirst();
-
-            ben.setIdSolicitud(row.getInt(1));
-            ben.setId_originacion(id_originacion);
-            ben.setCliente_id(row.getInt(3));
-            ben.setGrupo_id(row.getInt(4));
-            ben.setNombre(row.getString(5));
-            ben.setPaterno(row.getString(6));
-            ben.setMaterno(row.getString(7));
-            ben.setParentesco(row.getString(8));
-            ben.setSerieId(row.getInt(9));
+        if (row != null && row.moveToFirst()) {
+            String serieId = session.getUser().get(0);
+            beneficiarioDto = new BeneficiarioDto(
+                    row.getLong(row.getColumnIndex("id_solicitud")),
+                    row.getInt(row.getColumnIndex("id_cliente")),
+                    row.getInt(row.getColumnIndex("id_grupo")),
+                    row.getString(row.getColumnIndex("nombre")),
+                    row.getString(row.getColumnIndex("paterno")),
+                    row.getString(row.getColumnIndex("materno")),
+                    row.getString(row.getColumnIndex("parentesco")),
+                    Integer.parseInt(serieId)
+            );
             row.close();
         } else {
-            Toast.makeText(ctx, "NO SE ENCONTRARON LOS DATOS", Toast.LENGTH_SHORT).show();
+            Toast.makeText(ctx, "NO SE ENCONTRARON DATOS", Toast.LENGTH_SHORT).show();
         }
 
-        BeneficiarioService api = RetrofitClient.generalRF(CONTROLLER_API, ctx).create(BeneficiarioService.class);
-
-        Call<Beneficiario> call = api.senDataBeneficiario(
-                "Bearer " + session.getUser().get(7),
-                ben.getId_originacion(),
-                ben.getCliente_id(),
-                ben.getGrupo_id(),
-                ben.getNombre(),
-                ben.getPaterno(),
-                ben.getMaterno(),
-                ben.getParentesco(),
-                ben.getSerieId()
-        );
-
-        call.enqueue(new Callback<Beneficiario>() {
-            @Override
-            public void onResponse(Call<Beneficiario> call, Response<Beneficiario> response) {
-                switch (response.code()) {
-                    case 200:
-                        Log.e("AQUI:", "REGISTRO COMPLETO");
-                        break;
+        if (beneficiarioDto != null) {
+            BeneficiarioService sa = RetrofitClient.generalRF(CONTROLLER_API, ctx).create(BeneficiarioService.class);
+            Call<Map<String, Object>> call = sa.senDataBeneficiario(
+                    "Bearer " + session.getUser().get(7),
+                    beneficiarioDto
+            );
+            call.enqueue(new Callback<Map<String, Object>>() {
+                @Override
+                public void onResponse(Call<Map<String, Object>> call, Response<Map<String, Object>> response) {
+                    if (response.code() == 200) {
+                        Map<String, Object> res = response.body();
+                        Timber.tag("AQUI:").e("REGISTRO COMPLETO");
+                    }
                 }
-            }
+                @Override
+                public void onFailure(Call<Map<String, Object>> call, Throwable t) {
+                    Timber.tag("AQUI;").e(" NO SE REGISTRO NADA");
 
-            @Override
-            public void onFailure(Call<Beneficiario> call, Throwable t) {
-                Log.e("AQUI;", " NO SE REGISTRO NADA");
-            }
-        });
-
+                }
+            });
+        }
     }
 
-    public void obtenerDatosBeneficiarioRen(int id_solicitud, int id_originacion) {
+    @SuppressLint("Range")
+    public void obtenerDatosBeneficiarioRen(int id_solicitud) {
         DBhelper dBhelper = DBhelper.getInstance(ctx);
 
-        Beneficiario ben = new Beneficiario();
+        BeneficiarioDto beneficiarioDto = null;
 
         Cursor row = dBhelper.getBeneficiarioIndA(TBL_DATOS_BENEFICIARIO_REN, String.valueOf(id_solicitud));
 
         if (row.getCount() > 0) {
             row.moveToFirst();
-
-            ben.setIdSolicitud(row.getInt(1));
-            ben.setId_originacion(id_originacion);
-            ben.setCliente_id(row.getInt(3));
-            ben.setGrupo_id(row.getInt(4));
-            ben.setNombre(row.getString(5));
-            ben.setPaterno(row.getString(6));
-            ben.setMaterno(row.getString(7));
-            ben.setParentesco(row.getString(8));
-            ben.setSerieId(row.getInt(9));
+            String serieId = session.getUser().get(0);
+            beneficiarioDto = new BeneficiarioDto(
+                    row.getLong(row.getColumnIndex("id_solicitud")),
+                    row.getInt(row.getColumnIndex("id_cliente")),
+                    row.getInt(row.getColumnIndex("id_grupo")),
+                    row.getString(row.getColumnIndex("nombre")),
+                    row.getString(row.getColumnIndex("paterno")),
+                    row.getString(row.getColumnIndex("materno")),
+                    row.getString(row.getColumnIndex("parentesco")),
+                    Integer.parseInt(serieId)
+            );
             row.close();
         } else {
             Toast.makeText(ctx, "NO SE ENCONTRARON LOS DATOS", Toast.LENGTH_SHORT).show();
         }
 
-        BeneficiarioService api = RetrofitClient.generalRF(CONTROLLER_API, ctx).create(BeneficiarioService.class);
-
-        Call<Beneficiario> call = api.senDataBeneficiario(
-                "Bearer " + session.getUser().get(7),
-                ben.getId_originacion(),
-                ben.getCliente_id(),
-                ben.getGrupo_id(),
-                ben.getNombre(),
-                ben.getPaterno(),
-                ben.getMaterno(),
-                ben.getParentesco(),
-                ben.getSerieId()
-        );
-
-        call.enqueue(new Callback<Beneficiario>() {
-            @Override
-            public void onResponse(Call<Beneficiario> call, Response<Beneficiario> response) {
-                switch (response.code()) {
-                    case 200:
-                        Log.e("AQUI:", "REGISTRO COMPLETO");
-                        break;
+        if (beneficiarioDto != null) {
+            BeneficiarioService sa = RetrofitClient.generalRF(CONTROLLER_API, ctx).create(BeneficiarioService.class);
+            Call<Map<String, Object>> call = sa.senDataBeneficiario(
+                    "Bearer " + session.getUser().get(7),
+                    beneficiarioDto
+            );
+            call.enqueue(new Callback<Map<String, Object>>() {
+                @Override
+                public void onResponse(Call<Map<String, Object>> call, Response<Map<String, Object>> response) {
+                    if (response.code() == 200) {
+                        Map<String, Object> res = response.body();
+                        Timber.tag("AQUI:").e("REGISTRO COMPLETO");
+                    }
                 }
-            }
 
-            @Override
-            public void onFailure(Call<Beneficiario> call, Throwable t) {
-                Log.e("AQUI;", " NO SE REGISTRO NADA");
-            }
-        });
-
+                @Override
+                public void onFailure(Call<Map<String, Object>> call, Throwable t) {
+                    Timber.tag("AQUI;").e(" NO SE REGISTRO NADA");
+                }
+            });
+        }
     }
 
     public void enviarDatosCampana(int id_solicitud) {

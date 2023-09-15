@@ -7886,7 +7886,7 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                     if (campanaNombre.equals("NINGUNO")) {
                         txtNombreRefiero.setText(SIN_REFERENCIA);
                         txtNombreRefiero.setEnabled(false);
-                    }else{
+                    } else {
                         txtNombreRefiero.setText("");
                         txtNombreRefiero.setEnabled(true);
                     }
@@ -9367,9 +9367,7 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                                                     if (byteIneFrontalAval != null) {
                                                         if (byteIneReversoAval != null) {
                                                             if (byteCurpAval != null) {
-                                                                if (byteComprobanteAval != null) {
-
-                                                                } else {
+                                                                if (byteComprobanteAval == null) {
                                                                     flag = false;
                                                                     tvComprobanteAval.setError("");
                                                                 }
