@@ -13,7 +13,7 @@ android {
         minSdk 31
         targetSdk 33
         versionCode 1
-        versionName '2.7.1b'
+        versionName '2.7.2b'
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
         javaCompileOptions {

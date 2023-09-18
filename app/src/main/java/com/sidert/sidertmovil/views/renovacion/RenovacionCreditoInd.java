@@ -206,6 +206,7 @@ import static com.sidert.sidertmovil.utils.Constants.TBL_CROQUIS_IND_REN;
 import static com.sidert.sidertmovil.utils.Constants.TBL_DATOS_BENEFICIARIO_REN;
 import static com.sidert.sidertmovil.utils.Constants.TBL_DATOS_CREDITO_CAMPANA;
 import static com.sidert.sidertmovil.utils.Constants.TBL_DIRECCIONES_REN;
+import static com.sidert.sidertmovil.utils.Constants.TBL_DOCUMENTOS_INTEGRANTE_REN;
 import static com.sidert.sidertmovil.utils.Constants.TBL_DOCUMENTOS_REN;
 import static com.sidert.sidertmovil.utils.Constants.TBL_ECONOMICOS_IND_REN;
 import static com.sidert.sidertmovil.utils.Constants.TBL_NEGOCIO_IND;
@@ -586,25 +587,24 @@ public class RenovacionCreditoInd extends AppCompatActivity implements dialog_pl
     //========================================
     //========== DOCUMENTOS ==================
 
-    /*
+    private LinearLayout llFotoIneFrontal;
     private TextView tvIneFrontal;
     private ImageButton ibIneFrontal;
     private ImageView ivIneFrontal;
-     */
     public byte[] byteIneFrontal;
 
-    private LinearLayout llFotoIneFrontal;
-
     private LinearLayout llFotoIneReverso;
-
-    private LinearLayout llFotoIneSelfie;
-
-    /*
     private TextView tvIneReverso;
     private ImageButton ibIneReverso;
     private ImageView ivIneReverso;
-    */
     public byte[] byteIneReverso;
+
+    private LinearLayout llFotoIneSelfie;
+    private TextView tvIneSelfie;
+    private ImageButton ibIneSelfie;
+    private ImageView ivIneSelfie;
+    public byte[] byteIneSelfie;
+
     private LinearLayout llFotoCurp;
     /*private TextView tvCurp;
     private ImageButton ibCurp;
@@ -619,11 +619,6 @@ public class RenovacionCreditoInd extends AppCompatActivity implements dialog_pl
     private ImageView ivFirmaAsesor;
     public byte[] byteFirmaAsesor;
 
-    private TextView tvIneSelfie;
-    private ImageButton ibIneSelfie;
-    private ImageView ivIneSelfie;
-
-    public byte[] byteIneSelfie;
     private TextView tvComprobanteGarantia;
     private ImageButton ibComprobanteGarantia;
     private ImageView ivComprobanteGarantia;
@@ -1073,23 +1068,18 @@ public class RenovacionCreditoInd extends AppCompatActivity implements dialog_pl
         //==========================================================================================
         //=====================================  DOCUMENTOS  =======================================
 
-        /*
-        tvIneFrontal = findViewById(R.id.tvIneFrontal);
-        ibIneFrontal = findViewById(R.id.ibIneFrontal);
-        ivIneFrontal = findViewById(R.id.ivIneFrontal);
-         */
-
         llFotoIneFrontal = findViewById(R.id.llineFrotalInd);
         llFotoIneReverso = findViewById(R.id.llineReversoInd);
         llFotoIneSelfie = findViewById(R.id.llineSelfieInd);
 
+        tvIneFrontal = findViewById(R.id.tvIneFrontal);
+        ibIneFrontal = findViewById(R.id.ibIneFrontal);
+        ivIneFrontal = findViewById(R.id.ivIneFrontal);
 
-        /*
         tvIneReverso = findViewById(R.id.tvIneReverso);
         ibIneReverso = findViewById(R.id.ibIneReverso);
         ivIneReverso = findViewById(R.id.ivIneReverso);
 
-         */
 
         llFotoCurp = findViewById(R.id.llFotoCurp);
         /*tvCurp              = findViewById(R.id.tvCurp);
@@ -1158,10 +1148,10 @@ public class RenovacionCreditoInd extends AppCompatActivity implements dialog_pl
         mapNeg.onCreate(savedInstanceState);
         mapAval.onCreate(savedInstanceState);
 
+        llFotoIneSelfie.setVisibility(View.VISIBLE);
+        llFotoIneFrontal.setVisibility(View.VISIBLE);
+        llFotoIneReverso.setVisibility(View.VISIBLE);
 
-        llFotoIneSelfie.setVisibility(View.GONE);
-        llFotoIneFrontal.setVisibility(View.GONE);
-        llFotoIneReverso.setVisibility(View.GONE);
         llFotoCurp.setVisibility(View.GONE);
 
 
@@ -4867,11 +4857,12 @@ public class RenovacionCreditoInd extends AppCompatActivity implements dialog_pl
         });
         //================================  ESCANEAR DOCUMENTOS  ===================================
         /**Evento click en la seccion de documentos para cambios al momento*/
-        //ibIneFrontal.setOnClickListener(ibIneFrontal_OnClick);
-        //ibIneReverso.setOnClickListener(ibIneReverso_OnClick);
+        ibIneFrontal.setOnClickListener(ibIneFrontal_OnClick);
+        ibIneReverso.setOnClickListener(ibIneReverso_OnClick);
+        ibIneSelfie.setOnClickListener(ibIneSelfie_OnClick);
+
         //ibCurp.setOnClickListener(ibCurp_OnClick);
         ibComprobante.setOnClickListener(ibComprobante_OnClick);
-        //ibIneSelfie.setOnClickListener(ibIneSelfie_OnClick);
         ibComprobanteGarantia.setOnClickListener(ibComprobanteGarantia_OnClick);
         ibIneFrontalAval.setOnClickListener(ibIneFrontalAval_OnClick);
         ibIneReversoAval.setOnClickListener(ibIneReversoAval_OnClick);
@@ -5067,12 +5058,15 @@ public class RenovacionCreditoInd extends AppCompatActivity implements dialog_pl
         ivFotoFachNeg.setOnClickListener(ivFotoFachNeg_OnClick);
         ivFotoFachAval.setOnClickListener(ivFotoFachAval_OnClick);
         ivFirmaAval.setOnClickListener(ivFirmaAval_OnClick);
-        //ivIneFrontal.setOnClickListener(ivIneFrontal_OnClik);
-        //ivIneReverso.setOnClickListener(ivIneReverso_OnClick);
+
+        ivIneFrontal.setOnClickListener(ivIneFrontal_OnClik);
+        ivIneReverso.setOnClickListener(ivIneReverso_OnClick);
+        ivIneSelfie.setOnClickListener(ivIneSelfie_OnClik);
+
         //ivCurp.setOnClickListener(ivCurp_OnClick);
         ivComprobante.setOnClickListener(ivComprobante_OnClick);
         ivFirmaAsesor.setOnClickListener(ivFirmaAsesor_OnClick);
-        //ivIneSelfie.setOnClickListener(ivIneSelfie_OnClik);
+
         ivComprobanteGarantia.setOnClickListener(ivComprobanteGarantia_OnClick);
         ivIneFrontalAval.setOnClickListener(ivIneFrontalAval_OnClik);
         ivIneReversoAval.setOnClickListener(ivIneReversoAval_OnClick);
@@ -6566,8 +6560,6 @@ public class RenovacionCreditoInd extends AppCompatActivity implements dialog_pl
             scanIntent.putExtra(CardIOActivity.EXTRA_USE_CARDIO_LOGO, true); // cambiar logo de paypal por el de card.io
             scanIntent.putExtra(CardIOActivity.EXTRA_RETURN_CARD_IMAGE, true); // capture img
             scanIntent.putExtra(CardIOActivity.EXTRA_CAPTURED_CARD_IMAGE, true); // capturar img
-            //Intent i = new Intent(RenovacionCreditoInd.this,CameraVertical.class);
-            //i.putExtra(ORDER_ID,"O_ine_frontal");
             startActivityForResult(scanIntent, REQUEST_CODE_FOTO_INE_FRONTAL);
         }
     };
@@ -9028,22 +9020,37 @@ public class RenovacionCreditoInd extends AppCompatActivity implements dialog_pl
      * Funcion para validar y guardar los datos de la seccion de documentos
      */
     private boolean saveDocumentacion() {
-        boolean isNotAttachedFirmaCli = (byteFirmaCli == null);
-        boolean isNotAttachedComprobanteDomicilio = (byteComprobante == null);
 
-        if (isNotAttachedFirmaCli) {
-            this.tvComprobante.setError("");
-            this.ivError10.setVisibility(View.VISIBLE);
+        boolean flagByteIneFrontal = byteIneFrontal != null;
+        boolean flagByteIneReverso = byteIneReverso != null;
+        boolean flagByteIneSelfie = byteIneSelfie != null;
+        boolean faglByteFirmaCli = byteFirmaCli != null;
+        boolean flagByteComprobante = byteComprobante != null;
+
+        if (!flagByteIneFrontal) {
+            tvIneFrontal.setError("");
+        }
+        if (!flagByteIneReverso) {
+            tvIneReverso.setError("");
+        }
+        if (!flagByteIneSelfie) {
+            tvIneSelfie.setError("");
+        }
+        if (!flagByteComprobante) {
+            tvComprobante.setError("");
+        }
+        if (!faglByteFirmaCli) {
+            tvFirmaCli.setError("");
+        }
+
+        if (flagByteIneFrontal && flagByteIneReverso && flagByteIneSelfie && faglByteFirmaCli && flagByteComprobante) {
+            ivError9.setVisibility(View.GONE);
+            return true;
+        } else {
+            ivError9.setVisibility(View.VISIBLE);
             return false;
         }
 
-        if (isNotAttachedComprobanteDomicilio) {
-            this.tvComprobante.setError("");
-            this.ivError10.setVisibility(View.VISIBLE);
-            return false;
-        }
-
-        return true;
     }
 
     private boolean saveBeneficiario() {
@@ -9581,12 +9588,12 @@ public class RenovacionCreditoInd extends AppCompatActivity implements dialog_pl
             case REQUEST_CODE_FOTO_INE_SELFIE:
                 if (resultCode == Activity.RESULT_OK) {
                     if (data != null) {
-                        //tvIneSelfie.setError(null);
-                        //ibIneSelfie.setVisibility(View.GONE);
-                        //ivIneSelfie.setVisibility(View.VISIBLE);
+                        tvIneSelfie.setError(null);
+                        ibIneSelfie.setVisibility(View.GONE);
+                        ivIneSelfie.setVisibility(View.VISIBLE);
                         byteIneSelfie = data.getByteArrayExtra(PICTURE);
                         byteIneSelfie = Miscellaneous.etiquetasFotoNormales(byteIneSelfie, ctx);
-                        //Glide.with(ctx).load(byteIneSelfie).centerCrop().into(ivIneSelfie);
+                        Glide.with(ctx).load(byteIneSelfie).centerCrop().into(ivIneSelfie);
                         try {
                             Update("ine_selfie", TBL_DOCUMENTOS_REN, Miscellaneous.save(byteIneSelfie, 4));
                         } catch (IOException e) {
@@ -9595,20 +9602,16 @@ public class RenovacionCreditoInd extends AppCompatActivity implements dialog_pl
                     }
                 }
                 break;
-            case REQUEST_CODE_FOTO_INE_FRONTAL:/**Obtiene respuesta a la peticion de la foto del INE frontal*/
-                if (resultCode == RESULT_SCAN_SUPPRESSED) {/**Valida el codigo de respuesta*/
-                    if (data != null) {/**Valida que la respuesta contenga algun valor*/
-                        /**Oculta y muestra ciertos valores*/
-                        //ibIneFrontal.setVisibility(View.GONE);
-                        //ivIneFrontal.setVisibility(View.VISIBLE);
-                        //tvIneFrontal.setError(null);
-                        /**Obtiene la imagen capturado*/
+            case REQUEST_CODE_FOTO_INE_FRONTAL:
+                if (resultCode == RESULT_SCAN_SUPPRESSED) {
+                    if (data != null) {
+                        ibIneFrontal.setVisibility(View.GONE);
+                        ivIneFrontal.setVisibility(View.VISIBLE);
+                        tvIneFrontal.setError(null);
                         Bitmap cardIneFrontal = CardIOActivity.getCapturedCardImage(data);
                         byteIneFrontal = Miscellaneous.etiquetasIne(cardIneFrontal, ctx);
-                        /**Coloca la respuesta en el contenedor del ImageView*/
-                        //Glide.with(ctx).load(byteIneFrontal).centerCrop().into(ivIneFrontal);
+                        Glide.with(ctx).load(byteIneFrontal).centerCrop().into(ivIneFrontal);
                         try {
-                            /**Actualiza la columna con el nombre de la imagen que se guardo*/
                             Update("ine_frontal", TBL_DOCUMENTOS_REN, Miscellaneous.save(byteIneFrontal, 4));
                         } catch (IOException e) {
                             e.printStackTrace();
@@ -9616,21 +9619,17 @@ public class RenovacionCreditoInd extends AppCompatActivity implements dialog_pl
                     }
                 }
                 break;
-            case REQUEST_CODE_FOTO_INE_REVERSO:/**Obtiene la respuesta a la peticion de la foto del ine reverso*/
-                if (resultCode == RESULT_SCAN_SUPPRESSED) {/**Valida la respuesta de codigo*/
-                    if (data != null) {/**Valida que la respuesta contenga algun valor*/
-                        //tvIneReverso.setError(null);
-                        /**Obtiene la respuesta en un Bitmap*/
+            case REQUEST_CODE_FOTO_INE_REVERSO:
+                if (resultCode == RESULT_SCAN_SUPPRESSED) {
+                    if (data != null) {
+                        tvIneReverso.setError(null);
+
                         Bitmap cardIneReverso = CardIOActivity.getCapturedCardImage(data);
-                        /**Coloca la respuesta en en una variable*/
                         byteIneReverso = Miscellaneous.etiquetasIne(cardIneReverso, ctx);
-                        /**Oculta y muestra ciertos campos*/
-                        //ibIneReverso.setVisibility(View.GONE);
-                        //ivIneReverso.setVisibility(View.VISIBLE);
-                        /**Coloca la respuesta con el contenedor del ImageView*/
-                        //Glide.with(ctx).load(byteIneReverso).centerCrop().into(ivIneReverso);
+                        ibIneReverso.setVisibility(View.GONE);
+                        ivIneReverso.setVisibility(View.VISIBLE);
+                        Glide.with(ctx).load(byteIneReverso).centerCrop().into(ivIneReverso);
                         try {
-                            /**Actualiza la columna colocando el nombre de la imagen que se guardo*/
                             Update("ine_reverso", TBL_DOCUMENTOS_REN, Miscellaneous.save(byteIneReverso, 4));
                         } catch (IOException e) {
                             e.printStackTrace();

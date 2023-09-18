@@ -386,14 +386,14 @@ public class RenovarIntegrante
     private TextView tvAnexoPoliticamenteExp;
     //========================================
     //===================  DATOS NEGOCIO  =====================================
-    //private TextView tvIneFrontal;
-    //private ImageButton ibIneFrontal;
-    //private ImageView ivIneFrontal;
+    private TextView tvIneFrontal;
+    private ImageButton ibIneFrontal;
+    private ImageView ivIneFrontal;
     public byte[] byteIneFrontal;
 
-    //private TextView tvIneReverso;
-    //private ImageButton ibIneReverso;
-    //private ImageView ivIneReverso;
+    private TextView tvIneReverso;
+    private ImageButton ibIneReverso;
+    private ImageView ivIneReverso;
     public byte[] byteIneReverso;
 
     private LinearLayout llCurp;
@@ -406,9 +406,9 @@ public class RenovarIntegrante
     private ImageView ivComprobante;
     public byte[] byteComprobante;
 
-    //private TextView tvIneSelfie;
-    //private ImageButton ibIneSelfie;
-    //private ImageView ivIneSelfie;
+    private TextView tvIneSelfie;
+    private ImageButton ibIneSelfie;
+    private ImageView ivIneSelfie;
     public byte[] byteIneSelfie;
 
     //=========================================================================
@@ -725,24 +725,22 @@ public class RenovarIntegrante
         tvAnexoPoliticamenteExp = findViewById(R.id.tvAnexoPoliticamenteExp);
         //==========================================================================================
         //===================================  DOCUMENTOS  ========================================
-        /*
-        tvIneFrontal          = findViewById(R.id.tvIneFrontal);
-        ibIneFrontal          = findViewById(R.id.ibIneFrontal);
-        ivIneFrontal          = findViewById(R.id.ivIneFrontal);
-         */
+
         llFotoIneSelfieGpo = findViewById(R.id.llIneSelfieGpo);
         llFotoIneFrontalGpo = findViewById(R.id.llIneFrontalGpo);
         llFotoIneReversoGpo = findViewById(R.id.llIneReversoGpo);
 
-        llFotoIneSelfieGpo.setVisibility(View.GONE);
-        llFotoIneFrontalGpo.setVisibility(View.GONE);
-        llFotoIneReversoGpo.setVisibility(View.GONE);
+        tvIneFrontal = findViewById(R.id.tvIneFrontal);
+        ibIneFrontal = findViewById(R.id.ibIneFrontal);
+        ivIneFrontal = findViewById(R.id.ivIneFrontal);
 
-        /*
-        tvIneReverso          = findViewById(R.id.tvIneReverso);
-        ibIneReverso          = findViewById(R.id.ibIneReverso);
-        ivIneReverso          = findViewById(R.id.ivIneReverso);
-         */
+        tvIneReverso = findViewById(R.id.tvIneReverso);
+        ibIneReverso = findViewById(R.id.ibIneReverso);
+        ivIneReverso = findViewById(R.id.ivIneReverso);
+
+        tvIneSelfie = findViewById(R.id.tvIneSelfie);
+        ibIneSelfie = findViewById(R.id.ibIneSelfie);
+        ivIneSelfie = findViewById(R.id.ivIneSelfie);
 
         llCurp = findViewById(R.id.llCurp);
         tvCurp = findViewById(R.id.tvCurp);
@@ -752,10 +750,6 @@ public class RenovarIntegrante
         ibComprobante = findViewById(R.id.ibComprobante);
         ivComprobante = findViewById(R.id.ivComprobante);
         etMontoRefinanciar = findViewById(R.id.etMontoRefinanciar);
-
-        //tvIneSelfie         = findViewById(R.id.tvIneSelfie);
-        //ibIneSelfie         = findViewById(R.id.ibIneSelfie);
-        //ivIneSelfie         = findViewById(R.id.ivIneSelfie);
 
         //==========================================================================================
         //============================= IMAGE VIEW ERROR  ==========================================
@@ -2660,11 +2654,11 @@ public class RenovarIntegrante
         });
         //====================================  DOCUMENTOS  ========================================
         /**Evento de click de datos del neogocio del integrante con guardado en automatico*/
-        //ibIneFrontal.setOnClickListener(ibIneFrontal_OnClick);
-        //ibIneReverso.setOnClickListener(ibIneReverso_OnClick);
+        ibIneFrontal.setOnClickListener(ibIneFrontal_OnClick);
+        ibIneReverso.setOnClickListener(ibIneReverso_OnClick);
         ibCurp.setOnClickListener(ibCurp_OnClick);
         ibComprobante.setOnClickListener(ibComprobante_OnClick);
-        //ibIneSelfie.setOnClickListener(ibIneSelfie_OnClick);
+        ibIneSelfie.setOnClickListener(ibIneSelfie_OnClick);
         //==========================================================================
         /**Evento de click para retroceder o avanzar en seccionesro*/
 
@@ -2848,11 +2842,11 @@ public class RenovarIntegrante
         ivFotoFachCli.setOnClickListener(ivFotoFachCli_OnClick);
         ivFotoFachNeg.setOnClickListener(ivFotoFachNeg_OnClick);
         ivFirmaCli.setOnClickListener(ivFirmaCli_OnClick);
-        //ivIneFrontal.setOnClickListener(ivIneFrontal_OnClick);
-        //ivIneReverso.setOnClickListener(ivIneReverso_OnClick);
+        ivIneFrontal.setOnClickListener(ivIneFrontal_OnClick);
+        ivIneReverso.setOnClickListener(ivIneReverso_OnClick);
         ivCurp.setOnClickListener(ivCurp_OnClick);
         ivComprobante.setOnClickListener(ivComprobante_OnClick);
-        //ivIneSelfie.setOnClickListener(ivIneSelfie_OnClik);
+        ivIneSelfie.setOnClickListener(ivIneSelfie_OnClik);
         //&& !isNuevo
         //if(is_edit) {
         if (true) {
@@ -6579,36 +6573,41 @@ public class RenovarIntegrante
      * Funcion para validar los campos y actualizar la columnas del registro de los datos de documentos
      */
     private boolean saveDocumentos() {
-        boolean save_documentos = false;
-        if (byteIneFrontal == null) {
-            if (byteIneReverso == null) {
-                if (!isNuevo || byteCurp != null) {
-                    if (byteComprobante != null) {
-                        ivError9.setVisibility(View.GONE);
-                        ContentValues cv = new ContentValues();
-                        cv.put("estatus_completado", 1);
+        if (!isNuevo) return true;
 
-                        db.update(TBL_DOCUMENTOS_INTEGRANTE_REN, cv, "id_integrante = ?", new String[]{String.valueOf(id_integrante)});
+        boolean flagByteIneFrontal = byteIneFrontal != null;
+        boolean flagByteIneReverso = byteIneReverso != null;
+        boolean flagByteIneSelfie = byteIneSelfie != null;
+        boolean flagByteComprobante = byteComprobante != null;
+        boolean faglByteFirmaCli = byteFirmaCli != null;
 
-                        save_documentos = true;
-                    } else {
-                        tvComprobante.setError("");
-                        ivError9.setVisibility(View.VISIBLE);
-                    }
-                } else {
-                    tvCurp.setError("");
-                    ivError9.setVisibility(View.VISIBLE);
-                }
-            } else {
-                //tvIneReverso.setError("");
-                ivError9.setVisibility(View.VISIBLE);
-            }
-        } else {
-            //tvIneFrontal.setError(null);
-            ivError9.setVisibility(View.VISIBLE);
+        if (!flagByteIneFrontal) {
+            tvIneFrontal.setError("");
+        }
+        if (!flagByteIneReverso) {
+            tvIneReverso.setError("");
+        }
+        if (!flagByteIneSelfie) {
+            tvIneSelfie.setError("");
+        }
+        if (!flagByteComprobante) {
+            tvComprobante.setError("");
+        }
+        if (!faglByteFirmaCli) {
+            tvFirmaCli.setError("");
         }
 
-        return save_documentos;
+        if (flagByteIneFrontal && flagByteIneReverso && flagByteIneSelfie  && flagByteComprobante && faglByteFirmaCli) {
+            ivError9.setVisibility(View.GONE);
+            ContentValues cv = new ContentValues();
+            cv.put("estatus_completado", 1);
+            db.update(TBL_DOCUMENTOS_INTEGRANTE_REN, cv, "id_integrante = ?", new String[]{String.valueOf(id_integrante)});
+            return true;
+        } else {
+            ivError9.setVisibility(View.VISIBLE);
+            return false;
+        }
+
     }
 
     private boolean saveBeneficiario() {
@@ -6737,7 +6736,7 @@ public class RenovarIntegrante
 
                 finish();
             } else {
-                /**En caso de que alguna seccion no esta completada mostrara un mensaje*/
+/**En caso de que alguna seccion no esta completada mostrara un mensaje*/
                 final AlertDialog solicitud;
                 solicitud = Popups.showDialogMessage(this, warning,
                         "Faltan por llenar campos de la solicitud", R.string.accept, new Popups.DialogMessage() {
