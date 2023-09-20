@@ -6916,7 +6916,7 @@ public class RenovacionCreditoInd extends AppCompatActivity implements dialog_pl
                             @Override
                             public void OnClickListener(AlertDialog dialog) {
                                 Intent i = new Intent(ctx, VerImagen.class);
-                                //i.putExtra(IMAGEN, byteIneFrontal);
+                                i.putExtra(IMAGEN, byteIneFrontal);
                                 startActivity(i);
                                 dialog.dismiss();
                             }
@@ -6935,7 +6935,7 @@ public class RenovacionCreditoInd extends AppCompatActivity implements dialog_pl
                             @Override
                             public void OnClickListener(AlertDialog dialog) {
                                 Intent i = new Intent(ctx, VerImagen.class);
-                                //i.putExtra(IMAGEN, byteIneFrontal);
+                                i.putExtra(IMAGEN, byteIneFrontal);
                                 startActivity(i);
                                 dialog.dismiss();
 
@@ -6977,7 +6977,7 @@ public class RenovacionCreditoInd extends AppCompatActivity implements dialog_pl
                             @Override
                             public void OnClickListener(AlertDialog dialog) {
                                 Intent i = new Intent(ctx, VerImagen.class);
-                                //i.putExtra(IMAGEN, byteIneReverso);
+                                i.putExtra(IMAGEN, byteIneReverso);
                                 startActivity(i);
                                 dialog.dismiss();
                             }
@@ -6996,7 +6996,7 @@ public class RenovacionCreditoInd extends AppCompatActivity implements dialog_pl
                             @Override
                             public void OnClickListener(AlertDialog dialog) {
                                 Intent i = new Intent(ctx, VerImagen.class);
-                                //i.putExtra(IMAGEN, byteIneReverso);
+                                i.putExtra(IMAGEN, byteIneReverso);
                                 startActivity(i);
                                 dialog.dismiss();
 
@@ -7170,7 +7170,7 @@ public class RenovacionCreditoInd extends AppCompatActivity implements dialog_pl
                             @Override
                             public void OnClickListener(AlertDialog dialog) {
                                 Intent i = new Intent(ctx, VerImagen.class);
-                                //i.putExtra(IMAGEN, byteIneSelfie);
+                                i.putExtra(IMAGEN, byteIneSelfie);
                                 startActivity(i);
                                 dialog.dismiss();
                             }
@@ -7189,7 +7189,7 @@ public class RenovacionCreditoInd extends AppCompatActivity implements dialog_pl
                             @Override
                             public void OnClickListener(AlertDialog dialog) {
                                 Intent i = new Intent(ctx, VerImagen.class);
-                                //i.putExtra(IMAGEN, byteIneSelfie);
+                                i.putExtra(IMAGEN, byteIneSelfie);
                                 startActivity(i);
                                 dialog.dismiss();
 
@@ -11440,18 +11440,18 @@ public class RenovacionCreditoInd extends AppCompatActivity implements dialog_pl
             File ineFrontalFile = new File(ROOT_PATH + "Documentos/" + row.getString(2));
             Uri uriIneFrontal = Uri.fromFile(ineFrontalFile);
             byteIneFrontal = Miscellaneous.getBytesUri(ctx, uriIneFrontal, 0);
-            //Glide.with(ctx).load(uriIneFrontal).into(ivIneFrontal);
-            //ibIneFrontal.setVisibility(View.GONE);
-            //ivIneFrontal.setVisibility(View.VISIBLE);
+            Glide.with(ctx).load(uriIneFrontal).into(ivIneFrontal);
+            ibIneFrontal.setVisibility(View.GONE);
+            ivIneFrontal.setVisibility(View.VISIBLE);
         }
 
         if (!row.getString(3).isEmpty()) {
             File ineReversoFile = new File(ROOT_PATH + "Documentos/" + row.getString(3));
             Uri uriIneReverso = Uri.fromFile(ineReversoFile);
             byteIneReverso = Miscellaneous.getBytesUri(ctx, uriIneReverso, 0);
-            //Glide.with(ctx).load(uriIneReverso).into(ivIneReverso);
-            //ibIneReverso.setVisibility(View.GONE);
-            //ivIneReverso.setVisibility(View.VISIBLE);
+            Glide.with(ctx).load(uriIneReverso).into(ivIneReverso);
+            ibIneReverso.setVisibility(View.GONE);
+            ivIneReverso.setVisibility(View.VISIBLE);
         }
 
         /*if (!row.getString(4).isEmpty()){
@@ -11485,9 +11485,9 @@ public class RenovacionCreditoInd extends AppCompatActivity implements dialog_pl
             File ineSelfieFile = new File(ROOT_PATH + "Documentos/" + row.getString(9));
             Uri uriIneSelfie = Uri.fromFile(ineSelfieFile);
             byteIneSelfie = Miscellaneous.getBytesUri(ctx, uriIneSelfie, 0);
-            //Glide.with(ctx).load(uriIneSelfie).into(ivIneSelfie);
-            //ibIneSelfie.setVisibility(View.GONE);
-            //ivIneSelfie.setVisibility(View.VISIBLE);
+            Glide.with(ctx).load(uriIneSelfie).into(ivIneSelfie);
+            ibIneSelfie.setVisibility(View.GONE);
+            ivIneSelfie.setVisibility(View.VISIBLE);
         }
 
         if (row.getString(10) != null && !row.getString(10).isEmpty()) {

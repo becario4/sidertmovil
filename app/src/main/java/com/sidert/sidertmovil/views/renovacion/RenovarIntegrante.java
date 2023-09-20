@@ -80,6 +80,7 @@ import com.sidert.sidertmovil.utils.SessionManager;
 import com.sidert.sidertmovil.utils.Validator;
 import com.sidert.sidertmovil.utils.ValidatorTextView;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.text.DecimalFormat;
@@ -5727,18 +5728,18 @@ public class RenovarIntegrante
             File ineFrontalFile = new File(Constants.ROOT_PATH + "Documentos/" + row.getString(2));
             Uri uriIneFrontal = Uri.fromFile(ineFrontalFile);
             byteIneFrontal = Miscellaneous.getBytesUri(ctx, uriIneFrontal, 0);
-            //Glide.with(ctx).load(uriIneFrontal).into(ivIneFrontal);
-            //ibIneFrontal.setVisibility(View.GONE);
-            //ivIneFrontal.setVisibility(View.VISIBLE);
+            Glide.with(ctx).load(uriIneFrontal).into(ivIneFrontal);
+            ibIneFrontal.setVisibility(View.GONE);
+            ivIneFrontal.setVisibility(View.VISIBLE);
         }
 
         if (!row.getString(3).isEmpty()) {
             File ineReversoFile = new File(Constants.ROOT_PATH + "Documentos/" + row.getString(3));
             Uri uriIneReverso = Uri.fromFile(ineReversoFile);
             byteIneReverso = Miscellaneous.getBytesUri(ctx, uriIneReverso, 0);
-            //Glide.with(ctx).load(uriIneReverso).into(ivIneReverso);
-            //ibIneReverso.setVisibility(View.GONE);
-            //ivIneReverso.setVisibility(View.VISIBLE);
+            Glide.with(ctx).load(uriIneReverso).into(ivIneReverso);
+            ibIneReverso.setVisibility(View.GONE);
+            ivIneReverso.setVisibility(View.VISIBLE);
         }
 
         if (isNuevo) {
@@ -5767,9 +5768,9 @@ public class RenovarIntegrante
             File ineSelfieFile = new File(ROOT_PATH + "Documentos/" + row.getString(7));
             Uri uriIneSelfie = Uri.fromFile(ineSelfieFile);
             byteIneSelfie = Miscellaneous.getBytesUri(ctx, uriIneSelfie, 0);
-            //Glide.with(ctx).load(uriIneSelfie).into(ivIneSelfie);
-            //ibIneSelfie.setVisibility(View.GONE);
-            //ivIneSelfie.setVisibility(View.VISIBLE);
+            Glide.with(ctx).load(uriIneSelfie).into(ivIneSelfie);
+            ibIneSelfie.setVisibility(View.GONE);
+            ivIneSelfie.setVisibility(View.VISIBLE);
         }
 
         row.close(); //Cierra datos de documentos del integrante
@@ -6597,7 +6598,7 @@ public class RenovarIntegrante
             tvFirmaCli.setError("");
         }
 
-        if (flagByteIneFrontal && flagByteIneReverso && flagByteIneSelfie  && flagByteComprobante && faglByteFirmaCli) {
+        if (flagByteIneFrontal && flagByteIneReverso && flagByteIneSelfie && flagByteComprobante && faglByteFirmaCli) {
             ivError9.setVisibility(View.GONE);
             ContentValues cv = new ContentValues();
             cv.put("estatus_completado", 1);
@@ -7086,12 +7087,12 @@ public class RenovarIntegrante
             case REQUEST_CODE_FOTO_INE_SELFIE:
                 if (resultCode == Activity.RESULT_OK) {
                     if (data != null) {
-                        //tvIneSelfie.setError(null);
-                        //ibIneSelfie.setVisibility(View.GONE);
-                        //ivIneSelfie.setVisibility(View.VISIBLE);
+                        tvIneSelfie.setError(null);
+                        ibIneSelfie.setVisibility(View.GONE);
+                        ivIneSelfie.setVisibility(View.VISIBLE);
                         byteIneSelfie = data.getByteArrayExtra(PICTURE);
                         byteIneSelfie = Miscellaneous.etiquetasFotoNormales(byteIneSelfie, ctx);
-                        //Glide.with(ctx).load(byteIneSelfie).centerCrop().into(ivIneSelfie);
+                        Glide.with(ctx).load(byteIneSelfie).centerCrop().into(ivIneSelfie);
                         try {
                             Update("ine_selfie", TBL_DOCUMENTOS_INTEGRANTE_REN, Miscellaneous.save(byteIneSelfie, 4), "id_integrante", id_integrante);
                         } catch (IOException e) {
@@ -7099,29 +7100,25 @@ public class RenovarIntegrante
                         }
                     }
                 } else {
-                    //tvIneSelfie.setError("CAMPO REQUERIDO");
+                    tvIneSelfie.setError("CAMPO REQUERIDO");
                     Toast.makeText(ctx, "ESTE CAMPO ES REQUERIDO", Toast.LENGTH_SHORT).show();
                 }
                 break;
-            case REQUEST_CODE_FOTO_INE_FRONTAL:/**obtiene la respuesta a la peticion de fotografia del ine frontal*/
-                if (resultCode == RESULT_SCAN_SUPPRESSED) {/**valida el codigo de respuesta*/
-                    if (data != null) {/**valida que la respuesta contenga un valor*/
-                        //tvIneFrontal.setError(null);
-                        /** se extrae la imagen que se capturo de tipo byte array*/
+            case REQUEST_CODE_FOTO_INE_FRONTAL:
+                if (resultCode == RESULT_SCAN_SUPPRESSED) {
+                    if (data != null) {
+                        tvIneFrontal.setError(null);
                         Bitmap cardIneFrontal = CardIOActivity.getCapturedCardImage(data);
-                        //ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                        //cardIneFrontal.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+                        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                        cardIneFrontal.compress(Bitmap.CompressFormat.JPEG, 100, baos);
 
-                        /**coloca la respuesta en una variable*/
                         byteIneFrontal = Miscellaneous.etiquetasIne(cardIneFrontal, ctx);
 
-                        //ibIneFrontal.setVisibility(View.GONE);
-                        //ivIneFrontal.setVisibility(View.VISIBLE);
+                        ibIneFrontal.setVisibility(View.GONE);
+                        ivIneFrontal.setVisibility(View.VISIBLE);
 
-                        /**coloca la respuesta en el contenedor del imageView*/
-                        //Glide.with(ctx).load(byteIneFrontal).centerCrop().into(ivIneFrontal);
+                        Glide.with(ctx).load(byteIneFrontal).centerCrop().into(ivIneFrontal);
                         try {
-                            /**actualiza la columna con el nombre que se guardo la imagen*/
                             Update("ine_frontal", TBL_DOCUMENTOS_INTEGRANTE_REN, Miscellaneous.save(byteIneFrontal, 4), "id_integrante", id_integrante);
                         } catch (IOException e) {
                             e.printStackTrace();
@@ -7129,27 +7126,26 @@ public class RenovarIntegrante
 
                     }
                 } else {
-                    //tvIneFrontal.setError("CAMPO REQUERIDO");
+                    tvIneFrontal.setError("CAMPO REQUERIDO");
                     Toast.makeText(ctx, "ESTE CAMPO ES REQUERIDO", Toast.LENGTH_SHORT).show();
                 }
                 break;
-            case REQUEST_CODE_FOTO_INE_REVERSO:/**obtiene la respuesta a la peticion de fotografia del ine reverso*/
-                if (resultCode == RESULT_SCAN_SUPPRESSED) {/**valida el codigo de respuesta*/
-                    if (data != null) {/**valida que la respuesta contenga un valor*/
-                        //tvIneReverso.setError(null);
-                        /** se extrae la imagen que se capturo de tipo byte array*/
+            case REQUEST_CODE_FOTO_INE_REVERSO:
+                if (resultCode == RESULT_SCAN_SUPPRESSED) {
+                    if (data != null) {
+                        tvIneReverso.setError(null);
                         Bitmap cardIneReverso = CardIOActivity.getCapturedCardImage(data);
-                        //ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                        //cardIneReverso.compress(Bitmap.CompressFormat.JPEG, 100, baos);
-                        /**coloca la respuesta en una variable*/
-                        byteIneReverso = Miscellaneous.etiquetasIne(cardIneReverso, ctx);
-                        //ibIneReverso.setVisibility(View.GONE);
-                        //ivIneReverso.setVisibility(View.VISIBLE);
+                        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                        cardIneReverso.compress(Bitmap.CompressFormat.JPEG, 100, baos);
 
-                        /**coloca la respuesta en el contenedor del imageView*/
-                        //Glide.with(ctx).load(byteIneReverso).centerCrop().into(ivIneReverso);
+                        byteIneReverso = Miscellaneous.etiquetasIne(cardIneReverso, ctx);
+                        ibIneReverso.setVisibility(View.GONE);
+                        ivIneReverso.setVisibility(View.VISIBLE);
+
+
+                        Glide.with(ctx).load(byteIneReverso).centerCrop().into(ivIneReverso);
                         try {
-                            /**actualiza la columna con el nombre que se guardo la imagen*/
+
                             Update("ine_reverso", TBL_DOCUMENTOS_INTEGRANTE_REN, Miscellaneous.save(byteIneReverso, 4), "id_integrante", id_integrante);
                         } catch (IOException e) {
                             e.printStackTrace();
@@ -7157,7 +7153,7 @@ public class RenovarIntegrante
 
                     }
                 } else {
-                    //tvIneReverso.setError("CAMPO REQUERIDO");
+                    tvIneReverso.setError("CAMPO REQUERIDO");
                     Toast.makeText(ctx, "ESTE CAMPO ES REQUERIDO", Toast.LENGTH_SHORT).show();
                 }
                 break;

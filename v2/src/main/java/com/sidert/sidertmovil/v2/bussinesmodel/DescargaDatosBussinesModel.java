@@ -2543,44 +2543,49 @@ public class DescargaDatosBussinesModel extends BaseBussinesModel {
                             dBhelper.saveDatosDomicilio(db, params, tipo);
 
                             //Inserta registro de negocio
-                            params = new HashMap<>();
-                            params.put(0, String.valueOf(id));          //ID INTEGRANTE
-                            params.put(1, Miscellaneous.validStr(inte.getNegocio().getNombre()));     //NOMBRE
-                            params.put(2, Miscellaneous.validStr(inte.getNegocio().getLatitud()));    //LATITID
-                            params.put(3, Miscellaneous.validStr(inte.getNegocio().getLongitud()));   //LONGITUD
-                            params.put(4, Miscellaneous.validStr(inte.getNegocio().getCalle()));      //CALLE
-                            params.put(5, Miscellaneous.validStr(inte.getNegocio().getNoExterior())); //NO EXTERIOR
-                            params.put(6, Miscellaneous.validStr(inte.getNegocio().getNoInterior())); //NO INTERIOR
-                            params.put(7, Miscellaneous.validStr(inte.getNegocio().getNoManzana()));  //MANZANA
-                            params.put(8, Miscellaneous.validStr(inte.getNegocio().getNoLote()));     //LOTE
-                            params.put(9, String.valueOf(inte.getNegocio().getCodigoPostal()));       //CP
-                            params.put(10, Miscellaneous.GetColonia(this.sidertMovilApplication, inte.getNegocio().getColoniaId()));//COLONIA
-                            params.put(11, Miscellaneous.validStr(inte.getNegocio().getCiudad()));    //CIUDAD
-                            params.put(12, Miscellaneous.GetLocalidad(this.sidertMovilApplication, inte.getNegocio().getLocalidadId())); //LOCALIDAD
-                            params.put(13, Miscellaneous.GetMunicipio(this.sidertMovilApplication, inte.getNegocio().getMunicipioId())); //MUNICIPIO
-                            params.put(14, Miscellaneous.GetEstado(this.sidertMovilApplication, inte.getNegocio().getEstadoId())); //ESTADO
-                            params.put(15, Miscellaneous.GetDestinoCredito(this.sidertMovilApplication, inte.getNegocio().getDestinoCreditoId())); //DESTINO CREDITO
-                            params.put(16, Miscellaneous.validStr(inte.getNegocio().getOtroDestinoCredito())); //OTRO DESTINO CREDITO
-                            params.put(17, Miscellaneous.GetOcupacion(this.sidertMovilApplication, inte.getNegocio().getOcupacionId())); //OCUPACION
-                            params.put(18, Miscellaneous.GetSector(this.sidertMovilApplication, inte.getNegocio().getSectorId())); //ACTIVIDAD ECONOMICA
-                            params.put(19, String.valueOf(Miscellaneous.validInt(inte.getNegocio().getAntiguedad()))); //ANTIGUEDA
-                            params.put(20, String.valueOf(inte.getNegocio().getIngresoMensual()));   //INGRESO MENSUAL
-                            params.put(21, String.valueOf(inte.getNegocio().getIngresosOtros()));    //INGRESOS OTROS
-                            params.put(22, String.valueOf(inte.getNegocio().getGastoMensual()));     //GASTO MENSUAL
-                            params.put(23, String.valueOf(inte.getNegocio().getCapacidadPago()));    //CAPACIDAD DE PAGO
-                            params.put(24, String.valueOf(inte.getNegocio().getMontoMaximo()));      //MONTO MAXIMO
-                            params.put(25, Miscellaneous.GetMediosPagoSoli(this.sidertMovilApplication, inte.getNegocio().getMediosPagosIds()));                          //MEDIOS PAGO
-                            params.put(26, Miscellaneous.validStr(inte.getNegocio().getOtroMedioPago()));                          //OTRO MEDIO DE PAGO
-                            int numOper = 30 / item.getPrestamoGpo().getPeriodicida();
-                            params.put(27, String.valueOf(numOper));                          //NUM OPERACIONES MENSUALES
-                            params.put(28, String.valueOf(Miscellaneous.validInt(inte.getNegocio().getNumOperacionesMensualesEfectivo())));                          //NUM OPERACIONES MENSUALES EFECTIVO
-                            params.put(29, "");                          //FOTO FACHADA
-                            params.put(30, Miscellaneous.validStr(inte.getNegocio().getReferencia()));                          //REFERENCIA DOMICILIARIA
-                            params.put(31, "0");                         //ESTATUS RECHAZO
-                            params.put(32, "");                          //COMENTARIO RECHAZADO
-                            params.put(33, "1");                         //ESTATUS COMPLETADO
+                            MSolicitudAutorizar.Negocio integranteNegocio = inte.getNegocio();
+                            if (integranteNegocio != null) {
 
-                            dBhelper.saveDatosNegocioGpo(db, params, tipo);
+                                params = new HashMap<>();
+                                params.put(0, String.valueOf(id));          //ID INTEGRANTE
+                                params.put(1, Miscellaneous.validStr(integranteNegocio.getNombre()));     //NOMBRE
+                                params.put(2, Miscellaneous.validStr(integranteNegocio.getLatitud()));    //LATITID
+                                params.put(3, Miscellaneous.validStr(integranteNegocio.getLongitud()));   //LONGITUD
+                                params.put(4, Miscellaneous.validStr(integranteNegocio.getCalle()));      //CALLE
+                                params.put(5, Miscellaneous.validStr(integranteNegocio.getNoExterior())); //NO EXTERIOR
+                                params.put(6, Miscellaneous.validStr(integranteNegocio.getNoInterior())); //NO INTERIOR
+                                params.put(7, Miscellaneous.validStr(integranteNegocio.getNoManzana()));  //MANZANA
+                                params.put(8, Miscellaneous.validStr(integranteNegocio.getNoLote()));     //LOTE
+                                params.put(9, String.valueOf(integranteNegocio.getCodigoPostal()));       //CP
+                                params.put(10, Miscellaneous.GetColonia(this.sidertMovilApplication, integranteNegocio.getColoniaId()));//COLONIA
+                                params.put(11, Miscellaneous.validStr(integranteNegocio.getCiudad()));    //CIUDAD
+                                params.put(12, Miscellaneous.GetLocalidad(this.sidertMovilApplication, integranteNegocio.getLocalidadId())); //LOCALIDAD
+                                params.put(13, Miscellaneous.GetMunicipio(this.sidertMovilApplication, integranteNegocio.getMunicipioId())); //MUNICIPIO
+                                params.put(14, Miscellaneous.GetEstado(this.sidertMovilApplication, integranteNegocio.getEstadoId())); //ESTADO
+                                params.put(15, Miscellaneous.GetDestinoCredito(this.sidertMovilApplication, integranteNegocio.getDestinoCreditoId())); //DESTINO CREDITO
+                                params.put(16, Miscellaneous.validStr(integranteNegocio.getOtroDestinoCredito())); //OTRO DESTINO CREDITO
+                                params.put(17, Miscellaneous.GetOcupacion(this.sidertMovilApplication, integranteNegocio.getOcupacionId())); //OCUPACION
+                                params.put(18, Miscellaneous.GetSector(this.sidertMovilApplication, integranteNegocio.getSectorId())); //ACTIVIDAD ECONOMICA
+                                params.put(19, String.valueOf(Miscellaneous.validInt(integranteNegocio.getAntiguedad()))); //ANTIGUEDA
+                                params.put(20, String.valueOf(integranteNegocio.getIngresoMensual()));   //INGRESO MENSUAL
+                                params.put(21, String.valueOf(integranteNegocio.getIngresosOtros()));    //INGRESOS OTROS
+                                params.put(22, String.valueOf(integranteNegocio.getGastoMensual()));     //GASTO MENSUAL
+                                params.put(23, String.valueOf(integranteNegocio.getCapacidadPago()));    //CAPACIDAD DE PAGO
+                                params.put(24, String.valueOf(integranteNegocio.getMontoMaximo()));      //MONTO MAXIMO
+                                params.put(25, Miscellaneous.GetMediosPagoSoli(this.sidertMovilApplication, integranteNegocio.getMediosPagosIds()));                          //MEDIOS PAGO
+                                params.put(26, Miscellaneous.validStr(integranteNegocio.getOtroMedioPago()));                          //OTRO MEDIO DE PAGO
+                                int numOper = 30 / item.getPrestamoGpo().getPeriodicida();
+                                params.put(27, String.valueOf(numOper));                          //NUM OPERACIONES MENSUALES
+                                params.put(28, String.valueOf(Miscellaneous.validInt(integranteNegocio.getNumOperacionesMensualesEfectivo())));                          //NUM OPERACIONES MENSUALES EFECTIVO
+                                params.put(29, "");                          //FOTO FACHADA
+                                params.put(30, Miscellaneous.validStr(integranteNegocio.getReferencia()));                          //REFERENCIA DOMICILIARIA
+                                params.put(31, "0");                         //ESTATUS RECHAZO
+                                params.put(32, "");                          //COMENTARIO RECHAZADO
+                                params.put(33, "1");                         //ESTATUS COMPLETADO
+
+                                dBhelper.saveDatosNegocioGpo(db, params, tipo);
+                            }
+
 
                             if (inte.getCliente().getEstadoCivilId() == 2 || inte.getCliente().getEstadoCivilId() == 5) {
                                 //Inserta registro del conyuge
