@@ -76,7 +76,8 @@ public class DescargaDatosViewModel
                 (increment, total) -> {
                     avanceCartera.postValue(increment);
                     totalCartera.postValue(total);
-                });
+                }
+                );
         Thread thread = new Thread(runner);
         thread.start();
     }

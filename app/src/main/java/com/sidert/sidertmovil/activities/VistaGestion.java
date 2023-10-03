@@ -635,7 +635,7 @@ public class VistaGestion extends AppCompatActivity {
                 } else if (tipoGestion.equals("2") && tipoPrestamo.equals("VENCIDA")) {
                     Log.e("Respuesta", "Vencida Grupal Integrante: " + idRespuesta);
 
-                    sql = "SELECT r.fecha_fin, Miscellaneous.nombre FROM " + TBL_RESPUESTAS_INTEGRANTE_T + " AS r INNER JOIN " + TBL_MIEMBROS_GPO_T + " AS m ON r.id_prestamo = Miscellaneous.id_prestamo_integrante WHERE r._id = ? LIMIT 1";
+                    sql = "SELECT r.fecha_fin, m.nombre FROM " + TBL_RESPUESTAS_INTEGRANTE_T + " AS r INNER JOIN " + TBL_MIEMBROS_GPO_T + " AS m ON r.id_prestamo = m.id_prestamo_integrante WHERE r._id = ? LIMIT 1";
                     row = db.rawQuery(sql, new String[]{idRespuesta});
                 }
 
@@ -712,7 +712,7 @@ public class VistaGestion extends AppCompatActivity {
                 } else if (tipoGestion.equals("2") && tipoPrestamo.equals("VENCIDA")) {
                     Log.e("Respuesta", "Vencida Grupal Integrante: " + idRespuesta);
 
-                    sql = "SELECT r.fecha_fin, Miscellaneous.nombre FROM " + TBL_RESPUESTAS_INTEGRANTE_T + " AS r INNER JOIN " + TBL_MIEMBROS_GPO_T + " AS m ON r.id_prestamo = Miscellaneous.id_prestamo_integrante WHERE r._id = ? LIMIT 1";
+                    sql = "SELECT r.fecha_fin, m.nombre FROM " + TBL_RESPUESTAS_INTEGRANTE_T + " AS r INNER JOIN " + TBL_MIEMBROS_GPO_T + " AS m ON r.id_prestamo = m.id_prestamo_integrante WHERE r._id = ? LIMIT 1";
                     row = db.rawQuery(sql, new String[]{idRespuesta});
                 }
 

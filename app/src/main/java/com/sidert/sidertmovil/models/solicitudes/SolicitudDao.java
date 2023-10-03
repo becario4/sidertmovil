@@ -13,7 +13,10 @@ import com.sidert.sidertmovil.utils.Miscellaneous;
 import java.util.ArrayList;
 import java.util.List;
 
+import timber.log.Timber;
+
 import static com.sidert.sidertmovil.utils.Constants.TBL_DATOS_BENEFICIARIO;
+import static com.sidert.sidertmovil.utils.Constants.TBL_DATOS_BENEFICIARIO_REN;
 import static com.sidert.sidertmovil.utils.Constants.TBL_DATOS_CREDITO_CAMPANA;
 import static com.sidert.sidertmovil.utils.Constants.TBL_DATOS_CREDITO_CAMPANA_GPO;
 import static com.sidert.sidertmovil.utils.Constants.TBL_DATOS_CREDITO_CAMPANA_GPO_REN;
@@ -24,25 +27,22 @@ public class SolicitudDao {
     final DBhelper dbHelper;
     final SQLiteDatabase db;
 
-    public SolicitudDao(Context ctx){
+    public SolicitudDao(Context ctx) {
         this.dbHelper = DBhelper.getInstance(ctx);
         this.db = dbHelper.getWritableDatabase();
     }
 
-    public Solicitud findByIdSolicitud(int idSolicitud)
-    {
+    public Solicitud findByIdSolicitud(int idSolicitud) {
         Solicitud solicitud = null;
 
         String sql = "" +
                 "SELECT " +
                 "* " +
                 "FROM " + TBL_SOLICITUDES + " AS s " +
-                "WHERE s.id_solicitud = ? "
-                ;
+                "WHERE s.id_solicitud = ? ";
         Cursor row = db.rawQuery(sql, new String[]{String.valueOf(idSolicitud)});
 
-        if(row.getCount() > 0)
-        {
+        if (row.getCount() > 0) {
             row.moveToFirst();
 
             solicitud = new Solicitud();
@@ -55,21 +55,18 @@ public class SolicitudDao {
         return solicitud;
     }
 
-    public Solicitud findLikeNombre(String nombre)
-    {
+    public Solicitud findLikeNombre(String nombre) {
         Solicitud solicitud = null;
 
         String sql = "" +
                 "SELECT " +
                 "* " +
                 "FROM " + TBL_SOLICITUDES + " AS s " +
-                "WHERE s.nombre = ? "
-                ;
+                "WHERE s.nombre = ? ";
 
         Cursor row = db.rawQuery(sql, new String[]{nombre});
 
-        if(row.getCount() > 0)
-        {
+        if (row.getCount() > 0) {
             row.moveToFirst();
 
             solicitud = new Solicitud();
@@ -82,21 +79,18 @@ public class SolicitudDao {
         return solicitud;
     }
 
-    public Solicitud findByIdOriginacion(int idOriginacion)
-    {
+    public Solicitud findByIdOriginacion(int idOriginacion) {
         Solicitud solicitud = null;
 
         String sql = "" +
                 "SELECT " +
                 "* " +
                 "FROM " + TBL_SOLICITUDES + " AS s " +
-                "WHERE s.id_originacion = ? "
-                ;
+                "WHERE s.id_originacion = ? ";
 
         Cursor row = db.rawQuery(sql, new String[]{String.valueOf(idOriginacion)});
 
-        if(row.getCount() > 0)
-        {
+        if (row.getCount() > 0) {
             row.moveToFirst();
 
             solicitud = new Solicitud();
@@ -115,8 +109,7 @@ public class SolicitudDao {
             String sIndividuales,
             String sNombre,
             int iEstatus
-    )
-    {
+    ) {
         List<Solicitud> solicitudes = new ArrayList<>();
 
         String sql = "" +
@@ -133,17 +126,14 @@ public class SolicitudDao {
                 "   OR (s.estatus <= 2 AND ? = '1')" +
                 "   OR (s.estatus > 2 AND ? = '3')" +
                 ")" +
-                "ORDER BY s.fecha_inicio "
-                ;
+                "ORDER BY s.fecha_inicio ";
 
         Cursor row = db.rawQuery(sql, new String[]{sMenor45, sMenor45, sGrupales, sGrupales, sIndividuales, sIndividuales, sNombre, String.valueOf(iEstatus), String.valueOf(iEstatus), String.valueOf(iEstatus), String.valueOf(iEstatus)});
 
-        if(row.getCount() > 0)
-        {
+        if (row.getCount() > 0) {
             row.moveToFirst();
 
-            for(int i = 0; i < row.getCount(); i++)
-            {
+            for (int i = 0; i < row.getCount(); i++) {
                 Solicitud solicitud = new Solicitud();
 
                 Fill(row, solicitud);
@@ -159,8 +149,7 @@ public class SolicitudDao {
         return solicitudes;
     }
 
-    public List<String> showNombres(int iEstatus)
-    {
+    public List<String> showNombres(int iEstatus) {
         List<String> nombres = new ArrayList<>();
 
         String sql = "" +
@@ -174,16 +163,14 @@ public class SolicitudDao {
                 "   OR (s.estatus <= 2 AND ? = '1')" +
                 "   OR (s.estatus > 2 AND ? = '3')" +
                 ")" +
-                "ORDER BY s.fecha_inicio "
-                ;
+                "ORDER BY s.fecha_inicio ";
 
         Cursor row = db.rawQuery(sql, new String[]{String.valueOf(iEstatus), String.valueOf(iEstatus), String.valueOf(iEstatus), String.valueOf(iEstatus)});
 
-        if (row.getCount() > 0){
+        if (row.getCount() > 0) {
             row.moveToFirst();
 
-            for(int i = 0; i < row.getCount(); i++)
-            {
+            for (int i = 0; i < row.getCount(); i++) {
                 nombres.add(row.getString(0));
                 row.moveToNext();
             }
@@ -195,12 +182,11 @@ public class SolicitudDao {
     }
 
 
-    public void updateIdOriginacion(Solicitud solicitud)
-    {
+    public void updateIdOriginacion(Solicitud solicitud) {
         ContentValues cv = new ContentValues();
 
 
-        if(solicitud.getIdOriginacion() > 0) {
+        if (solicitud.getIdOriginacion() > 0) {
             cv.put("id_originacion", String.valueOf(solicitud.getIdOriginacion()));
 
             db.update(TBL_SOLICITUDES, cv, "id_solicitud = ?", new String[]{String.valueOf(solicitud.getIdSolicitud())});
@@ -208,69 +194,67 @@ public class SolicitudDao {
         }
     }
 
-    public void updateEstatus(Solicitud solicitud)
-    {
+    public void updateEstatus(Solicitud solicitud) {
         ContentValues cv = new ContentValues();
 
         cv.put("estatus", solicitud.getEstatus());
-        if(solicitud.getIdOriginacion() > 0) cv.put("id_originacion", String.valueOf(solicitud.getIdOriginacion()));
+        if (solicitud.getIdOriginacion() > 0)
+            cv.put("id_originacion", String.valueOf(solicitud.getIdOriginacion()));
         cv.put("fecha_termino", solicitud.getFechaTermino());
         db.update(TBL_SOLICITUDES, cv, "id_solicitud = ?", new String[]{String.valueOf(solicitud.getIdSolicitud())});
         //cv.put("fecha_envio", solicitud.getFechaEnvio());
         //cv.put("fecha_guardado", solicitud.getFechaGuardado());
     }
 
-    public void solicitudEnviada(Solicitud solicitud, MResSaveSolicitud dato)
-    {
+    public void solicitudEnviada(Solicitud solicitud, MResSaveSolicitud dato) {
         ContentValues cv = new ContentValues();
         ContentValues mn = new ContentValues();
 
         cv.put("estatus", solicitud.getEstatus());
-        if(solicitud.getIdOriginacion() > 0) cv.put("id_originacion", String.valueOf(solicitud.getIdOriginacion()));
+        if (solicitud.getIdOriginacion() > 0) {
+            cv.put("id_originacion", String.valueOf(solicitud.getIdOriginacion()));
+        }
         cv.put("fecha_guardado", Miscellaneous.ObtenerFecha(TIMESTAMP));
         mn.put("id_originacion", String.valueOf(solicitud.getIdOriginacion()));
 
-        updateIdCliente(dato,solicitud);
-
+        updateIdCliente(dato, solicitud);
         db.update(TBL_SOLICITUDES, cv, "id_solicitud = ?", new String[]{String.valueOf(solicitud.getIdSolicitud())});
-        db.update(TBL_DATOS_BENEFICIARIO,mn,"id_solicitud = ?",new String[]{String.valueOf(solicitud.getIdSolicitud())});
-        db.update(TBL_DATOS_CREDITO_CAMPANA,mn,"id_solicitud = ?", new String[]{String.valueOf(solicitud.getIdSolicitud())});
-        db.update(TBL_DATOS_CREDITO_CAMPANA_GPO_REN,mn,"id_solicitud = ?", new String[]{String.valueOf(solicitud.getIdSolicitud())});
+        db.update(TBL_DATOS_CREDITO_CAMPANA, mn, "id_solicitud = ?", new String[]{String.valueOf(solicitud.getIdSolicitud())});
+        db.update(TBL_DATOS_BENEFICIARIO, mn, "id_solicitud = ?", new String[]{String.valueOf(solicitud.getIdSolicitud())});
+
     }
 
-    public void updateIdCliente(MResSaveSolicitud id_cliente, Solicitud solicitud){
+    public void updateIdCliente(MResSaveSolicitud id_cliente, Solicitud solicitud) {
 
         ContentValues cv = new ContentValues();
 
-        if(solicitud.getIdSolicitud()>0){
-            cv.put("id_cliente",String.valueOf(id_cliente.getId_cliente()));
-            db.update(TBL_DATOS_BENEFICIARIO,cv,"id_solicitud = ?", new String[]{String.valueOf(solicitud.getIdSolicitud())});
+        if (solicitud.getIdSolicitud() > 0) {
+            cv.put("id_cliente", String.valueOf(id_cliente.getId_cliente()));
+            db.update(TBL_DATOS_BENEFICIARIO, cv, "id_solicitud = ?", new String[]{String.valueOf(solicitud.getIdSolicitud())});
         }
 
     }
 
-    public void solicitudEnviadaInd(Solicitud solicitud){
+    public void solicitudEnviadaInd(Solicitud solicitud) {
         ContentValues cv = new ContentValues();
-        cv.put("id_originacion",String.valueOf(solicitud.getIdOriginacion()));
-        db.update(TBL_DATOS_CREDITO_CAMPANA, cv,"id_solicitud = ?", new String[]{String.valueOf(solicitud.getIdSolicitud())});
+        cv.put("id_originacion", String.valueOf(solicitud.getIdOriginacion()));
+        db.update(TBL_DATOS_CREDITO_CAMPANA, cv, "id_solicitud = ?", new String[]{String.valueOf(solicitud.getIdSolicitud())});
     }
 
-    public void solicitudEnviadaGpo(Solicitud solicitud){
+    public void solicitudEnviadaGpo(Solicitud solicitud) {
         ContentValues cv = new ContentValues();
-        cv.put("id_originacion",String.valueOf(solicitud.getIdOriginacion()));
-        db.update(TBL_DATOS_CREDITO_CAMPANA_GPO,cv, "id_solicitud = ?", new String[]{String.valueOf(solicitud.getIdSolicitud())});
+        cv.put("id_originacion", String.valueOf(solicitud.getIdOriginacion()));
+        db.update(TBL_DATOS_CREDITO_CAMPANA_GPO, cv, "id_solicitud = ?", new String[]{String.valueOf(solicitud.getIdSolicitud())});
     }
 
-    public void setCompletado(Solicitud solicitud)
-    {
+    public void setCompletado(Solicitud solicitud) {
         ContentValues cv = new ContentValues();
         cv.put("estatus", "2");
         cv.put("fecha_guardado", Miscellaneous.ObtenerFecha(TIMESTAMP));
         db.update(TBL_SOLICITUDES, cv, "id_solicitud = ?", new String[]{String.valueOf(solicitud.getIdSolicitud())});
     }
 
-    private void Fill(Cursor row, Solicitud solicitud)
-    {
+    private void Fill(Cursor row, Solicitud solicitud) {
         solicitud.setIdSolicitud(row.getInt(0));
         solicitud.setVolSolicitud(row.getString(1));
         solicitud.setUsuarioId(row.getInt(2));

@@ -19,26 +19,23 @@ public class IntegranteGpoDao {
     final DBhelper dbHelper;
     final SQLiteDatabase db;
 
-    public IntegranteGpoDao(Context ctx){
+    public IntegranteGpoDao(Context ctx) {
         this.dbHelper = DBhelper.getInstance(ctx);
         this.db = dbHelper.getWritableDatabase();
     }
 
-    public IntegranteGpo findByIdSolicitudIntegrante(Integer idSolicitudIntegrante)
-    {
+    public IntegranteGpo findByIdSolicitudIntegrante(Integer idSolicitudIntegrante) {
         IntegranteGpo integrante = null;
 
         String sql = "" +
                 "SELECT " +
                 "* " +
                 "FROM " + TBL_INTEGRANTES_GPO + " AS i " +
-                "WHERE i.id_solicitud_integrante = ? AND i.id_solicitud_integrante > 0"
-                ;
+                "WHERE i.id_solicitud_integrante = ? AND i.id_solicitud_integrante > 0";
 
         Cursor row = db.rawQuery(sql, new String[]{String.valueOf(idSolicitudIntegrante)});
 
-        if(row.getCount() > 0)
-        {
+        if (row.getCount() > 0) {
             row.moveToFirst();
 
             integrante = new IntegranteGpo();
@@ -73,25 +70,37 @@ public class IntegranteGpoDao {
         return integrante;
     }
 
-    public List<IntegranteGpo> findAllByIdCredito(Integer idCredito)
-    {
+    public int countIntegrantesWihtStatusSuccessBycreditoId(Integer creditoId) {
+
+        String query = "SELECT count(*) FROM " + TBL_INTEGRANTES_GPO + " AS i0 WHERE i0.id_credito = ? AND i0.estatus_completado = 2";
+
+        try (Cursor row = db.rawQuery(query, new String[]{creditoId.toString()})) {
+            if (row.getCount() > 0) {
+                return row.getInt(0);
+            } else {
+                return 0;
+            }
+        } catch (Exception ex) {
+            return 0;
+        }
+    }
+
+
+    public List<IntegranteGpo> findAllByIdCredito(Integer idCredito) {
         List<IntegranteGpo> integranteGpos = new ArrayList<>();
 
         String sql = "" +
-            "SELECT " +
-            "* " +
-            "FROM " + TBL_INTEGRANTES_GPO + " AS i " +
-            "WHERE i.id_credito = ? "
-        ;
+                "SELECT " +
+                "* " +
+                "FROM " + TBL_INTEGRANTES_GPO + " AS i " +
+                "WHERE i.id_credito = ? ";
 
         Cursor row = db.rawQuery(sql, new String[]{String.valueOf(idCredito)});
 
-        if(row.getCount() > 0)
-        {
+        if (row.getCount() > 0) {
             row.moveToFirst();
 
-            for(int i = 0; i < row.getCount(); i++)
-            {
+            for (int i = 0; i < row.getCount(); i++) {
                 IntegranteGpo integrante = new IntegranteGpo();
 
                 integrante.setId(row.getInt(0));
@@ -129,16 +138,14 @@ public class IntegranteGpoDao {
         return integranteGpos;
     }
 
-    public void updateEstatus(IntegranteGpo integrante)
-    {
+    public void updateEstatus(IntegranteGpo integrante) {
         ContentValues cv = new ContentValues();
         //cv.put("estatus_completado", integrante.getEstatusCompletado());
         cv.put("comentario_rechazo", integrante.getComentarioRechazo());
         db.update(TBL_INTEGRANTES_GPO, cv, "id = ?", new String[]{String.valueOf(integrante.getId())});
     }
 
-    public void saveEstatus(IntegranteGpo integrante)
-    {
+    public void saveEstatus(IntegranteGpo integrante) {
         ContentValues cv = new ContentValues();
 
         cv.put("estatus_completado", integrante.getEstatusCompletado());
@@ -146,31 +153,25 @@ public class IntegranteGpoDao {
 
     }
 
-    public void setCompletado(IntegranteGpo integranteGpo, Integer idSolicitud, Integer id_grupo,Integer id_cliente)
-    {
+    public void setCompletado(IntegranteGpo integranteGpo, Integer idSolicitud, Integer id_grupo, Integer id_cliente) {
         ContentValues cv = new ContentValues();
         cv.put("id_solicitud_integrante", idSolicitud);
-        cv.put("estatus_completado",2);
+        cv.put("estatus_completado", 2);
         db.update(TBL_INTEGRANTES_GPO, cv, "id = ?", new String[]{String.valueOf(integranteGpo.getId())});
 
         ContentValues cv1 = new ContentValues();
         cv1.put("id_solicitud_integrante", idSolicitud);
-        cv1.put("id_grupo",id_grupo);
-        cv1.put("id_cliente",id_cliente);
-        db.update(TBL_DATOS_BENEFICIARIO_GPO,cv1,"id_integrante = ?", new String[]{String.valueOf(integranteGpo.getId())});
+        cv1.put("id_grupo", id_grupo);
+        cv1.put("id_cliente", id_cliente);
+        db.update(TBL_DATOS_BENEFICIARIO_GPO, cv1, "id_integrante = ?", new String[]{String.valueOf(integranteGpo.getId())});
 
         ContentValues cv2 = new ContentValues();
         cv2.put("id_solicitud_integrante", idSolicitud);
-        db.update(TBL_DATOS_BENEFICIARIO_GPO_REN,cv2,"id_integrante = ?", new String[]{String.valueOf(integranteGpo.getId())});
+        db.update(TBL_DATOS_BENEFICIARIO_GPO_REN, cv2, "id_integrante = ?", new String[]{String.valueOf(integranteGpo.getId())});
 
         ContentValues cv3 = new ContentValues();
-        cv3.put("id_originacion",idSolicitud);
-        db.update(TBL_DATOS_CREDITO_CAMPANA_GPO, cv3,"id_solicitud = ?", new String[]{String.valueOf(integranteGpo.getId())});
-
-
-
-
-
+        cv3.put("id_originacion", idSolicitud);
+        db.update(TBL_DATOS_CREDITO_CAMPANA_GPO, cv3, "id_solicitud = ?", new String[]{String.valueOf(integranteGpo.getId())});
 
 
     }

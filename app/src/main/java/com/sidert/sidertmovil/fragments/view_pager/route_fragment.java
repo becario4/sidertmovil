@@ -75,8 +75,10 @@ import static com.sidert.sidertmovil.utils.Constants.TBL_RESPUESTAS_IND_V_T;
 import static com.sidert.sidertmovil.utils.Constants.TBL_RESPUESTAS_INTEGRANTE_T;
 import static com.sidert.sidertmovil.utils.Constants.TIPO;
 
-/**Clase para ver la cartera que esten asignadas a ruta ya sea que le toca gestionar ese dia
- * o porque el asesor lo agrego manual a ruta*/
+/**
+ * Clase para ver la cartera que esten asignadas a ruta ya sea que le toca gestionar ese dia
+ * o porque el asesor lo agrego manual a ruta
+ */
 public class route_fragment extends Fragment {
 
     private Context ctx;
@@ -197,7 +199,7 @@ public class route_fragment extends Fragment {
      * un String que es el condicional para filtrar aparte de que esten en ruta
      * ya sea por nombre/grupo, colonia, asesor, grupal/individual y/o gestiones parciales
      */
-    private void GetCartera(String where){
+    private void GetCartera(String where) {
         Cursor row;
         _m_carteraGral = new ArrayList<>();
         String query;
@@ -206,14 +208,14 @@ public class route_fragment extends Fragment {
          * y JOIN con TBL_PRESTAMOS_IND_T y TBL_PRESTAMOS_GPO_T y
          * JOIN con TBL_RESPUESTAS_IND_T, TBL_RESPUESTAS_GPO_T, TBL_RESPUESTAS_IND_V_T, TBL_RESPUESTAS_INTEGRANTE_T
          * para saber si tiene en estatus parcial*/
-        query = "SELECT * FROM (SELECT id_cartera,nombre,direccion,is_ruta,ruta_obligado,dia,'' AS tesorera,asesor_nombre,'INDIVIDUAL' AS tipo,colonia, pi.tipo_cartera, COALESCE(ri.estatus, -1) AS parcial, ci.dias_atraso FROM " + TBL_CARTERA_IND_T + " AS ci INNER JOIN "+ TBL_PRESTAMOS_IND_T + " AS pi ON ci.id_cartera = pi.id_cliente LEFT JOIN " + TBL_RESPUESTAS_IND_T + " AS ri ON pi.id_prestamo = ri.id_prestamo WHERE is_ruta = 1 AND (ri._id = (SELECT ri2._id FROM " + TBL_RESPUESTAS_IND_T + " AS ri2 WHERE ri2.id_prestamo = pi.id_prestamo ORDER BY ri2._id DESC LIMIT 1) OR ri._id IS NULL) AND pi.tipo_cartera IN ('VIGENTE', 'COBRANZA') AND ci.estatus = '1' UNION SELECT id_cartera,nombre, direccion,is_ruta, ruta_obligado,dia,tesorera,asesor_nombre,'GRUPAL' AS tipo, colonia, pg.tipo_cartera, COALESCE(rg.estatus, -1) AS parcial, cg.dias_atraso FROM "+TBL_CARTERA_GPO_T + " AS cg INNER JOIN " + TBL_PRESTAMOS_GPO_T + " AS pg ON cg.id_cartera = pg.id_grupo LEFT JOIN " + TBL_RESPUESTAS_GPO_T + " AS rg ON pg.id_prestamo = rg.id_prestamo WHERE is_ruta = 1 AND (rg._id = (SELECT rg2._id FROM " + TBL_RESPUESTAS_GPO_T + " AS rg2 WHERE rg2.id_prestamo = pg.id_prestamo ORDER BY rg2._id DESC LIMIT 1) OR rg._id IS NULL) AND pg.tipo_cartera IN ('VIGENTE', 'COBRANZA') AND cg.estatus = '1' UNION SELECT cvi.id_cartera,cvi.nombre,cvi.direccion,cvi.is_ruta,cvi.ruta_obligado,cvi.dia,'' AS tesorera,cvi.asesor_nombre,'INDIVIDUAL' AS tipo, cvi.colonia, pvi.tipo_cartera, COALESCE(rvi.estatus, -1) AS parcial, cvi.dias_atraso FROM " + TBL_CARTERA_IND_T + " AS cvi INNER JOIN "+ TBL_PRESTAMOS_IND_T + " AS pvi ON cvi.id_cartera = pvi.id_cliente LEFT JOIN " + TBL_RESPUESTAS_IND_V_T + " AS rvi ON pvi.id_prestamo = rvi.id_prestamo WHERE cvi.is_ruta = 1 AND (rvi._id = (SELECT rvi2._id FROM " + TBL_RESPUESTAS_IND_V_T + " AS rvi2 WHERE rvi2.id_prestamo = pvi.id_prestamo ORDER BY rvi2._id DESC LIMIT 1) OR rvi._id IS NULL) AND pvi.tipo_cartera IN ('VENCIDA') AND cvi.estatus = '1' UNION SELECT cvg.id_cartera,cvg.nombre, cvg.direccion,cvg.is_ruta, cvg.ruta_obligado,cvg.dia,cvg.tesorera,cvg.asesor_nombre,'GRUPAL' AS tipo, cvg.colonia, pvg.tipo_cartera, COALESCE(rvg.estatus, -1) AS parcial, cvg.dias_atraso FROM " + TBL_CARTERA_GPO_T + " AS cvg INNER JOIN " + TBL_PRESTAMOS_GPO_T + " AS pvg ON cvg.id_cartera = pvg.id_grupo LEFT JOIN " + TBL_RESPUESTAS_INTEGRANTE_T + " AS rvg ON pvg.id_prestamo = rvg.id_prestamo WHERE cvg.is_ruta = 1 AND (rvg._id = (SELECT rvg2._id FROM " + TBL_RESPUESTAS_INTEGRANTE_T + " AS rvg2 WHERE rvg2.id_prestamo = pvg.id_prestamo ORDER BY rvg2._id DESC LIMIT 1) OR rvg._id IS NULL) AND pvg.tipo_cartera IN ('VENCIDA') AND cvg.estatus = '1') AS cartera " + where + " GROUP BY id_cartera";
+        query = "SELECT * FROM (SELECT id_cartera,nombre,direccion,is_ruta,ruta_obligado,dia,'' AS tesorera,asesor_nombre,'INDIVIDUAL' AS tipo,colonia, pi.tipo_cartera, COALESCE(ri.estatus, -1) AS parcial, ci.dias_atraso FROM " + TBL_CARTERA_IND_T + " AS ci INNER JOIN " + TBL_PRESTAMOS_IND_T + " AS pi ON ci.id_cartera = pi.id_cliente LEFT JOIN " + TBL_RESPUESTAS_IND_T + " AS ri ON pi.id_prestamo = ri.id_prestamo WHERE is_ruta = 1 AND (ri._id = (SELECT ri2._id FROM " + TBL_RESPUESTAS_IND_T + " AS ri2 WHERE ri2.id_prestamo = pi.id_prestamo ORDER BY ri2._id DESC LIMIT 1) OR ri._id IS NULL) AND pi.tipo_cartera IN ('VIGENTE', 'COBRANZA') AND ci.estatus = '1' UNION SELECT id_cartera,nombre, direccion,is_ruta, ruta_obligado,dia,tesorera,asesor_nombre,'GRUPAL' AS tipo, colonia, pg.tipo_cartera, COALESCE(rg.estatus, -1) AS parcial, cg.dias_atraso FROM " + TBL_CARTERA_GPO_T + " AS cg INNER JOIN " + TBL_PRESTAMOS_GPO_T + " AS pg ON cg.id_cartera = pg.id_grupo LEFT JOIN " + TBL_RESPUESTAS_GPO_T + " AS rg ON pg.id_prestamo = rg.id_prestamo WHERE is_ruta = 1 AND (rg._id = (SELECT rg2._id FROM " + TBL_RESPUESTAS_GPO_T + " AS rg2 WHERE rg2.id_prestamo = pg.id_prestamo ORDER BY rg2._id DESC LIMIT 1) OR rg._id IS NULL) AND pg.tipo_cartera IN ('VIGENTE', 'COBRANZA') AND cg.estatus = '1' UNION SELECT cvi.id_cartera,cvi.nombre,cvi.direccion,cvi.is_ruta,cvi.ruta_obligado,cvi.dia,'' AS tesorera,cvi.asesor_nombre,'INDIVIDUAL' AS tipo, cvi.colonia, pvi.tipo_cartera, COALESCE(rvi.estatus, -1) AS parcial, cvi.dias_atraso FROM " + TBL_CARTERA_IND_T + " AS cvi INNER JOIN " + TBL_PRESTAMOS_IND_T + " AS pvi ON cvi.id_cartera = pvi.id_cliente LEFT JOIN " + TBL_RESPUESTAS_IND_V_T + " AS rvi ON pvi.id_prestamo = rvi.id_prestamo WHERE cvi.is_ruta = 1 AND (rvi._id = (SELECT rvi2._id FROM " + TBL_RESPUESTAS_IND_V_T + " AS rvi2 WHERE rvi2.id_prestamo = pvi.id_prestamo ORDER BY rvi2._id DESC LIMIT 1) OR rvi._id IS NULL) AND pvi.tipo_cartera IN ('VENCIDA') AND cvi.estatus = '1' UNION SELECT cvg.id_cartera,cvg.nombre, cvg.direccion,cvg.is_ruta, cvg.ruta_obligado,cvg.dia,cvg.tesorera,cvg.asesor_nombre,'GRUPAL' AS tipo, cvg.colonia, pvg.tipo_cartera, COALESCE(rvg.estatus, -1) AS parcial, cvg.dias_atraso FROM " + TBL_CARTERA_GPO_T + " AS cvg INNER JOIN " + TBL_PRESTAMOS_GPO_T + " AS pvg ON cvg.id_cartera = pvg.id_grupo LEFT JOIN " + TBL_RESPUESTAS_INTEGRANTE_T + " AS rvg ON pvg.id_prestamo = rvg.id_prestamo WHERE cvg.is_ruta = 1 AND (rvg._id = (SELECT rvg2._id FROM " + TBL_RESPUESTAS_INTEGRANTE_T + " AS rvg2 WHERE rvg2.id_prestamo = pvg.id_prestamo ORDER BY rvg2._id DESC LIMIT 1) OR rvg._id IS NULL) AND pvg.tipo_cartera IN ('VENCIDA') AND cvg.estatus = '1') AS cartera " + where + " GROUP BY id_cartera";
 
-        row = db.rawQuery(query,null);
+        row = db.rawQuery(query, null);
 
         /**Coloca el total de registros obtenidos en el titulo de Ruta*/
         parent.SetUpBagde(1, row.getCount());
 
-        if (row.getCount() > 0){
+        if (row.getCount() > 0) {
             row.moveToFirst();
 
             /**Arrays para almacenar los nombre de los cliente, dias de la semana y colonias para filtros*/
@@ -225,7 +227,7 @@ public class route_fragment extends Fragment {
             List<String> colonia = new ArrayList<>();
 
             /**Se ha recorrido de la cartera obtenida de acorde a la consulta*/
-            for (int i = 0; i < row.getCount(); i++){
+            for (int i = 0; i < row.getCount(); i++) {
                 nombre.add(row.getString(1));
                 dia.add(row.getString(5));
                 colonia.add(row.getString(9));
@@ -233,8 +235,8 @@ public class route_fragment extends Fragment {
                 mCarteraGnral.setId_cliente(row.getString(0));
                 mCarteraGnral.setNombre(row.getString(1));
                 mCarteraGnral.setDireccion(row.getString(2));
-                mCarteraGnral.setIs_ruta(row.getInt(3)==1);
-                mCarteraGnral.setIs_obligatorio(row.getInt(4)==1);
+                mCarteraGnral.setIs_ruta(row.getInt(3) == 1);
+                mCarteraGnral.setIs_obligatorio(row.getInt(4) == 1);
                 mCarteraGnral.setDiaSemana(row.getString(5));
                 mCarteraGnral.setTesorera(row.getString(6));
                 mCarteraGnral.setTipo(row.getString(8));
@@ -267,34 +269,35 @@ public class route_fragment extends Fragment {
 
         row.close();
 
-        if(_m_carteraGral.size() > 0) {
+        if (_m_carteraGral.size() > 0) {
             /**Actualiza la lista de la cartera*/
-            Log.e("as","................................");
+            Log.e("as", "................................");
             adapter.UpdateData(_m_carteraGral);
             rvFichas.setVisibility(View.VISIBLE);
             //tvNoInfo.setVisibility(View.GONE);
-        }
-        else {
+        } else {
             /**Oculta el recycler porque no encontró fichas*/
-            Log.e("as",",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,");
+            Log.e("as", ",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,");
             rvFichas.setVisibility(View.GONE);
             //tvNoInfo.setVisibility(View.VISIBLE);
         }
 
     }
 
-    /**Funcion para obtener el listado de asesores en la cartera esto es para cuando se comparte cartera
-     * y puedan filtrar por asesor*/
-    private void GetAsesores (){
+    /**
+     * Funcion para obtener el listado de asesores en la cartera esto es para cuando se comparte cartera
+     * y puedan filtrar por asesor
+     */
+    private void GetAsesores() {
         /**Se prepara la consulta a la tablas de TBL_CARTERA_IND_T y TBL_CARTERA_GPO_T que esten en estatus 1*/
-        String sql = "SELECT * FROM (SELECT ci.asesor_nombre FROM "+TBL_CARTERA_IND_T + " AS ci WHERE ci.estatus = ? UNION SELECT cg.asesor_nombre FROM " + TBL_CARTERA_GPO_T + " AS cg WHERE cg.estatus = ?) AS asesores ORDER BY asesor_nombre ASC";
+        String sql = "SELECT * FROM (SELECT ci.asesor_nombre FROM " + TBL_CARTERA_IND_T + " AS ci WHERE ci.estatus = ? UNION SELECT cg.asesor_nombre FROM " + TBL_CARTERA_GPO_T + " AS cg WHERE cg.estatus = ?) AS asesores ORDER BY asesor_nombre ASC";
         Cursor row = db.rawQuery(sql, new String[]{"1", "1"});
         asesor = new ArrayList<>();
         asesor.add("");
-        if (row.getCount() > 0){
+        if (row.getCount() > 0) {
             row.moveToFirst();
             dataAsesor = new String[row.getCount()];
-            for(int i = 0; i < row.getCount(); i++){
+            for (int i = 0; i < row.getCount(); i++) {
                 asesor.add(row.getString(0));
                 row.moveToNext();
             }
@@ -302,8 +305,7 @@ public class route_fragment extends Fragment {
 
             adapterAsesor = new ArrayAdapter<>(ctx,
                     R.layout.custom_list_item, R.id.text_view_list_item, dataAsesor);
-        }
-        else{
+        } else {
             dataAsesor = new String[1];
             dataAsesor[0] = "";
             adapterAsesor = new ArrayAdapter<>(ctx,
@@ -312,7 +314,9 @@ public class route_fragment extends Fragment {
         row.close();
     }
 
-    /**Se carga los menus Filtros, Informacion, Sincronizar*/
+    /**
+     * Se carga los menus Filtros, Informacion, Sincronizar
+     */
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         menu.clear();
@@ -320,8 +324,11 @@ public class route_fragment extends Fragment {
         inflater.inflate(R.menu.menu_cartera, menu);
 
         /**Si tiene ROLE_GESTOR mostrar menu de Cierre de dia*/
-        if (session.getUser().get(5).contains("ROLE_GESTOR"))
+        String userRole = session.getUser().get(5);
+
+        if (userRole != null && userRole.contains("ROLE_GESTOR")) {
             menu.getItem(0).setVisible(true);
+        }
 
         /**Variables para el menu de filtro y Contador de filtros realizado*/
         final MenuItem menuItem = menu.findItem(R.id.nvFiltro);
@@ -386,9 +393,11 @@ public class route_fragment extends Fragment {
         return super.onOptionsItemSelected(item);
     }
 
-    /**Funcion para mostrar la vista de filtros*/
+    /**
+     * Funcion para mostrar la vista de filtros
+     */
     @SuppressLint("ClickableViewAccessibility")
-    private void Filtros (){
+    private void Filtros() {
         /**Se crea un nuevo dialogo con su configuracion de mostrar arriba y el padding*/
 
         int sizeH = 900;
@@ -401,14 +410,14 @@ public class route_fragment extends Fragment {
         DialogPlus filtros_dg = DialogPlus.newDialog(boostrap)
                 .setContentHolder(new ViewHolder(R.layout.sheet_dialog_filtros_cartera))
                 .setGravity(Gravity.TOP)
-                .setPadding(20,10,20,10)
+                .setPadding(20, 10, 20, 10)
                 .setOnClickListener(new OnClickListener() {
                     @Override
                     public void onClick(DialogPlus dialog, View view) {
                         String where = "";
                         cont_filtros = 0;
                         HashMap<String, String> filtros = new HashMap<>();
-                        InputMethodManager imm = (InputMethodManager)boostrap.getSystemService(Context.INPUT_METHOD_SERVICE);
+                        InputMethodManager imm = (InputMethodManager) boostrap.getSystemService(Context.INPUT_METHOD_SERVICE);
                         /**Se valida que boton fue selecionado si Borrar filtros o Filtrar*/
                         int id = view.getId();
                         if (id == R.id.btnFiltrar) {/**Seleccionaron Filtrar*/
@@ -564,13 +573,13 @@ public class route_fragment extends Fragment {
                 .setExpanded(true, sizeH)
                 .create();
         /**Declaracion de variables con la vista XML*/
-        aetNombre   = filtros_dg.getHolderView().findViewById(R.id.aetNombre);
-        aetDia      = filtros_dg.getHolderView().findViewById(R.id.aetDia);
-        aetColonia  = filtros_dg.getHolderView().findViewById(R.id.aetColonia);
-        spAsesor    = filtros_dg.getHolderView().findViewById(R.id.spAsesor);
-        cbInd       = filtros_dg.getHolderView().findViewById(R.id.cbInd);
-        cbGpo       = filtros_dg.getHolderView().findViewById(R.id.cbGpo);
-        cbParcial   = filtros_dg.getHolderView().findViewById(R.id.cbParciales);
+        aetNombre = filtros_dg.getHolderView().findViewById(R.id.aetNombre);
+        aetDia = filtros_dg.getHolderView().findViewById(R.id.aetDia);
+        aetColonia = filtros_dg.getHolderView().findViewById(R.id.aetColonia);
+        spAsesor = filtros_dg.getHolderView().findViewById(R.id.spAsesor);
+        cbInd = filtros_dg.getHolderView().findViewById(R.id.cbInd);
+        cbGpo = filtros_dg.getHolderView().findViewById(R.id.cbGpo);
+        cbParcial = filtros_dg.getHolderView().findViewById(R.id.cbParciales);
 
 
         aetNombre.setAdapter(adapterNombre);
@@ -625,19 +634,21 @@ public class route_fragment extends Fragment {
         filtros_dg.show();
     }
 
-    /**Funcion para colocar el contador en los menus de filtros y cierre de dia*/
+    /**
+     * Funcion para colocar el contador en los menus de filtros y cierre de dia
+     */
     private void setupBadge() {
-        Log.v("contador ruta",session.getFiltrosCarteraRuta().get(6));
+        Log.v("contador ruta", session.getFiltrosCarteraRuta().get(6));
         if (tvContFiltros != null) {
             Log.e("tvcontador", "visible");
             tvContFiltros.setText(String.valueOf(session.getFiltrosCarteraRuta().get(6)));
             tvContFiltros.setVisibility(View.VISIBLE);
         }
 
-        if (tvContCierre != null){
+        if (tvContCierre != null) {
             Cursor row = dBhelper.getRecords(TBL_CIERRE_DIA_T, " WHERE estatus = 0", "", null);
-            if (row.getCount() > 0){
-                Log.e("Cierre", row.getCount()+" zzz");
+            if (row.getCount() > 0) {
+                Log.e("Cierre", row.getCount() + " zzz");
                 tvContCierre.setText(String.valueOf(row.getCount()));
                 tvContCierre.setVisibility(View.VISIBLE);
             }
@@ -646,8 +657,10 @@ public class route_fragment extends Fragment {
 
     }
 
-    /**Metodo que se ejecuta en automatico cada vez que entra a la vista y comienza a obtener
-     * los filtros de variables de sesion para continue con el filtro que habia dejado anteriormente*/
+    /**
+     * Metodo que se ejecuta en automatico cada vez que entra a la vista y comienza a obtener
+     * los filtros de variables de sesion para continue con el filtro que habia dejado anteriormente
+     */
     @Override
     public void onResume() {
         super.onResume();
@@ -675,20 +688,20 @@ public class route_fragment extends Fragment {
         }
 
         /**Valida si selecciono grupal e individual en el filtro*/
-        if (session.getFiltrosCarteraRuta().get(0).equals("1") && session.getFiltrosCarteraRuta().get(1).equals("1")){
+        if (session.getFiltrosCarteraRuta().get(0).equals("1") && session.getFiltrosCarteraRuta().get(1).equals("1")) {
             where += " AND tipo IN ('INDIVIDUAL','GRUPAL')";
         }
         /**Valida si solo selecciono individual en el filtro*/
-        else if (session.getFiltrosCarteraRuta().get(0).equals("1")){
+        else if (session.getFiltrosCarteraRuta().get(0).equals("1")) {
             where += " AND tipo = 'INDIVIDUAL' ";
         }
         /**Valida si solo selecciono grupal en el filtro*/
-        else if (session.getFiltrosCarteraRuta().get(1).equals("1")){
+        else if (session.getFiltrosCarteraRuta().get(1).equals("1")) {
             where += " AND tipo = 'GRUPAL'";
         }
 
         /**Valida si solo selecciono gestiones parciales en el filtro*/
-        if (session.getFiltrosCarteraRuta().get(7).equals("1")){
+        if (session.getFiltrosCarteraRuta().get(7).equals("1")) {
             where += " AND parcial = '0'";
         }
 
@@ -700,11 +713,11 @@ public class route_fragment extends Fragment {
             GetCartera("");
     }
 
-    private String[] RemoverRepetidos(List<String> nombres){
+    private String[] RemoverRepetidos(List<String> nombres) {
         String[] data;
         List<String> nombreUnico = new ArrayList<>();
 
-        for (int i = 0; i < nombres.size(); i++){
+        for (int i = 0; i < nombres.size(); i++) {
             String nombre = nombres.get(i);
             if (nombreUnico.indexOf(nombre) < 0) {
                 nombreUnico.add(nombre);
@@ -712,7 +725,7 @@ public class route_fragment extends Fragment {
         }
 
         data = new String[nombreUnico.size()];
-        for (int j = 0; j < nombreUnico.size(); j++){
+        for (int j = 0; j < nombreUnico.size(); j++) {
             data[j] = nombreUnico.get(j);
         }
 

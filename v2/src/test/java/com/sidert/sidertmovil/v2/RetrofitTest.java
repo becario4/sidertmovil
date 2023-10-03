@@ -55,7 +55,7 @@ public class RetrofitTest {
                 "Wright",
                 "Lopez",
                 "VECINO",
-                389
+                "389"
         );
 
         BeneficiarioService beneficiarioService = retrofit.create(BeneficiarioService.class);
@@ -81,7 +81,7 @@ public class RetrofitTest {
                 "Wright",
                 "Lopez",
                 "VECINO",
-                389
+                "389"
         );
 
         BeneficiarioService beneficiarioService = retrofit.create(BeneficiarioService.class);

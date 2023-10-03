@@ -3282,8 +3282,8 @@ public class DBhelper extends SQLiteOpenHelper {
                 "VALUES (?, ?, ?, ?, ?, ?)";
         SQLiteStatement pInsert = db.compileStatement(sql);
         pInsert.bindLong(1, Long.parseLong(params.get(0)));
-        pInsert.bindString(2, params.get(1));
-        pInsert.bindString(3, params.get(2));
+        pInsert.bindString(2, params.get(1) == null ? "" : params.get(1));
+        pInsert.bindString(3, params.get(2) == null ? "" : params.get(2));
         pInsert.bindString(4, params.get(3));
         pInsert.bindString(5, params.get(4));
         pInsert.bindLong(6, Long.parseLong(params.get(5)));

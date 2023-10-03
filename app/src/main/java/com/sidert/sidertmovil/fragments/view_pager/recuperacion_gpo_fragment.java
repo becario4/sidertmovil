@@ -833,10 +833,10 @@ public class recuperacion_gpo_fragment extends Fragment {
                     for (int i = 0; i < row.getCount(); i++) {
                         String sqlIntegrante = "" +
                                 "SELECT " +
-                                "Miscellaneous.* " +
+                                "m.* " +
                                 "FROM " + TBL_MIEMBROS_PAGOS_T + " AS m " +
-                                "WHERE Miscellaneous.id_prestamo = ? " +
-                                "AND Miscellaneous.id_integrante = ? ";
+                                "WHERE m.id_prestamo = ? " +
+                                "AND m.id_integrante = ? ";
 
                         Cursor rowIntegrante = db.rawQuery(sqlIntegrante, new String[]{String.valueOf(parent.id_prestamo), row.getString(2)});
 
@@ -934,7 +934,7 @@ public class recuperacion_gpo_fragment extends Fragment {
 
                 if (parent.tipo_cartera.contains("VENCIDA")) {
 
-                    String sql = "SELECT p.*, Miscellaneous.* FROM " + TBL_MIEMBROS_PAGOS_T + " AS p INNER JOIN " + TBL_MIEMBROS_GPO_T + " AS m ON p.id_integrante = Miscellaneous.id_integrante WHERE p.id_gestion = ? AND p.pago_realizado > 0";
+                    String sql = "SELECT p.*, m.* FROM " + TBL_MIEMBROS_PAGOS_T + " AS p INNER JOIN " + TBL_MIEMBROS_GPO_T + " AS m ON p.id_integrante = m.id_integrante WHERE p.id_gestion = ? AND p.pago_realizado > 0";
 
                     Cursor row = db.rawQuery(sql, new String[]{parent.id_respuesta});
                     if (row.getCount() > 0) {

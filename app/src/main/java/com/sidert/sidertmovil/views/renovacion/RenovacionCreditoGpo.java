@@ -461,7 +461,7 @@ public class RenovacionCreditoGpo extends AppCompatActivity implements dialog_re
                                         db.delete(TBL_POLITICAS_PLD_INTEGRANTE_REN, "id_integrante = ?", new String[]{id_integrante});
                                         db.delete(TBL_DOCUMENTOS_INTEGRANTE_REN, "id_integrante = ?", new String[]{id_integrante});
                                         db.delete(TBL_DATOS_BENEFICIARIO_GPO_REN, "id_integrante = ?", new String[]{id_integrante});
-                                        db.delete(TBL_DATOS_CREDITO_CAMPANA_GPO, "id_integrante = ?", new String[]{id_integrante});
+                                        //db.delete(TBL_DATOS_CREDITO_CAMPANA_GPO, "id_integrante = ?", new String[]{id_integrante});
 
                                         adapter.removeItem(position);
                                         dialog.dismiss();

@@ -11509,10 +11509,10 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
         etValorAproxEco.setEnabled(isEditEco);
         etUbicacionEco.setEnabled(isEditEco);
 
-        txtNomBeneficiario.setEnabled(false);
+/*        txtNomBeneficiario.setEnabled(false);
         txtApellidoPaternoBeneficiario.setEnabled(false);
         txtApellidoMaternoBeneficiario.setEnabled(false);
-        txtParentescoBeneficiario.setEnabled(false);
+        txtParentescoBeneficiario.setEnabled(false);*/
 
         etNombreNeg.setEnabled(isEditNeg);
         etCalleNeg.setEnabled(isEditNeg);

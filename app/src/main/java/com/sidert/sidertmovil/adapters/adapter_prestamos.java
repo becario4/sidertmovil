@@ -1,8 +1,11 @@
 package com.sidert.sidertmovil.adapters;
 
 import android.content.Context;
+
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+import timber.log.Timber;
+
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -27,14 +30,18 @@ import java.util.List;
 
 public class adapter_prestamos extends RecyclerView.Adapter<adapter_prestamos.ViewHolder> {
 
-    private Context ctx;
-    private List<MPrestamo> data;
-    private Event evento;
-    private SessionManager session;
+    private final Context ctx;
+    private final List<MPrestamo> data;
+    private final Event evento;
+    private final SessionManager session;
+
     public interface Event {
         void ExpedientesClick(MPrestamo item);
+
         void PrestamoClick(MPrestamo item);
+
         void GestionadasClick(MPrestamo item);
+
         void CodigoOxxoClick(MPrestamo item);
     }
 
@@ -57,8 +64,8 @@ public class adapter_prestamos extends RecyclerView.Adapter<adapter_prestamos.Vi
         MPrestamo item = data.get(position);
 
         holder.tvNombre.setText(item.getNombre());
-        holder.tvDesembolso.setText("Desembolso: "+item.getDesembolso());
-        holder.tvMontoPrestamo.setText("Otorgado: "+Miscellaneous.moneyFormat(item.getMontoPrestamo()));
+        holder.tvDesembolso.setText("Desembolso: " + item.getDesembolso());
+        holder.tvMontoPrestamo.setText("Otorgado: " + Miscellaneous.moneyFormat(item.getMontoPrestamo()));
         holder.tvIdPrestamo.setText(item.getIdPrestamo());
         if (item.getEstatus().equals("1"))
             holder.tvPagado.setVisibility(View.VISIBLE);
@@ -86,124 +93,118 @@ public class adapter_prestamos extends RecyclerView.Adapter<adapter_prestamos.Vi
         private TextView tvSaldoMovil;
         private TextView tvSaldoOmega;
         private TextView tvPagado;
+
         public ViewHolder(@NonNull View v) {
             super(v);
-            tvNombre        = v.findViewById(R.id.tvNombre);
-            tvDesembolso    = v.findViewById(R.id.tvDesembolso);
+            tvNombre = v.findViewById(R.id.tvNombre);
+            tvDesembolso = v.findViewById(R.id.tvDesembolso);
             tvMontoPrestamo = v.findViewById(R.id.tvMontoPrestamo);
-            tvIdPrestamo    = v.findViewById(R.id.tvIdPrestamo);
-            tvSaldoMovil    = v.findViewById(R.id.tvSaldoMovil);
-            tvSaldoOmega    = v.findViewById(R.id.tvSaldoOmega);
-            tvPagado        = v.findViewById(R.id.tvPagada);
+            tvIdPrestamo = v.findViewById(R.id.tvIdPrestamo);
+            tvSaldoMovil = v.findViewById(R.id.tvSaldoMovil);
+            tvSaldoOmega = v.findViewById(R.id.tvSaldoOmega);
+            tvPagado = v.findViewById(R.id.tvPagada);
         }
 
-        public void bind (final MPrestamo item_prestamo){
+        public void bind(final MPrestamo item_prestamo) {
 
-                    itemView.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(final View view) {
-                            PopupMenu popup = new PopupMenu(view.getContext(), view);
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(final View view) {
+                    PopupMenu popup = new PopupMenu(view.getContext(), view);
 
+                    try {
+                        Field[] fields = popup.getClass().getDeclaredFields();
+                        for (Field field : fields) {
+                            if (field.getName().equals("mPopup")) {
+                                field.setAccessible(true);
+                                Object menuPopupHelper = field.get(popup);
+                                Class<?> classPopupHelper = Class.forName(menuPopupHelper.getClass().getName());
+                                Method setForceIcons = classPopupHelper.getMethod("setForceShowIcon", boolean.class);
+                                setForceIcons.invoke(menuPopupHelper, true);
+                                break;
+                            }
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    popup.getMenuInflater().inflate(R.menu.menu_prestamos, popup.getMenu());
+
+                    int iIndexExpedientes = 0;
+                    int iIndexRecuperacion = 1;
+                    int iIndexGestionadas = 2;
+                    int iIndexCodigosOxxo = 3;
+
+                    if (item_prestamo.getEstatus().equals("1"))
+                        popup.getMenu().getItem(iIndexRecuperacion).setEnabled(false);
+
+                    String userRole = session.getUser().get(5);
+                    if (userRole == null) return;
+
+                    Timber.tag("ROLE").e(userRole);
+                    if (userRole.contains("ROLE_SUPER") ||
+                            userRole.contains("ROLE_ANALISTA") ||
+                            userRole.contains("ROLE_DIRECCION") ||
+                            userRole.contains("ROLE_ASESOR") ||
+                            userRole.contains("ROLE_GERENTESUCURSAL") ||
+                            userRole.contains("ROLE_GERENTEREGIONAL")) {
+                        if (userRole.contains("ROLE_GERENTESUCURSAL") ||
+                                userRole.contains("ROLE_GERENTEREGIONAL")) {
                             try {
-                                Field[] fields = popup.getClass().getDeclaredFields();
-                                for (Field field : fields) {
-                                    if (field.getName().equals("mPopup")) {
-                                        field.setAccessible(true);
-                                        Object menuPopupHelper = field.get(popup);
-                                        Class<?> classPopupHelper = Class.forName(menuPopupHelper.getClass().getName());
-                                        Method setForceIcons = classPopupHelper.getMethod("setForceShowIcon", boolean.class);
-                                        setForceIcons.invoke(menuPopupHelper, true);
-                                        break;
-                                    }
-                                }
-                            }
-                            catch (Exception e)
-                            {
-                                e.printStackTrace();
-                            }
-                            popup.getMenuInflater().inflate(R.menu.menu_prestamos, popup.getMenu());
+                                JSONArray modulos = new JSONArray(session.getUser().get(8));
+                                for (int i = 0; i < modulos.length(); i++) {
 
-                            int iIndexExpedientes = 0;
-                            int iIndexRecuperacion = 1;
-                            int iIndexGestionadas = 2;
-                            int iIndexCodigosOxxo = 3;
-
-                            if (item_prestamo.getEstatus().equals("1"))
-                                popup.getMenu().getItem(iIndexRecuperacion).setEnabled(false);
-
-                            Log.e("ROLE", session.getUser().get(5));
-                            if (session.getUser().get(5).contains("ROLE_SUPER") ||
-                                session.getUser().get(5).contains("ROLE_ANALISTA") ||
-                                session.getUser().get(5).contains("ROLE_DIRECCION") ||
-                                session.getUser().get(5).contains("ROLE_ASESOR") ||
-                                session.getUser().get(5).contains("ROLE_GERENTESUCURSAL") ||
-                                session.getUser().get(5).contains("ROLE_GERENTEREGIONAL")) {
-                                if (session.getUser().get(5).contains("ROLE_GERENTESUCURSAL") ||
-                                    session.getUser().get(5).contains("ROLE_GERENTEREGIONAL")){
-                                    JSONArray modulos = null;
-                                    try {
-                                        modulos = new JSONArray(session.getUser().get(8));
-                                        for (int i = 0; i < modulos.length(); i++){
-
-                                            JSONObject item = modulos.getJSONObject(i);
-                                            if (item.getString("nombre").trim().toLowerCase().equals("cartera")){
-                                                JSONArray permisos = item.getJSONArray("permisos");
-                                                for(int j = 0; j < permisos.length(); j++){
-                                                    JSONObject item_permiso = permisos.getJSONObject(j);
-                                                    if (item_permiso.getString("nombre").toLowerCase().equals("editar")){
-                                                        popup.getMenu().getItem(iIndexCodigosOxxo).setVisible(true);
-                                                        break;
-                                                    }
-                                                }
+                                    JSONObject item = modulos.getJSONObject(i);
+                                    if (item.getString("nombre").trim().toLowerCase().equals("cartera")) {
+                                        JSONArray permisos = item.getJSONArray("permisos");
+                                        for (int j = 0; j < permisos.length(); j++) {
+                                            JSONObject item_permiso = permisos.getJSONObject(j);
+                                            if (item_permiso.getString("nombre").toLowerCase().equals("editar")) {
+                                                popup.getMenu().getItem(iIndexCodigosOxxo).setVisible(true);
+                                                break;
                                             }
                                         }
-                                    } catch (JSONException e) {
-                                        e.printStackTrace();
                                     }
-
-                                }else
-                                    popup.getMenu().getItem(iIndexCodigosOxxo).setVisible(true);
-
-                                if (
-                                        session.getUser().get(5).contains("ROLE_SUPER") ||
-                                        session.getUser().get(5).contains("ROLE_ANALISTA") ||
-                                        session.getUser().get(5).contains("ROLE_DIRECCION") ||
-                                        session.getUser().get(5).contains("ROLE_GESTOR") ||
-                                        session.getUser().get(5).contains("ROLE_GERENTECARTERAVENCIDA")
-                                ) {
-                                    popup.getMenu().getItem(iIndexExpedientes).setVisible(true);
                                 }
-                                else
-                                {
-                                    popup.getMenu().getItem(iIndexExpedientes).setVisible(false);
-                                }
-
+                            } catch (JSONException e) {
+                                e.printStackTrace();
                             }
 
-                            popup.setGravity(Gravity.RIGHT);
-                            popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-                                @Override
-                                public boolean onMenuItemClick(MenuItem item) {
-                                    int itemId = item.getItemId();
-                                    if (itemId == R.id.nvExpedientes) {
-                                        evento.ExpedientesClick(item_prestamo);
-                                        return true;
-                                    } else if (itemId == R.id.nvRecuperacion) {
-                                        evento.PrestamoClick(item_prestamo);
-                                        return true;
-                                    } else if (itemId == R.id.nvGestionadas) {
-                                        evento.GestionadasClick(item_prestamo);
-                                        return true;
-                                    } else if (itemId == R.id.nvCodigoOxxo) {
-                                        evento.CodigoOxxoClick(item_prestamo);
-                                        return true;
-                                    }
-                                    return false;
-                                }
-                            });
-                            popup.show();
+                        } else {
+                            popup.getMenu().getItem(iIndexCodigosOxxo).setVisible(true);
+                        }
+
+                        boolean popupVisible = userRole.contains("ROLE_SUPER") ||
+                                userRole.contains("ROLE_ANALISTA") ||
+                                userRole.contains("ROLE_DIRECCION") ||
+                                userRole.contains("ROLE_GESTOR") ||
+                                userRole.contains("ROLE_GERENTECARTERAVENCIDA");
+                        popup.getMenu().getItem(iIndexExpedientes).setVisible(popupVisible);
+                    }
+
+                    popup.setGravity(Gravity.RIGHT);
+                    popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                        @Override
+                        public boolean onMenuItemClick(MenuItem item) {
+                            int itemId = item.getItemId();
+                            if (itemId == R.id.nvExpedientes) {
+                                evento.ExpedientesClick(item_prestamo);
+                                return true;
+                            } else if (itemId == R.id.nvRecuperacion) {
+                                evento.PrestamoClick(item_prestamo);
+                                return true;
+                            } else if (itemId == R.id.nvGestionadas) {
+                                evento.GestionadasClick(item_prestamo);
+                                return true;
+                            } else if (itemId == R.id.nvCodigoOxxo) {
+                                evento.CodigoOxxoClick(item_prestamo);
+                                return true;
+                            }
+                            return false;
                         }
                     });
+                    popup.show();
+                }
+            });
 
         }
     }

@@ -35,7 +35,7 @@ public interface BluetoothModule {
     @Singleton
     static BluetoothPort provideBluetoothPort() {
         BluetoothPort bluetoothPort = BluetoothPort.getInstance();
-        bluetoothPort.SetMacFilter(false);
+//        bluetoothPort.SetMacFilter(false);
         return bluetoothPort;
     }
 

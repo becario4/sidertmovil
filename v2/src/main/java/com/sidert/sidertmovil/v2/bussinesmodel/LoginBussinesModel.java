@@ -49,7 +49,9 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
@@ -144,8 +146,22 @@ public class LoginBussinesModel extends BaseBussinesModel {
     }
 
     private void bluetoothSetup() {
-        if ((ActivityCompat.checkSelfPermission(sidertMovilApplication, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) &&
-                (ActivityCompat.checkSelfPermission(sidertMovilApplication, Manifest.permission.BLUETOOTH_SCAN) != PackageManager.PERMISSION_GRANTED)) {
+
+        int version = Build.VERSION.SDK_INT;
+        String blueetoothPermisson00;
+        String blueetoothPermisson01;
+
+        if (version <= 30) {
+            blueetoothPermisson00 = Manifest.permission.BLUETOOTH;
+            blueetoothPermisson01 = Manifest.permission.BLUETOOTH_ADMIN;
+        } else {
+            blueetoothPermisson00 = Manifest.permission.BLUETOOTH_SCAN;
+            blueetoothPermisson01 = Manifest.permission.BLUETOOTH_CONNECT;
+        }
+
+
+        if ((ActivityCompat.checkSelfPermission(sidertMovilApplication, blueetoothPermisson00) != PackageManager.PERMISSION_GRANTED) &&
+                (ActivityCompat.checkSelfPermission(sidertMovilApplication, blueetoothPermisson01) != PackageManager.PERMISSION_GRANTED)) {
             return;
         }
 
@@ -348,8 +364,24 @@ public class LoginBussinesModel extends BaseBussinesModel {
     public void requestPermissionsForApplication(final AppCompatActivity activity) {
         if (activity == null) return;
 
-        boolean blueetoothScanPermisson = ActivityCompat.checkSelfPermission(activity, Manifest.permission.BLUETOOTH_SCAN) != PackageManager.PERMISSION_GRANTED;
-        boolean blueetoothConnectPermisson = ActivityCompat.checkSelfPermission(activity, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED;
+        int version = Build.VERSION.SDK_INT;
+
+        Timber.tag(this.getClass().getName()).i("Android version: %s", version);
+
+        List<String> permissionsRequested = new ArrayList<>();
+        permissionsRequested.add(Manifest.permission.ACCESS_FINE_LOCATION);
+        permissionsRequested.add(Manifest.permission.ACCESS_COARSE_LOCATION);
+        permissionsRequested.add(Manifest.permission.BLUETOOTH);
+        permissionsRequested.add(Manifest.permission.BLUETOOTH_ADMIN);
+        permissionsRequested.add(Manifest.permission.CAMERA);
+        permissionsRequested.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        permissionsRequested.add(Manifest.permission.READ_EXTERNAL_STORAGE);
+        permissionsRequested.add(Manifest.permission.CALL_PHONE);
+        permissionsRequested.add(Manifest.permission.READ_PHONE_STATE);
+        permissionsRequested.add(Manifest.permission.SEND_SMS);
+
+        boolean blueetoothPermisson00 = ActivityCompat.checkSelfPermission(activity, Manifest.permission.BLUETOOTH) != PackageManager.PERMISSION_GRANTED;
+        boolean blueetoothPermisson01 = ActivityCompat.checkSelfPermission(activity, Manifest.permission.BLUETOOTH_ADMIN) != PackageManager.PERMISSION_GRANTED;
         boolean fineLocationPermisson = ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED;
         boolean coarseLocationPermisson = ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED;
         boolean cameraPermisson = ActivityCompat.checkSelfPermission(activity, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED;
@@ -359,36 +391,46 @@ public class LoginBussinesModel extends BaseBussinesModel {
         boolean readPhoneStatePermisson = ActivityCompat.checkSelfPermission(activity, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED;
         boolean sendMsmPermisson = ActivityCompat.checkSelfPermission(activity, Manifest.permission.SEND_SMS) != PackageManager.PERMISSION_GRANTED;
 
-        if (
-                blueetoothScanPermisson || blueetoothConnectPermisson || fineLocationPermisson || coarseLocationPermisson ||
-                        cameraPermisson || writeExternalStoragePermisson || readExternalStoragePermisson || callphonePermisson ||
-                        readPhoneStatePermisson || sendMsmPermisson
-        ) {
+        boolean allPermissionFlag = blueetoothPermisson00 || blueetoothPermisson01 || fineLocationPermisson || coarseLocationPermisson ||
+                cameraPermisson || writeExternalStoragePermisson || readExternalStoragePermisson || callphonePermisson ||
+                readPhoneStatePermisson || sendMsmPermisson;
+
+        if (version > 30) {
+            allPermissionFlag |= ActivityCompat.checkSelfPermission(activity, Manifest.permission.BLUETOOTH_SCAN) != PackageManager.PERMISSION_GRANTED;
+            allPermissionFlag |= ActivityCompat.checkSelfPermission(activity, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED;
+            permissionsRequested.add(Manifest.permission.BLUETOOTH_CONNECT);
+            permissionsRequested.add(Manifest.permission.BLUETOOTH_SCAN);
+        }
+
+        if (allPermissionFlag) {
             ActivityResultLauncher<String[]> permissionRequest = activity.registerForActivityResult(new ActivityResultContracts
                     .RequestMultiplePermissions(), result -> {
                 bluetoothPermissionAction(result);
                 locationPermissionAction(activity, result);
             });
 
-            permissionRequest.launch(new String[]{
-                    Manifest.permission.ACCESS_FINE_LOCATION,
-                    Manifest.permission.ACCESS_COARSE_LOCATION,
-                    Manifest.permission.BLUETOOTH,
-                    Manifest.permission.BLUETOOTH_SCAN,
-                    Manifest.permission.BLUETOOTH_CONNECT,
-                    Manifest.permission.CAMERA,
-                    Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                    Manifest.permission.READ_EXTERNAL_STORAGE,
-                    Manifest.permission.CALL_PHONE,
-                    Manifest.permission.READ_PHONE_STATE,
-                    Manifest.permission.SEND_SMS
-            });
+            String[] permissionArray = new String[permissionsRequested.size()];
+            permissionRequest.launch(permissionsRequested.toArray(permissionArray));
         }
     }
 
     private void bluetoothPermissionAction(Map<String, Boolean> result) {
-        Boolean bluethootConnectGranted = result.getOrDefault(Manifest.permission.BLUETOOTH_CONNECT, false);
-        if (bluethootConnectGranted != null && bluethootConnectGranted) {
+
+        int version = Build.VERSION.SDK_INT;
+        String blueetoothPermisson00;
+        String blueetoothPermisson01;
+
+        if (version <= 30) {
+            blueetoothPermisson00 = Manifest.permission.BLUETOOTH;
+            blueetoothPermisson01 = Manifest.permission.BLUETOOTH_ADMIN;
+        } else {
+            blueetoothPermisson00 = Manifest.permission.BLUETOOTH_SCAN;
+            blueetoothPermisson01 = Manifest.permission.BLUETOOTH_CONNECT;
+        }
+
+        Boolean bluethootConnectGranted = result.getOrDefault(blueetoothPermisson00, false);
+        Boolean bluethootAdminGranted = result.getOrDefault(blueetoothPermisson01, false);
+        if ((bluethootConnectGranted != null && bluethootConnectGranted) && (bluethootAdminGranted != null && bluethootAdminGranted)) {
             Timber.tag(TAG).i("Ya tenemos permisos para el Bluetooth");
         } else {
             Timber.tag(TAG).i("No tenemos permisos para el Bluetooth");

@@ -265,12 +265,14 @@ public final class PrestamosRenovarRepository
                             Cursor row = db.rawQuery(sql, new String[]{sessionManager.getUser().get(0), String.valueOf(item.getPrestamoId()), String.valueOf(item.getClienteId())});
 
                             if (row.getCount() == 0) {
+                                String noPrestamo = item.getNoPrestamo();
+
                                 HashMap<Integer, String> params = new HashMap<>();
                                 params.put(0, sessionManager.getUser().get(0));
                                 params.put(1, String.valueOf(item.getPrestamoId()));
                                 params.put(2, String.valueOf(item.getClienteId()));
                                 params.put(3, item.getNombre());
-                                params.put(4, item.getNoPrestamo().trim());
+                                params.put(4, noPrestamo == null ? "" : noPrestamo.trim());
                                 params.put(5, item.getFechaVencimiento());
                                 params.put(6, String.valueOf(item.getNumPagos()));
                                 params.put(7, "0");

@@ -1191,7 +1191,9 @@ public class DescargaDatosBussinesModel extends BaseBussinesModel {
                                     dBhelper.saveMiembros(db, values_miembro);
 
                                     //BUSCAR SI SE TIENE LOS DOCUMENTOS DE EXPEDIENTES
-                                    if (sessionManager.getUser().get(5).contains("ROLE_GESTOR")) {
+                                    List<String> user = sessionManager.getUser();
+                                    String roles = user.get(5);
+                                    if (roles != null && roles.contains("ROLE_GESTOR")) {
                                         DocumentoClienteDao documentoClienteDao = new DocumentoClienteDao(sidertMovilApplication);
                                         List<DocumentoCliente> documentosClientes = documentoClienteDao.findAllByPrestamoId(mIntegrante.getPrestamoId());
 
@@ -1830,7 +1832,6 @@ public class DescargaDatosBussinesModel extends BaseBussinesModel {
             this.klassTag.e(e);
         }
 
-
     }
 
     private void getSolicitudesRechazadasGpo() {
@@ -2442,10 +2443,23 @@ public class DescargaDatosBussinesModel extends BaseBussinesModel {
                     Cursor row = db.rawQuery(sql, new String[]{String.valueOf(item.getPrestamoGpo().getSolicitudId())});
                     if (row.getCount() == 0) {
 
+                        MSolicitudAutorizar.PrestamoGpo prestamoGrupo = item.getPrestamoGpo();
+                        Integer solicitudId = prestamoGrupo.getSolicitudId();
+                        Integer prestamoGruapalTipoSolicitud = prestamoGrupo.getTipoSolicitud();
+
+                        if (prestamoGruapalTipoSolicitud == null) {
+                            Timber.tag("DescargaDatosBussinesModel").e("Tipo de solicitud en nulo");
+                            Timber.tag("DescargaDatosBussinesModel").e("Numero de solicitud " + solicitudId);
+                        }
+
+
+                        prestamoGruapalTipoSolicitud = (prestamoGruapalTipoSolicitud == null) ? 1 : prestamoGruapalTipoSolicitud;
+                        String tipoPrestamoGrupal = prestamoGruapalTipoSolicitud == 1 ? "ORIGINACION" : "RENOVACION";
+
                         HashMap<Integer, String> params = new HashMap<>();
-                        params.put(0, "2");                                      //TIPO SOLICITUD
-                        params.put(1, item.getPrestamoGpo().getAsesor());        //ASESOR
-                        params.put(2, ((item.getPrestamoGpo().getTipoSolicitud() == 1) ? "ORIGINACION" : "RENOVACION"));//TIPO SOLICITUD
+                        params.put(0, "2");                                     //TIPO SOLICITUD
+                        params.put(1, item.getPrestamoGpo().getAsesor());       //ASESOR
+                        params.put(2, tipoPrestamoGrupal);                      //TIPO SOLICITUD
                         params.put(3, String.valueOf(item.getPrestamoGpo().getSolicitudId()));    //SOLICITUD ID
                         params.put(4, item.getPrestamoGpo().getNombreGrupo());  //NOMBRE grupo
                         params.put(5, "");                                      //FECHA ENVIO

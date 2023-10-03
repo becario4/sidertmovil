@@ -23,7 +23,7 @@ public class BeneficiarioDto
     @SerializedName("parentesco")
     private final String parentesco;
     @SerializedName("serie_id")
-    private final Integer serieid;
+    private final String serieid;
 
     public BeneficiarioDto(Long solicitudId,
                            Integer clienteId,
@@ -32,7 +32,7 @@ public class BeneficiarioDto
                            String apellidoPaterno,
                            String apellidoMaterno,
                            String parentesco,
-                           Integer serieid) {
+                           String serieid) {
         this.solicitudId = solicitudId;
         this.clienteId = clienteId;
         this.grupoId = grupoId;
@@ -84,7 +84,7 @@ public class BeneficiarioDto
         return parentesco;
     }
 
-    public Integer getSerieid() {
+    public String getSerieid() {
         return serieid;
     }
 }

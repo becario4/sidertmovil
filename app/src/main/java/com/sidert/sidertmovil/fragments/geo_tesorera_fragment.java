@@ -643,7 +643,7 @@ public class geo_tesorera_fragment extends Fragment {
     private void initComponents (){
         Cursor row;
 
-        String sql = "SELECT p.id_grupo, Miscellaneous.id_integrante, COALESCE(Miscellaneous.nombre, ''), COALESCE(Miscellaneous.direccion, ''), Miscellaneous.clave FROM " + TBL_MIEMBROS_GPO_T + " AS m LEFT JOIN " + TBL_PRESTAMOS_GPO_T + " AS p ON p.id_prestamo = Miscellaneous.id_prestamo WHERE Miscellaneous.tipo_integrante = 'TESORERO' AND p.num_solicitud = ?";
+        String sql = "SELECT p.id_grupo, m.id_integrante, COALESCE(m.nombre, ''), COALESCE(m.direccion, ''), m.clave FROM " + TBL_MIEMBROS_GPO_T + " AS m LEFT JOIN " + TBL_PRESTAMOS_GPO_T + " AS p ON p.id_prestamo = m.id_prestamo WHERE m.tipo_integrante = 'TESORERO' AND p.num_solicitud = ?";
 
         row = db.rawQuery(sql, new String[]{getArguments().getString(Constants.NUM_SOLICITUD)});
         if (row.getCount() > 0){
