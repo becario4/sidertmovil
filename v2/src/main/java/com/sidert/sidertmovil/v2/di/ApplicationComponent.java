@@ -44,5 +44,9 @@ public interface ApplicationComponent extends AndroidInjector<SidertMovilApplica
         );
     }
 
+    @Named("baseUrl")
+    String getBaseUrl();
+
+
 }
 

@@ -2268,6 +2268,9 @@ public class DescargaDatosBussinesModel extends BaseBussinesModel {
                         id_direccion_neg = dBhelper.saveDirecciones(db, params, 3);
 
                         //Inserta registro de negocio
+                        String diasVentaNegocio = neg.getDiasVenta();
+                        diasVentaNegocio = diasVentaNegocio == null ? "" : diasVentaNegocio;
+
                         params = new HashMap<>();
                         params.put(0, String.valueOf(id));                  //ID SOLICITUD
                         params.put(1, Miscellaneous.validStr(neg.getNombre()));   //NOMBRE
@@ -2292,7 +2295,7 @@ public class DescargaDatosBussinesModel extends BaseBussinesModel {
                         int numOper = 30 / pre.getPeriodicida();
                         params.put(20, String.valueOf(numOper));  //NUM OPERACION MENSUALES
                         params.put(21, String.valueOf(neg.getNumOperacionesMensualesEfectivo())); //NUM OPERACION EFECTIVO
-                        params.put(22, neg.getDiasVenta());                 //DIAS VENTA
+                        params.put(22, diasVentaNegocio);                 //DIAS VENTA
                         params.put(23, "");                                  //FOTO FACHADA
                         params.put(24, neg.getReferencia());                                  //REF DOMICILIARIA
                         params.put(25, "1");                                 //ESTATUS COMPLETADO

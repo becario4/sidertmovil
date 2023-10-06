@@ -37,7 +37,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
-import com.github.dhaval2404.imagepicker.ImagePicker;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -62,7 +61,6 @@ import com.sidert.sidertmovil.fragments.dialogs.dialog_registro_cli;
 import com.sidert.sidertmovil.fragments.dialogs.dialog_sending_solicitud_individual;
 import com.sidert.sidertmovil.fragments.dialogs.dialog_time_picker;
 import com.sidert.sidertmovil.models.ApiResponse;
-import com.sidert.sidertmovil.models.MCarteraGnral;
 import com.sidert.sidertmovil.models.MSolicitudRechazoInd;
 import com.sidert.sidertmovil.models.ModeloCatalogoGral;
 import com.sidert.sidertmovil.models.catalogos.Colonia;
@@ -98,7 +96,6 @@ import com.sidert.sidertmovil.models.solicitudes.solicitudind.originacion.Refere
 import com.sidert.sidertmovil.services.permiso.IPermisoService;
 import com.sidert.sidertmovil.services.solicitud.solicitudind.SolicitudIndService;
 import com.sidert.sidertmovil.utils.Constants;
-import com.sidert.sidertmovil.utils.DatosCompartidos;
 import com.sidert.sidertmovil.utils.ManagerInterface;
 import com.sidert.sidertmovil.utils.Miscellaneous;
 import com.sidert.sidertmovil.utils.MyCurrentListener;
@@ -109,7 +106,6 @@ import com.sidert.sidertmovil.utils.RetrofitClient;
 import com.sidert.sidertmovil.utils.SessionManager;
 import com.sidert.sidertmovil.utils.Validator;
 import com.sidert.sidertmovil.utils.ValidatorTextView;
-import com.yalantis.ucrop.UCrop;
 
 import org.json.JSONObject;
 
@@ -225,15 +221,9 @@ import static io.card.payment.CardIOActivity.RESULT_SCAN_SUPPRESSED;
 public class SolicitudCreditoInd extends AppCompatActivity implements dialog_registro_cli.OnCompleteListener {
 
     private static final String SIN_REFERENCIA = "NINGUNO";
-
     private Context ctx;
     private Context context;
-
     private final Integer ind = 1;
-
-
-    Uri photoUri;
-
     private String[] _dias_semana;
     private String[] _plazo;
     private String[] _frecuencia;
@@ -252,24 +242,16 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
     private String[] _confirmacion;
     private String[] _activos;
     private String[] _max_pagos_mes;
-    private String[] _campanas;
-
     private ArrayList<Integer> selectedItemsDias;
     private ArrayList<Integer> selectedItemsMediosPago;
     private ArrayList<Integer> selectedItemsActivos;
-
     private DBhelper dBhelper;
     private SQLiteDatabase db;
-
-    private MCarteraGnral mcar = new MCarteraGnral();
-
-    private SimpleDateFormat sdf = new SimpleDateFormat(FORMAT_DATE_GNRAL);
+    private final SimpleDateFormat sdf = new SimpleDateFormat(FORMAT_DATE_GNRAL);
     private Calendar myCalendar;
-
     private long id_solicitud = 0;
     private String direccionIdCli, direccionIdCony, direccionIdNeg, direccionIdAval, direccionIdRef;
     private boolean is_edit = true;
-
     private FloatingActionButton btnContinuar0;
     private FloatingActionButton btnContinuar1;
     private FloatingActionButton btnContinuar2;
@@ -313,12 +295,8 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
     private EditText etNombreCli;
     private EditText etApPaternoCli;
     private EditText etApMaternoCli;
-
     private TextView tvFechaNacCli;
-
     private DialogSelectorFecha date;
-    private DatosCompartidos datos = new DatosCompartidos();
-
     private TextView tvEdadCli;
     private TextView tvGeneroCli;
     private RadioGroup rgGeneroCli;
@@ -722,7 +700,10 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
     private final int MENU_INDEX_UPDATE_ESTATUS = 1;
     private final int MENU_INDEX_ENVIAR = 0;
     private boolean modoSuperUsuario = false;
-
+    private final String PATTERN_MONTO_CREDITO = "[1-9][0-9][0-9][0][0][0]|[1-9][0-9][0][0][0]|[1-9][0][0][0]";
+    private final Pattern pattern0 = Pattern.compile(PATTERN_MONTO_CREDITO);
+    private final String PATTERN_MONTO_CREDITO_02 = "[0-9]+";
+    private final Pattern pattern1 = Pattern.compile(PATTERN_MONTO_CREDITO_02);
 
     //======================================================
 
@@ -1243,9 +1224,6 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
         tvHoraVisita.setOnClickListener(tvHoraVisita_OnClick);
         ibFirmaAsesor.setOnClickListener(ibFirmaAsesor_OnClick);
         etMontoPrestamo.addTextChangedListener(new TextWatcher() {
-            private final String PATTERN_MONTO_CREDITO = "[1-9][0-9][0-9][0][0][0]|[1-9][0-9][0][0][0]|[1-9][0][0][0]";
-            private Pattern pattern;
-            private Matcher matcher;
 
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -1284,15 +1262,12 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                         // place cursor at the end?
                         etMontoPrestamo.setSelection(Miscellaneous.GetStr(etMontoPrestamo).length() - 1);
                     }
-                } catch (NumberFormatException nfe) {
-                    // do nothing?
-                } catch (ParseException e) {
+                } catch (NumberFormatException | ParseException ignored) {
                     // do nothing?
                 }
 
                 if (s.length() > 0) {
-                    pattern = Pattern.compile(PATTERN_MONTO_CREDITO);
-                    matcher = pattern.matcher(s.toString().replace(",", ""));
+                    Matcher matcher = pattern0.matcher(s.toString().replace(",", ""));
                     if (!matcher.matches()) {
                         tvCantidadLetra.setText("");
                         etMontoPrestamo.setError("La cantidad no corresponde a un monto de crédito válido");
@@ -1316,9 +1291,6 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
         tvDestino.setOnClickListener(tvDestino_OnClick);
         tvRiesgo.setOnClickListener(tvRiesgo_OnClick);
         etMontoRefinanciar.addTextChangedListener(new TextWatcher() {
-            private final String PATTERN_MONTO_CREDITO = "[0-9]+";
-            private Pattern pattern;
-            private Matcher matcher;
 
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -1357,15 +1329,12 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                         // place cursor at the end?
                         etMontoRefinanciar.setSelection(Miscellaneous.GetStr(etMontoRefinanciar).length() - 1);
                     }
-                } catch (NumberFormatException nfe) {
-                    // do nothing?
-                } catch (ParseException e) {
+                } catch (NumberFormatException | ParseException ignored) {
                     // do nothing?
                 }
 
                 if (s.length() > 0) {
-                    pattern = Pattern.compile(PATTERN_MONTO_CREDITO);
-                    matcher = pattern.matcher(s.toString().replace(",", ""));
+                    Matcher matcher = pattern1.matcher(s.toString().replace(",", ""));
                     if (!matcher.matches()) {
                         etMontoRefinanciar.setError("La cantidad no corresponde a un monto válido");
                     } else {
@@ -5224,16 +5193,6 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
         }
     };
 
-    private void openImagePicker() {
-        ImagePicker.with(this)
-                .cameraOnly()
-                .crop()
-                .compress(1024)
-                .maxResultSize(1080, 1080)
-                .start();
-    }
-
-
     private View.OnClickListener etEstadoNac_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -7006,7 +6965,6 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
             }
         }
     };
-
     private View.OnClickListener ivIneReversoAval_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
@@ -7065,7 +7023,6 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
             }
         }
     };
-
     private View.OnClickListener ivCurpAval_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
@@ -7119,7 +7076,6 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
             }
         }
     };
-
     private View.OnClickListener ivFirmaAsesor_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
@@ -7146,7 +7102,6 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
             }
         }
     };
-
     private View.OnClickListener ivComprobanteAval_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
@@ -7216,7 +7171,6 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
             }
         }
     };
-
     private View.OnClickListener llPersonales_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -7232,7 +7186,6 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
             }
         }
     };
-
     private View.OnClickListener llConyuge_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -7248,7 +7201,6 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
             }
         }
     };
-
     private View.OnClickListener llEconomicos_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -7264,7 +7216,6 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
             }
         }
     };
-
     private View.OnClickListener llNegocio_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -7280,7 +7231,6 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
             }
         }
     };
-
     private View.OnClickListener llAval_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -7296,7 +7246,6 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
             }
         }
     };
-
     private View.OnClickListener llReferencia_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -7313,7 +7262,6 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
             }
         }
     };
-
     private View.OnClickListener llBeneficiario_OnClik = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
@@ -7329,7 +7277,6 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
             }
         }
     };
-
     private View.OnClickListener llCroquis_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -7345,7 +7292,6 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
             }
         }
     };
-
     private View.OnClickListener llPoliticas_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -7361,7 +7307,6 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
             }
         }
     };
-
     private View.OnClickListener llDocumentos_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -8342,13 +8287,6 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
         }
     }
 
-    public void openCropActivity(Uri sourceUri, Uri destinationUri) {
-        UCrop.of(sourceUri, destinationUri)
-                .withMaxResultSize(1024, 1024)
-                .withAspectRatio(5f, 5f)
-                .start(SolicitudCreditoInd.this);
-    }
-
     public void mostrarEdad(String edad, String campo) {
         try {
             switch (campo) {
@@ -8669,42 +8607,6 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
         return save_credito;
     }
 
-    private boolean saveDatosCampana() {
-        ContentValues cv = new ContentValues();
-        String txtCampanaValue = txtCampana.getText().toString();
-        String txtNombreRefieroValue = txtNombreRefiero.getText().toString();
-        boolean validationHasErrors = validatorTV.validate(txtCampana, new String[]{validator.REQUIRED}) && validator.validate(txtNombreRefiero, new String[]{validator.REQUIRED});
-
-        if (validationHasErrors) {
-            txtCampana.setError("Esta campo es requerido");
-            txtNombreRefiero.setError("Este campo es requerido");
-            return false;
-        }
-
-        if (
-                (txtCampanaValue.equals("SUMA Y GANA") || txtCampanaValue.equals("RESCATE Y GANA")) &&
-                        txtNombreRefieroValue.equals(SIN_REFERENCIA)
-        ) {
-            txtCampana.setError("");
-            txtNombreRefiero.setError("");
-            Toast.makeText(ctx, "NO SE PUEDE ASOCIAR LA CAMPAÑA", Toast.LENGTH_SHORT).show();
-            return false;
-        } else {
-            cv.put("id_solicitud", id_solicitud);
-            cv.put("id_campana", Miscellaneous.selectCampana(ctx, Miscellaneous.GetStr(txtCampana)));
-            cv.put("tipo_campana", Miscellaneous.GetStr(txtCampana));
-            cv.put("nombre_refiero", Miscellaneous.GetStr(txtNombreRefiero));
-
-            boolean auxiliar = datosCampanaDao.validarEstatus(ctx, Integer.parseInt(String.valueOf(id_solicitud)));
-            if (auxiliar) {
-                db.update(TBL_DATOS_CREDITO_CAMPANA, cv, " id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
-            } else {
-                db.insert(TBL_DATOS_CREDITO_CAMPANA, null, cv);
-            }
-            return true;
-        }
-    }
-
     private boolean saveDatosPersonales() {
 
         boolean save_cliente = false;
@@ -8910,6 +8812,42 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
         }
 
         return save_cliente;
+    }
+
+    private boolean saveDatosCampana() {
+        ContentValues cv = new ContentValues();
+        String txtCampanaValue = txtCampana.getText().toString();
+        String txtNombreRefieroValue = txtNombreRefiero.getText().toString();
+        boolean validationHasErrors = validatorTV.validate(txtCampana, new String[]{validator.REQUIRED}) && validator.validate(txtNombreRefiero, new String[]{validator.REQUIRED});
+
+        if (validationHasErrors) {
+            txtCampana.setError("Esta campo es requerido");
+            txtNombreRefiero.setError("Este campo es requerido");
+            return false;
+        }
+
+        if (
+                (txtCampanaValue.equals("SUMA Y GANA") || txtCampanaValue.equals("RESCATE Y GANA")) &&
+                        txtNombreRefieroValue.equals(SIN_REFERENCIA)
+        ) {
+            txtCampana.setError("");
+            txtNombreRefiero.setError("");
+            Toast.makeText(ctx, "NO SE PUEDE ASOCIAR LA CAMPAÑA", Toast.LENGTH_SHORT).show();
+            return false;
+        } else {
+            cv.put("id_solicitud", id_solicitud);
+            cv.put("id_campana", Miscellaneous.selectCampana(ctx, Miscellaneous.GetStr(txtCampana)));
+            cv.put("tipo_campana", Miscellaneous.GetStr(txtCampana));
+            cv.put("nombre_refiero", Miscellaneous.GetStr(txtNombreRefiero));
+
+            boolean auxiliar = datosCampanaDao.validarEstatus(ctx, Integer.parseInt(String.valueOf(id_solicitud)));
+            if (auxiliar) {
+                db.update(TBL_DATOS_CREDITO_CAMPANA, cv, " id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
+            } else {
+                db.insert(TBL_DATOS_CREDITO_CAMPANA, null, cv);
+            }
+            return true;
+        }
     }
 
     private boolean saveBeneficiario() {
@@ -9652,45 +9590,47 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
     }
 
     private boolean saveDocumentacion() {
-        boolean save_documentacion = false;
-        if (byteIneSelfie != null) {
-            if (byteIneFrontal != null) {
-                if (byteIneReverso != null) {
-                    if (byteCurp != null) {
-                        if (byteComprobante != null) {
-                            if (byteFirmaAsesor != null) {
-                                save_documentacion = true;
-                            } else {
-                                ivError10.setVisibility(View.VISIBLE);
-                                showError(tvFirmaAsesor, "FOTOGRAFIA REQUERIDA");
-                            }
-                        } else {
-                            ivError10.setVisibility(View.VISIBLE);
-                            showError(tvComprobante, "FOTOGRAFIA REQUERIDA");
-                        }
-                    } else {
-                        ivError10.setVisibility(View.VISIBLE);
-                        showError(tvCurp, "FOTOGRAFIA REQUERIDA");
-                    }
-                } else {
-                    ivError10.setVisibility(View.VISIBLE);
-                    showError(tvIneReverso, "FOTOGRAFIA REQUERIDA");
-                }
-            } else {
-                ivError10.setVisibility(View.VISIBLE);
-                showError(tvIneFrontal, "FOTOGRAFIA REQUERIDA");
-            }
-        } else {
-            ivError10.setVisibility(View.VISIBLE);
-            showError(tvIneSelfie, "FOTOGRAFIA REQUERIDA");
+        if (byteIneSelfie == null) {
+            showErrorIconAndMessage(tvIneSelfie, "FOTOGRAFIA DEL INE CON SELFIE REQUERIDA");
+            return false;
         }
 
-        return save_documentacion;
+        if (byteIneFrontal == null) {
+            showErrorIconAndMessage(tvIneFrontal, "FOTOGRAFIA DEL INE FRONTAL REQUERIDA");
+            return false;
+        }
+
+        if (byteIneReverso == null) {
+            showErrorIconAndMessage(tvIneReverso, "FOTOGRAFIA DEL INE REVERSO REQUERIDA");
+            return false;
+        }
+
+        if (byteCurp == null) {
+            showErrorIconAndMessage(tvCurp, "FOTOGRAFIA DEL CURP REQUERIDA");
+            return false;
+        }
+
+        if (byteComprobante == null) {
+            showErrorIconAndMessage(tvComprobante, "FOTOGRAFIA DEL COMPROBANTE REQUERIDA");
+            return false;
+        }
+
+        if (byteFirmaAsesor == null) {
+            showErrorIconAndMessage(tvFirmaAsesor, "FOTOGRAFIA DE LA FIRMA DEL ASESOR REQUERIDA");
+            return false;
+        }
+
+        return true;
     }
 
-    private void showError(TextView texto, String n) {
-        texto.setError(n);
-        texto.requestFocus();
+    private void showErrorIconAndMessage(TextView textView, String message) {
+        ivError10.setVisibility(View.VISIBLE);
+        showError(textView, message);
+    }
+
+    private void showError(TextView textView, String n) {
+        textView.setError(n);
+        textView.requestFocus();
         Toast.makeText(ctx, "FOTOGRAFIA REQUERIDA", Toast.LENGTH_SHORT).show();
     }
 
@@ -10295,8 +10235,7 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
             direccionIdAval = String.valueOf(dirAval);
             direccionIdRef = String.valueOf(dirRef);
 
-        } else
-            finish();
+        } else finish();
     }
 
     private void initComponents(String idSolicitud) {
@@ -10334,6 +10273,7 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
             etMontoRefinanciar.setText(dfnd.format(row.getInt(11)));
 
         txtCampana.setText(Miscellaneous.tipoCampana(ctx, row.getString(12)));
+        txtNombreRefiero.setText(Miscellaneous.tipoCampana(ctx, row.getString(12)));
 
         row.close(); //Cierra dato del credito
 

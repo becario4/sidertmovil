@@ -3,10 +3,10 @@
     <string name="app_version">2.7.5b</string>
     <string name="vol_solicitud">Vol.2020</string>
 
-    <string name="default_asesor"></string>
-    <string name="default_mac"></string>
+    <string name="default_asesor">ASESOR547</string>
+    <string name="default_mac">2BF5923B6A389CD</string>
 
-    <string name="api_url">https://f16f-187-188-168-167.ngrok-free.app/</string>
+    <string name="api_url">http://sidert.ddns.net:91/</string>
     <string name="api_user">androidapp</string>
     <string name="api_password">m1*cR0w4V3-s</string>
 

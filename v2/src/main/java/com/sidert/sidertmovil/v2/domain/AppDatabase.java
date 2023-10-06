@@ -148,7 +148,7 @@ import androidx.room.migration.AutoMigrationSpec;
                 VerificacionesDomiciliarias.class,
                 ViviendaTipos.class
         },
-        version = 2
+        version = 1
 )
 @TypeConverters({
         LocalDatetimeConverter.class

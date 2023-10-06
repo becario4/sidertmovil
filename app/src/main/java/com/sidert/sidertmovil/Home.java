@@ -20,6 +20,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.tabs.TabLayout;
@@ -37,10 +38,13 @@ import com.sidert.sidertmovil.fragments.geolocalizacion_fragment;
 import com.sidert.sidertmovil.fragments.impression_history_fragment;
 import com.sidert.sidertmovil.fragments.mesa_ayuda_fragment;
 import com.sidert.sidertmovil.fragments.orders_fragment;
+import com.sidert.sidertmovil.models.permiso.PermisoResponse;
+import com.sidert.sidertmovil.services.permiso.IPermisoService;
 import com.sidert.sidertmovil.utils.Constants;
 import com.sidert.sidertmovil.utils.CustomDrawerLayout;
 import com.sidert.sidertmovil.utils.CustomRelativeLayout;
 import com.sidert.sidertmovil.utils.NameFragments;
+import com.sidert.sidertmovil.utils.RetrofitClient;
 import com.sidert.sidertmovil.utils.SessionManager;
 import com.sidert.sidertmovil.views.apoyogastosfunerarios.ApoyoGastosFunerariosActivity;
 import com.sidert.sidertmovil.views.originacion.SolicitudCredito;
@@ -57,6 +61,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
@@ -68,6 +73,10 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
 
 import static com.sidert.sidertmovil.utils.Constants.SINCRONIZADO_T;
 import static com.sidert.sidertmovil.utils.NameFragments.CALCULADORA;
@@ -94,7 +103,6 @@ public class Home extends AppCompatActivity {
     private boolean canExitApp = false;
     private SessionManager session;
     private Menu menuGeneral;
-    private String datos,datasss;
 
     public interface Sidert {
         void initTabLayout(TabLayout Tabs);
@@ -105,30 +113,30 @@ public class Home extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
-        ctx             = getApplicationContext();
-        session         = SessionManager.getInstance(ctx);
+        ctx = getApplicationContext();
+        session = SessionManager.getInstance(ctx);
         FirebaseApp.initializeApp(this);
 
         //Fabric.with(this, new Crashlytics());
         //logUserFabric();
 
-        TBmain          = findViewById(R.id.TBmain);
-        mDrawerLayout   = findViewById(R.id.mDrawerLayout);
-        NVmenu          = findViewById(R.id.NVmenu);
+        TBmain = findViewById(R.id.TBmain);
+        mDrawerLayout = findViewById(R.id.mDrawerLayout);
+        NVmenu = findViewById(R.id.NVmenu);
         tvVersionAppAmbiente = findViewById(R.id.tvVersionAppAmbiente);
-        mTabLayout      = findViewById(R.id.mTabLayout);
-        CLcontainer     = findViewById(R.id.CLcontainer);
-        View view       = NVmenu.getHeaderView(0);
-        tvNameUser      = view.findViewById(R.id.tvName);
-        tvUltimaSincro  = view.findViewById(R.id.tvultimaSincro);
-        llProfile       = view.findViewById(R.id.llProfile);
-        ivLogout        = view.findViewById(R.id.ivLogout);
-        txtRole         = view.findViewById(R.id.txtRolUser);
+        mTabLayout = findViewById(R.id.mTabLayout);
+        CLcontainer = findViewById(R.id.CLcontainer);
+        View view = NVmenu.getHeaderView(0);
+        tvNameUser = view.findViewById(R.id.tvName);
+        tvUltimaSincro = view.findViewById(R.id.tvultimaSincro);
+        llProfile = view.findViewById(R.id.llProfile);
+        ivLogout = view.findViewById(R.id.ivLogout);
+        txtRole = view.findViewById(R.id.txtRolUser);
         Log.e("MAC", session.getMacAddress());
 
-       SessionManager sen = SessionManager.getInstance(ctx);
+        SessionManager sen = SessionManager.getInstance(ctx);
         try {
-           getTipoRolB(sen);
+            getTipoRolB(sen);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -144,18 +152,18 @@ public class Home extends AppCompatActivity {
         final Bundle data = getIntent().getExtras();
 
 
-        if (true){/** Siempre entra a esta condición , es el menu general de sidert movil */
+        if (true) {/** Siempre entra a esta condición , es el menu general de sidert movil */
             initNavigationDrawer();
             setSupportActionBar(TBmain);
             final DrawerLayout.LayoutParams CLparams = (DrawerLayout.LayoutParams) CLcontainer.getLayoutParams();
-            if(CLparams.getMarginStart() == (int)getResources().getDimension(R.dimen.drawermenu)) {
+            if (CLparams.getMarginStart() == (int) getResources().getDimension(R.dimen.drawermenu)) {
                 mDrawerLayout.setLocked(true);
                 mDrawerLayout.setDrawerShadow(ContextCompat.getDrawable(getApplicationContext(), R.drawable.shadow), GravityCompat.START);
                 mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_OPEN, NVmenu);
                 mDrawerLayout.setScrimColor(Color.TRANSPARENT);
             }
 
-            if(!mDrawerLayout.isLocked()) {
+            if (!mDrawerLayout.isLocked()) {
                 mToggled = new ActionBarDrawerToggle(this, mDrawerLayout, R.string.open, R.string.close) {
                     @Override
                     public void onDrawerOpened(View drawerView) {
@@ -166,22 +174,22 @@ public class Home extends AppCompatActivity {
                         MenuItem itemCalcu = menuGeneral.findItem(R.id.nvCalculadora);
 
                         /**Se obtiene el log de sincronnizaciones para colocar la fecha y hora de la ultima sincronizacion*/
-                        Cursor row = dBhelper.getRecords(SINCRONIZADO_T, ""," ORDER BY _id DESC", null);
+                        Cursor row = dBhelper.getRecords(SINCRONIZADO_T, "", " ORDER BY _id DESC", null);
 
-                        if (row.getCount() > 0){
+                        if (row.getCount() > 0) {
                             row.moveToFirst();
                             /**Coloca la fecha y hora de la ultima sincronizacion*/
                             tvUltimaSincro.setText("Última Sincronización: " + row.getString(2));
-                            for (int i = 0; i < row.getCount(); i++){
-                                Log.e("Sincronizado"+i, row.getString(2));
+                            for (int i = 0; i < row.getCount(); i++) {
+                                Log.e("Sincronizado" + i, row.getString(2));
                                 row.moveToNext();
                             }
 
                         }
                         MenuItem xd = menuGeneral.findItem(R.id.nvCalculadora);
-                        if(txtRole.getText().toString().contains("ROLE_ASESOR")){
+                        if (txtRole.getText().toString().contains("ROLE_ASESOR")) {
                             xd.setVisible(true);
-                        }else
+                        } else
                             xd.setVisible(false);
                         /*row = dBhelper.getRecords(TBL_TRACKER_ASESOR_T, ""," ORDER BY _id DESC", null);
 
@@ -222,7 +230,7 @@ public class Home extends AppCompatActivity {
             ShowMenuItems();
 
             /**Coloca el nombre del usuario que inicio sesion en el menu lateral*/
-            tvNameUser.setText(session.getUser().get(1)+" "+session.getUser().get(2)+" "+session.getUser().get(3));
+            tvNameUser.setText(session.getUser().get(1) + " " + session.getUser().get(2) + " " + session.getUser().get(3));
 
             /**Coloca la vista de cartera por defecto*/
             setFragment(ORDERS, null);
@@ -233,8 +241,7 @@ public class Home extends AppCompatActivity {
             llProfile.setOnClickListener(LLprofile_OnClick);
             /**Evento de click para cerrar sesion*/
             ivLogout.setOnClickListener(ivLogout_OnClick);
-        }
-        else {/** esto era cuando se lanzo por primera vez sidert movil y solo tenia Denuncia PLD pero
+        } else {/** esto era cuando se lanzo por primera vez sidert movil y solo tenia Denuncia PLD pero
          ya no se ocupa esta vista*/
             mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
             TBmain.setVisibility(View.GONE);
@@ -243,9 +250,10 @@ public class Home extends AppCompatActivity {
         }
     }
 
-    /**Listener el menu lateral... Si se agrega otro menu tendrá que colocarse aqui
+    /**
+     * Listener el menu lateral... Si se agrega otro menu tendrá que colocarse aqui
      * para que funcione el evento de la transicion de una vista a otra
-     * */
+     */
     private NavigationView.OnNavigationItemSelectedListener NVmenu_onClick = new NavigationView.OnNavigationItemSelectedListener() {
 
         @Override
@@ -324,12 +332,14 @@ public class Home extends AppCompatActivity {
                 startActivity(intent);
                 finish();
             }
-            if(!mDrawerLayout.isLocked()) mDrawerLayout.closeDrawer(NVmenu);
+            if (!mDrawerLayout.isLocked()) mDrawerLayout.closeDrawer(NVmenu);
             return true;
         }
     };
 
-    /**Funcion para hacer las trancisiones de vistas solo de los Fragments*/
+    /**
+     * Funcion para hacer las trancisiones de vistas solo de los Fragments
+     */
     public void setFragment(String fragment, Bundle extras) {
         mTabLayout.setVisibility(View.GONE);
         Fragment current = getSupportFragmentManager().findFragmentById(R.id.FLmain);
@@ -339,7 +349,7 @@ public class Home extends AppCompatActivity {
         switch (fragment) {
             case ORDERS:/**Fragmento de Cartera*/
                 mTabLayout.setVisibility(View.VISIBLE);
-                if (!(current instanceof orders_fragment)){
+                if (!(current instanceof orders_fragment)) {
                     orders_fragment myAppointments = new orders_fragment();
                     myAppointments.setArguments(extras);
                     transaction.replace(R.id.FLmain, myAppointments, ORDERS);
@@ -349,17 +359,17 @@ public class Home extends AppCompatActivity {
                 break;
 
             case CALCULADORA:/**Fragmento calculadora*/
-                if(!(current instanceof calculadoraPrestamo)){
+                if (!(current instanceof calculadoraPrestamo)) {
                     calculadoraPrestamo calcul = new calculadoraPrestamo();
                     calcul.setArguments(extras);
-                    transaction.replace(R.id.FLmain, calcul,CALCULADORA);
+                    transaction.replace(R.id.FLmain, calcul, CALCULADORA);
                     tokenFragment = CALCULADORA;
-                }else
+                } else
                     return;
                 break;
 
             case NameFragments.IMPRESSION_HISTORY:/**Fragmento de Impresiones*/
-                if (!(current instanceof impression_history_fragment)){
+                if (!(current instanceof impression_history_fragment)) {
                     impression_history_fragment impression_history = new impression_history_fragment();
                     impression_history.setArguments(extras);
                     transaction.replace(R.id.FLmain, impression_history, NameFragments.IMPRESSION_HISTORY);
@@ -368,7 +378,7 @@ public class Home extends AppCompatActivity {
                     return;
                 break;
             case NameFragments.AUTORIZAR_CC:/**Fragmento de autorizaciones de CC*/
-                if (!(current instanceof autorizaciones_cc_fragment)){
+                if (!(current instanceof autorizaciones_cc_fragment)) {
                     autorizaciones_cc_fragment impression_history = new autorizaciones_cc_fragment();
                     impression_history.setArguments(extras);
                     transaction.replace(R.id.FLmain, impression_history, NameFragments.AUTORIZAR_CC);
@@ -377,7 +387,7 @@ public class Home extends AppCompatActivity {
                     return;
                 break;
             case MESA_AYUDA:/**Fragmento de Mesa de ayuda*/
-                if (!(current instanceof mesa_ayuda_fragment)){
+                if (!(current instanceof mesa_ayuda_fragment)) {
                     mesa_ayuda_fragment mesa_ayuda = new mesa_ayuda_fragment();
                     mesa_ayuda.setArguments(extras);
                     transaction.replace(R.id.FLmain, mesa_ayuda, MESA_AYUDA);
@@ -387,7 +397,7 @@ public class Home extends AppCompatActivity {
                 break;
             case GEOLOCALIZACION:/**Fragmento de Geolocalizaciones*/
                 mTabLayout.setVisibility(View.VISIBLE);
-                if (!(current instanceof geolocalizacion_fragment)){
+                if (!(current instanceof geolocalizacion_fragment)) {
                     geolocalizacion_fragment geolocalizacion = new geolocalizacion_fragment();
                     geolocalizacion.setArguments(extras);
                     transaction.replace(R.id.FLmain, geolocalizacion, GEOLOCALIZACION);
@@ -397,7 +407,7 @@ public class Home extends AppCompatActivity {
                 break;
 
             default:/**Fragmento de Cartera por default*/
-                if (!(current instanceof orders_fragment)){
+                if (!(current instanceof orders_fragment)) {
                     transaction.replace(R.id.FLmain, new orders_fragment(), ORDERS);
                     tokenFragment = ORDERS;
                 } else
@@ -406,12 +416,12 @@ public class Home extends AppCompatActivity {
         }
 
         //if(!tokenFragment.equals(NameFragments.COMPLAINT_TEMP) && !tokenFragment.equals(NameFragments.IMPRESSION_HISTORY) && !tokenFragment.equals(NameFragments.ORDERS) && !tokenFragment.equals(NameFragments.GEOLOCALIZACION)) {
-        if(!tokenFragment.equals(ORDERS)) {
+        if (!tokenFragment.equals(ORDERS)) {
             int count = manager.getBackStackEntryCount();
-            if(count > 0) {
+            if (count > 0) {
                 int index = count - 1;
                 String tag = manager.getBackStackEntryAt(index).getName();
-                if(!tag.equals(tokenFragment)) {
+                if (!tag.equals(tokenFragment)) {
                     transaction.addToBackStack(tokenFragment);
                 }
             } else {
@@ -427,12 +437,12 @@ public class Home extends AppCompatActivity {
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-        if(!mDrawerLayout.isLocked()) mToggled.onConfigurationChanged(newConfig);
+        if (!mDrawerLayout.isLocked()) mToggled.onConfigurationChanged(newConfig);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if(!mDrawerLayout.isLocked()) {
+        if (!mDrawerLayout.isLocked()) {
             if (mToggled.onOptionsItemSelected(item)) {
                 return true;
             }
@@ -451,7 +461,7 @@ public class Home extends AppCompatActivity {
 
     public void setActionBar(Toolbar TBmain, HashMap<String, String> options) {
         setSupportActionBar(TBmain);
-        if(options != null) {
+        if (options != null) {
             for (Map.Entry<String, String> entry : options.entrySet()) {
                 switch (entry.getKey()) {
                     case Constants.TBtitle:
@@ -466,19 +476,19 @@ public class Home extends AppCompatActivity {
     }
 
     //PARA RECORRER EL ARREGLO Y OBTENER EL DATO ESPECIFICO
-    public void getTipoRolB(SessionManager sen){
+    public void getTipoRolB(SessionManager sen) {
         txtRole = findViewById(R.id.txtRolUser);
 
         List<String> rol = new ArrayList<>();
 
         rol = sen.getAutorizacionList();
 
-        for(int i=0;i<rol.size();i++){
+        for (int i = 0; i < rol.size(); i++) {
             String objeto;
             objeto = rol.get(0).trim();
             if (objeto != null && objeto.contains("ROLE_ASESOR")) {
                 String a = objeto; //.substring(25);
-                a = a.replace("ROL_GERENTESUCURSAL","");
+                a = a.replace("ROL_GERENTESUCURSAL", "");
                 String b = a.replace("[ ]", "");
                 b = b.replace(" \" ", " ");
 
@@ -495,23 +505,25 @@ public class Home extends AppCompatActivity {
 
         rol = sen.getAutorizacionList();
 
-        for(int i=0;i<rol.size();i++) {
+        for (int i = 0; i < rol.size(); i++) {
             String objeto;
             objeto = rol.get(0).trim();
 
             if (objeto != null) {
-               dato = objeto;
+                dato = objeto;
             } else
-               dato = "NEL PERRO";
+                dato = "NEL PERRO";
         }
         return dato;
     }
 
-    /**Inicializacion de variables del menu lateral como el nombre d usuario*/
+    /**
+     * Inicializacion de variables del menu lateral como el nombre d usuario
+     */
     private void initNavigationDrawer() {
-        View view                      = NVmenu.getHeaderView(0);
-        final CustomRelativeLayout HV  = view.findViewById(R.id.HV);
-        tvNameUser                     = view.findViewById(R.id.tvName);
+        View view = NVmenu.getHeaderView(0);
+        final CustomRelativeLayout HV = view.findViewById(R.id.HV);
+        tvNameUser = view.findViewById(R.id.tvName);
         final String pic = "";
         /*NVmenu.post(new Runnable() {
             @Override
@@ -526,7 +538,9 @@ public class Home extends AppCompatActivity {
         });*/
     }
 
-    /**Evento para abrir la vista del perfil del usuario no se está ocupando*/
+    /**
+     * Evento para abrir la vista del perfil del usuario no se está ocupando
+     */
     private View.OnClickListener LLprofile_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -535,35 +549,75 @@ public class Home extends AppCompatActivity {
         }
     };
 
-    /**Evento que abre un dialogFragment para cerrar sesion*/
-    private View.OnClickListener ivLogout_OnClick = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            dialog_logout mess_confirm = new dialog_logout();
-            Bundle b = new Bundle();
-            b.putString(Constants.MESSAGE, getApplicationContext().getString(R.string.mess_logout));
-            mess_confirm.setArguments(b);
-            mess_confirm.show(getSupportFragmentManager(), NameFragments.DIALOGLOGOUT);
-        }
+    /**
+     * Evento que abre un dialogFragment para cerrar sesion
+     */
+    private final View.OnClickListener ivLogout_OnClick = v -> {
+
+        dialog_logout mess_confirm = new dialog_logout();
+        Bundle b = new Bundle();
+        b.putString(Constants.MESSAGE, getApplicationContext().getString(R.string.mess_logout));
+        mess_confirm.setArguments(b);
+        mess_confirm.show(getSupportFragmentManager(), NameFragments.DIALOGLOGOUT);
+
+        /*
+        List<String> userdata = this.session.getUser();
+        String token = userdata.get(7);
+        Retrofit retrofit = RetrofitClient.newInstance(this);
+        IPermisoService iPermisoService = retrofit.create(IPermisoService.class);
+        Call<Map<String, Object>> response = iPermisoService.canICloseTheSession("Bearer " + token);
+*/
+
+
+
+
+/*        response.enqueue(new Callback<Map<String, Object>>() {
+            @Override
+            public void onResponse(Call<Map<String, Object>> call, Response<Map<String, Object>> response) {
+                if (response.code() == 200) {
+                    Map<String, Object> data = response.body();
+                    if (data != null) {
+                        Boolean canIlogout = (Boolean) data.get("logout");
+                        if (canIlogout) {
+                        } else {
+                            Toast.makeText(Home.this, "No tienes permiso para cerrar la sesion", Toast.LENGTH_SHORT).show();
+                        }
+                    } else {
+                        Toast.makeText(Home.this, "No tienes permiso para cerrar la sesion", Toast.LENGTH_SHORT).show();
+                    }
+                } else {
+                    Toast.makeText(Home.this, "No tienes permiso para cerrar la sesion", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Map<String, Object>> call, Throwable t) {
+                Toast.makeText(Home.this, "No tienes permiso para cerrar la sesion", Toast.LENGTH_SHORT).show();
+            }
+        });*/
+
     };
 
-    /**Colocar el un identificador y nombre de usuario en los crash cuando se cierra la app*/
+    /**
+     * Colocar el un identificador y nombre de usuario en los crash cuando se cierra la app
+     */
     /*private void logUserFabric() {
         Crashlytics.setUserIdentifier(session.getUser().get(0));
         Crashlytics.setUserName(session.getUser().get(1)+" "+session.getUser().get(2)+" "+session.getUser().get(3));
     }*/
-
     @Override
     public void onBackPressed() {
-        if(mDrawerLayout.isDrawerOpen(Gravity.LEFT)){
+        if (mDrawerLayout.isDrawerOpen(Gravity.LEFT)) {
             mDrawerLayout.closeDrawer(Gravity.LEFT);
-        }else{
+        } else {
             super.onBackPressed();
         }
     }
 
-    /**Funcion para validar que menus se van a mostrar de acuerdo a los permisos asignados al usuario*/
-    private void ShowMenuItems (){
+    /**
+     * Funcion para validar que menus se van a mostrar de acuerdo a los permisos asignados al usuario
+     */
+    private void ShowMenuItems() {
         try {
             if (session.getUser().get(8) != null) {
                 /**Se obtienen los mudulos asignados guardado en la variable de sesion*/

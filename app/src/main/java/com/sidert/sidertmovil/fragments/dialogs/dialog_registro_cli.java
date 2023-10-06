@@ -6,8 +6,10 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+
 import androidx.fragment.app.DialogFragment;
 import androidx.appcompat.app.AlertDialog;
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -41,9 +43,8 @@ public class dialog_registro_cli extends DialogFragment {
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         try {
-            this.mListener = (dialog_registro_cli.OnCompleteListener)activity;
-        }
-        catch (final ClassCastException e) {
+            this.mListener = (dialog_registro_cli.OnCompleteListener) activity;
+        } catch (final ClassCastException e) {
             throw new ClassCastException(activity.toString() + " must implement OnCompleteListener");
         }
     }
@@ -68,21 +69,21 @@ public class dialog_registro_cli extends DialogFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.popup_registro_cli, container, false);
-        mCalendar   = Calendar.getInstance();
+        mCalendar = Calendar.getInstance();
 
-        ctx         = getContext();
+        ctx = getContext();
 
-        session     = SessionManager.getInstance(ctx);
-        validator   = new Validator();
-        dBhelper    = DBhelper.getInstance(ctx);
-        db          = dBhelper.getWritableDatabase();
+        session = SessionManager.getInstance(ctx);
+        validator = new Validator();
+        dBhelper = DBhelper.getInstance(ctx);
+        db = dBhelper.getWritableDatabase();
 
-        boostrap    = (SolicitudCreditoInd) getActivity();
+        boostrap = (SolicitudCreditoInd) getActivity();
 
-        etNombre    = view.findViewById(R.id.etNombre);
-        etPaterno   = view.findViewById(R.id.etPaterno);
-        etMaterno   = view.findViewById(R.id.etMaterno);
-        btnGuardar  = view.findViewById(R.id.btnGuardar);
+        etNombre = view.findViewById(R.id.etNombre);
+        etPaterno = view.findViewById(R.id.etPaterno);
+        etMaterno = view.findViewById(R.id.etMaterno);
+        btnGuardar = view.findViewById(R.id.btnGuardar);
         btnCancelar = view.findViewById(R.id.btnCancelar);
 
         getDialog().getWindow().requestFeature(Window.FEATURE_NO_TITLE);
@@ -98,8 +99,8 @@ public class dialog_registro_cli extends DialogFragment {
         @Override
         public void onClick(View v) {
             if (!validator.validate(etNombre, new String[]{validator.REQUIRED, validator.ONLY_TEXT}) &&
-                !validator.validate(etPaterno, new String[]{validator.ONLY_TEXT}) &&
-                !validator.validate(etMaterno, new String[]{validator.ONLY_TEXT})){
+                    !validator.validate(etPaterno, new String[]{validator.ONLY_TEXT}) &&
+                    !validator.validate(etMaterno, new String[]{validator.ONLY_TEXT})) {
                 AlertDialog guardar_info_dlg = Popups.showDialogConfirm(ctx, Constants.question,
                         R.string.datos_correctos, R.string.yes, new Popups.DialogMessage() {
                             @Override
@@ -122,7 +123,7 @@ public class dialog_registro_cli extends DialogFragment {
         }
     };
 
-    private void saveCliente(){
+    private void saveCliente() {
         long id = 0;
         long id_cliente = 0;
         long id_direccion_cli = 0;
@@ -135,13 +136,13 @@ public class dialog_registro_cli extends DialogFragment {
         String nombre = (etNombre.getText().toString().trim().toUpperCase() + " " + etPaterno.getText().toString().trim().toUpperCase() + " " + etMaterno.getText().toString().trim().toUpperCase()).trim();
         HashMap<Integer, String> params = new HashMap<>();
         params.put(0, getString(R.string.vol_solicitud));                               //VOL SOLICITUD
-        params.put(1,session.getUser().get(9));                 //USUARIO ID
-        params.put(2,"1");                                      //TIPO SOLICITUD
-        params.put(3,"0");                                      //ID ORIGINACION
+        params.put(1, session.getUser().get(9));                 //USUARIO ID
+        params.put(2, "1");                                      //TIPO SOLICITUD
+        params.put(3, "0");                                      //ID ORIGINACION
         params.put(4, nombre);                                  //NOMBRE
         params.put(5, Miscellaneous.ObtenerFecha(TIMESTAMP));   //FECHA INICIO
-        params.put(6,"");                                       //FECHA TERMINO
-        params.put(7,"");                                       //FECHA ENVIO
+        params.put(6, "");                                       //FECHA TERMINO
+        params.put(7, "");                                       //FECHA ENVIO
         params.put(8, Miscellaneous.ObtenerFecha(TIMESTAMP));   //FECHA DISPOSITIVO
         params.put(9, "");                                      //FECHA GUARDADO
         params.put(10, "0");                                    //ESTATUS
@@ -150,16 +151,16 @@ public class dialog_registro_cli extends DialogFragment {
 
         //Inserta registro de datos del credito
         params = new HashMap<>();
-        params.put(0,String.valueOf(id));                       //ID SOLICITUD
-        params.put(1,"");                                       //PLAZO
-        params.put(2,"");                                       //PERIODICIDAD
-        params.put(3,"");                                       //FECHA DESEMBOLSO
-        params.put(4,"");                                       //DIA DESEMBOLSO
-        params.put(5,"");                                       //HORA VISITA
-        params.put(6,"");                                       //MONTO PRESTAMO
-        params.put(7,"");                                       //DESTINO
-        params.put(8,"");                                       //CLASIFICACION RIESGO
-        params.put(9,"0");                                      //ESTATUS COMPLETO
+        params.put(0, String.valueOf(id));                       //ID SOLICITUD
+        params.put(1, "");                                       //PLAZO
+        params.put(2, "");                                       //PERIODICIDAD
+        params.put(3, "");                                       //FECHA DESEMBOLSO
+        params.put(4, "");                                       //DIA DESEMBOLSO
+        params.put(5, "");                                       //HORA VISITA
+        params.put(6, "");                                       //MONTO PRESTAMO
+        params.put(7, "");                                       //DESTINO
+        params.put(8, "");                                       //CLASIFICACION RIESGO
+        params.put(9, "0");                                      //ESTATUS COMPLETO
 
         dBhelper.saveDatosCredito(db, params);
 
@@ -299,26 +300,26 @@ public class dialog_registro_cli extends DialogFragment {
         params.put(4, "");                                  //ACTIVIDAD ECONOMICA
         params.put(5, "");                                  //DESTINO CREDITO
         params.put(6, "");                                  //OTRO DESTINO
-        params.put(7,"0");                                  //ANTIGUEDAD
-        params.put(8,"");                                   //ING MENSUAL
-        params.put(9,"");                                   //ING OTROS
-        params.put(10,"");                                   //GASTO SEMANAL
-        params.put(11,"");                                  //GASTO AGUA
-        params.put(12,"");                                  //GASTO LUZ
-        params.put(13,"");                                  //GASTO TELEFONO
-        params.put(14,"");                                  //GASTO RENTA
-        params.put(15,"");                                  //GASTO OTROS
-        params.put(16,"");                                  //CAPACIDAD PAGO
-        params.put(17,"");                                  //MEDIO PAGO
-        params.put(18,"");                                  //OTRO MEDIO PAGO
-        params.put(19,"");                                  //MONTO MAXIMO
-        params.put(20,"0");                                 //NUM OPERACION MENSUALES
-        params.put(21,"0");                                 //NUM OPERACION EFECTIVO
-        params.put(22,"");                                  //DIAS VENTA
-        params.put(23,"");                                  //FOTO FACHADA
-        params.put(24,"");                                  //REF DOMICILIARIA
-        params.put(25,"0");                                 //ESTATUS COMPLETADO
-        params.put(26,"");                                  //COMENTARIO RECHAZO
+        params.put(7, "0");                                  //ANTIGUEDAD
+        params.put(8, "");                                   //ING MENSUAL
+        params.put(9, "");                                   //ING OTROS
+        params.put(10, "");                                   //GASTO SEMANAL
+        params.put(11, "");                                  //GASTO AGUA
+        params.put(12, "");                                  //GASTO LUZ
+        params.put(13, "");                                  //GASTO TELEFONO
+        params.put(14, "");                                  //GASTO RENTA
+        params.put(15, "");                                  //GASTO OTROS
+        params.put(16, "");                                  //CAPACIDAD PAGO
+        params.put(17, "");                                  //MEDIO PAGO
+        params.put(18, "");                                  //OTRO MEDIO PAGO
+        params.put(19, "");                                  //MONTO MAXIMO
+        params.put(20, "0");                                 //NUM OPERACION MENSUALES
+        params.put(21, "0");                                 //NUM OPERACION EFECTIVO
+        params.put(22, "");                                  //DIAS VENTA
+        params.put(23, "");                                  //FOTO FACHADA
+        params.put(24, "");                                  //REF DOMICILIARIA
+        params.put(25, "0");                                 //ESTATUS COMPLETADO
+        params.put(26, "");                                  //COMENTARIO RECHAZO
 
         dBhelper.saveDatosNegocio(db, params, 1);
 
@@ -455,7 +456,7 @@ public class dialog_registro_cli extends DialogFragment {
 
         //Inseta registro de documentos
         params = new HashMap<>();
-        params.put(0,String.valueOf(id));       //ID SOLICITUD
+        params.put(0, String.valueOf(id));       //ID SOLICITUD
         params.put(1, "");                      //INE FRONTAL
         params.put(2, "");                      //INE REVERSO
         params.put(3, "");                      //CURP
@@ -465,6 +466,30 @@ public class dialog_registro_cli extends DialogFragment {
         params.put(7, "0");                     //ESTATUS COMPLETADO
 
         dBhelper.saveDocumentosClientes(db, params, 1);
+
+        //Inserta Credito de la campaña
+        params = new HashMap<>();
+        params.put(0, String.valueOf(id));       //ID SOLICITUD
+        params.put(1, "");                      //ORIGINACION QUE ES DONDE SE VA A GUARDAR LA SOLICITUD PERO REMOTA
+        params.put(2, "");                      //ID DE LA CAMPAÑA
+        params.put(3, "");                      //TIPO CAMPAÑA
+        params.put(4, "");                      //NOMBRE DEL REFERENDO
+
+        dBhelper.saveDatosCreditoCampa(db, params);
+
+        //Insertar Beneficiario AGF
+        params = new HashMap<>();
+        params.put(0, String.valueOf(id));       //ID SOLICITUD
+        params.put(1, "");                      //CLIENTE ID
+        params.put(2, "");                      //GRUPO ID
+        params.put(3, "");                      //NOMBRE
+        params.put(4, "");                      //APELLIDO PATERNO
+        params.put(5, "");                      //APELLIDO MATERNO
+        params.put(6, "");                      //PARENTESCO
+        params.put(7, "");                      //SERIE ID
+
+        dBhelper.saveBeneficiario(db, params);
+
 
         mListener.onComplete(id, String.valueOf(id_cliente),
                 etNombre.getText().toString().trim().toUpperCase(),
@@ -482,7 +507,7 @@ public class dialog_registro_cli extends DialogFragment {
     private View.OnClickListener btnCancelar_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            mListener.onComplete(0, "0", null, null, null, 0,0,0,0,0);
+            mListener.onComplete(0, "0", null, null, null, 0, 0, 0, 0, 0);
             getDialog().dismiss();
         }
     };

@@ -229,24 +229,21 @@ public class Catalogos extends AppCompatActivity {
                 break;
         }
 
-        adapter = new adapter_catalogos(ctx, catalogo, new adapter_catalogos.Event() {
-            @Override
-            public void FichaOnClick(ModeloCatalogoGral item) {
-                Intent data = new Intent();
-                switch (item.getCatalogo()){
-                    case ESTADOS:
-                    case OCUPACIONES:
-                    case COLONIAS:
-                    case SECTORES:
-                    case CAMPANAS:
-                    case CARTERAEN:
-                    case LOCALIDADES:
-                    case SUCLOCALIDADES:
-                        data.putExtra(ITEM, item);
-                        setResult(request_code, data);
-                        finish();
-                        break;
-                }
+        adapter = new adapter_catalogos(ctx, catalogo, item -> {
+            Intent data = new Intent();
+            switch (item.getCatalogo()){
+                case ESTADOS:
+                case OCUPACIONES:
+                case COLONIAS:
+                case SECTORES:
+                case CAMPANAS:
+                case CARTERAEN:
+                case LOCALIDADES:
+                case SUCLOCALIDADES:
+                    data.putExtra(ITEM, item);
+                    setResult(request_code, data);
+                    finish();
+                    break;
             }
         });
 

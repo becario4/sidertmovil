@@ -5035,14 +5035,14 @@ public class DBhelper extends SQLiteOpenHelper {
                 " VALUES (?, ?, ? , ?, ?, ?, ?, ?) ";
 
         SQLiteStatement pInsert = db.compileStatement(sql);
-        pInsert.bindString(1, params.get(1));
-        pInsert.bindString(2, params.get(2));
-        pInsert.bindString(3, params.get(3));
-        pInsert.bindString(4, params.get(4));
-        pInsert.bindString(5, params.get(5));
-        pInsert.bindString(6, params.get(6));
-        pInsert.bindString(7, params.get(7));
-        pInsert.bindString(8, params.get(8));
+        pInsert.bindString(1, params.get(0));
+        pInsert.bindString(2, params.get(1));
+        pInsert.bindString(3, params.get(2));
+        pInsert.bindString(4, params.get(3));
+        pInsert.bindString(5, params.get(4));
+        pInsert.bindString(6, params.get(5));
+        pInsert.bindString(7, params.get(6));
+        pInsert.bindString(8, params.get(7));
 
         pInsert.executeInsert();
 
