@@ -1,24 +1,28 @@
 package com.sidert.sidertmovil.fragments.dialogs;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
-import android.database.Cursor;
+import android.graphics.Color;
 import android.os.Bundle;
-import android.util.Log;
+import android.text.Html;
+import android.text.Spanned;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
+import android.widget.ImageButton;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.sidert.sidertmovil.R;
 import com.sidert.sidertmovil.database.DBhelper;
+import com.sidert.sidertmovil.database.EntitiesCommonsContants;
+import com.sidert.sidertmovil.database.dao.BeneficiariosDao;
+import com.sidert.sidertmovil.database.dao.SolicitudCampanaDao;
+import com.sidert.sidertmovil.database.entities.Beneficiario;
+import com.sidert.sidertmovil.database.entities.SolicitudCampana;
 import com.sidert.sidertmovil.models.MResSaveSolicitud;
+import com.sidert.sidertmovil.models.SolicitudCreditoErrorMessage;
 import com.sidert.sidertmovil.models.catalogos.MedioPagoDao;
-import com.sidert.sidertmovil.models.datosCampañas.datosCampanaGpo;
-import com.sidert.sidertmovil.models.datosCampañas.datosCampanaGpoRen;
-import com.sidert.sidertmovil.models.dto.BeneficiarioDto;
 import com.sidert.sidertmovil.models.solicitudes.Solicitud;
 import com.sidert.sidertmovil.models.solicitudes.SolicitudDao;
 import com.sidert.sidertmovil.models.solicitudes.SolicitudRen;
@@ -63,9 +67,7 @@ import com.sidert.sidertmovil.models.solicitudes.solicitudgpo.renovacion.Politic
 import com.sidert.sidertmovil.models.solicitudes.solicitudgpo.renovacion.PoliticaPldIntegranteRenDao;
 import com.sidert.sidertmovil.models.solicitudes.solicitudgpo.renovacion.TelefonoIntegranteRen;
 import com.sidert.sidertmovil.models.solicitudes.solicitudgpo.renovacion.TelefonoIntegranteRenDao;
-import com.sidert.sidertmovil.services.beneficiario.BeneficiarioService;
 import com.sidert.sidertmovil.services.solicitud.solicitudgpo.SolicitudGpoService;
-import com.sidert.sidertmovil.utils.ManagerInterface;
 import com.sidert.sidertmovil.utils.Miscellaneous;
 import com.sidert.sidertmovil.utils.RetrofitClient;
 import com.sidert.sidertmovil.utils.SessionManager;
@@ -73,123 +75,243 @@ import com.sidert.sidertmovil.utils.SessionManager;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ExecutionException;
+import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.FragmentActivity;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
-import retrofit2.Callback;
 import retrofit2.Response;
-import timber.log.Timber;
 
-import static com.sidert.sidertmovil.utils.Constants.*;
+import static com.sidert.sidertmovil.utils.Constants.ES_RENOVACION;
+import static com.sidert.sidertmovil.utils.Constants.ID_SOLICITUD;
+import static com.sidert.sidertmovil.utils.Constants.K_ACTIVIDAD_ECONOMICA;
+import static com.sidert.sidertmovil.utils.Constants.K_ANTIGUEDAD;
+import static com.sidert.sidertmovil.utils.Constants.K_BIENES;
+import static com.sidert.sidertmovil.utils.Constants.K_CALLE;
+import static com.sidert.sidertmovil.utils.Constants.K_CALLE_ATRAS;
+import static com.sidert.sidertmovil.utils.Constants.K_CALLE_ENFRENTE;
+import static com.sidert.sidertmovil.utils.Constants.K_CALLE_LATERAL_DER;
+import static com.sidert.sidertmovil.utils.Constants.K_CALLE_LATERAL_IZQ;
+import static com.sidert.sidertmovil.utils.Constants.K_CAPACIDAD_PAGO;
+import static com.sidert.sidertmovil.utils.Constants.K_CARACTERISTICAS_DOMICILIO;
+import static com.sidert.sidertmovil.utils.Constants.K_CARGO;
+import static com.sidert.sidertmovil.utils.Constants.K_CASA_REUNION;
+import static com.sidert.sidertmovil.utils.Constants.K_CIUDAD;
+import static com.sidert.sidertmovil.utils.Constants.K_CLASIFICACION_RIESGO;
+import static com.sidert.sidertmovil.utils.Constants.K_CLIENTE_ID;
+import static com.sidert.sidertmovil.utils.Constants.K_CODIGO_POSTAL;
+import static com.sidert.sidertmovil.utils.Constants.K_COLONIA;
+import static com.sidert.sidertmovil.utils.Constants.K_COMPROBANTE_DOMICILIO;
+import static com.sidert.sidertmovil.utils.Constants.K_CURP;
+import static com.sidert.sidertmovil.utils.Constants.K_DEPENDIENTES_ECONOMICO;
+import static com.sidert.sidertmovil.utils.Constants.K_DESTINO_CREDITO;
+import static com.sidert.sidertmovil.utils.Constants.K_EDAD;
+import static com.sidert.sidertmovil.utils.Constants.K_EMAIL;
+import static com.sidert.sidertmovil.utils.Constants.K_ESTADO;
+import static com.sidert.sidertmovil.utils.Constants.K_ESTADO_CIVIL;
+import static com.sidert.sidertmovil.utils.Constants.K_ESTADO_CUENTA;
+import static com.sidert.sidertmovil.utils.Constants.K_ESTADO_NACIMIENTO;
+import static com.sidert.sidertmovil.utils.Constants.K_ESTATUS_INTEGRANTE;
+import static com.sidert.sidertmovil.utils.Constants.K_FECHA_DESEMBOLSO;
+import static com.sidert.sidertmovil.utils.Constants.K_FECHA_ENVIO;
+import static com.sidert.sidertmovil.utils.Constants.K_FECHA_INICIO;
+import static com.sidert.sidertmovil.utils.Constants.K_FECHA_NACIMIENTO;
+import static com.sidert.sidertmovil.utils.Constants.K_FECHA_TERMINO;
+import static com.sidert.sidertmovil.utils.Constants.K_FIRMA;
+import static com.sidert.sidertmovil.utils.Constants.K_FOTO_FACHADA;
+import static com.sidert.sidertmovil.utils.Constants.K_GASTO_MENSUAL;
+import static com.sidert.sidertmovil.utils.Constants.K_GENERO;
+import static com.sidert.sidertmovil.utils.Constants.K_GRUPO_ID;
+import static com.sidert.sidertmovil.utils.Constants.K_HORA_VISITA;
+import static com.sidert.sidertmovil.utils.Constants.K_IDENTIFICACION_FRONTAL;
+import static com.sidert.sidertmovil.utils.Constants.K_IDENTIFICACION_REVERSO;
+import static com.sidert.sidertmovil.utils.Constants.K_IDENTIFICACION_SELFIE;
+import static com.sidert.sidertmovil.utils.Constants.K_IDENTIFICACION_TIPO;
+import static com.sidert.sidertmovil.utils.Constants.K_ID_CAMPANA;
+import static com.sidert.sidertmovil.utils.Constants.K_INGRESOS_OTROS;
+import static com.sidert.sidertmovil.utils.Constants.K_INGRESO_MENSUAL;
+import static com.sidert.sidertmovil.utils.Constants.K_LATITUD;
+import static com.sidert.sidertmovil.utils.Constants.K_LOCALIDAD;
+import static com.sidert.sidertmovil.utils.Constants.K_LOCATED_AT;
+import static com.sidert.sidertmovil.utils.Constants.K_LONGITUD;
+import static com.sidert.sidertmovil.utils.Constants.K_MATERNO;
+import static com.sidert.sidertmovil.utils.Constants.K_MEDIOS_PAGOS;
+import static com.sidert.sidertmovil.utils.Constants.K_MEDIO_CONTACTO;
+import static com.sidert.sidertmovil.utils.Constants.K_MONTO_LETRA;
+import static com.sidert.sidertmovil.utils.Constants.K_MONTO_MAXIMO;
+import static com.sidert.sidertmovil.utils.Constants.K_MONTO_PRESTAMO;
+import static com.sidert.sidertmovil.utils.Constants.K_MONTO_REFINANCIAR;
+import static com.sidert.sidertmovil.utils.Constants.K_MUNICIPIO;
+import static com.sidert.sidertmovil.utils.Constants.K_NACIONALIDAD;
+import static com.sidert.sidertmovil.utils.Constants.K_NIVEL_ESTUDIO;
+import static com.sidert.sidertmovil.utils.Constants.K_NOMBRE;
+import static com.sidert.sidertmovil.utils.Constants.K_NOMBRE_GRUPO;
+import static com.sidert.sidertmovil.utils.Constants.K_NOMBRE_QUIEN_FIRMA;
+import static com.sidert.sidertmovil.utils.Constants.K_NO_EXTERIOR;
+import static com.sidert.sidertmovil.utils.Constants.K_NO_IDENTIFICACION;
+import static com.sidert.sidertmovil.utils.Constants.K_NO_INTERIOR;
+import static com.sidert.sidertmovil.utils.Constants.K_NO_LOTE;
+import static com.sidert.sidertmovil.utils.Constants.K_NO_MANZANA;
+import static com.sidert.sidertmovil.utils.Constants.K_NUM_OPERACIONES_MENSUAL;
+import static com.sidert.sidertmovil.utils.Constants.K_NUM_OPERACIONES_MENSUAL_EFECTIVO;
+import static com.sidert.sidertmovil.utils.Constants.K_OBSERVACIONES;
+import static com.sidert.sidertmovil.utils.Constants.K_OCUPACION;
+import static com.sidert.sidertmovil.utils.Constants.K_OTROS_DATOS;
+import static com.sidert.sidertmovil.utils.Constants.K_OTRO_DESTINO_CREDITO;
+import static com.sidert.sidertmovil.utils.Constants.K_OTRO_MEDIOS_PAGOS;
+import static com.sidert.sidertmovil.utils.Constants.K_OTRO_TIPO_VIVIENDA;
+import static com.sidert.sidertmovil.utils.Constants.K_PARENTESCO;
+import static com.sidert.sidertmovil.utils.Constants.K_PATERNO;
+import static com.sidert.sidertmovil.utils.Constants.K_PERIODICIDAD;
+import static com.sidert.sidertmovil.utils.Constants.K_PLAZO;
+import static com.sidert.sidertmovil.utils.Constants.K_POLITICAMENTE_EXP;
+import static com.sidert.sidertmovil.utils.Constants.K_PROPIETARIO;
+import static com.sidert.sidertmovil.utils.Constants.K_PROVEEDOR_RECURSOS;
+import static com.sidert.sidertmovil.utils.Constants.K_REFERENCIAS;
+import static com.sidert.sidertmovil.utils.Constants.K_REFERENCIA_DOMICILIARIA;
+import static com.sidert.sidertmovil.utils.Constants.K_REFERENCIA_NEGOCIO;
+import static com.sidert.sidertmovil.utils.Constants.K_RFC;
+import static com.sidert.sidertmovil.utils.Constants.K_SOLICITANTE;
+import static com.sidert.sidertmovil.utils.Constants.K_SOLICITANTE_CONYUGE;
+import static com.sidert.sidertmovil.utils.Constants.K_SOLICITANTE_CROQUIS;
+import static com.sidert.sidertmovil.utils.Constants.K_SOLICITANTE_DOCUMENTOS;
+import static com.sidert.sidertmovil.utils.Constants.K_SOLICITANTE_NEGOCIO;
+import static com.sidert.sidertmovil.utils.Constants.K_SOLICITANTE_POLITICAS;
+import static com.sidert.sidertmovil.utils.Constants.K_SOL_LATITUD;
+import static com.sidert.sidertmovil.utils.Constants.K_SOL_LOCATED_AT;
+import static com.sidert.sidertmovil.utils.Constants.K_SOL_LONGITUD;
+import static com.sidert.sidertmovil.utils.Constants.K_TEL_CASA;
+import static com.sidert.sidertmovil.utils.Constants.K_TEL_CELULAR;
+import static com.sidert.sidertmovil.utils.Constants.K_TEL_MENSAJE;
+import static com.sidert.sidertmovil.utils.Constants.K_TEL_TRABAJO;
+import static com.sidert.sidertmovil.utils.Constants.K_TIEMPO_VIVIR_SITIO;
+import static com.sidert.sidertmovil.utils.Constants.K_TIENE_FIRMA;
+import static com.sidert.sidertmovil.utils.Constants.K_TIPO_SOLICITUD;
+import static com.sidert.sidertmovil.utils.Constants.K_TIPO_VIVIENDA;
+import static com.sidert.sidertmovil.utils.Constants.K_TOTAL_INTEGRANTES;
+import static com.sidert.sidertmovil.utils.Constants.TIMESTAMP;
+import static com.sidert.sidertmovil.utils.Miscellaneous.runInMainThread;
 
 
 public class dialog_sending_solicitud_grupal extends DialogFragment {
+    private static final String PROGRESS_SEND_MEMBERS_FORMAT = "Enviando integrante: %d de %d";
+    private static final String TITLE_FORMAT = "ENVIANDO SOLICITUD DE: %s DEL GRUPO %s";
+    private static final String ERROR_TITLE_FORMAT = "ERROR EN EL ENVIO DE: %s";
+    private static final String SUCCESS_TITLE_FORMAT = "ENVIO COMPLETADO: %s";
+    private ImageButton closeDialogButton;
+    private ProgressBar pbSending;
+    private TextView infoView;
+    private TextView tvTitle;
     private Context ctx;
     private SessionManager session;
-    private ImageView ivClose;
-    private TextView tvError;
-    private TextView tvTitle;
-    private TextView tvNombreIntegrante;
-    private TextView tvTotalIntegrante;
-    private TextView tvNumIntegrante;
     private ExecutorService executorService;
+    private final SolicitudCampana defaultCamapana = new SolicitudCampana();
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+
         View v = inflater.inflate(R.layout.popup_sending_solicitud_grupal, container, false);
         ctx = getContext();
         session = SessionManager.getInstance(ctx);
-        ivClose = v.findViewById(R.id.ivClose);
-        tvError = v.findViewById(R.id.tvError);
+        closeDialogButton = v.findViewById(R.id.close_button);
+        pbSending = v.findViewById(R.id.pbSending);
+        infoView = v.findViewById(R.id.infoView);
         tvTitle = v.findViewById(R.id.tvTitle);
-        tvNombreIntegrante = v.findViewById(R.id.tvNombreIntegrante);
-        tvTotalIntegrante = v.findViewById(R.id.tvTotalIntegrante);
-        tvNumIntegrante = v.findViewById(R.id.tvNumIntegrante);
-        executorService = Executors.newSingleThreadExecutor();
-
-        Bundle args = getArguments();
-        if (args != null) {
-            long idSolicitud = getArguments().getLong(ID_SOLICITUD);
-            boolean esRenovacion = getArguments().getBoolean(ES_RENOVACION);
-            if (esRenovacion) {
-                sendRenovacion(idSolicitud);
-            } else {
-                SendOriginacion(idSolicitud);
-            }
-        }
-
+        executorService = Executors.newFixedThreadPool(10);
         return v;
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        ivClose.setOnClickListener((imageView) -> dismiss());
+        closeDialogButton.setOnClickListener((imageView) -> dismiss());
+        Bundle args = getArguments();
+        if (args != null) {
+            defaultCamapana.setCampanaNombre("NINGUNO");
+            defaultCamapana.setNombreReferido("NINGUNO");
+
+            showInfoProgress(0, 0);
+            long idSolicitud = getArguments().getLong(ID_SOLICITUD);
+            boolean esRenovacion = getArguments().getBoolean(ES_RENOVACION);
+            if (esRenovacion) {
+                sendRenovacion(idSolicitud);
+            } else {
+                sendOriginacion(idSolicitud);
+            }
+        }
+
     }
 
     private void sendRenovacion(long idSolicitud) {
         SolicitudRenDao solicitudRenDao = new SolicitudRenDao(ctx);
-        SolicitudRen solicitudRen = solicitudRenDao.findByIdSolicitud(Math.toIntExact(idSolicitud));
+        SolicitudRen solicitudRen = solicitudRenDao.findByIdSolicitud((int) idSolicitud);
 
         if (solicitudRen != null) {
             CreditoGpoRenDao creditoGpoRenDao = new CreditoGpoRenDao(ctx);
             CreditoGpoRen creditoGpoRen = creditoGpoRenDao.findByIdSolicitud(solicitudRen.getIdSolicitud());
-            tvTitle.setText("ENVIANDO SOLICITUD DE " + creditoGpoRen.getNombreGrupo());
 
             Integer creditoId = creditoGpoRen.getId();
             IntegranteGpoRenDao integranteGpoRenDao = new IntegranteGpoRenDao(ctx);
             List<IntegranteGpoRen> integranteGpoRenList = integranteGpoRenDao.findAllByIdCredito(creditoId);
 
-            Integer totalMembers = integranteGpoRenList.size();
-
-            if (totalMembers > 0) {
-                tvTotalIntegrante.setText(String.valueOf(totalMembers));
-
-                for (int i = 0; i < integranteGpoRenList.size(); i++) {
-                    IntegranteGpoRen integranteGpoRen = integranteGpoRenList.get(i);
-                    tvNumIntegrante.setText(String.valueOf(i + 1));
-                    tvNombreIntegrante.setText(integranteGpoRen.getNombreCompleto());
-                    if (integranteGpoRen.getEstatusCompletado() < 2) {
-                        envioDeIntegrantesRenovacion(integranteGpoRen, totalMembers, creditoGpoRen, solicitudRen);
+            if (!integranteGpoRenList.isEmpty()) {
+                Runnable runnable = () -> {
+                    int totalMembers = integranteGpoRenList.size();
+                    showInfoProgress(0, totalMembers);
+                    ResponseResultWrapper responseResultWrapper = null;
+                    for (int i = 0; i < integranteGpoRenList.size(); i++) {
+                        IntegranteGpoRen integranteGpoRen = integranteGpoRenList.get(i);
+                        String integranteNombreCompleto = integranteGpoRen.getNombreCompleto();
+                        showInfoProgress(i + 1, totalMembers);
+                        this.updateTitleView(integranteNombreCompleto, solicitudRen.getNombre());
+                        if (integranteGpoRen.getEstatusCompletado() < 2) {
+                            responseResultWrapper = envioDeIntegrantesRenovacion(integranteGpoRen, totalMembers, creditoGpoRen, solicitudRen);
+                            if (responseResultWrapper.code == 500) {
+                                updateTitleViewError(integranteNombreCompleto, responseResultWrapper);
+                                break;
+                            } else {
+                                updateTitleViewSuccess(integranteNombreCompleto);
+                            }
+                        }
                     }
-                }
-
-                Integer totalMembersThatWereSuccessfullySubmitted = integranteGpoRenDao.countIntegrantesWihtStatusSuccessBycreditoId(creditoId);
-
-                if (totalMembersThatWereSuccessfullySubmitted.equals(totalMembers)) {
-                    solicitudRenDao.setCompletado(solicitudRen);
-                    Toast.makeText(ctx, "¡Solicitud enviada!", Toast.LENGTH_LONG).show();
-                } else {
-                    Toast.makeText(ctx, "No todos los integrantes fueron enviados correctamente, porfavor trata de nuevo", Toast.LENGTH_LONG).show();
-                }
-                getActivity().finish();
+                    if (responseResultWrapper != null && responseResultWrapper.code == 200) {
+                        Integer totalMembersThatWereSuccessfullySubmitted = integranteGpoRenDao.countIntegrantesWihtStatusSuccessBycreditoId(creditoId);
+                        if (totalMembersThatWereSuccessfullySubmitted.equals(totalMembers)) {
+                            solicitudRenDao.setCompletado(solicitudRen);
+                            runInMainThread(() -> Toast.makeText(ctx, "¡Solicitud enviada!", Toast.LENGTH_LONG).show());
+                            FragmentActivity activity = this.getActivity();
+                            if (activity != null) {
+                                activity.finish();
+                            }
+                        } else {
+                            runInMainThread(() -> Toast.makeText(ctx, "No todos los integrantes fueron enviados correctamente, favor de trata de nuevo", Toast.LENGTH_LONG).show());
+                            this.dismiss();
+                        }
+                    }
+                };
+                this.executorService.submit(runnable);
             }
         }
     }
 
 
-    private void envioDeIntegrantesRenovacion(@NonNull final IntegranteGpoRen integranteGpoRen, int totalIntegrantesRenovacion, CreditoGpoRen creditoGpoRen, SolicitudRen solicitudRen) {
+    private ResponseResultWrapper envioDeIntegrantesRenovacion(@NonNull final IntegranteGpoRen integranteGpoRen, int totalIntegrantesRenovacion, CreditoGpoRen creditoGpoRen, SolicitudRen solicitudRen) {
 
         JSONObject json_solicitud = new JSONObject();
         try {
             Integer integranteId = integranteGpoRen.getId();
             Integer solicitudIntegranteId = integranteGpoRen.getIdSolicitudIntegrante();
             String estadoCivil = integranteGpoRen.getEstadoCivil();
-
+            Integer creditoGpoId = creditoGpoRen.getId();
 
             DomicilioIntegranteRenDao domicilioIntegranteRenDao = new DomicilioIntegranteRenDao(ctx);
             DomicilioIntegranteRen domicilioIntegranteRen = domicilioIntegranteRenDao.findByIdIntegrante(integranteId.longValue());
@@ -206,6 +328,14 @@ public class dialog_sending_solicitud_grupal extends DialogFragment {
             CroquisIntegranteRenDao croquisIntegranteRenDao = new CroquisIntegranteRenDao(ctx);
             CroquisIntegranteRen croquisIntegranteRen = croquisIntegranteRenDao.findByIdIntegrante(integranteId);
 
+            SolicitudCampanaDao solicitudCampanaDao = DBhelper.getInstance(ctx).getSolicitudCampanaDao();
+            SolicitudCampana solicitudCampana = solicitudCampanaDao
+                    .findBySolicitudId(creditoGpoId.longValue(), integranteId, EntitiesCommonsContants.TIPO_SOLICITUD_GRUPAL_RENOVACION)
+                    .orElse(defaultCamapana);
+
+            BeneficiariosDao beneficiariosDao = DBhelper.getInstance(ctx).getBeneficiariosDao();
+            Optional<Beneficiario> beneficiarioOptional = beneficiariosDao.findBySolicitudId(creditoGpoId.longValue(), integranteId, EntitiesCommonsContants.TIPO_SOLICITUD_GRUPAL_RENOVACION);
+
             FillSolicitudRen(json_solicitud, totalIntegrantesRenovacion, creditoGpoRen, solicitudRen);
             FillIntegranteRen(json_solicitud, integranteGpoRen, otrosDatosIntegranteRen, domicilioIntegranteRen);
             FillOtrosDatosIntegranteRen(json_solicitud, integranteGpoRen, otrosDatosIntegranteRen);
@@ -217,6 +347,12 @@ public class dialog_sending_solicitud_grupal extends DialogFragment {
             FillPLDIntegranteRen(json_solicitud, politicaPldIntegranteRen);
             if (otrosDatosIntegranteRen.getCasaReunion() == 1) {
                 FillCroquisIntegranteRen(json_solicitud, croquisIntegranteRen);
+            }
+
+            fillSolicitudCampana(json_solicitud, solicitudCampana);
+
+            if (beneficiarioOptional.isPresent()) {
+                fillBeneficiario(json_solicitud, beneficiarioOptional.get());
             }
 
             MultipartBody.Part fachada_cliente = domicilioIntegranteRen.getFachadaMBPart();
@@ -247,177 +383,95 @@ public class dialog_sending_solicitud_grupal extends DialogFragment {
                     ine_selfie
             );
 
+            Future<ResponseResultWrapper> futureResponse = executorService.submit(() -> {
 
-            Future<Integer> futureResponse = executorService.submit(() -> {
-                try {
-                    Response<MResSaveSolicitud> response = call.execute();
-                    int status = response.code();
-                    if (status == 200) {
-                        MResSaveSolicitud res = response.body();
-                        IntegranteGpoRenDao integranteGpoRenDao = new IntegranteGpoRenDao(ctx);
-                        integranteGpoRenDao.setCompletado(integranteGpoRen, res.getIdSolicitud());
-                        integranteGpoRen.setEstatusCompletado(2);
-                        enviarDatosBeneficiarioRenovacion(integranteGpoRen);
-                        enviarDatosCampanaGpoRen(integranteGpoRen);
-                        tvNombreIntegrante.setText("ENVIO COMPLETADO: " + integranteGpoRen.getNombreCompleto());
-                    } else {
-                        tvNombreIntegrante.setText("ERROR EN EL ENVIO DE: " + integranteGpoRen.getNombreCompleto());
-                        try (ResponseBody errorBody = response.errorBody()) {
-                            if (errorBody == null) {
-                                showError("Error no identificado");
-                            } else {
-                                String errorMessage = errorBody.string();
-                                showError(errorMessage);
-                            }
-                        } catch (IOException e) {
-                            showError(e.getMessage());
-                        }
+                Response<MResSaveSolicitud> response = call.execute();
+                int status = response.code();
+                MResSaveSolicitud res = response.body();
+                ResponseResultWrapper responseResultWrapper = new ResponseResultWrapper();
+                if (status == 200 && res != null) {
+                    IntegranteGpoRenDao integranteGpoRenDao = new IntegranteGpoRenDao(ctx);
+                    integranteGpoRenDao.setCompletado(integranteGpoRen, res.getIdSolicitud());
+                    integranteGpoRen.setEstatusCompletado(2);
+                    responseResultWrapper.code = 200;
+                    responseResultWrapper.message = "OK!";
+                    return responseResultWrapper;
+                } else {
+                    try (ResponseBody errorBody = response.errorBody()) {
+                        responseResultWrapper.code = 500;
+                        responseResultWrapper.kind = 2;
+                        responseResultWrapper.message = (errorBody == null) ? "Error no identificado" : errorBody.string();
+                        return responseResultWrapper;
                     }
-                    return 200;
-                } catch (IOException ioException) {
-                    showError(ioException.getMessage());
-                    return 500;
                 }
             });
 
-            int responseCodeResult = futureResponse.get(5, TimeUnit.MINUTES);
-            Timber.tag(this.getClass().getName()).i("Codigo de error: %d", responseCodeResult);
+            return futureResponse.get();
         } catch (Exception e) {
-            showError(e.getMessage());
+            ResponseResultWrapper responseResultWrapper = new ResponseResultWrapper();
+            responseResultWrapper.code = 500;
+            responseResultWrapper.message = e.getMessage();
+            return responseResultWrapper;
         }
     }
 
-    @SuppressLint("Range")
-    public void enviarDatosBeneficiarioRenovacion(IntegranteGpoRen integrante) {
-        DBhelper dBhelper = DBhelper.getInstance(ctx);
-        BeneficiarioDto beneficiarioDto = null;
-
-        Cursor row = dBhelper.getBeneficiarioRen(TBL_DATOS_BENEFICIARIO_GPO_REN, String.valueOf(integrante.getClienteId()));
-        if (row != null && row.moveToFirst()) {
-            String serieId = session.getUser().get(0);
-            beneficiarioDto = new BeneficiarioDto(
-                    row.getLong(row.getColumnIndex("id_originacion")),
-                    row.getInt(row.getColumnIndex("id_cliente")),
-                    row.getInt(row.getColumnIndex("id_grupo")),
-                    row.getString(row.getColumnIndex("nombre")),
-                    row.getString(row.getColumnIndex("paterno")),
-                    row.getString(row.getColumnIndex("materno")),
-                    row.getString(row.getColumnIndex("parentesco")),
-                    serieId
-            );
-        } else {
-            Toast.makeText(ctx, "NO SE ENCONTRARON DATOS", Toast.LENGTH_SHORT).show();
-        }
-
-        if (beneficiarioDto != null) {
-            BeneficiarioService sa = RetrofitClient.generalRF(CONTROLLER_API, ctx).create(BeneficiarioService.class);
-            Call<Map<String, Object>> call = sa.senDataBeneficiario(
-                    "Bearer " + session.getUser().get(7),
-                    beneficiarioDto
-            );
-            call.enqueue(new Callback<Map<String, Object>>() {
-                @Override
-                public void onResponse(Call<Map<String, Object>> call, Response<Map<String, Object>> response) {
-                    if (response.code() == 200) {
-                        Map<String, Object> res = response.body();
-                        Timber.tag("AQUI:").e("REGISTRO COMPLETO");
-                    }
-                }
-
-                @Override
-                public void onFailure(Call<Map<String, Object>> call, Throwable t) {
-                    Timber.tag("AQUI;").e(" NO SE REGISTRO NADA");
-                }
-            });
-        }
-    }
-
-    public void enviarDatosCampanaGpoRen(IntegranteGpoRen integrante) {
-        DBhelper dBhelper = DBhelper.getInstance(ctx);
-        String queryWhere = " WHERE id_solicitud = ?";
-        String[] params = {String.valueOf(integrante.getId())};
-
-        try (Cursor row = dBhelper.getRecords(TBL_DATOS_CREDITO_CAMPANA_GPO_REN, queryWhere, " ", params)) {
-            if (row != null && row.moveToFirst()) {
-                datosCampanaGpoRen dato = new datosCampanaGpoRen();
-                dato.fill(row);
-                ManagerInterface api = RetrofitClient.generalRF(CONTROLLER_API, ctx).create(ManagerInterface.class);
-
-                Call<datosCampanaGpoRen> call = api.saveCreditoCampanaGpoRen(
-                        "Bearer " + session.getUser().get(7),
-                        Long.valueOf(dato.getId_originacion()),
-                        dato.getId_campana(),
-                        dato.getTipo_campana(),
-                        dato.getNombre_refiero()
-                );
-
-                Future<?> future = this.executorService.submit(() -> {
-                    try {
-                        Response<datosCampanaGpoRen> response = call.execute();
-                        if (response.code() == 200) {
-                            processCampaniaResponse(response);
-                        } else {
-                            Log.e("AQUI:", "NO SE REGISTRO LA CAMPAÑA");
-                        }
-                    } catch (IOException e) {
-                        Log.e("AQUI:", "NO SE REGISTRO LA CAMPAÑA");
-                    }
-                });
-                future.get(5, TimeUnit.MINUTES);
-            } else {
-                Toast.makeText(ctx, "NO SE ENCONTRARON DATOS", Toast.LENGTH_SHORT).show();
-            }
-        } catch (ExecutionException | InterruptedException | TimeoutException ignored) {
-        }
-    }
-
-    private void processCampaniaResponse(Response<datosCampanaGpoRen> response) {
-        try (okhttp3.Response res = response.raw()) {
-            ResponseBody responseBody = res.body();
-            Timber.tag(this.getClass().getName()).i("Service response: %s", responseBody.string());
-            Log.e("AQUI:", "REGISTRO COMPLETO CREDITO CAMPAÑA");
-        } catch (IOException ignored) {
-        }
-    }
-
-
-    private void SendOriginacion(long idSolicitud) {
+    private void sendOriginacion(long idSolicitud) {
         SolicitudDao solicitudDao = new SolicitudDao(ctx);
-        Solicitud solicitud = solicitudDao.findByIdSolicitud(Integer.valueOf(String.valueOf(idSolicitud)));
+        Solicitud solicitud = solicitudDao.findByIdSolicitud((int) idSolicitud);
 
         if (solicitud != null) {
             CreditoGpoDao creditoGpoDao = new CreditoGpoDao(ctx);
             CreditoGpo creditoGpo = creditoGpoDao.findByIdSolicitud(solicitud.getIdSolicitud());
-            tvTitle.setText("ENVIANDO SOLICITUD DE " + creditoGpo.getNombreGrupo());
 
             IntegranteGpoDao integranteGpoDao = new IntegranteGpoDao(ctx);
             List<IntegranteGpo> integranteGpoList = integranteGpoDao.findAllByIdCredito(creditoGpo.getId());
-            int totalIntegrantes = integranteGpoList.size();
-            if (totalIntegrantes > 0) {
-                tvTotalIntegrante.setText(String.valueOf(totalIntegrantes));
-                for (int count = 0; count < integranteGpoList.size(); count++) {
-                    tvNumIntegrante.setText(String.valueOf(count + 1));
-                    IntegranteGpo integranteGpo = integranteGpoList.get(count);
-                    SendIntegrantePendiente(solicitud, integranteGpo, totalIntegrantes, creditoGpo);
-                }
-                int totalSuccess = integranteGpoDao.countIntegrantesWihtStatusSuccessBycreditoId(creditoGpo.getId());
-                if (totalIntegrantes == totalSuccess) {
-                    solicitudDao.setCompletado(solicitud);
-                    Toast.makeText(ctx, "¡Solicitud enviada!", Toast.LENGTH_LONG).show();
-                } else {
-                    Toast.makeText(ctx, "No todos los integrantes fueron enviados correctamente, favor de trata de nuevo", Toast.LENGTH_LONG).show();
-                }
-                getActivity().finish();
+
+            if (!integranteGpoList.isEmpty()) {
+
+                Runnable runnable = () -> {
+                    int totalIntegrantes = integranteGpoList.size();
+                    this.showInfoProgress(0, totalIntegrantes);
+                    ResponseResultWrapper responseResultWrapper = null;
+                    for (int count = 0; count < integranteGpoList.size(); count++) {
+                        IntegranteGpo integranteGpo = integranteGpoList.get(count);
+                        String integranteNombreCompleto = integranteGpo.getNombreCompleto();
+                        this.showInfoProgress(count + 1, totalIntegrantes);
+                        this.updateTitleView(integranteNombreCompleto, solicitud.getNombre());
+                        responseResultWrapper = sendIntegrantePendiente(solicitud, integranteGpo, totalIntegrantes, creditoGpo);
+                        if (responseResultWrapper.code == 200) {
+                            this.updateTitleViewSuccess(integranteNombreCompleto);
+                        } else {
+                            this.updateTitleViewError(integranteNombreCompleto, responseResultWrapper);
+                            break;
+                        }
+                    }
+                    if (responseResultWrapper != null && responseResultWrapper.code == 200) {
+                        int totalSuccess = integranteGpoDao.countIntegrantesWihtStatusSuccessBycreditoId(creditoGpo.getId());
+                        if (totalIntegrantes == totalSuccess) {
+                            solicitudDao.setCompletado(solicitud);
+                            runInMainThread(() -> Toast.makeText(ctx, "¡Solicitud enviada!", Toast.LENGTH_LONG).show());
+                            FragmentActivity activity = this.getActivity();
+                            if (activity != null) {
+                                activity.finish();
+                            }
+                        } else {
+                            runInMainThread(() -> Toast.makeText(ctx, "No todos los integrantes fueron enviados correctamente, favor de trata de nuevo", Toast.LENGTH_LONG).show());
+                            this.dismiss();
+                        }
+                    }
+                };
+                this.executorService.submit(runnable);
+
             }
         }
     }
 
-    private void SendIntegrantePendiente(final Solicitud solicitud, final IntegranteGpo integranteGpo, int totalIntegrantes, CreditoGpo creditoGpo) {
+    private ResponseResultWrapper sendIntegrantePendiente(final Solicitud solicitud, final IntegranteGpo integranteGpo, int totalIntegrantes, CreditoGpo creditoGpo) {
 
-        tvNombreIntegrante.setText(integranteGpo.getNombreCompleto());
         Integer integranteId = integranteGpo.getId();
         String estadoCivil = integranteGpo.getEstadoCivil();
         Integer solicitudIntegranteId = integranteGpo.getIdSolicitudIntegrante();
+        Integer creditoGpoId = creditoGpo.getId();
 
         JSONObject json_solicitud = new JSONObject();
 
@@ -437,6 +491,14 @@ public class dialog_sending_solicitud_grupal extends DialogFragment {
             CroquisIntegranteDao croquisIntegranteDao = new CroquisIntegranteDao(ctx);
             CroquisIntegrante croquisIntegrante = croquisIntegranteDao.findByIdIntegrante(integranteId);
 
+            SolicitudCampanaDao solicitudCampanaDao = DBhelper.getInstance(ctx).getSolicitudCampanaDao();
+            SolicitudCampana solicitudCampana = solicitudCampanaDao
+                    .findBySolicitudId(creditoGpoId.longValue(), integranteId, EntitiesCommonsContants.TIPO_SOLICITUD_GRUPAL_ORIGINACION)
+                    .orElse(defaultCamapana);
+
+            BeneficiariosDao beneficiariosDao = DBhelper.getInstance(ctx).getBeneficiariosDao();
+            Optional<Beneficiario> beneficiarioOptional = beneficiariosDao.findBySolicitudId(creditoGpoId.longValue(), integranteId, EntitiesCommonsContants.TIPO_SOLICITUD_GRUPAL_ORIGINACION);
+
             FillSolicitud(json_solicitud, totalIntegrantes, creditoGpo, solicitud);
             FillIntegrante(json_solicitud, integranteGpo, otrosDatosIntegrante, domicilioIntegrante);
             FillOtrosDatosIntegrante(json_solicitud, integranteGpo, otrosDatosIntegrante);
@@ -448,6 +510,10 @@ public class dialog_sending_solicitud_grupal extends DialogFragment {
             FillPLDIntegrante(json_solicitud, politicaPldIntegrante);
             if (otrosDatosIntegrante.getCasaReunion() == 1) {
                 FillCroquisIntegrante(json_solicitud, croquisIntegrante);
+            }
+            fillSolicitudCampana(json_solicitud, solicitudCampana);
+            if (beneficiarioOptional.isPresent()) {
+                fillBeneficiario(json_solicitud, beneficiarioOptional.get());
             }
 
             MultipartBody.Part fachada_cliente = domicilioIntegrante.getFachadaMBPart();
@@ -478,12 +544,13 @@ public class dialog_sending_solicitud_grupal extends DialogFragment {
                     ine_selfie
             );
 
-            Future<Integer> future = this.executorService.submit(() -> {
+            Future<ResponseResultWrapper> future = this.executorService.submit(() -> {
                 Response<MResSaveSolicitud> response = call.execute();
                 int statusCode = response.code();
-                if (statusCode == 200) {
+                MResSaveSolicitud res = response.body();
+                ResponseResultWrapper responseResultWrapper = new ResponseResultWrapper();
+                if (statusCode == 200 && res != null) {
                     SolicitudDao solicitudDao = new SolicitudDao(ctx);
-                    MResSaveSolicitud res = response.body();
 
                     IntegranteGpoDao integranteGpoDao = new IntegranteGpoDao(ctx);
                     integranteGpoDao.setCompletado(integranteGpo, res.getIdSolicitud(), res.getId_grupo(), res.getId_cliente());
@@ -492,114 +559,45 @@ public class dialog_sending_solicitud_grupal extends DialogFragment {
                     solicitudDao.solicitudEnviadaGpo(solicitud);
 
                     integranteGpo.setEstatusCompletado(2);
-                    enviarDatosCampanaGpo(integranteGpo);
-                    enviarDatosBeneficiario(integranteGpo);
-                    return 200;
+
+                    responseResultWrapper.code = 200;
+                    responseResultWrapper.message = "OK";
+                    return responseResultWrapper;
+
                 } else {
-                    try (ResponseBody responseError = response.errorBody()) {
-                        if (responseError != null) {
-                            String err = responseError.string();
-                            showError(err);
-                        }
-                    } catch (IOException e) {
-                        showError(e.getMessage());
+                    try (ResponseBody errorBody = response.errorBody()) {
+                        responseResultWrapper.code = 500;
+                        responseResultWrapper.kind = 2;
+                        responseResultWrapper.message = (errorBody == null) ? "Error no identificado" : errorBody.string();
+                        return responseResultWrapper;
                     }
-                    return 500;
                 }
             });
-
-            Integer responseCodeResult = future.get(5, TimeUnit.MINUTES);
-            Timber.tag(this.getClass().getName()).i("Codigo de error: %d", responseCodeResult);
-
+            return future.get();
         } catch (Exception e) {
-            showError(e.getMessage());
+            ResponseResultWrapper responseResultWrapper = new ResponseResultWrapper();
+            responseResultWrapper.code = 500;
+            responseResultWrapper.message = e.getMessage();
+            return responseResultWrapper;
         }
     }
 
-    @SuppressLint("Range")
-    public void enviarDatosBeneficiario(IntegranteGpo integrante) {
-        DBhelper dBhelper = DBhelper.getInstance(ctx);
-        try (Cursor row = dBhelper.getBeneficiarioA(TBL_DATOS_BENEFICIARIO_GPO, String.valueOf(integrante.getIdSolicitudIntegrante()))) {
-            if (row != null && row.moveToFirst()) {
-                String serieId = session.getUser().get(0);
-                BeneficiarioDto beneficiarioDto = new BeneficiarioDto(
-                        row.getLong(row.getColumnIndex("id_originacion")),
-                        row.getInt(row.getColumnIndex("id_cliente")),
-                        row.getInt(row.getColumnIndex("id_grupo")),
-                        row.getString(row.getColumnIndex("nombre")),
-                        row.getString(row.getColumnIndex("paterno")),
-                        row.getString(row.getColumnIndex("materno")),
-                        row.getString(row.getColumnIndex("parentesco")),
-                        serieId
-                );
-
-                BeneficiarioService sa = RetrofitClient.generalRF(CONTROLLER_API, ctx).create(BeneficiarioService.class);
-                Call<Map<String, Object>> call = sa.senDataBeneficiario(
-                        "Bearer " + session.getUser().get(7),
-                        beneficiarioDto
-                );
-                call.enqueue(new Callback<Map<String, Object>>() {
-                    @Override
-                    public void onResponse(Call<Map<String, Object>> call, Response<Map<String, Object>> response) {
-                        if (response.code() == 200) {
-                            Map<String, Object> res = response.body();
-                            Timber.tag("AQUI:").e("REGISTRO COMPLETO");
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(Call<Map<String, Object>> call, Throwable t) {
-                        Timber.tag("AQUI;").e(" NO SE REGISTRO NADA");
-                    }
-                });
-            }
-        }
-
-        Toast.makeText(ctx, "NO SE ENCONTRARON DATOS", Toast.LENGTH_SHORT).show();
+    private void fillBeneficiario(JSONObject jsonSolicitud, Beneficiario beneficiario) throws JSONException {
+        JSONObject jsonBeneficiario = new JSONObject();
+        jsonBeneficiario.put("nombre", beneficiario.getNombre());
+        jsonBeneficiario.put("paterno", beneficiario.getPaterno());
+        jsonBeneficiario.put("materno", beneficiario.getMaterno());
+        jsonBeneficiario.put("parentesco", beneficiario.getParentesco());
+        jsonSolicitud.put("beneficiario_agf", jsonBeneficiario);
     }
 
-
-    public void enviarDatosCampanaGpo(IntegranteGpo integrante) {
-        DBhelper dBhelper = DBhelper.getInstance(ctx);
-        String queryWhere = " WHERE id_solicitud = ?";
-        String[] params = {String.valueOf(integrante.getId())};
-
-        try (Cursor row = dBhelper.getRecords(TBL_DATOS_CREDITO_CAMPANA_GPO, queryWhere, " ", params)) {
-            if (row != null && row.moveToFirst()) {
-                datosCampanaGpo dato = new datosCampanaGpo();
-                dato.fill(row);
-                ManagerInterface api = RetrofitClient.generalRF(CONTROLLER_API, ctx).create(ManagerInterface.class);
-                Call<datosCampanaGpo> call = api.saveCreditoCampanaGpo(
-                        "Bearer " + session.getUser().get(7),
-                        Long.valueOf(dato.getId_originacion()),
-                        dato.getId_campana(),
-                        dato.getTipo_campana(),
-                        dato.getNombre_refiero()
-                );
-
-                Future<Integer> future = executorService.submit(() -> {
-                    try {
-                        Response<datosCampanaGpo> response = call.execute();
-                        if (response.code() == 200) {
-                            datosCampanaGpo res = response.body();
-                            Log.e("AQUI:", "REGISTRO COMPLETO CREDITO CAMPAÑA");
-                            return 200;
-
-                        } else {
-                            Log.e("AQUI:", "NO SE REGISTRO LA CAMPAÑA");
-                        }
-                    } catch (Exception e) {
-                        Log.e("AQUI:", "NO SE REGISTRO LA CAMPAÑA");
-                    }
-                    return 500;
-                });
-                future.get(5, TimeUnit.MINUTES);
-            } else {
-                Toast.makeText(ctx, "NO SE ENCONTRARON DATOS", Toast.LENGTH_SHORT).show();
-            }
-        } catch (ExecutionException | InterruptedException | TimeoutException ignored) {
-        }
+    private void fillSolicitudCampana(JSONObject jsonSolicitud, SolicitudCampana solicitudCampana) throws JSONException {
+        JSONObject jsonCampana = new JSONObject();
+        jsonCampana.put("nombre_referido", solicitudCampana.getNombreReferido());
+        jsonCampana.put("nombre_campana", solicitudCampana.getCampanaNombre());
+        jsonSolicitud.put("solicitud_campana", jsonCampana);
     }
+
 
     private void FillConyugueIntegranteRen(JSONObject json_solicitud, ConyugueIntegranteRen conyugueIntegranteRen) throws JSONException {
         JSONObject json_conyuge = new JSONObject();
@@ -1035,15 +1033,39 @@ public class dialog_sending_solicitud_grupal extends DialogFragment {
         json_solicitud.put(K_SOLICITANTE_CROQUIS, json_croquis);
     }
 
-    private void showError(String message) {
-        Log.e("AQUI", message);
-
-        int limit = message.length();
-
-        if (limit > 1000) limit = 1000;
-
-        tvError.setText(message.substring(0, limit));
-        tvError.setVisibility(View.VISIBLE);
-        ivClose.setVisibility(View.VISIBLE);
+    private void updateTitleView(String memberName, String groupName) {
+        runInMainThread(() -> this.tvTitle.setText(String.format(TITLE_FORMAT, memberName, groupName)));
     }
+
+    private void updateTitleViewError(String memberName, ResponseResultWrapper responseResultWrapper) {
+        runInMainThread(() -> {
+            this.tvTitle.setTextColor(Color.RED);
+            this.tvTitle.setText(String.format(ERROR_TITLE_FORMAT, memberName));
+            this.pbSending.setVisibility(View.INVISIBLE);
+            this.closeDialogButton.setVisibility(View.VISIBLE);
+            if (responseResultWrapper.kind == 2) {
+                SolicitudCreditoErrorMessage solicitudCreditoErrorMessage = Miscellaneous.jsonToObject(responseResultWrapper.message, SolicitudCreditoErrorMessage.class);
+                Spanned spanned = Html.fromHtml(String.format("<p>%s</p> <p>%s</p>", solicitudCreditoErrorMessage.getMensaje(), solicitudCreditoErrorMessage.getError()), Html.FROM_HTML_SEPARATOR_LINE_BREAK_DIV);
+                this.infoView.setText(spanned);
+            } else {
+                this.infoView.setText(responseResultWrapper.message);
+            }
+        });
+    }
+
+    private void updateTitleViewSuccess(String memberName) {
+        runInMainThread(() -> this.tvTitle.setText(String.format(SUCCESS_TITLE_FORMAT, memberName)));
+    }
+
+    private void showInfoProgress(int currentProgress, int totalProgress) {
+        runInMainThread(() -> this.infoView.setText(String.format(PROGRESS_SEND_MEMBERS_FORMAT, currentProgress, totalProgress)));
+    }
+
+    private static final class ResponseResultWrapper {
+        String message;
+        int code;
+        int kind = 1;
+    }
+
+
 }

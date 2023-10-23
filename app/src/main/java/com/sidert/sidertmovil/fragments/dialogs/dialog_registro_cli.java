@@ -18,6 +18,11 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import com.sidert.sidertmovil.R;
+import com.sidert.sidertmovil.database.EntitiesCommonsContants;
+import com.sidert.sidertmovil.database.dao.BeneficiariosDao;
+import com.sidert.sidertmovil.database.dao.SolicitudCampanaDao;
+import com.sidert.sidertmovil.database.entities.Beneficiario;
+import com.sidert.sidertmovil.database.entities.SolicitudCampana;
 import com.sidert.sidertmovil.views.originacion.SolicitudCreditoInd;
 import com.sidert.sidertmovil.database.DBhelper;
 import com.sidert.sidertmovil.utils.Constants;
@@ -36,7 +41,7 @@ import static com.sidert.sidertmovil.utils.Constants.TIMESTAMP;
 public class dialog_registro_cli extends DialogFragment {
 
     public interface OnCompleteListener {
-        void onComplete(long id_solicitud, String id_cliente, String nombre, String paterno, String materno, long dirClie, long dirCony, long dirNeg, long dirAval, long dirRef);
+        void onComplete(long id_solicitud, String id_cliente, String nombre, String paterno, String materno, long dirClie, long dirCony, long dirNeg, long dirAval, long dirRef, long solicitudCampanaId, long beneficiarioId);
     }
 
     @Override
@@ -124,7 +129,10 @@ public class dialog_registro_cli extends DialogFragment {
     };
 
     private void saveCliente() {
-        long id = 0;
+        BeneficiariosDao beneficiariosDao = dBhelper.getBeneficiariosDao();
+        SolicitudCampanaDao solicitudCampanaDao = dBhelper.getSolicitudCampanaDao();
+
+        Long solicitudId = 0L;
         long id_cliente = 0;
         long id_direccion_cli = 0;
         long id_direccion_cony = 0;
@@ -147,11 +155,11 @@ public class dialog_registro_cli extends DialogFragment {
         params.put(9, "");                                      //FECHA GUARDADO
         params.put(10, "0");                                    //ESTATUS
 
-        id = dBhelper.saveSolicitudes(db, params, 1);
+        solicitudId = dBhelper.saveSolicitudes(db, params, 1);
 
         //Inserta registro de datos del credito
         params = new HashMap<>();
-        params.put(0, String.valueOf(id));                       //ID SOLICITUD
+        params.put(0, String.valueOf(solicitudId));                       //ID SOLICITUD
         params.put(1, "");                                       //PLAZO
         params.put(2, "");                                       //PERIODICIDAD
         params.put(3, "");                                       //FECHA DESEMBOLSO
@@ -185,7 +193,7 @@ public class dialog_registro_cli extends DialogFragment {
 
         //Inserta registro de datos del cliente
         params = new HashMap<>();
-        params.put(0, String.valueOf(id));                                      //ID SOLICITUD
+        params.put(0, String.valueOf(solicitudId));                                      //ID SOLICITUD
         params.put(1, etNombre.getText().toString().trim().toUpperCase());      //NOMBRE
         params.put(2, etPaterno.getText().toString().trim().toUpperCase());     //PATERNO
         params.put(3, etMaterno.getText().toString().trim().toUpperCase());     //MATERNO
@@ -246,7 +254,7 @@ public class dialog_registro_cli extends DialogFragment {
 
         //Inserta registro de datos conyuge
         params = new HashMap<>();
-        params.put(0, String.valueOf(id));                      //ID SOLICITUD
+        params.put(0, String.valueOf(solicitudId));                      //ID SOLICITUD
         params.put(1, "");                                      //NOMBRE
         params.put(2, "");                                      //PATERNO
         params.put(3, "");                                      //MATERNO
@@ -263,7 +271,7 @@ public class dialog_registro_cli extends DialogFragment {
 
         //Inserta registro de datos economicos
         params = new HashMap<>();
-        params.put(0, String.valueOf(id));                      //ID SOLICITUD
+        params.put(0, String.valueOf(solicitudId));                      //ID SOLICITUD
         params.put(1, "");                                      //PROPIEDADES
         params.put(2, "");                                      //VALOR APROXIMADO
         params.put(3, "");                                      //UBICACION
@@ -293,7 +301,7 @@ public class dialog_registro_cli extends DialogFragment {
 
         //Inserta registro de negocio
         params = new HashMap<>();
-        params.put(0, String.valueOf(id));                  //ID SOLICITUD
+        params.put(0, String.valueOf(solicitudId));                  //ID SOLICITUD
         params.put(1, "");                                  //NOMBRE
         params.put(2, String.valueOf(id_direccion_neg));        //DIRECCION ID
         params.put(3, "");                                  //OCUPACION
@@ -344,7 +352,7 @@ public class dialog_registro_cli extends DialogFragment {
 
         //Inserta registro del aval
         params = new HashMap<>();
-        params.put(0, String.valueOf(id));                  //ID SOLICITUD
+        params.put(0, String.valueOf(solicitudId));                  //ID SOLICITUD
         params.put(1, "");                                  //NOMBRE
         params.put(2, "");                                  //PATERNO
         params.put(3, "");                                  //MATERNO
@@ -419,7 +427,7 @@ public class dialog_registro_cli extends DialogFragment {
 
         //Inserta registro de referencia
         params = new HashMap<>();
-        params.put(0, String.valueOf(id));                  //ID SOLICITUD
+        params.put(0, String.valueOf(solicitudId));                  //ID SOLICITUD
         params.put(1, "");                                  //NOMBRE
         params.put(2, "");                                  //PATERNO
         params.put(3, "");                                  //MATERNO
@@ -433,7 +441,7 @@ public class dialog_registro_cli extends DialogFragment {
 
         //Inserta registro de croquis
         params = new HashMap<>();
-        params.put(0, String.valueOf(id));                  //ID SOLICITUD
+        params.put(0, String.valueOf(solicitudId));                  //ID SOLICITUD
         params.put(1, "");                                  //CALLE PRINCIPAL
         params.put(2, "");                                  //LATERAL UNO
         params.put(3, "");                                  //LATERAL DOS
@@ -446,7 +454,7 @@ public class dialog_registro_cli extends DialogFragment {
 
         //Inserta registro de politicas
         params = new HashMap<>();
-        params.put(0, String.valueOf(id));                  //ID SOLICITUD
+        params.put(0, String.valueOf(solicitudId));                  //ID SOLICITUD
         params.put(1, "0");                                 //PROPIERATIO REAL
         params.put(2, "0");                                 //PROVEEDOR RECURSOS
         params.put(3, "0");                                 //PERSONA POLITICA
@@ -456,7 +464,7 @@ public class dialog_registro_cli extends DialogFragment {
 
         //Inseta registro de documentos
         params = new HashMap<>();
-        params.put(0, String.valueOf(id));       //ID SOLICITUD
+        params.put(0, String.valueOf(solicitudId));       //ID SOLICITUD
         params.put(1, "");                      //INE FRONTAL
         params.put(2, "");                      //INE REVERSO
         params.put(3, "");                      //CURP
@@ -467,31 +475,28 @@ public class dialog_registro_cli extends DialogFragment {
 
         dBhelper.saveDocumentosClientes(db, params, 1);
 
-        //Inserta Credito de la campaña
-        params = new HashMap<>();
-        params.put(0, String.valueOf(id));       //ID SOLICITUD
-        params.put(1, "");                      //ORIGINACION QUE ES DONDE SE VA A GUARDAR LA SOLICITUD PERO REMOTA
-        params.put(2, "");                      //ID DE LA CAMPAÑA
-        params.put(3, "");                      //TIPO CAMPAÑA
-        params.put(4, "");                      //NOMBRE DEL REFERENDO
+        SolicitudCampana solicitudCampana = new SolicitudCampana();
+        solicitudCampana.setSolicitudId(solicitudId.intValue());
+        solicitudCampana.setIntegranteId(0);
+        solicitudCampana.setTipoSolicitud(EntitiesCommonsContants.TIPO_SOLICITUD_INDIVIDUAL_ORIGINACION);
+        solicitudCampana.setSolicitudRemotaId(0);
+        solicitudCampana.setNombreReferido("NINGUNO");
+        solicitudCampana.setCampanaNombre("NINGUNO");
+        Long solicitudCampanaId = solicitudCampanaDao.insert(solicitudCampana);
 
-        dBhelper.saveDatosCreditoCampa(db, params);
-
-        //Insertar Beneficiario AGF
-        params = new HashMap<>();
-        params.put(0, String.valueOf(id));       //ID SOLICITUD
-        params.put(1, "");                      //CLIENTE ID
-        params.put(2, "");                      //GRUPO ID
-        params.put(3, "");                      //NOMBRE
-        params.put(4, "");                      //APELLIDO PATERNO
-        params.put(5, "");                      //APELLIDO MATERNO
-        params.put(6, "");                      //PARENTESCO
-        params.put(7, "");                      //SERIE ID
-
-        dBhelper.saveBeneficiario(db, params);
+        Beneficiario beneficiario = new Beneficiario();
+        beneficiario.setSolicitudId(solicitudId.intValue());
+        beneficiario.setIntegranteId(0);
+        beneficiario.setTipoSolicitud(EntitiesCommonsContants.TIPO_SOLICITUD_INDIVIDUAL_ORIGINACION);
+        beneficiario.setSolicitudRemotaId(0);
+        beneficiario.setNombre("");
+        beneficiario.setPaterno("");
+        beneficiario.setMaterno("");
+        beneficiario.setParentesco("");
+        Long beneficiarioId = beneficiariosDao.insert(beneficiario);
 
 
-        mListener.onComplete(id, String.valueOf(id_cliente),
+        mListener.onComplete(solicitudId, String.valueOf(id_cliente),
                 etNombre.getText().toString().trim().toUpperCase(),
                 etPaterno.getText().toString().trim().toUpperCase(),
                 etMaterno.getText().toString().trim().toUpperCase(),
@@ -499,7 +504,9 @@ public class dialog_registro_cli extends DialogFragment {
                 id_direccion_cony,
                 id_direccion_neg,
                 id_direccion_aval,
-                id_direccion_ref);
+                id_direccion_ref,
+                solicitudCampanaId,
+                beneficiarioId);
 
         getDialog().dismiss();
     }
@@ -507,7 +514,7 @@ public class dialog_registro_cli extends DialogFragment {
     private View.OnClickListener btnCancelar_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            mListener.onComplete(0, "0", null, null, null, 0, 0, 0, 0, 0);
+            mListener.onComplete(0, "0", null, null, null, 0, 0, 0, 0, 0, 0, 0);
             getDialog().dismiss();
         }
     };

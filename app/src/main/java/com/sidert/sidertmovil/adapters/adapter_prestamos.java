@@ -1,12 +1,6 @@
 package com.sidert.sidertmovil.adapters;
 
 import android.content.Context;
-
-import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.RecyclerView;
-import timber.log.Timber;
-
-import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -27,6 +21,10 @@ import org.json.JSONObject;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.List;
+
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
+import timber.log.Timber;
 
 public class adapter_prestamos extends RecyclerView.Adapter<adapter_prestamos.ViewHolder> {
 

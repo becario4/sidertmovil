@@ -206,21 +206,14 @@ public class SolicitudDao {
         //cv.put("fecha_guardado", solicitud.getFechaGuardado());
     }
 
-    public void solicitudEnviada(Solicitud solicitud, MResSaveSolicitud dato) {
+    public void solicitudEnviada(Solicitud solicitud) {
         ContentValues cv = new ContentValues();
-        ContentValues mn = new ContentValues();
-
         cv.put("estatus", solicitud.getEstatus());
         if (solicitud.getIdOriginacion() > 0) {
             cv.put("id_originacion", String.valueOf(solicitud.getIdOriginacion()));
         }
         cv.put("fecha_guardado", Miscellaneous.ObtenerFecha(TIMESTAMP));
-        mn.put("id_originacion", String.valueOf(solicitud.getIdOriginacion()));
-
-        updateIdCliente(dato, solicitud);
         db.update(TBL_SOLICITUDES, cv, "id_solicitud = ?", new String[]{String.valueOf(solicitud.getIdSolicitud())});
-        db.update(TBL_DATOS_CREDITO_CAMPANA, mn, "id_solicitud = ?", new String[]{String.valueOf(solicitud.getIdSolicitud())});
-        db.update(TBL_DATOS_BENEFICIARIO, mn, "id_solicitud = ?", new String[]{String.valueOf(solicitud.getIdSolicitud())});
 
     }
 

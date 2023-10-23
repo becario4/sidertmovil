@@ -54,6 +54,9 @@ import com.sidert.sidertmovil.activities.CapturarFirma;
 import com.sidert.sidertmovil.activities.Catalogos;
 import com.sidert.sidertmovil.activities.VerImagen;
 import com.sidert.sidertmovil.database.DBhelper;
+import com.sidert.sidertmovil.database.EntitiesCommonsContants;
+import com.sidert.sidertmovil.database.entities.Beneficiario;
+import com.sidert.sidertmovil.database.entities.SolicitudCampana;
 import com.sidert.sidertmovil.fragments.dialogs.DialogSelectorFecha;
 import com.sidert.sidertmovil.fragments.dialogs.dialog_date_picker;
 import com.sidert.sidertmovil.fragments.dialogs.dialog_input_calle;
@@ -65,16 +68,12 @@ import com.sidert.sidertmovil.models.MSolicitudRechazoInd;
 import com.sidert.sidertmovil.models.ModeloCatalogoGral;
 import com.sidert.sidertmovil.models.catalogos.Colonia;
 import com.sidert.sidertmovil.models.catalogos.ColoniaDao;
-import com.sidert.sidertmovil.models.datosCampañas.datosCampanaDao;
 import com.sidert.sidertmovil.models.permiso.PermisoResponse;
 import com.sidert.sidertmovil.models.solicitudes.Solicitud;
 import com.sidert.sidertmovil.models.solicitudes.SolicitudDao;
-import com.sidert.sidertmovil.models.solicitudes.solicitudgpo.renovacion.BeneficiarioRenDao;
 import com.sidert.sidertmovil.models.solicitudes.solicitudind.SolicitudDetalleEstatusInd;
 import com.sidert.sidertmovil.models.solicitudes.solicitudind.originacion.Aval;
 import com.sidert.sidertmovil.models.solicitudes.solicitudind.originacion.AvalDao;
-import com.sidert.sidertmovil.models.solicitudes.solicitudind.originacion.Beneficiario;
-import com.sidert.sidertmovil.models.solicitudes.solicitudind.originacion.BeneficiarioDao;
 import com.sidert.sidertmovil.models.solicitudes.solicitudind.originacion.Cliente;
 import com.sidert.sidertmovil.models.solicitudes.solicitudind.originacion.ClienteDao;
 import com.sidert.sidertmovil.models.solicitudes.solicitudind.originacion.Conyugue;
@@ -123,6 +122,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -200,8 +200,6 @@ import static com.sidert.sidertmovil.utils.Constants.TBL_CLIENTE_IND;
 import static com.sidert.sidertmovil.utils.Constants.TBL_CONYUGE_IND;
 import static com.sidert.sidertmovil.utils.Constants.TBL_CREDITO_IND;
 import static com.sidert.sidertmovil.utils.Constants.TBL_CROQUIS_IND;
-import static com.sidert.sidertmovil.utils.Constants.TBL_DATOS_BENEFICIARIO;
-import static com.sidert.sidertmovil.utils.Constants.TBL_DATOS_CREDITO_CAMPANA;
 import static com.sidert.sidertmovil.utils.Constants.TBL_DIRECCIONES;
 import static com.sidert.sidertmovil.utils.Constants.TBL_DOCUMENTOS;
 import static com.sidert.sidertmovil.utils.Constants.TBL_ECONOMICOS_IND;
@@ -364,7 +362,6 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
     private EditText txtApellidoMaternoBeneficiario;
     private TextView txtParentescoBeneficiario;
     private TextView txtEjemeplo;
-    Beneficiario beneficiario;
     private Button btnRegistrar;
 
     //========== CONYUGE ======================
@@ -704,6 +701,8 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
     private final Pattern pattern0 = Pattern.compile(PATTERN_MONTO_CREDITO);
     private final String PATTERN_MONTO_CREDITO_02 = "[0-9]+";
     private final Pattern pattern1 = Pattern.compile(PATTERN_MONTO_CREDITO_02);
+    private long solicitudCampanaId;
+    private long beneficiarioId;
 
     //======================================================
 
@@ -722,11 +721,6 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
 
         dBhelper = DBhelper.getInstance(ctx);
         db = dBhelper.getWritableDatabase();
-
-        //PASAR ESTE MÉTODO AL DAO BENEFICIARIO
-        int serieA = BeneficiarioRenDao.obtenerSerieAsesor(ctx); //Miscellaneous.obtenerSerieAsesor(ctx);
-
-        Log.e("AQUI:", String.valueOf(serieA));
 
         _dias_semana = getResources().getStringArray(R.array.dias_semana);
 
@@ -1181,8 +1175,12 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
         if (getIntent().getBooleanExtra("is_new", true)) {
             openRegistroCliente();
         } else {
-            id_solicitud = Long.parseLong(getIntent().getStringExtra("id_solicitud"));
-            initComponents(getIntent().getStringExtra("id_solicitud"));
+            Intent bundle = this.getIntent();
+            if (bundle != null) {
+                String solicitudIdRaw = bundle.getStringExtra("id_solicitud");
+                id_solicitud = Long.parseLong(solicitudIdRaw);
+                initComponents(solicitudIdRaw);
+            }
         }
 
         tvRiesgo.setText(_riesgo[2]);
@@ -1361,12 +1359,16 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
 
             @Override
             public void afterTextChanged(Editable editable) {
-                /** CODE.... */
-                if (editable.length() > 0) {
-                    Update("nombre_refiero", TBL_DATOS_CREDITO_CAMPANA, editable.toString().trim().toUpperCase());
-                } else
-                    Update("nombre_refiero", TBL_DATOS_CREDITO_CAMPANA, "");
 
+                String referidoNombre = editable.toString().trim().toUpperCase();
+                String campanaNombre = txtCampana.getText().toString();
+
+                SolicitudCampana solicitudCampana = new SolicitudCampana();
+                solicitudCampana.setId(solicitudCampanaId);
+                solicitudCampana.setCampanaNombre(campanaNombre);
+                solicitudCampana.setNombreReferido(referidoNombre);
+
+                dBhelper.getSolicitudCampanaDao().update(solicitudCampana);
             }
         });
 
@@ -1982,10 +1984,11 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
 
             @Override
             public void afterTextChanged(Editable editable) {
-                if (editable.length() > 0) {
-                    Update("nombre", TBL_DATOS_BENEFICIARIO, editable.toString().trim().toUpperCase());
-                } else
-                    Update("nombre", TBL_DATOS_BENEFICIARIO, "");
+                String beneficiarioNombre = editable.toString().trim().toUpperCase();
+                Beneficiario beneficiario = new Beneficiario();
+                beneficiario.setId(beneficiarioId);
+                beneficiario.setNombre(beneficiarioNombre);
+                dBhelper.getBeneficiariosDao().update(beneficiario);
             }
         });
         txtApellidoPaternoBeneficiario.addTextChangedListener(new TextWatcher() {
@@ -2001,10 +2004,11 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
 
             @Override
             public void afterTextChanged(Editable editable) {
-                if (editable.length() > 0) {
-                    Update("paterno", TBL_DATOS_BENEFICIARIO, editable.toString().trim().toUpperCase());
-                } else
-                    Update("paterno", TBL_DATOS_BENEFICIARIO, "");
+                String beneficiarioPaterno = editable.toString().trim().toUpperCase();
+                Beneficiario beneficiario = new Beneficiario();
+                beneficiario.setId(beneficiarioId);
+                beneficiario.setPaterno(beneficiarioPaterno);
+                dBhelper.getBeneficiariosDao().update(beneficiario);
             }
         });
         txtApellidoMaternoBeneficiario.addTextChangedListener(new TextWatcher() {
@@ -2020,11 +2024,11 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
 
             @Override
             public void afterTextChanged(Editable editable) {
-                if (editable.length() > 0) {
-                    Update("materno", TBL_DATOS_BENEFICIARIO, editable.toString().trim().toUpperCase());
-
-                } else
-                    Update("materno", TBL_DATOS_BENEFICIARIO, editable.toString().trim().toUpperCase());
+                String beneficiarioMaterno = editable.toString().trim().toUpperCase();
+                Beneficiario beneficiario = new Beneficiario();
+                beneficiario.setId(beneficiarioId);
+                beneficiario.setMaterno(beneficiarioMaterno);
+                dBhelper.getBeneficiariosDao().update(beneficiario);
             }
         });
         txtParentescoBeneficiario.addTextChangedListener(new TextWatcher() {
@@ -2040,10 +2044,11 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
 
             @Override
             public void afterTextChanged(Editable editable) {
-                if (editable.length() > 0) {
-                    Update("parentesco", TBL_DATOS_BENEFICIARIO, editable.toString().trim().toUpperCase());
-                } else
-                    Update("parentesco", TBL_DATOS_BENEFICIARIO, " ");
+                String beneficiariParentesco = editable.toString().trim().toUpperCase();
+                Beneficiario beneficiario = new Beneficiario();
+                beneficiario.setId(beneficiarioId);
+                beneficiario.setParentesco(beneficiariParentesco);
+                dBhelper.getBeneficiariosDao().update(beneficiario);
             }
         });
 
@@ -7825,28 +7830,28 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                 if (data != null) {
                     ModeloCatalogoGral modeloCatalogoGral = (ModeloCatalogoGral) data.getSerializableExtra(ITEM);
                     if (modeloCatalogoGral == null) return;
+
                     String campanaNombre = modeloCatalogoGral.getNombre();
-                    Integer campanaId = Miscellaneous.selectCampana(ctx, campanaNombre);
+
+                    SolicitudCampana solicitudCampana = new SolicitudCampana();
+                    solicitudCampana.setId(solicitudCampanaId);
+                    solicitudCampana.setCampanaNombre(campanaNombre);
 
                     if (campanaNombre.equals("NINGUNO")) {
                         txtNombreRefiero.setText(SIN_REFERENCIA);
                         txtNombreRefiero.setEnabled(false);
+                        solicitudCampana.setNombreReferido(SIN_REFERENCIA);
                     } else {
                         txtNombreRefiero.setText("");
                         txtNombreRefiero.setEnabled(true);
+                        solicitudCampana.setNombreReferido("");
                     }
 
-                    ContentValues cv = new ContentValues();
-                    cv.put("id_campana", campanaId);
-                    db.update(TBL_CREDITO_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
+                    this.dBhelper.getSolicitudCampanaDao().update(solicitudCampana);
+
                     txtCampana.setError(null);
                     txtCampana.setText(campanaNombre);
                     txtCampana.setTag(modeloCatalogoGral);
-
-
-                } else {
-                    txtCampana.setText(" ");
-                    Toast.makeText(ctx, "ESTE CAMPO ES REQUERIDO", Toast.LENGTH_SHORT).show();
                 }
                 break;
             case REQUEST_CODE_LOCALIDAD_CLIE:
@@ -8572,34 +8577,20 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
                         !validatorTV.validate(txtCampana, new String[]{validator.ONLY_TEXT}) &&
                         !validator.validate(txtNombreRefiero, new String[]{validator.ONLY_TEXT})
         ) {
-            String txtCampanaValue = txtCampana.getText().toString();
-            String txtNombreRefieroValue = txtNombreRefiero.getText().toString();
-
-            if
-            (
-                    (txtCampanaValue.equals("SUMA Y GANA") || txtCampanaValue.equals("RESCATE Y GANA")) && txtNombreRefieroValue.equals(SIN_REFERENCIA)
-            ) {
-                txtCampana.setError("");
-                txtNombreRefiero.setError("");
-                Toast.makeText(ctx, "NO SE PUEDE ASOCIAR LA CAMPAÑA", Toast.LENGTH_SHORT).show();
-            } else {
-                ivError1.setVisibility(View.GONE);
-                ContentValues cv = new ContentValues();
-                cv.put("plazo", Miscellaneous.GetStr(tvPlazo));
-                cv.put("periodicidad", Miscellaneous.GetStr(tvFrecuencia));
-                cv.put("fecha_desembolso", Miscellaneous.GetStr(tvFechaDesembolso));
-                cv.put("dia_desembolso", Miscellaneous.GetStr(tvDiaDesembolso));
-                cv.put("hora_visita", Miscellaneous.GetStr(tvHoraVisita));
-                cv.put("monto_prestamo", Miscellaneous.GetStr(etMontoPrestamo).replace(",", ""));
-                cv.put("destino", Miscellaneous.GetStr(tvDestino));
-                cv.put("clasificacion_riesgo", Miscellaneous.GetStr(tvRiesgo));
-                cv.put("monto_refinanciar", Miscellaneous.GetStr(etMontoRefinanciar).replace(",", ""));
-                cv.put("id_campana", Miscellaneous.selectCampana(ctx, Miscellaneous.GetStr(txtCampana)));
-
-                db.update(TBL_CREDITO_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
-                save_credito = true;
-            }
-
+            ivError1.setVisibility(View.GONE);
+            ContentValues cv = new ContentValues();
+            cv.put("plazo", Miscellaneous.GetStr(tvPlazo));
+            cv.put("periodicidad", Miscellaneous.GetStr(tvFrecuencia));
+            cv.put("fecha_desembolso", Miscellaneous.GetStr(tvFechaDesembolso));
+            cv.put("dia_desembolso", Miscellaneous.GetStr(tvDiaDesembolso));
+            cv.put("hora_visita", Miscellaneous.GetStr(tvHoraVisita));
+            cv.put("monto_prestamo", Miscellaneous.GetStr(etMontoPrestamo).replace(",", ""));
+            cv.put("destino", Miscellaneous.GetStr(tvDestino));
+            cv.put("clasificacion_riesgo", Miscellaneous.GetStr(tvRiesgo));
+            cv.put("monto_refinanciar", Miscellaneous.GetStr(etMontoRefinanciar).replace(",", ""));
+            cv.put("id_campana", Miscellaneous.selectCampana(ctx, Miscellaneous.GetStr(txtCampana)));
+            db.update(TBL_CREDITO_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
+            save_credito = true;
         } else {
             ivError1.setVisibility(View.VISIBLE);
         }
@@ -8815,91 +8806,92 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
     }
 
     private boolean saveDatosCampana() {
-        ContentValues cv = new ContentValues();
-        String txtCampanaValue = txtCampana.getText().toString();
-        String txtNombreRefieroValue = txtNombreRefiero.getText().toString();
-        boolean validationHasErrors = validatorTV.validate(txtCampana, new String[]{validator.REQUIRED}) && validator.validate(txtNombreRefiero, new String[]{validator.REQUIRED});
 
-        if (validationHasErrors) {
+        Optional<SolicitudCampana> optionalSolicitudCampana = dBhelper.getSolicitudCampanaDao()
+                .findBySolicitudId(id_solicitud, 0, EntitiesCommonsContants.TIPO_SOLICITUD_INDIVIDUAL_ORIGINACION);
+
+        if (optionalSolicitudCampana.isPresent()) {
+            SolicitudCampana solicitudCampana = optionalSolicitudCampana.get();
+            String nombreCampana = solicitudCampana.getCampanaNombre();
+            nombreCampana = (nombreCampana == null) ? "" : nombreCampana.trim();
+
+            String nombreRefiero = solicitudCampana.getNombreReferido();
+            nombreRefiero = (nombreRefiero == null) ? "" : nombreRefiero.trim();
+
+            boolean nombreCampanaValidacion = nombreCampana.isEmpty();
+            boolean nombreRefieroValidacion = nombreRefiero.isEmpty();
+
+            if (nombreCampanaValidacion) {
+                txtCampana.setError("Esta campo es requerido");
+                ivError1.setVisibility(View.VISIBLE);
+            }
+
+            if (nombreRefieroValidacion) {
+                txtNombreRefiero.setError("Este campo es requerido");
+                ivError1.setVisibility(View.VISIBLE);
+            }
+
+            return (!nombreCampanaValidacion) && (!nombreRefieroValidacion);
+
+        } else {
+            ivError1.setVisibility(View.VISIBLE);
             txtCampana.setError("Esta campo es requerido");
             txtNombreRefiero.setError("Este campo es requerido");
             return false;
         }
-
-        if (
-                (txtCampanaValue.equals("SUMA Y GANA") || txtCampanaValue.equals("RESCATE Y GANA")) &&
-                        txtNombreRefieroValue.equals(SIN_REFERENCIA)
-        ) {
-            txtCampana.setError("");
-            txtNombreRefiero.setError("");
-            Toast.makeText(ctx, "NO SE PUEDE ASOCIAR LA CAMPAÑA", Toast.LENGTH_SHORT).show();
-            return false;
-        } else {
-            cv.put("id_solicitud", id_solicitud);
-            cv.put("id_campana", Miscellaneous.selectCampana(ctx, Miscellaneous.GetStr(txtCampana)));
-            cv.put("tipo_campana", Miscellaneous.GetStr(txtCampana));
-            cv.put("nombre_refiero", Miscellaneous.GetStr(txtNombreRefiero));
-
-            boolean auxiliar = datosCampanaDao.validarEstatus(ctx, Integer.parseInt(String.valueOf(id_solicitud)));
-            if (auxiliar) {
-                db.update(TBL_DATOS_CREDITO_CAMPANA, cv, " id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
-            } else {
-                db.insert(TBL_DATOS_CREDITO_CAMPANA, null, cv);
-            }
-            return true;
-        }
     }
 
+    /**
+     * Guarda un beneficiario en la base de datos o actualiza si ya existe, y realiza validaciones.
+     *
+     * @return True si todas las validaciones pasan y se guarda o actualiza el beneficiario, False en caso contrario.
+     */
     private boolean saveBeneficiario() {
-        ContentValues cv = new ContentValues();
-        int grupo_id = 1;
-        boolean estatus = BeneficiarioDao.validarBeneficiarioInd(Integer.parseInt(String.valueOf(id_solicitud)), ctx);
-        int serieIdA = BeneficiarioDao.obtenerSerieAsesor(ctx);//Miscellaneous.obtenerSerieAsesor(ctx);
-        boolean save_beneficiario = false;
+        // Obtener un Optional con el Beneficiario a partir de la solicitud.
+        Optional<Beneficiario> optionalBeneficiario = dBhelper.getBeneficiariosDao()
+                .findBySolicitudId(id_solicitud, 0, EntitiesCommonsContants.TIPO_SOLICITUD_INDIVIDUAL_ORIGINACION);
 
-        if (!validator.validate(txtNomBeneficiario, new String[]{validator.REQUIRED})) {
-            if (!validator.validate(txtApellidoPaternoBeneficiario, new String[]{validator.ONLY_TEXT})) {
-                if (!validator.validate(txtApellidoMaternoBeneficiario, new String[]{validator.ONLY_TEXT})) {
-                    if (!validatorTV.validate(txtParentescoBeneficiario, new String[]{validatorTV.REQUIRED})) {
+        if (optionalBeneficiario.isPresent()) {
+            Beneficiario beneficiario = optionalBeneficiario.get();
 
-                        cv.put("id_solicitud", id_solicitud);
-                        cv.put("id_originacion", 0);
-                        cv.put("id_cliente", 0);
-                        cv.put("id_grupo", grupo_id);
-                        cv.put("nombre", Miscellaneous.GetStr(txtNomBeneficiario));
-                        cv.put("paterno", Miscellaneous.GetStr(txtApellidoPaternoBeneficiario));
-                        cv.put("materno", Miscellaneous.GetStr(txtApellidoMaternoBeneficiario));
-                        cv.put("parentesco", Miscellaneous.GetStr(txtParentescoBeneficiario));
-                        cv.put("serieid", serieIdA);
+            // Obtener los datos del beneficiario y asegurarse de que no sean nulos.
+            String beneficiarioNombre = beneficiario.getNombre() == null ? "" : beneficiario.getNombre();
+            String beneficiarioPaterno = beneficiario.getPaterno() == null ? "" : beneficiario.getPaterno();
+            String beneficiarioMaterno = beneficiario.getMaterno() == null ? "" : beneficiario.getMaterno();
+            String beneficiarioParentesco = beneficiario.getParentesco() == null ? "" : beneficiario.getParentesco();
 
-                        if (!estatus) {
-                            db.insert(TBL_DATOS_BENEFICIARIO, null, cv);
-                        }
+            // Variable para indicar si la validación es correcta.
+            boolean validacionCorrecta = true;
 
-                        if (estatus) {
-                            db.update(TBL_DATOS_BENEFICIARIO, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
-                        }
-
-                        save_beneficiario = true;
-                    } else {
-                        ivError11.setVisibility(View.VISIBLE);
-                        txtParentescoBeneficiario.setError("CAMPO REQUERIDO");
-                        showError(txtParentescoBeneficiario, "CAMPO REQUERIDO");
-                    }
-                } else {
-                    ivError11.setVisibility(View.VISIBLE);
-                    txtApellidoPaternoBeneficiario.setError("CAMPO REQUERIDO");
-                    showError(txtApellidoMaternoBeneficiario, "CAMPO REQUERIDO");
-                }
-            } else {
+            // Realizar las validaciones y mostrar errores si es necesario.
+            if (beneficiarioNombre.isEmpty()) {
+                txtNomBeneficiario.setError("CAMPO REQUERIDO");
                 ivError11.setVisibility(View.VISIBLE);
-                showError(txtApellidoPaternoBeneficiario, "CAMPO REQUERIDO");
+                validacionCorrecta = false;
             }
+            if (beneficiarioPaterno.isEmpty()) {
+                txtApellidoPaternoBeneficiario.setError("CAMPO REQUERIDO");
+                ivError11.setVisibility(View.VISIBLE);
+                validacionCorrecta = false;
+            }
+            if (beneficiarioMaterno.isEmpty()) {
+                txtApellidoMaternoBeneficiario.setError("CAMPO REQUERIDO");
+                ivError11.setVisibility(View.VISIBLE);
+                validacionCorrecta = false;
+            }
+            if (beneficiarioParentesco.isEmpty()) {
+                txtParentescoBeneficiario.setError("CAMPO REQUERIDO");
+                ivError11.setVisibility(View.VISIBLE);
+                validacionCorrecta = false;
+            }
+
+            // Devolver true solo si todas las validaciones pasan.
+            return validacionCorrecta;
+
         } else {
-            ivError11.setVisibility(View.VISIBLE);
-            showError(txtNomBeneficiario, "CAMPO REQUERIDO");
+            // Si no se encuentra el beneficiario, retornar false.
+            return false;
         }
-        return save_beneficiario;
     }
 
     private boolean saveConyuge() {
@@ -10209,7 +10201,6 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
             solicitud.show();
         } else
             finish();
-        saveBeneficiario();
     }
 
     private void openRegistroCliente() {
@@ -10219,7 +10210,7 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
     }
 
     @Override
-    public void onComplete(long id_solicitud, String id_cliente, String nombre, String paterno, String materno, long dirCli, long dirCony, long dirNeg, long dirAval, long dirRef) {
+    public void onComplete(long id_solicitud, String id_cliente, String nombre, String paterno, String materno, long dirCli, long dirCony, long dirNeg, long dirAval, long dirRef, long solicitudCampanaId, long beneficiarioId) {
         if (id_solicitud > 0) {
             this.id_solicitud = id_solicitud;
             //this.id_cliente = id_cliente;
@@ -10234,7 +10225,8 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
             direccionIdNeg = String.valueOf(dirNeg);
             direccionIdAval = String.valueOf(dirAval);
             direccionIdRef = String.valueOf(dirRef);
-
+            this.solicitudCampanaId = solicitudCampanaId;
+            this.beneficiarioId = beneficiarioId;
         } else finish();
     }
 
@@ -10272,20 +10264,7 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
         if (row.getString(11) != null && !row.getString(11).trim().isEmpty())
             etMontoRefinanciar.setText(dfnd.format(row.getInt(11)));
 
-        txtCampana.setText(Miscellaneous.tipoCampana(ctx, row.getString(12)));
-        txtNombreRefiero.setText(Miscellaneous.tipoCampana(ctx, row.getString(12)));
-
         row.close(); //Cierra dato del credito
-
-
-        row = dBhelper.getRecords(TBL_DATOS_CREDITO_CAMPANA, " WHERE id_solicitud = ?", " ", new String[]{idSolicitud});
-
-        if (row.getCount() > 0) {
-            row.moveToFirst();
-            txtNombreRefiero.setText(row.getString(5));
-            row.close();
-        }
-
 
         //Llenado de datos del cliente
         row = dBhelper.getRecords(TBL_CLIENTE_IND, " WHERE id_solicitud = ?", "", new String[]{idSolicitud});
@@ -10448,22 +10427,6 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
 
         row.close(); //Cierra datos del conyuge
 
-        //llenando de datos beneficiario
-
-        //=============================================DATOS DEL BENEFICIARIO==============================================\\
-
-        row = dBhelper.getRecords(TBL_DATOS_BENEFICIARIO, " WHERE id_solicitud = ?", " ", new String[]{idSolicitud});
-
-        if (row.getCount() > 0) {
-            row.moveToFirst();
-
-            txtNomBeneficiario.setText(row.getString(5).trim().toUpperCase());
-            txtApellidoPaternoBeneficiario.setText(row.getString(6).trim().toUpperCase());
-            txtApellidoMaternoBeneficiario.setText(row.getString(7).trim().toUpperCase());
-            txtParentescoBeneficiario.setText(row.getString(8).trim().toUpperCase());
-
-            row.close();
-        }
 
         //==================================================================================================
 
@@ -10903,6 +10866,49 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
         row.close(); //Cierra datos de los documentos
 
         deshabilitarCampos();
+
+        SolicitudCampana solicitudCampana = dBhelper.getSolicitudCampanaDao()
+                .findBySolicitudId(id_solicitud, 0, EntitiesCommonsContants.TIPO_SOLICITUD_INDIVIDUAL_ORIGINACION)
+                .orElseGet(() -> {
+                    SolicitudCampana _solicitudCampana = new SolicitudCampana();
+                    _solicitudCampana.setSolicitudId((int) id_solicitud);
+                    _solicitudCampana.setIntegranteId(0);
+                    _solicitudCampana.setTipoSolicitud(EntitiesCommonsContants.TIPO_SOLICITUD_INDIVIDUAL_ORIGINACION);
+                    _solicitudCampana.setSolicitudRemotaId(0);
+                    _solicitudCampana.setNombreReferido("NINGUNO");
+                    _solicitudCampana.setCampanaNombre("NINGUNO");
+                    Long solicitudCampanaId = dBhelper.getSolicitudCampanaDao().insert(_solicitudCampana);
+                    _solicitudCampana.setId(solicitudCampanaId);
+                    return _solicitudCampana;
+                });
+
+        String campanaNombre = solicitudCampana.getCampanaNombre();
+        this.solicitudCampanaId = solicitudCampana.getId();
+        this.txtCampana.setText(campanaNombre);
+        this.txtNombreRefiero.setText(solicitudCampana.getNombreReferido());
+        txtNombreRefiero.setEnabled(!campanaNombre.equals("NINGUNO"));
+
+        Beneficiario beneficiario = dBhelper.getBeneficiariosDao()
+                .findBySolicitudId(id_solicitud, 0, EntitiesCommonsContants.TIPO_SOLICITUD_INDIVIDUAL_ORIGINACION)
+                .orElseGet(() -> {
+                    Beneficiario _beneficiario = new Beneficiario();
+                    _beneficiario.setSolicitudId((int) id_solicitud);
+                    _beneficiario.setIntegranteId(0);
+                    _beneficiario.setTipoSolicitud(EntitiesCommonsContants.TIPO_SOLICITUD_INDIVIDUAL_ORIGINACION);
+                    _beneficiario.setSolicitudRemotaId(0);
+                    _beneficiario.setNombre("");
+                    _beneficiario.setPaterno("");
+                    _beneficiario.setMaterno("");
+                    _beneficiario.setParentesco("");
+                    Long beneficiarioId = dBhelper.getBeneficiariosDao().insert(_beneficiario);
+                    _beneficiario.setId(beneficiarioId);
+                    return _beneficiario;
+                });
+        this.beneficiarioId = beneficiario.getId();
+        this.txtNomBeneficiario.setText(beneficiario.getNombre());
+        this.txtApellidoPaternoBeneficiario.setText(beneficiario.getPaterno());
+        this.txtApellidoMaternoBeneficiario.setText(beneficiario.getMaterno());
+        this.txtParentescoBeneficiario.setText(beneficiario.getParentesco());
 
     }
 

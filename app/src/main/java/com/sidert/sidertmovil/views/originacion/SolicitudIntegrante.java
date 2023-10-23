@@ -9,16 +9,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.location.LocationManager;
-/*import android.support.design.widget.FloatingActionButton;
-import android.support.v4.app.ActivityCompat;*/
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
-import androidx.appcompat.widget.Toolbar;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -37,7 +28,6 @@ import android.widget.ProgressBar;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -63,6 +53,12 @@ import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+
 import static com.sidert.sidertmovil.utils.Constants.TBL_CONYUGE_INTEGRANTE_AUTO;
 import static com.sidert.sidertmovil.utils.Constants.TBL_CROQUIS_GPO_AUTO;
 import static com.sidert.sidertmovil.utils.Constants.TBL_DOMICILIO_INTEGRANTE_AUTO;
@@ -79,7 +75,7 @@ public class SolicitudIntegrante extends AppCompatActivity {
     private DBhelper dBhelper;
     private SQLiteDatabase db;
 
-    private Validator validator = new Validator();
+    private final Validator validator = new Validator();
 
     private boolean is_edit = true;
 

@@ -37,7 +37,7 @@ public interface SolicitudIndService {
     Call<ApiResponse> jsonOriginacionInd(@Header("Authorization") String barer_token, @Body String solicitud);
 
     @Multipart
-    @POST("/api/solicitudes/creditos/individuales")
+    @POST("/api/v2/solicitudes/creditos/individuales")
     Call<MResSaveSolicitud> saveOriginacion(
         @Header("Authorization") String token,
         @Part("solicitud") RequestBody solicitud,
@@ -61,7 +61,7 @@ public interface SolicitudIndService {
     );
 
     @Multipart
-    @POST("/api/solicitudes/creditos/individuales")
+    @POST("/api/v2/solicitudes/creditos/individuales")
     Call<MResSaveSolicitud> saveRenovacion(
             @Header("Authorization") String token,
             @Part("solicitud") RequestBody solicitud,

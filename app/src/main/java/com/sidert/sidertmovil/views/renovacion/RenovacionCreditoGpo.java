@@ -203,6 +203,11 @@ public class RenovacionCreditoGpo extends AppCompatActivity implements dialog_re
         }
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        this.initComponents(Long.toString(this.id_solicitud));
+    }
 
     /**
      * Evento para abrir un dialogFragment para mostrar los datos del credito

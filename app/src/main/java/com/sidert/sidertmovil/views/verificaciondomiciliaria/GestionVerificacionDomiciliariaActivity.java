@@ -31,6 +31,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.OnMapsSdkInitializedCallback;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -53,6 +54,7 @@ import com.sidert.sidertmovil.utils.ValidatorTextView;
 import java.io.File;
 import java.io.IOException;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -157,35 +159,28 @@ public class GestionVerificacionDomiciliariaActivity extends AppCompatActivity {
 
         VerificacionDomiciliaria verificacionTemp = (VerificacionDomiciliaria) getIntent().getExtras().get("ver_dom");
 
-        if(verificacionTemp != null && verificacionTemp.getVerificacionDomiciliariaId() != null)
-        {
+        if (verificacionTemp != null && verificacionTemp.getVerificacionDomiciliariaId() != null) {
             verificacion = verificacionDao.findByVerificacionDomiciliariaId(verificacionTemp.getVerificacionDomiciliariaId());
 
-            if(verificacion != null) {
+            if (verificacion != null) {
                 gestion = gestionDao.findByVerificacionDomiciliariaId(verificacion.getVerificacionDomiciliariaId());
 
-                if(verificacion.getGrupoId() == 1)
-                {
+                if (verificacion.getGrupoId() == 1) {
                     _verificaciones_tipos = getResources().getStringArray(R.array.verificaciones_tipos);
                     llTipoIntegrante.setVisibility(View.GONE);
-                }
-                else
-                {
+                } else {
                     _verificaciones_tipos = getResources().getStringArray(R.array.verificaciones_tipos_grupales);
                 }
             }
         }
 
-        if(verificacion.getGrupoId() == 1)
-        {
+        if (verificacion.getGrupoId() == 1) {
             tvTipoIntegrante.setText(_verificaciones_tipos[verificacion.getVerificacionTipoId() - 1]);
-        }
-        else
-        {
+        } else {
             tvTipoIntegrante.setText(_verificaciones_tipos[verificacion.getVerificacionTipoId() - 2]);
         }
 
-        if(gestion == null) {
+        if (gestion == null) {
             gestion = new GestionVerificacionDomiciliaria();
             gestion.setVerificacionDomiciliariaId(verificacion.getVerificacionDomiciliariaId());
             gestion.setFechaInicio(Miscellaneous.ObtenerFecha("timestamp"));
@@ -201,42 +196,38 @@ public class GestionVerificacionDomiciliariaActivity extends AppCompatActivity {
     private View.OnClickListener tvTipoIntegrante_OnClick = v -> {
         AlertDialog.Builder builder = new AlertDialog.Builder(ctx);
         builder.setTitle(R.string.selected_option)
-            .setItems(_verificaciones_tipos, (dialog, position) -> {
-                tvTipoIntegrante.setError(null);
-                tvTipoIntegrante.setText(_verificaciones_tipos[position]);
+                .setItems(_verificaciones_tipos, (dialog, position) -> {
+                    tvTipoIntegrante.setError(null);
+                    tvTipoIntegrante.setText(_verificaciones_tipos[position]);
 
-                VerificacionDomiciliaria verificacionTemp = verificacionDao.findByGrupoIdAndNumSolicitudAndVerificacionTipoId(
-                        verificacion.getGrupoId(),
-                        verificacion.getNumSolicitud(),
-                        position + 2
-                );
-                verificacion.setId(verificacionTemp.getId());
-                verificacion.setVerificacionDomiciliariaId(verificacionTemp.getVerificacionDomiciliariaId());
+                    VerificacionDomiciliaria verificacionTemp = verificacionDao.findByGrupoIdAndNumSolicitudAndVerificacionTipoId(
+                            verificacion.getGrupoId(),
+                            verificacion.getNumSolicitud(),
+                            position + 2
+                    );
+                    verificacion.setId(verificacionTemp.getId());
+                    verificacion.setVerificacionDomiciliariaId(verificacionTemp.getVerificacionDomiciliariaId());
 
-                GestionVerificacionDomiciliaria gestionTemp = gestionDao.findByVerificacionDomiciliariaId(verificacion.getVerificacionDomiciliariaId());
+                    GestionVerificacionDomiciliaria gestionTemp = gestionDao.findByVerificacionDomiciliariaId(verificacion.getVerificacionDomiciliariaId());
 
-                if(gestionTemp != null && gestionTemp.getId() != null && gestionTemp.getId() > 0)
-                {
-                    gestion = gestionTemp;
-                    fillForm();
+                    if (gestionTemp != null && gestionTemp.getId() != null && gestionTemp.getId() > 0) {
+                        gestion = gestionTemp;
+                        fillForm();
 
-                    tvTipoIntegrante.setBackground(ContextCompat.getDrawable(ctx, R.drawable.et_rounded_edges));
-                    tvTipoIntegrante.setEnabled(true);
-                }
-                else
-                {
-                    if(gestion.getId() != null)
-                    {
-                        gestion = new GestionVerificacionDomiciliaria();
+                        tvTipoIntegrante.setBackground(ContextCompat.getDrawable(ctx, R.drawable.et_rounded_edges));
+                        tvTipoIntegrante.setEnabled(true);
+                    } else {
+                        if (gestion.getId() != null) {
+                            gestion = new GestionVerificacionDomiciliaria();
 
-                        enabledForm();
+                            enabledForm();
+                        }
+
+                        gestion.setVerificacionDomiciliariaId(verificacion.getVerificacionDomiciliariaId());
+                        gestion.setFechaInicio(Miscellaneous.ObtenerFecha("timestamp"));
                     }
 
-                    gestion.setVerificacionDomiciliariaId(verificacion.getVerificacionDomiciliariaId());
-                    gestion.setFechaInicio(Miscellaneous.ObtenerFecha("timestamp"));
-                }
-
-            });
+                });
         builder.create();
         builder.show();
     };
@@ -257,41 +248,34 @@ public class GestionVerificacionDomiciliariaActivity extends AppCompatActivity {
         }
     };
 
-    private void initComponents()
-    {
-        if(verificacion != null)
-        {
+    private void initComponents() {
+        if (verificacion != null) {
             etSucursalNombre.setText(verificacion.getSucursalNombre());
             etAsesorNombre.setText(verificacion.getAsesorSerieId() + " - " + verificacion.getAsesorNombre());
             etClienteFechaNacimiento.setText(verificacion.getClienteFechaNacimiento());
             etClienteNacionalidad.setText(verificacion.getClienteNacionalidad());
 
-            if(verificacion.getGrupoId() == 1) etClienteNombre.setText(verificacion.getClienteNombre());
+            if (verificacion.getGrupoId() == 1)
+                etClienteNombre.setText(verificacion.getClienteNombre());
             else etClienteNombre.setText(verificacion.getGrupoNombre());
 
             etDomicilioDireccion.setText(verificacion.getDomicilioDireccion());
             etDomicilioReferencia.setText(verificacion.getDomicilioReferencia());
             etHorarioLocalizacion.setText(verificacion.getHorarioLocalizacion());
             etMontoSolicitado.setText(verificacion.getMontoSolicitado());
-        }
-        else
-        {
+        } else {
             disabledForm();
         }
 
-        if(gestion != null && gestion.getId() != null && gestion.getId() > 0)
-        {
+        if (gestion != null && gestion.getId() != null && gestion.getId() > 0) {
             fillForm();
-        }
-        else
-        {
+        } else {
             gestion.setFechaInicio(Miscellaneous.ObtenerFecha("timestamp"));
 
         }
     }
 
-    private void enabledForm()
-    {
+    private void enabledForm() {
         etComentario.setBackground(ContextCompat.getDrawable(ctx, R.drawable.et_rounded_edges));
         etComentario.setEnabled(true);
         etComentario.setText("");
@@ -305,16 +289,16 @@ public class GestionVerificacionDomiciliariaActivity extends AppCompatActivity {
         mapUbicacion.setVisibility(View.GONE);
         pbLoadMap.setVisibility(View.GONE);
 
-        for(int i = 0; i < rgCoincideDomicilio.getChildCount(); i++){
+        for (int i = 0; i < rgCoincideDomicilio.getChildCount(); i++) {
             rgCoincideDomicilio.getChildAt(i).setEnabled(true);
             ((RadioButton) rgCoincideDomicilio.getChildAt(i)).setChecked(false);
         }
 
-        if(tbMain.getMenu() != null && tbMain.getMenu().size() > 0) tbMain.getMenu().getItem(0).setVisible(true);
+        if (tbMain.getMenu() != null && tbMain.getMenu().size() > 0)
+            tbMain.getMenu().getItem(0).setVisible(true);
     }
 
-    private void disabledForm()
-    {
+    private void disabledForm() {
         etComentario.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
         etComentario.setEnabled(false);
         ibUbicacion.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
@@ -322,24 +306,24 @@ public class GestionVerificacionDomiciliariaActivity extends AppCompatActivity {
         ibFotoFachada.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
         ibFotoFachada.setEnabled(false);
 
-        for(int i = 0; i < rgCoincideDomicilio.getChildCount(); i++){
+        for (int i = 0; i < rgCoincideDomicilio.getChildCount(); i++) {
             rgCoincideDomicilio.getChildAt(i).setEnabled(false);
         }
 
         tvTipoIntegrante.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
         tvTipoIntegrante.setEnabled(false);
 
-        if(tbMain.getMenu() != null && tbMain.getMenu().size() > 0) tbMain.getMenu().getItem(0).setVisible(false);
+        if (tbMain.getMenu() != null && tbMain.getMenu().size() > 0)
+            tbMain.getMenu().getItem(0).setVisible(false);
     }
 
-    private void fillForm()
-    {
+    private void fillForm() {
         etComentario.setText(gestion.getComentario());
 
-        if (!gestion.getFotoFachada().isEmpty()){
-            File fachadaFile = new File(Constants.ROOT_PATH + "Fachada/"+ gestion.getFotoFachada());
+        if (!gestion.getFotoFachada().isEmpty()) {
+            File fachadaFile = new File(Constants.ROOT_PATH + "Fachada/" + gestion.getFotoFachada());
             Uri uriFachada = Uri.fromFile(fachadaFile);
-            byteFotoFachada = Miscellaneous.getBytesUri(ctx, uriFachada,0);
+            byteFotoFachada = Miscellaneous.getBytesUri(ctx, uriFachada, 0);
             Glide.with(ctx).load(uriFachada).into(ivFotoFachada);
             ibFotoFachada.setVisibility(View.GONE);
             ivFotoFachada.setVisibility(View.VISIBLE);
@@ -348,15 +332,13 @@ public class GestionVerificacionDomiciliariaActivity extends AppCompatActivity {
         mapUbicacion.setVisibility(View.VISIBLE);
         Ubicacion(Double.parseDouble(gestion.getLatitud()), Double.parseDouble(gestion.getLongitud()));
 
-        if (gestion.getDomicilioCoincide() == 1) ((RadioButton) rgCoincideDomicilio.getChildAt(0)).setChecked(true);
+        if (gestion.getDomicilioCoincide() == 1)
+            ((RadioButton) rgCoincideDomicilio.getChildAt(0)).setChecked(true);
         else ((RadioButton) rgCoincideDomicilio.getChildAt(1)).setChecked(true);
 
-        if(verificacion.getGrupoId() == 1)
-        {
+        if (verificacion.getGrupoId() == 1) {
             tvTipoIntegrante.setText(_verificaciones_tipos[verificacion.getVerificacionTipoId() - 1]);
-        }
-        else
-        {
+        } else {
             tvTipoIntegrante.setText(_verificaciones_tipos[verificacion.getVerificacionTipoId() - 2]);
         }
 
@@ -364,11 +346,19 @@ public class GestionVerificacionDomiciliariaActivity extends AppCompatActivity {
 
     }
 
-    private void Ubicacion(final double latitud, final double longitud)
-    {
+    private void Ubicacion(final double latitud, final double longitud) {
         mapUbicacion.onResume();
         try {
-            MapsInitializer.initialize(getApplicationContext());
+            MapsInitializer.initialize(getApplicationContext(), MapsInitializer.Renderer.LATEST, renderer -> {
+                switch (renderer) {
+                    case LATEST:
+                        Log.d("MapsDemo", "The latest version of the renderer is used.");
+                        break;
+                    case LEGACY:
+                        Log.d("MapsDemo", "The legacy version of the renderer is used.");
+                        break;
+                }
+            });
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -389,11 +379,10 @@ public class GestionVerificacionDomiciliariaActivity extends AppCompatActivity {
         });
     }
 
-    private void addMarker(double latitud, double longitud)
-    {
+    private void addMarker(double latitud, double longitud) {
         LatLng coordenadas = new LatLng(latitud, longitud);
         latLngUbiCli = coordenadas;
-        CameraUpdate ubication = CameraUpdateFactory.newLatLngZoom(coordenadas,17);
+        CameraUpdate ubication = CameraUpdateFactory.newLatLngZoom(coordenadas, 17);
 
         gmMap.clear();
         gmMap.addMarker(new MarkerOptions()
@@ -406,8 +395,7 @@ public class GestionVerificacionDomiciliariaActivity extends AppCompatActivity {
         ibUbicacion.setVisibility(View.GONE);
     }
 
-    private void ObtenerUbicacion()
-    {
+    private void ObtenerUbicacion() {
         pbLoadMap.setVisibility(View.VISIBLE);
         ibUbicacion.setEnabled(false);
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
@@ -420,17 +408,14 @@ public class GestionVerificacionDomiciliariaActivity extends AppCompatActivity {
                 ibUbicacion.setEnabled(true);
                 tvUbicacion.setError(null);
 
-                if (!latitud.isEmpty() && !longitud.isEmpty())
-                {
+                if (!latitud.isEmpty() && !longitud.isEmpty()) {
                     mapUbicacion.setVisibility(View.VISIBLE);
                     gestion.setLatitud(latitud);
                     gestion.setLongitud(longitud);
 
                     Ubicacion(Double.parseDouble(latitud), Double.parseDouble(longitud));
-                }
-                else
-                {
-                    latLngUbiCli = new LatLng(0,0);
+                } else {
+                    latLngUbiCli = new LatLng(0, 0);
                     gestion.setLatitud("");
                     gestion.setLongitud("");
 
@@ -451,76 +436,63 @@ public class GestionVerificacionDomiciliariaActivity extends AppCompatActivity {
         String provider;
         if (NetworkStatus.haveNetworkConnection(ctx)) {
             provider = LocationManager.NETWORK_PROVIDER;
-        }
-        else {
+        } else {
             provider = LocationManager.GPS_PROVIDER;
         }
 
-        locationManager.requestSingleUpdate(provider, locationListener,null);
+        locationManager.requestSingleUpdate(provider, locationListener, null);
 
         myHandler.postDelayed(() -> {
             locationManager.removeUpdates(locationListener);
             pbLoadMap.setVisibility(View.GONE);
             ibUbicacion.setEnabled(true);
-            latLngUbiCli = new LatLng(0,0);
+            latLngUbiCli = new LatLng(0, 0);
             Toast.makeText(ctx, "No se logró obtener la ubicación", Toast.LENGTH_SHORT).show();
         }, 60000);
     }
 
-    private void CancelUbicacion (){
+    private void CancelUbicacion() {
         locationManager.removeUpdates(locationListener);
     }
 
-    private void Guardar()
-    {
+    private void Guardar() {
         Boolean bValido = true;
 
-        if(((RadioButton) rgCoincideDomicilio.getChildAt(0)).isChecked()) gestion.setDomicilioCoincide(1);
-        if(((RadioButton) rgCoincideDomicilio.getChildAt(1)).isChecked()) gestion.setDomicilioCoincide(0);
+        if (((RadioButton) rgCoincideDomicilio.getChildAt(0)).isChecked())
+            gestion.setDomicilioCoincide(1);
+        if (((RadioButton) rgCoincideDomicilio.getChildAt(1)).isChecked())
+            gestion.setDomicilioCoincide(0);
         gestion.setComentario(Miscellaneous.GetStr(etComentario));
 
-        if(gestion.getLatitud() == null || gestion.getLatitud().equals(""))
-        {
+        if (gestion.getLatitud() == null || gestion.getLatitud().equals("")) {
             bValido = false;
             tvUbicacion.setError("Este campo es requerido.");
-        }
-        else
-        {
+        } else {
             tvUbicacion.setError(null);
         }
 
-        if(gestion.getFotoFachada() == null || gestion.getFotoFachada().isEmpty())
-        {
+        if (gestion.getFotoFachada() == null || gestion.getFotoFachada().isEmpty()) {
             bValido = false;
             tvFotoFachada.setError("Este campo es requerido.");
-        }
-        else
-        {
+        } else {
             tvFotoFachada.setError(null);
         }
 
-        if(gestion.getDomicilioCoincide() == null)
-        {
+        if (gestion.getDomicilioCoincide() == null) {
             bValido = false;
             tvCoincideDomicilio.setError("Este campo es requerido.");
-        }
-        else
-        {
+        } else {
             tvCoincideDomicilio.setError(null);
         }
 
-        if(gestion.getComentario() == null || gestion.getComentario().isEmpty())
-        {
+        if (gestion.getComentario() == null || gestion.getComentario().isEmpty()) {
             bValido = false;
             etComentario.setError("Este campo es requerido.");
-        }
-        else
-        {
+        } else {
             etComentario.setError(null);
         }
 
-        if(bValido)
-        {
+        if (bValido) {
             gestion.setVerificacionDomiciliariaId(verificacion.getVerificacionDomiciliariaId());
             gestion.setUsuarioId(Long.parseLong(session.getUser().get(9)));
             gestion.setUsuarioNombre(session.getUser().get(1) + " " + session.getUser().get(2) + " " + session.getUser().get(3));
@@ -530,7 +502,7 @@ public class GestionVerificacionDomiciliariaActivity extends AppCompatActivity {
             gestion.setCreatedAt(Miscellaneous.ObtenerFecha("timestamp"));
             gestion.setEstatus(1);//DISPONIBLE PARA ENVIO
 
-            if(gestion.getId() == null || gestion.getId() == 0) gestionDao.store(gestion);
+            if (gestion.getId() == null || gestion.getId() == 0) gestionDao.store(gestion);
             else gestionDao.update(gestion);
 
             Servicios_Sincronizado ss = new Servicios_Sincronizado();
@@ -544,8 +516,8 @@ public class GestionVerificacionDomiciliariaActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode) {
             case REQUEST_CODE_CAMARA_FACHADA:
-                if (resultCode == Activity.RESULT_OK){
-                    if (data != null){
+                if (resultCode == Activity.RESULT_OK) {
+                    if (data != null) {
                         ibFotoFachada.setVisibility(View.GONE);
                         tvFotoFachada.setError(null);
                         ivFotoFachada.setVisibility(View.VISIBLE);

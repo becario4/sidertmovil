@@ -34,11 +34,9 @@ public class dialog_solicitud_gpo extends DialogFragment {
     private EditText etObservaciones;
     private Button btnGuardar;
     private Button btnCerrar;
-
     private DBhelper dBhelper;
     private SQLiteDatabase db;
     private SessionManager session;
-
     private String idSolicitud = "";
 
     @Override

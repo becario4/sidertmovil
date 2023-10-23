@@ -14,6 +14,9 @@ import android.widget.TextView;
 
 import com.sidert.sidertmovil.R;
 import com.sidert.sidertmovil.database.DBhelper;
+import com.sidert.sidertmovil.database.EntitiesCommonsContants;
+import com.sidert.sidertmovil.database.entities.Beneficiario;
+import com.sidert.sidertmovil.database.entities.SolicitudCampana;
 import com.sidert.sidertmovil.utils.Constants;
 import com.sidert.sidertmovil.utils.Popups;
 import com.sidert.sidertmovil.utils.SessionManager;
@@ -36,8 +39,7 @@ public class dialog_plazo_ind extends DialogFragment {
         super.onAttach(activity);
         try {
             this.mListener = (dialog_plazo_ind.OnCompleteListener) activity;
-        }
-        catch (final ClassCastException e) {
+        } catch (final ClassCastException e) {
             throw new ClassCastException(activity.toString() + " must implement OnCompleteListener");
         }
     }
@@ -117,10 +119,10 @@ public class dialog_plazo_ind extends DialogFragment {
         public void onClick(View v) {
             AlertDialog.Builder builder = new AlertDialog.Builder(ctx);
             builder.setTitle(R.string.selected_option)
-                .setItems(R.array.lapso_grupal, (dialog, position) -> {
-                    tvPeriodicidad.setError(null);
-                    tvPeriodicidad.setText(_frecuencia[position]);
-                });
+                    .setItems(R.array.lapso_grupal, (dialog, position) -> {
+                        tvPeriodicidad.setError(null);
+                        tvPeriodicidad.setText(_frecuencia[position]);
+                    });
             builder.create();
             builder.show();
         }
@@ -130,16 +132,15 @@ public class dialog_plazo_ind extends DialogFragment {
         @Override
         public void onClick(View v) {
             if (
-                !validatorTV.validate(tvPlazo, new String[]{validatorTV.REQUIRED}) &&
-                !validatorTV.validate(tvPeriodicidad, new String[]{validatorTV.REQUIRED})
-            )
-            {
+                    !validatorTV.validate(tvPlazo, new String[]{validatorTV.REQUIRED}) &&
+                            !validatorTV.validate(tvPeriodicidad, new String[]{validatorTV.REQUIRED})
+            ) {
                 AlertDialog guardar_info_dlg = Popups.showDialogConfirm(ctx, Constants.question,
-                    R.string.datos_correctos, R.string.yes, dialog -> {
-                        savePlazo();
-                        dialog.dismiss();
+                        R.string.datos_correctos, R.string.yes, dialog -> {
+                            savePlazo();
+                            dialog.dismiss();
 
-                    }, R.string.no, dialog -> dialog.dismiss()
+                        }, R.string.no, dialog -> dialog.dismiss()
                 );
                 Objects.requireNonNull(guardar_info_dlg.getWindow()).requestFeature(Window.FEATURE_NO_TITLE);
                 guardar_info_dlg.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
@@ -157,8 +158,7 @@ public class dialog_plazo_ind extends DialogFragment {
         }
     };
 
-    private void savePlazo()
-    {
+    private void savePlazo() {
         mListener.onComplete(tvPlazo.getText().toString(), tvPeriodicidad.getText().toString());
         getDialog().dismiss();
     }

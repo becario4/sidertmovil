@@ -12,6 +12,8 @@ import android.graphics.Color;
 import android.location.Address;
 import android.location.Geocoder;
 import android.net.Uri;
+import android.os.Handler;
+import android.os.Looper;
 import android.provider.MediaStore;
 import android.telephony.SmsManager;
 import android.util.Base64;
@@ -53,8 +55,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
+import java.util.regex.Pattern;
 
 import androidx.appcompat.app.AppCompatActivity;
+import timber.log.Timber;
 
 import static com.sidert.sidertmovil.utils.Constants.COLONIAS;
 import static com.sidert.sidertmovil.utils.Constants.ESTADOS;
@@ -90,6 +94,7 @@ public class Miscellaneous extends AppCompatActivity {
     }
 
     private static final Gson GSON;
+    private static final Pattern BIRTHDAY_PATTERN = Pattern.compile("^(?<century>(19|20|21))(?<year>\\d{2})-(?<month>0?[1-9]|1[0-2])-(?<day>0?[1-9]|[12]\\d|3[01])$");
 
     /*Validación de que no sea null ni vacio y colocar primera leta mayúscula*/
     public static String ucFirst(String str) {
@@ -648,363 +653,31 @@ public class Miscellaneous extends AppCompatActivity {
     /* Generador de CURP */
     public static String GenerarCurp(HashMap<Integer, String> params) {
 
-        String nombreTexto = RemoveTildes(params.get(0).toUpperCase());
+        try {
+            String nombreTexto = params.get(0);
+            String primerApellidoTexto = params.get(1);
+            String segundoApellidoTexto = params.get(2);
+            String fechaNacimientoTexto = params.get(3);
+            String sexoTexto = params.get(4);
+            String estadoTexto = params.get(5);
 
-        nombreTexto = nombreTexto.replaceAll("\\bMARIA\\s\\b", "");
-        nombreTexto = nombreTexto.replaceAll("\\bMARÍA\\s\\b", "");
-        nombreTexto = nombreTexto.replaceAll("\\bJOSE\\s\\b", "");
-        nombreTexto = nombreTexto.replaceAll("\\bMA\\s\\b", "");
-        nombreTexto = nombreTexto.replaceAll("\\bMA\\.\\s\\b", "");
-        nombreTexto = nombreTexto.replaceAll("\\bJOSE\\s\\b", "");
-        nombreTexto = nombreTexto.replaceAll("\\bJOSÉ\\s\\b", "");
-        nombreTexto = nombreTexto.replaceAll("\\bJ\\.\\s\\b", "");
+            Timber.tag("GENERADOR CURP").i("Nombre: %s", nombreTexto);
+            Timber.tag("GENERADOR CURP").i("Paterno: %s", primerApellidoTexto);
+            Timber.tag("GENERADOR CURP").i("Materno: %s", segundoApellidoTexto);
+            Timber.tag("GENERADOR CURP").i("Fecha: %s", fechaNacimientoTexto);
+            Timber.tag("GENERADOR CURP").i("Genero: %s", sexoTexto);
+            Timber.tag("GENERADOR CURP").i("Estado: %s", estadoTexto);
 
-        String primerApellidoTexto = RemoveTildes(params.get(1).toUpperCase().replace("Ñ", "X"));
-        primerApellidoTexto = primerApellidoTexto.replaceAll("/", "X");
-        primerApellidoTexto = primerApellidoTexto.replaceAll("-", "X");
-
-        primerApellidoTexto = (!primerApellidoTexto.trim().isEmpty()) ? primerApellidoTexto : "XXXX";
-
-        String segundoApellidoTexto = RemoveTildes(params.get(2).toUpperCase().replace("Ñ", "X"));
-        String fechaNacimientoTexto = params.get(3).toUpperCase();
-
-        String fechaNacimientoTextotest = fechaNacimientoTexto;
-
-        String sexoTexto = params.get(4);
-        String estadoTexto = params.get(5);
-
-        // Lista Resultado
-
-        List<Character> listaResultado = new ArrayList<>();
-
-        // String Resultado
-
-        String resultado = "";
-
-        // Verificando datos
-
-        Log.e("Curp", "Nombre: " + nombreTexto);
-        Log.e("Curp", "Paterno: " + primerApellidoTexto);
-        Log.e("Curp", "Materno: " + segundoApellidoTexto);
-        Log.e("Curp", "Fecha: " + fechaNacimientoTexto);
-        Log.e("Curp", "Genero: " + sexoTexto);
-        Log.e("Curp", "Estado: " + estadoTexto);
-
-        boolean datosCorrectos = true;
-
-        if (nombreTexto.isEmpty() || primerApellidoTexto.isEmpty() || fechaNacimientoTexto.isEmpty()
-                || fechaNacimientoTexto.length() < 6 || sexoTexto.isEmpty() || estadoTexto.isEmpty()) {
-            datosCorrectos = false;
-            resultado = "";
-
+            return CurpUtils.generateCURP(nombreTexto, primerApellidoTexto, segundoApellidoTexto, fechaNacimientoTexto, sexoTexto.toUpperCase(Locale.ROOT), estadoTexto);
+        } catch (Exception illegalArgumentException) {
+            Timber.tag("GENERADOR CURP").e(illegalArgumentException);
+            return "";
         }
-
-        if (datosCorrectos && nombreTexto.length() > 3 && primerApellidoTexto.length() > 2) {
-
-            // Convirtiendo textos a Listas
-
-            List<Character> nombreLista = new ArrayList<>();
-            for (int i = 0; i < nombreTexto.length(); i++) {
-                nombreLista.add(nombreTexto.charAt(i));
-            }
-
-            List<Character> primerApellidoLista = new ArrayList<>();
-            for (int i = 0; i < primerApellidoTexto.length(); i++) {
-                primerApellidoLista.add(primerApellidoTexto.charAt(i));
-            }
-
-            List<Character> segundoApellidoLista = new ArrayList<>();
-            for (int i = 0; i < segundoApellidoTexto.length(); i++) {
-                segundoApellidoLista.add(segundoApellidoTexto.charAt(i));
-            }
-
-            // Calculando 4 primeros caracteres
-
-            boolean segundaLetraConsonante = false;
-            boolean noSegundoApellido = false;
-
-            // ¿Consonante segunda letra?
-
-            if (!(esVocal(primerApellidoLista.get(1)))) {
-                segundaLetraConsonante = true;
-            }
-
-            if (segundoApellidoTexto == "") {
-                noSegundoApellido = true;
-            }
-
-            // Lista Resultado
-
-            //primera letra: si no segunda componante -> dos primeras letras = dos primeras letras 1er apellido
-
-            int posicionPrimeraVocal = 0;
-
-            if (segundaLetraConsonante == false) {
-                listaResultado.add(primerApellidoLista.get(0));
-                listaResultado.add(primerApellidoLista.get(1));
-            } else {
-                if (!esVocal(primerApellidoLista.get(0))) {
-                    listaResultado.add(primerApellidoLista.get(0));
-                    for (int i = 0; i < primerApellidoLista.size(); i++) {
-                        if (esVocal(primerApellidoLista.get(i))) {
-                            listaResultado.add(primerApellidoLista.get(i));
-                            break;
-                        }
-                    }
-
-                } else {
-                    boolean primerletra = true;
-                    boolean primervocal = true;
-                    for (int i = 0; i < primerApellidoLista.size(); i++) {
-                        Log.e("Letra--", primerApellidoLista.get(i).toString());
-                        Log.e("Letra--", "" + esVocal(primerApellidoLista.get(i)));
-                        if (primerletra) {
-                            listaResultado.add(primerApellidoLista.get(i));
-                            primerletra = false;
-                        } else if (primervocal) {
-                            if (esVocal(primerApellidoLista.get(i))) {
-                                listaResultado.add(primerApellidoLista.get(i));
-                                primervocal = false;
-                            }
-                        }
-
-                    }
-
-                }
-            }
-
-            //segunda letra: buscamos la primera vocal interna del apellido
-
-            /*if (listaResultado.size() == 1){
-                for (int i = 0 ; i < primerApellidoLista.size(); i++){
-                    if(esVocal(primerApellidoLista.get(i)) && listaResultado.size() < 2){
-                        listaResultado.add(primerApellidoLista.get(i));
-                    }
-                }
-            }*/
-
-            if (listaResultado.size() == 1) {
-                listaResultado.add('X');
-            }
-
-            // tercera letra: inicial del segundo apellido
-
-            if (segundoApellidoLista.isEmpty() == true) {
-                listaResultado.add('X');
-            } else {
-                listaResultado.add(segundoApellidoLista.get(0));
-            }
-
-            // cuarta letra: inicial del nombre
-
-            listaResultado.add(nombreLista.get(0));
-
-            // Fecha de nacimiento
-
-            fechaNacimientoTextotest = fechaNacimientoTextotest.replaceAll("-", "");
-            fechaNacimientoTextotest = fechaNacimientoTextotest.replaceAll("/", "");
-
-            if (fechaNacimientoTextotest.length() > 0) {
-                listaResultado.add(fechaNacimientoTextotest.charAt(2));
-                listaResultado.add(fechaNacimientoTextotest.charAt(3));
-                listaResultado.add(fechaNacimientoTextotest.charAt(4));
-                listaResultado.add(fechaNacimientoTextotest.charAt(5));
-                listaResultado.add(fechaNacimientoTextotest.charAt(6));
-                listaResultado.add(fechaNacimientoTextotest.charAt(7));
-            }
-            /*for (int i=0;i<fechaNacimientoTextotest.length();i++){
-                listaResultado.add(fechaNacimientoTextotest.charAt(i));
-            }*/
-
-            // Sexo
-
-            listaResultado.add(sexoTexto.charAt(0));
-
-            // Estado
-
-            String codigoEstado = "";
-
-            switch (estadoTexto) {
-                case "EXTRANJERO":
-                    codigoEstado = "NE";
-                    break;
-                case "AGUASCALIENTES":
-                    codigoEstado = "AS";
-                    break;
-                case "BAJA CALIFORNIA":
-                    codigoEstado = "BC";
-                    break;
-                case "BAJA CALIFORNIA SUR":
-                    codigoEstado = "BS";
-                    break;
-                case "CAMPECHE":
-                    codigoEstado = "CC";
-                    break;
-                case "CHIAPAS":
-                    codigoEstado = "CS";
-                    break;
-                case "CHIHUAHUA":
-                    codigoEstado = "CH";
-                    break;
-                case "CIUDAD DE MEXICO":
-                    codigoEstado = "DF";
-                    break;
-                case "COAHUILA DE ZARAGOZA":
-                    codigoEstado = "CL";
-                    break;
-                case "COLIMA":
-                    codigoEstado = "CM";
-                    break;
-                case "DURANGO":
-                    codigoEstado = "DG";
-                    break;
-                case "GUANAJUATO":
-                    codigoEstado = "GT";
-                    break;
-                case "GUERRERO":
-                    codigoEstado = "GR";
-                    break;
-                case "HIDALGO":
-                    codigoEstado = "HG";
-                    break;
-                case "JALISCO":
-                    codigoEstado = "JC";
-                    break;
-                case "MEXICO":
-                    codigoEstado = "MC";
-                    break;
-                case "MICHOACAN DE OCAMPO":
-                    codigoEstado = "MN";
-                    break;
-                case "MORELOS":
-                    codigoEstado = "MS";
-                    break;
-                case "NAYARIT":
-                    codigoEstado = "NT";
-                    break;
-                case "NUEVO LEON":
-                    codigoEstado = "NL";
-                    break;
-                case "OAXACA":
-                    codigoEstado = "OC";
-                    break;
-                case "PUEBLA":
-                    codigoEstado = "PL";
-                    break;
-                case "QUERETARO":
-                    codigoEstado = "QO";
-                    break;
-                case "QUINTANA ROO":
-                    codigoEstado = "QR";
-                    break;
-                case "SAN LUIS POTOSI":
-                    codigoEstado = "SP";
-                    break;
-                case "SINALOA":
-                    codigoEstado = "SL";
-                    break;
-                case "SONORA":
-                    codigoEstado = "SR";
-                    break;
-                case "TABASCO":
-                    codigoEstado = "TC";
-                    break;
-                case "TAMAULIPAS":
-                    codigoEstado = "TS";
-                    break;
-                case "TLAXCALA":
-                    codigoEstado = "TL";
-                    break;
-                case "VERACRUZ":
-                    codigoEstado = "VZ";
-                    break;
-                case "YUCATAN":
-                    codigoEstado = "YN";
-                    break;
-                case "ZACATECAS":
-                    codigoEstado = "ZS";
-                    break;
-            }
-
-            listaResultado.add(codigoEstado.charAt(0));
-            listaResultado.add(codigoEstado.charAt(1));
-
-            // Consonantes internas de nombre y apellidos
-
-            // Consonante interna primer apellido
-
-            for (int i = 1; i < primerApellidoLista.size(); i++) {
-                if (esVocal(primerApellidoLista.get(i)) == false) {
-                    listaResultado.add(primerApellidoLista.get(i));
-                    break;
-                }
-            }
-
-            if (listaResultado.size() < 14) {
-                listaResultado.add('X');
-            }
-
-            // Consonante interna segundo apellido
-
-            for (int i = 1; i < segundoApellidoLista.size(); i++) {
-                if (segundoApellidoLista.isEmpty()) {
-                    listaResultado.add('X');
-                    break;
-                }
-
-                if (esVocal(segundoApellidoLista.get(i)) == false) {
-                    listaResultado.add(segundoApellidoLista.get(i));
-                    break;
-                }
-            }
-
-            if (listaResultado.size() < 15) {
-                listaResultado.add('X');
-            }
-
-            // Consonante interna nombre
-
-            for (int i = 1; i < nombreLista.size(); i++) {
-                if (esVocal(nombreLista.get(i)) == false) {
-                    listaResultado.add(nombreLista.get(i));
-                    break;
-                }
-            }
-
-            if (listaResultado.size() < 16) {
-                listaResultado.add('X');
-            }
-
-
-            StringBuilder builder = new StringBuilder(listaResultado.size());
-            for (Character ch : listaResultado) {
-                builder.append(ch);
-            }
-
-            String listaResultadoTexto = builder.toString();
-
-            listaResultadoTexto = listaResultadoTexto.replaceAll("Ñ", "X");
-            listaResultadoTexto = listaResultadoTexto.replaceAll("\\-", "X");
-            listaResultadoTexto = listaResultadoTexto.replaceAll("\\.", "X");
-            listaResultadoTexto = listaResultadoTexto.replace("Ä", "A")
-                    .replace("Ë", "E")
-                    .replace("Ï", "I")
-                    .replace("Ö", "O")
-                    .replace("Ü", "U");
-            listaResultadoTexto = listaResultadoTexto.replaceAll(" ", "");
-
-            resultado = listaResultadoTexto;
-
-        } else
-            resultado = "";
-
-        return resultado;
     }
 
     public static String RemoveTildes(String str) {
         String cadenaNormalize = Normalizer.normalize(str, Normalizer.Form.NFD);
-        String cadenaSinAcentos = cadenaNormalize.replaceAll("[^\\p{ASCII}]", "");
-        return cadenaSinAcentos;
+        return cadenaNormalize.replaceAll("[^\\p{ASCII}]", "");
     }
 
     public static String RemoveTildesVocal(String str) {
@@ -1126,25 +799,7 @@ public class Miscellaneous extends AppCompatActivity {
     }
 
     public static boolean CurpValidador(String curp) {
-        String diccionario = "0123456789ABCDEFGHIJKLMNÑOPQRSTUVWXYZ";
-        String curp17 = curp.substring(0, 17);
-        Log.e("Curp17", curp17);
-        double lngSuma = 0.0;
-        double lngDigito = 0.0;
-        for (int i = 0; i < 17; i++) {
-            lngSuma = lngSuma + diccionario.indexOf(curp17.charAt(i)) * (18 - i);
-        }
-        lngDigito = 10 - lngSuma % 10;
-        if (lngDigito == 10) lngDigito = 0;
-
-        Log.e("CurpValidator", String.valueOf(lngDigito));
-        //Log.e("CurpValidator", String.valueOf(Integer.parseInt(curp.substring(17,18))));
-        Log.e("CurpValidator", String.valueOf(lngDigito == Integer.parseInt(curp.substring(17, 18))));
-
-        if (lngDigito == Integer.parseInt(curp.substring(17, 18)))
-            return true;
-        else
-            return false;
+        return CurpUtils.curpValidador(curp);
     }
 
     public static String GenerarRFC(String rfc, String nombre, String ap_paterno, String ap_materno) {
@@ -1652,8 +1307,14 @@ public class Miscellaneous extends AppCompatActivity {
     }
 
     public static String ConvertToJson(Object obj) {
-        Log.v("JsonConvert", GSON.toJson(obj));
-        return GSON.toJson(obj);
+        String jsonToReturn = GSON.toJson(obj);
+        Timber.tag("JSONConvert").i(jsonToReturn);
+        return jsonToReturn;
+    }
+
+    public static <T> T jsonToObject(String json, Class<T> klass) {
+        Timber.tag("JSONConvert").i(json);
+        return GSON.fromJson(json, klass);
     }
 
     /*Obtiene el texto de los edittext y textview*/
@@ -3036,6 +2697,12 @@ public class Miscellaneous extends AppCompatActivity {
         imagenResultado = baos.toByteArray();
 
         return imagenResultado;
+    }
+
+
+    public static void runInMainThread(Runnable runnable) {
+        Handler handler = new Handler(Looper.getMainLooper());
+        handler.postDelayed(runnable, 1_500L);
     }
 
 

@@ -56,27 +56,27 @@ import com.sidert.sidertmovil.activities.CapturarFirma;
 import com.sidert.sidertmovil.activities.Catalogos;
 import com.sidert.sidertmovil.activities.VerImagen;
 import com.sidert.sidertmovil.database.DBhelper;
+import com.sidert.sidertmovil.database.EntitiesCommonsContants;
+import com.sidert.sidertmovil.database.entities.Beneficiario;
+import com.sidert.sidertmovil.database.entities.SolicitudCampana;
 import com.sidert.sidertmovil.fragments.dialogs.DialogSelectorFecha;
 import com.sidert.sidertmovil.fragments.dialogs.dialog_input_calle;
 import com.sidert.sidertmovil.fragments.dialogs.dialog_renovar_integrante;
 import com.sidert.sidertmovil.models.ModeloCatalogoGral;
 import com.sidert.sidertmovil.models.catalogos.Colonia;
 import com.sidert.sidertmovil.models.catalogos.ColoniaDao;
-import com.sidert.sidertmovil.models.datosCampañas.datosCampanaGpoRenDao;
-import com.sidert.sidertmovil.models.solicitudes.solicitudgpo.renovacion.BeneficiarioRenDao;
-import com.sidert.sidertmovil.models.solicitudes.solicitudgpo.renovacion.BeneficiarioRenGPO;
 import com.sidert.sidertmovil.models.solicitudes.solicitudgpo.renovacion.DomicilioIntegranteRen;
 import com.sidert.sidertmovil.models.solicitudes.solicitudgpo.renovacion.DomicilioIntegranteRenDao;
 import com.sidert.sidertmovil.models.solicitudes.solicitudgpo.renovacion.NegocioIntegranteRen;
 import com.sidert.sidertmovil.models.solicitudes.solicitudgpo.renovacion.NegocioIntegranteRenDao;
 import com.sidert.sidertmovil.utils.Constants;
-import com.sidert.sidertmovil.utils.DatosCompartidos;
 import com.sidert.sidertmovil.utils.Miscellaneous;
 import com.sidert.sidertmovil.utils.MyCurrentListener;
 import com.sidert.sidertmovil.utils.NameFragments;
 import com.sidert.sidertmovil.utils.NetworkStatus;
 import com.sidert.sidertmovil.utils.Popups;
 import com.sidert.sidertmovil.utils.SessionManager;
+import com.sidert.sidertmovil.utils.TextWatcherAdapter;
 import com.sidert.sidertmovil.utils.Validator;
 import com.sidert.sidertmovil.utils.ValidatorTextView;
 
@@ -95,6 +95,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -137,8 +138,6 @@ import static com.sidert.sidertmovil.utils.Constants.SECTORES;
 import static com.sidert.sidertmovil.utils.Constants.TBL_CONYUGE_INTEGRANTE_REN;
 import static com.sidert.sidertmovil.utils.Constants.TBL_CREDITO_GPO_REN;
 import static com.sidert.sidertmovil.utils.Constants.TBL_CROQUIS_GPO_REN;
-import static com.sidert.sidertmovil.utils.Constants.TBL_DATOS_BENEFICIARIO_GPO_REN;
-import static com.sidert.sidertmovil.utils.Constants.TBL_DATOS_CREDITO_CAMPANA_GPO_REN;
 import static com.sidert.sidertmovil.utils.Constants.TBL_DOCUMENTOS_INTEGRANTE_REN;
 import static com.sidert.sidertmovil.utils.Constants.TBL_DOMICILIO_INTEGRANTE_REN;
 import static com.sidert.sidertmovil.utils.Constants.TBL_INTEGRANTES_GPO;
@@ -166,6 +165,9 @@ public class RenovarIntegrante
         extends AppCompatActivity
         implements dialog_renovar_integrante.OnCompleteListener {
 
+    private final AtomicReference<Beneficiario> beneficiarioAtomicReference = new AtomicReference<>();
+    private final AtomicReference<SolicitudCampana> solicitudCampanaAtomicReference = new AtomicReference<>();
+
     private Context ctx;
     private DBhelper dBhelper;
     private SQLiteDatabase db;
@@ -175,9 +177,6 @@ public class RenovarIntegrante
     private DialogSelectorFecha date;
     private Integer gpoRen = 4;
     private boolean is_edit = true;
-    RenovacionCreditoGpo gpo = new RenovacionCreditoGpo();
-    private long id_solicitud = 0;
-
     private String[] _estudios;
     private String[] _tipo_identificacion;
     private String[] _civil;
@@ -496,8 +495,6 @@ public class RenovarIntegrante
     private MyCurrentListener locationListener;
     private GoogleMap mMapCli;
     private GoogleMap mMapNeg;
-    private BeneficiarioRenGPO renGpo = new BeneficiarioRenGPO();
-
     private String id_credito = "";
     private String id_integrante = "";
     private int id_solicitud_integrante = 0;
@@ -2360,87 +2357,40 @@ public class RenovarIntegrante
         //==========================================================================================
         //==================================  NEGOCIO BENEFICIARIO  ================================
 
-        txtNombreBeneficiario.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-                if (editable != null) {
-                    String nombreBeneficiario = editable.toString().trim().toUpperCase();
-                    if (nombreBeneficiario.isEmpty()) {
-                        Update("nombre", TBL_DATOS_BENEFICIARIO_GPO_REN, " ", "id_integrante", String.valueOf(id_integrante));
-                    } else {
-                        Update("nombre", TBL_DATOS_BENEFICIARIO_GPO_REN, editable.toString().trim().toUpperCase(), "id_integrante", String.valueOf(id_integrante));
-                    }
-                }
+        txtNombreBeneficiario.addTextChangedListener((TextWatcherAdapter) editable -> {
+            Beneficiario beneficiario = this.beneficiarioAtomicReference.get();
+            if (beneficiario != null) {
+                String beneficiarioNombre = editable.toString().trim().toUpperCase();
+                beneficiario.setNombre(beneficiarioNombre);
+                dBhelper.getBeneficiariosDao().update(beneficiario);
             }
         });
 
-        txtApellidoPaterno.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-                if (editable.length() > 0) {
-                    Update("paterno", TBL_DATOS_BENEFICIARIO_GPO_REN, editable.toString().trim().toUpperCase(), "id_integrante", String.valueOf(id_integrante));
-                } else
-                    Update("paterno", TBL_DATOS_BENEFICIARIO_GPO_REN, " ", "id_integrante", String.valueOf(id_integrante));
+        txtApellidoPaterno.addTextChangedListener((TextWatcherAdapter) editable -> {
+            Beneficiario beneficiario = this.beneficiarioAtomicReference.get();
+            if (beneficiario != null) {
+                String beneficiarioPaterno = editable.toString().trim().toUpperCase();
+                beneficiario.setPaterno(beneficiarioPaterno);
+                dBhelper.getBeneficiariosDao().update(beneficiario);
             }
         });
 
-        txtApellidoMaterno.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-                if (editable.length() > 0) {
-                    Update("materno", TBL_DATOS_BENEFICIARIO_GPO_REN, editable.toString().trim().toUpperCase(), "id_integrante", String.valueOf(id_integrante));
-                } else
-                    Update("materno", TBL_DATOS_BENEFICIARIO_GPO_REN, " ", "id_integrante", String.valueOf(id_integrante));
+        txtApellidoMaterno.addTextChangedListener((TextWatcherAdapter) editable -> {
+            Beneficiario beneficiario = this.beneficiarioAtomicReference.get();
+            if (beneficiario != null) {
+                String beneficiarioMaterno = editable.toString().trim().toUpperCase();
+                beneficiario.setMaterno(beneficiarioMaterno);
+                dBhelper.getBeneficiariosDao().update(beneficiario);
             }
         });
 
-        txtParentescoBeneficiario.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-                if (editable.length() > 0) {
-                    Update("parentesco", TBL_DATOS_BENEFICIARIO_GPO_REN, editable.toString().trim().toUpperCase(), "id_integrante", String.valueOf(id_integrante));
-                } else
-                    Update("parentesco", TBL_DATOS_BENEFICIARIO_GPO_REN, " ", "id_integrante", String.valueOf(id_integrante));
+        txtParentescoBeneficiario.addTextChangedListener((TextWatcherAdapter) editable -> {
+            Beneficiario beneficiario = this.beneficiarioAtomicReference.get();
+            if (beneficiario != null) {
+                String beneficiarioParentesco = editable.toString().trim().toUpperCase();
+                beneficiario.setParentesco(beneficiarioParentesco);
+                dBhelper.getBeneficiariosDao().update(beneficiario);
             }
         });
 
@@ -2857,7 +2807,16 @@ public class RenovarIntegrante
                 openRegistroIntegrante(id_credito, id_integrante);
             });
         }
-        //obtenerDatosBeneficiario();
+
+        txtNombreRefieroGpoRen.addTextChangedListener((TextWatcherAdapter) editable -> {
+            String referidoNombre = editable.toString().trim().toUpperCase();
+            if (referidoNombre.isEmpty()) return;
+
+            SolicitudCampana solicitudCampana = this.solicitudCampanaAtomicReference.get();
+            solicitudCampana.setNombreReferido(referidoNombre);
+            dBhelper.getSolicitudCampanaDao().update(solicitudCampana);
+        });
+
     }
 
     //========================  ACTION LINEAR LAYOUT  ==============================================
@@ -5581,18 +5540,6 @@ public class RenovarIntegrante
         etCasaCony.setEnabled(is_edit);
         row.close(); // Cierra datos del conyuge
 
-        row = dBhelper.getRecords(TBL_DATOS_BENEFICIARIO_GPO_REN, " WHERE id_integrante = ?", " ", new String[]{id_integrante});
-
-        if (row.getCount() > 0) {
-            row.moveToFirst();
-            txtNombreBeneficiario.setText(row.getString(6).trim().toUpperCase());
-            txtApellidoPaterno.setText(row.getString(7).trim().toUpperCase());
-            txtApellidoMaterno.setText(row.getString(8).trim().toUpperCase());
-            txtParentescoBeneficiario.setText(row.getString(9).trim().toUpperCase());
-            row.close();
-        }
-
-
         /**Obtiene los datos generales*/
         //Datos Otros
         row = dBhelper.getRecords(TBL_OTROS_DATOS_INTEGRANTE_REN, " WHERE id_integrante = ?", "", new String[]{id_integrante});
@@ -5661,14 +5608,6 @@ public class RenovarIntegrante
             ivFirmaCli.setVisibility(View.VISIBLE);
         }
         row.close(); //Cierra otros datos
-
-        row = dBhelper.getRecords(TBL_DATOS_CREDITO_CAMPANA_GPO_REN, " WHERE id_solicitud = ?", " ", new String[]{id_integrante});
-
-        if (row.getCount() > 0) {
-            row.moveToFirst();
-            txtNombreRefieroGpoRen.setText(row.getString(5));
-            row.close();
-        }
 
         /**Obtiene los datos del croquis*/
         row = dBhelper.getRecords(TBL_CROQUIS_GPO_REN, " WHERE id_integrante = ?", "", new String[]{id_integrante});
@@ -5774,6 +5713,52 @@ public class RenovarIntegrante
         }
 
         row.close(); //Cierra datos de documentos del integrante
+
+        SolicitudCampana solicitudCampana = dBhelper.getSolicitudCampanaDao()
+                .findBySolicitudId(Long.parseLong(this.id_credito), Integer.parseInt(id_integrante), EntitiesCommonsContants.TIPO_SOLICITUD_GRUPAL_RENOVACION)
+                .orElseGet(() -> {
+                    SolicitudCampana newSolicitudCampana = new SolicitudCampana();
+                    newSolicitudCampana.setSolicitudId(Integer.parseInt(id_credito));
+                    newSolicitudCampana.setIntegranteId(Integer.parseInt(id_integrante));
+                    newSolicitudCampana.setTipoSolicitud(EntitiesCommonsContants.TIPO_SOLICITUD_GRUPAL_RENOVACION);
+                    newSolicitudCampana.setSolicitudRemotaId(0);
+                    newSolicitudCampana.setNombreReferido("NINGUNO");
+                    newSolicitudCampana.setCampanaNombre("NINGUNO");
+                    Long solicitudCamapanaId = dBhelper.getSolicitudCampanaDao().insert(newSolicitudCampana);
+                    newSolicitudCampana.setId(solicitudCamapanaId);
+                    return newSolicitudCampana;
+                });
+
+        String solicitudCampanaNombre = solicitudCampana.getCampanaNombre();
+
+        this.solicitudCampanaAtomicReference.set(solicitudCampana);
+        this.txtCampanaGpoRen.setText(solicitudCampanaNombre);
+        this.txtNombreRefieroGpoRen.setText(solicitudCampana.getNombreReferido());
+        txtNombreRefieroGpoRen.setEnabled(!solicitudCampanaNombre.equals("NINGUNO"));
+
+        Beneficiario beneficiario = dBhelper.getBeneficiariosDao()
+                .findBySolicitudId(Long.parseLong(this.id_credito), Integer.parseInt(id_integrante), EntitiesCommonsContants.TIPO_SOLICITUD_GRUPAL_RENOVACION)
+                .orElseGet(() -> {
+                    Beneficiario newBeneficiario = new Beneficiario();
+                    newBeneficiario.setSolicitudId(Integer.parseInt(id_credito));
+                    newBeneficiario.setIntegranteId(Integer.parseInt(id_integrante));
+                    newBeneficiario.setTipoSolicitud(EntitiesCommonsContants.TIPO_SOLICITUD_GRUPAL_RENOVACION);
+                    newBeneficiario.setSolicitudRemotaId(0);
+                    newBeneficiario.setNombre("");
+                    newBeneficiario.setPaterno("");
+                    newBeneficiario.setMaterno("");
+                    newBeneficiario.setParentesco("");
+                    Long beneficiarioId = dBhelper.getBeneficiariosDao().insert(newBeneficiario);
+                    newBeneficiario.setId(beneficiarioId);
+                    return newBeneficiario;
+                });
+
+
+        this.beneficiarioAtomicReference.set(beneficiario);
+        this.txtNombreBeneficiario.setText(beneficiario.getNombre());
+        this.txtApellidoPaterno.setText(beneficiario.getPaterno());
+        this.txtApellidoMaterno.setText(beneficiario.getMaterno());
+        this.txtParentescoBeneficiario.setText(beneficiario.getParentesco());
 
 
         /**Valida si ya esta guardado la solicitud para bloquear todos los campos y eventos*/
@@ -6453,32 +6438,39 @@ public class RenovarIntegrante
         return save_otros;
     }
 
-    private boolean saveDatosCampan() {
-        boolean save_campana = false;
-        ContentValues cv = new ContentValues();
+    private boolean saveDatosCampana() {
 
-        boolean auxiliar = datosCampanaGpoRenDao.validarEstatus(ctx, Integer.parseInt(String.valueOf(id_integrante)));
-        if (!validatorTV.validate(txtCampanaGpoRen, new String[]{validator.ONLY_TEXT}) && !validator.validate(txtNombreRefieroGpoRen, new String[]{validator.ONLY_TEXT})) {
+        SolicitudCampana solicitudCampana = this.solicitudCampanaAtomicReference.get();
 
-            cv.put("id_solicitud", id_integrante);
-            cv.put("id_campana", Miscellaneous.selectCampana(ctx, Miscellaneous.GetStr(txtCampanaGpoRen)));
-            cv.put("tipo_campana", Miscellaneous.GetStr(txtCampanaGpoRen));
-            cv.put("nombre_refiero", Miscellaneous.GetStr(txtNombreRefieroGpoRen));
+        if (solicitudCampana != null) {
 
-            if (!auxiliar) {
-                db.insert(TBL_DATOS_CREDITO_CAMPANA_GPO_REN, null, cv);
+            String nombreCampana = solicitudCampana.getCampanaNombre();
+            nombreCampana = (nombreCampana == null) ? "" : nombreCampana.trim();
+
+            String nombreRefiero = solicitudCampana.getNombreReferido();
+            nombreRefiero = (nombreRefiero == null) ? "" : nombreRefiero.trim();
+
+            boolean nombreCampanaValidacion = nombreCampana.isEmpty();
+            boolean nombreRefieroValidacion = nombreRefiero.isEmpty();
+
+            if (nombreCampanaValidacion) {
+                txtCampanaGpoRen.setError("Esta campo es requerido");
+                ivError1.setVisibility(View.VISIBLE);
             }
 
-            if (auxiliar) {
-                db.update(TBL_DATOS_CREDITO_CAMPANA_GPO_REN, cv, " id_solicitud = ?", new String[]{String.valueOf(id_integrante)});
+            if (nombreRefieroValidacion) {
+                txtNombreRefieroGpoRen.setError("Este campo es requerido");
+                ivError1.setVisibility(View.VISIBLE);
             }
 
-            save_campana = true;
+            return (!nombreCampanaValidacion) && (!nombreRefieroValidacion);
+
         } else {
+            ivError1.setVisibility(View.VISIBLE);
             txtCampanaGpoRen.setError("Esta campo es requerido");
             txtNombreRefieroGpoRen.setError("Este campo es requerido");
+            return false;
         }
-        return save_campana;
     }
 
 
@@ -6612,54 +6604,46 @@ public class RenovarIntegrante
     }
 
     private boolean saveBeneficiario() {
+        // Obtener un Optional con el Beneficiario a partir de la solicitud.
+        Beneficiario beneficiario = this.beneficiarioAtomicReference.get();
 
-        boolean isInvalidNombreBeneficiario = validator.validate(txtNombreBeneficiario, new String[]{validator.REQUIRED});
-        boolean isInvalidApellidoPaternoBeneficiario = validator.validate(txtApellidoPaterno, new String[]{validator.ONLY_TEXT});
-        boolean isInvalidApellidoMaternoBeneficiario = validator.validate(txtApellidoMaterno, new String[]{validator.ONLY_TEXT});
-        boolean isInvalidParentescoBeneficiario = validatorTV.validate(txtParentescoBeneficiario, new String[]{validatorTV.REQUIRED});
+        if (beneficiario != null) {
+            // Obtener los datos del beneficiario y asegurarse de que no sean nulos.
+            String beneficiarioNombre = beneficiario.getNombre() == null ? "" : beneficiario.getNombre();
+            String beneficiarioPaterno = beneficiario.getPaterno() == null ? "" : beneficiario.getPaterno();
+            String beneficiarioMaterno = beneficiario.getMaterno() == null ? "" : beneficiario.getMaterno();
+            String beneficiarioParentesco = beneficiario.getParentesco() == null ? "" : beneficiario.getParentesco();
 
-        if (!(isInvalidNombreBeneficiario || isInvalidApellidoPaternoBeneficiario || isInvalidApellidoMaternoBeneficiario || isInvalidParentescoBeneficiario)) {
-            id_solicitud = DatosCompartidos.getInstance().getId_solicitud();
+            // Variable para indicar si la validación es correcta.
+            boolean validacionCorrecta = true;
 
-            int id_cliente = BeneficiarioRenDao.obtenerClienteId(Integer.parseInt(id_integrante), ctx);//Miscellaneous.obtenerClienteId(Integer.valueOf(id_integrante),ctx);
-            int id_solicitud_integrante = BeneficiarioRenDao.obtenerIdSolicitud(id_cliente, ctx);
-            int grupo_id = BeneficiarioRenDao.obtenerGrupoId(id_solicitud, ctx); //Miscellaneous.obtenerGrupoId(id_solicitud,ctx);
-            int serieIdA = BeneficiarioRenDao.obtenerSerieAsesor(ctx);//Miscellaneous.obtenerSerieAsesor(ctx);
-            boolean existeBeneficiario = BeneficiarioRenDao.validarBeneficiarioGPO(Integer.parseInt(id_integrante), ctx);
-
-            ContentValues cv = new ContentValues();
-            cv.put("id_solicitud", id_solicitud);
-            cv.put("id_solicitud_integrante", id_solicitud_integrante);
-            cv.put("id_cliente", id_cliente);
-            cv.put("id_integrante", id_integrante);
-            cv.put("id_grupo", grupo_id);
-            cv.put("nombre", Miscellaneous.GetStr(txtNombreBeneficiario));
-            cv.put("paterno", Miscellaneous.GetStr(txtApellidoPaterno));
-            cv.put("materno", Miscellaneous.GetStr(txtApellidoMaterno));
-            cv.put("parentesco", Miscellaneous.GetStr(txtParentescoBeneficiario));
-            cv.put("serieid", serieIdA);
-
-            if (existeBeneficiario) {
-                db.update(TBL_DATOS_BENEFICIARIO_GPO_REN, cv, "id_integrante = ?", new String[]{String.valueOf(id_integrante)});
-            } else {
-                db.insert(TBL_DATOS_BENEFICIARIO_GPO_REN, null, cv);
+            // Realizar las validaciones y mostrar errores si es necesario.
+            if (beneficiarioNombre.isEmpty()) {
+                this.txtNombreBeneficiario.setError("CAMPO REQUERIDO");
+                ivError11.setVisibility(View.VISIBLE);
+                validacionCorrecta = false;
             }
-
-            return true;
-        } else {
-            ivError11.setVisibility(View.VISIBLE);
-            if (isInvalidNombreBeneficiario) {
+            if (beneficiarioPaterno.isEmpty()) {
+                this.txtApellidoPaterno.setError("CAMPO REQUERIDO");
+                ivError11.setVisibility(View.VISIBLE);
+                validacionCorrecta = false;
+            }
+            if (beneficiarioMaterno.isEmpty()) {
+                this.txtApellidoMaterno.setError("CAMPO REQUERIDO");
+                ivError11.setVisibility(View.VISIBLE);
+                validacionCorrecta = false;
+            }
+            if (beneficiarioParentesco.isEmpty()) {
                 txtParentescoBeneficiario.setError("CAMPO REQUERIDO");
+                ivError11.setVisibility(View.VISIBLE);
+                validacionCorrecta = false;
             }
-            if (isInvalidApellidoPaternoBeneficiario) {
-                txtApellidoMaterno.setError("CAMPO REQUERIDO");
-            }
-            if (isInvalidApellidoMaternoBeneficiario) {
-                txtApellidoPaterno.setError("CAMPO REQUERIDO");
-            }
-            if (isInvalidParentescoBeneficiario) {
-                txtNombreBeneficiario.setError("CAMPO REQUERIDO");
-            }
+
+            // Devolver true solo si todas las validaciones pasan.
+            return validacionCorrecta;
+
+        } else {
+            // Si no se encuentra el beneficiario, retornar false.
             return false;
         }
     }
@@ -6694,7 +6678,7 @@ public class RenovarIntegrante
             boolean datos_domiclio = saveDatosDomicilio();
             boolean datos_beneficiario = saveBeneficiario();
             boolean datos_negocio = saveDatosNegocio();
-            boolean datos_campana = saveDatosCampan();
+            boolean datos_campana = saveDatosCampana();
             boolean datos_conyuge = false;
             boolean datos_croquis = true;
 
@@ -6758,8 +6742,9 @@ public class RenovarIntegrante
      * Funcion de respuesta a la peticion de registro de nombre y cargo del integrante
      */
     @Override
-    public void onComplete(long id_integrante, String nombre, String paterno, String materno, String cargo) {
+    public void onComplete(long id_integrante, String nombre, String paterno, String materno, String cargo, SolicitudCampana solicitudCampana, Beneficiario beneficiario) {
         /**se valida si se crearon los registros de las secciones(datos personales, domicilio...)*/
+
         if (id_integrante > 0) {
             Log.e("id_Credito", "cccc" + id_integrante);
             this.id_integrante = String.valueOf(id_integrante);
@@ -6783,6 +6768,8 @@ public class RenovarIntegrante
 
             if (isNuevo) Log.e("AQUI", "cliente nuevo");
             else Log.e("AQUI", "cliente renovado");
+            solicitudCampanaAtomicReference.set(solicitudCampana);
+            beneficiarioAtomicReference.set(beneficiario);
         } else {
             /**en caso de que cancelo el registo cierra el formulario de solicitud*/
             finish();
@@ -6884,27 +6871,29 @@ public class RenovarIntegrante
 
             case REQUEST_CODE_CAMAPANAS:
                 if (data != null) {
-                    ModeloCatalogoGral campana = (ModeloCatalogoGral) data.getSerializableExtra(ITEM);
-                    if (campana != null) {
-                        String campanaNombre = campana.getNombre();
-                        Integer id_campana = 0;
-                        if (campanaNombre.equals("NINGUNO")) {
-                            this.txtNombreRefieroGpoRen.setText("SIN REFERENCIA");
-                            this.txtNombreRefieroGpoRen.setEnabled(false);
-                        } else {
-                            this.txtNombreRefieroGpoRen.setText("");
-                            this.txtNombreRefieroGpoRen.setEnabled(true);
-                        }
-                        ContentValues cv1 = new ContentValues();
-                        txtCampanaGpoRen.setError(null);
-                        txtCampanaGpoRen.setText(campanaNombre);
-                        id_campana = Miscellaneous.selectCampana(ctx, Miscellaneous.GetStr(txtCampanaGpoRen));
-                        cv1.put("id_campana", id_campana);
-                        db.update(TBL_OTROS_DATOS_INTEGRANTE_REN, cv1, " id_integrante = ?", new String[]{String.valueOf(id_integrante)});
+                    ModeloCatalogoGral modeloCatalogoGral = (ModeloCatalogoGral) data.getSerializableExtra(ITEM);
+                    if (modeloCatalogoGral == null) return;
+
+                    String campanaNombre = modeloCatalogoGral.getNombre();
+
+                    SolicitudCampana solicitudCampana = this.solicitudCampanaAtomicReference.get();
+                    solicitudCampana.setCampanaNombre(campanaNombre);
+
+                    if (campanaNombre.equals("NINGUNO")) {
+                        txtNombreRefieroGpoRen.setText("NINGUNO");
+                        txtNombreRefieroGpoRen.setEnabled(false);
+                        solicitudCampana.setNombreReferido("NINGUNO");
+                    } else {
+                        txtNombreRefieroGpoRen.setText("");
+                        txtNombreRefieroGpoRen.setEnabled(true);
+                        solicitudCampana.setNombreReferido("");
                     }
-                } else {
-                    txtCampanaGpoRen.setText(" ");
-                    Toast.makeText(ctx, "ESTE CAMPO ES REQUERIDO", Toast.LENGTH_SHORT).show();
+
+                    this.dBhelper.getSolicitudCampanaDao().update(solicitudCampana);
+
+                    txtCampanaGpoRen.setError(null);
+                    txtCampanaGpoRen.setText(campanaNombre);
+                    txtCampanaGpoRen.setTag(modeloCatalogoGral);
                 }
                 break;
 

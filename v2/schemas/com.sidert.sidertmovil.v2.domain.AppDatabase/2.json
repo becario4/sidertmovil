@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 2,
-    "identityHash": "84e4a6a40658db4d9c2cbf97ccf4ed68",
+    "identityHash": "ba4226fd0e4852b7f991990cbf728c45",
     "entities": [
       {
         "tableName": "tbl_amortizaciones_t",
@@ -13830,12 +13830,136 @@
         },
         "indices": [],
         "foreignKeys": []
+      },
+      {
+        "tableName": "beneficiario",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`_id` INTEGER PRIMARY KEY AUTOINCREMENT, `solicitud_id` INTEGER, `integrante_id` INTEGER, `solicitud_remota_id` INTEGER, `tipo_solicitud` TEXT, `nombre` TEXT, `paterno` TEXT, `materno` TEXT, `parentesco` TEXT)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "_id",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "solicitudId",
+            "columnName": "solicitud_id",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "integranteId",
+            "columnName": "integrante_id",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "solicitudRemotaId",
+            "columnName": "solicitud_remota_id",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "tipoSolicitud",
+            "columnName": "tipo_solicitud",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "nombre",
+            "columnName": "nombre",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "paterno",
+            "columnName": "paterno",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "materno",
+            "columnName": "materno",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "parentesco",
+            "columnName": "parentesco",
+            "affinity": "TEXT",
+            "notNull": false
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "_id"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "solicitud_campana",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`_id` INTEGER PRIMARY KEY AUTOINCREMENT, `solicitud_id` INTEGER, `integrante_id` INTEGER, `tipo_solicitud` TEXT, `solicitud_remota_id` INTEGER, `campana_nombre` TEXT, `nombre_referido` TEXT)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "_id",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "solicitudId",
+            "columnName": "solicitud_id",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "integranteId",
+            "columnName": "integrante_id",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "tipoSolicitud",
+            "columnName": "tipo_solicitud",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "solicitudRemotaId",
+            "columnName": "solicitud_remota_id",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "campanaNombre",
+            "columnName": "campana_nombre",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "nombreReferido",
+            "columnName": "nombre_referido",
+            "affinity": "TEXT",
+            "notNull": false
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "_id"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
       }
     ],
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '84e4a6a40658db4d9c2cbf97ccf4ed68')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'ba4226fd0e4852b7f991990cbf728c45')"
     ]
   }
 }

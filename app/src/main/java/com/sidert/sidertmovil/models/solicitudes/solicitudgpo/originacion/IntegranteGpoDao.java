@@ -72,11 +72,12 @@ public class IntegranteGpoDao {
 
     public int countIntegrantesWihtStatusSuccessBycreditoId(Integer creditoId) {
 
-        String query = "SELECT count(*) FROM " + TBL_INTEGRANTES_GPO + " AS i0 WHERE i0.id_credito = ? AND i0.estatus_completado = 2";
+        String query = "SELECT count(*) as total FROM " + TBL_INTEGRANTES_GPO + " AS i0 WHERE i0.id_credito = ? AND i0.estatus_completado = 2";
 
         try (Cursor row = db.rawQuery(query, new String[]{creditoId.toString()})) {
             if (row.getCount() > 0) {
-                return row.getInt(0);
+                row.moveToFirst();
+                return row.getInt(row.getColumnIndex("total"));
             } else {
                 return 0;
             }

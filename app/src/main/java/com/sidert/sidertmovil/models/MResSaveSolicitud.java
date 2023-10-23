@@ -10,17 +10,12 @@ public class MResSaveSolicitud implements Serializable {
     @SerializedName("mensaje")
     @Expose
     private String mensaje;
-    @SerializedName("codigo")
-    @Expose
-    private Integer codigo;
     @SerializedName("id_solicitud")
     @Expose
     private Integer idSolicitud;
-
     @SerializedName("id_grupo")
     @Expose
     private Integer id_grupo;
-
     @SerializedName("id_cliente")
     @Expose
     private Integer id_cliente;
@@ -32,14 +27,6 @@ public class MResSaveSolicitud implements Serializable {
 
     public void setMensaje(String mensaje) {
         this.mensaje = mensaje;
-    }
-
-    public Integer getCodigo() {
-        return codigo;
-    }
-
-    public void setCodigo(Integer codigo) {
-        this.codigo = codigo;
     }
 
     public Integer getIdSolicitud() {
