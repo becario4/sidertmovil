@@ -8,8 +8,6 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-import androidx.fragment.app.DialogFragment;
-import androidx.appcompat.app.AlertDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,18 +18,22 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.sidert.sidertmovil.R;
-import com.sidert.sidertmovil.views.originacion.AgregarIntegrante;
 import com.sidert.sidertmovil.database.DBhelper;
+import com.sidert.sidertmovil.database.EntitiesCommonsContants;
+import com.sidert.sidertmovil.database.entities.Beneficiario;
+import com.sidert.sidertmovil.database.entities.SolicitudCampana;
 import com.sidert.sidertmovil.utils.Constants;
 import com.sidert.sidertmovil.utils.NameFragments;
 import com.sidert.sidertmovil.utils.Popups;
-import com.sidert.sidertmovil.utils.SessionManager;
 import com.sidert.sidertmovil.utils.Validator;
 import com.sidert.sidertmovil.utils.ValidatorTextView;
+import com.sidert.sidertmovil.views.originacion.AgregarIntegrante;
 
-import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Objects;
+
+import androidx.appcompat.app.AlertDialog;
+import androidx.fragment.app.DialogFragment;
 
 import static com.sidert.sidertmovil.utils.Constants.TBL_INTEGRANTES_GPO;
 
@@ -39,17 +41,16 @@ import static com.sidert.sidertmovil.utils.Constants.TBL_INTEGRANTES_GPO;
 public class dialog_registro_integrante extends DialogFragment {
 
     public interface OnCompleteListener {
-        void onComplete(long id_integrante, String nombre, String paterno, String materno, String cargo);
+        void onComplete(long id_integrante, String nombre, String paterno, String materno, String cargo, SolicitudCampana solicitudCampana, Beneficiario beneficiarioId);
     }
 
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         try {
-            this.mListener = (dialog_registro_integrante.OnCompleteListener)activity;
-        }
-        catch (final ClassCastException e) {
-            throw new ClassCastException(activity.toString() + " must implement OnCompleteListener");
+            this.mListener = (dialog_registro_integrante.OnCompleteListener) activity;
+        } catch (final ClassCastException e) {
+            throw new ClassCastException(activity + " must implement OnCompleteListener");
         }
     }
 
@@ -62,18 +63,11 @@ public class dialog_registro_integrante extends DialogFragment {
     private TextView tvCargo;
     private Button btnGuardar;
     private Button btnCancelar;
-    private Calendar mCalendar;
-
     private Validator validator;
     private ValidatorTextView validatorTV;
-
-    private SessionManager session;
-
     private DBhelper dBhelper;
     private SQLiteDatabase db;
-
     private int id_cargo = 0;
-
     private int id_credito = 0;
     private int id_integrante = 0;
 
@@ -81,21 +75,20 @@ public class dialog_registro_integrante extends DialogFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.popup_registro_integrante, container, false);
 
-        ctx         = getContext();
+        ctx = getContext();
 
-        session     = SessionManager.getInstance(ctx);
-        validator   = new Validator();
+        validator = new Validator();
         validatorTV = new ValidatorTextView();
-        dBhelper    = DBhelper.getInstance(ctx);
-        db          = dBhelper.getWritableDatabase();
+        dBhelper = DBhelper.getInstance(ctx);
+        db = dBhelper.getWritableDatabase();
 
-        boostrap    = (AgregarIntegrante) getActivity();
+        boostrap = (AgregarIntegrante) getActivity();
 
-        etNombre    = view.findViewById(R.id.etNombre);
-        etPaterno   = view.findViewById(R.id.etPaterno);
-        etMaterno   = view.findViewById(R.id.etMaterno);
-        tvCargo     = view.findViewById(R.id.tvCargo);
-        btnGuardar  = view.findViewById(R.id.btnGuardar);
+        etNombre = view.findViewById(R.id.etNombre);
+        etPaterno = view.findViewById(R.id.etPaterno);
+        etMaterno = view.findViewById(R.id.etMaterno);
+        tvCargo = view.findViewById(R.id.tvCargo);
+        btnGuardar = view.findViewById(R.id.btnGuardar);
         btnCancelar = view.findViewById(R.id.btnCancelar);
 
         getDialog().getWindow().requestFeature(Window.FEATURE_NO_TITLE);
@@ -109,8 +102,7 @@ public class dialog_registro_integrante extends DialogFragment {
         String materno = getArguments().getString("materno");
         String cargo = getArguments().getString("cargo");
 
-        if(nombre != null && !nombre.isEmpty())
-        {
+        if (nombre != null && !nombre.isEmpty()) {
             id_integrante = Integer.parseInt(getArguments().getString("id_integrante"));
 
             etNombre.setText(nombre);
@@ -138,15 +130,15 @@ public class dialog_registro_integrante extends DialogFragment {
             dialog_cargo_integrante dlg_cargo = new dialog_cargo_integrante();
             Bundle b = new Bundle();
             Cursor row = dBhelper.getCargoGrupo(String.valueOf(id_credito), 1);
-            Log.e("cargo", String.valueOf(row.getCount())+";");
-            if (row.getCount() > 0){
+            Log.e("cargo", String.valueOf(row.getCount()) + ";");
+            if (row.getCount() > 0) {
                 row.moveToFirst();
                 b.putBoolean("presidente", true);
                 b.putBoolean("tesorero", true);
                 b.putBoolean("secretario", true);
                 b.putBoolean("integrante", true);
-                for (int i = 0; i < row.getCount(); i++){
-                    switch (row.getInt(0)){
+                for (int i = 0; i < row.getCount(); i++) {
+                    switch (row.getInt(0)) {
                         case 1:
                             b.putBoolean("presidente", false);
                             break;
@@ -162,15 +154,14 @@ public class dialog_registro_integrante extends DialogFragment {
                 row.close();
 
                 Cursor r_integrantes = dBhelper.customSelect(TBL_INTEGRANTES_GPO, "COUNT(cargo)", " WHERE id_credito = ? AND cargo = ?", "", new String[]{String.valueOf(id_credito), "4"});
-                if (r_integrantes.getCount() > 0){
+                if (r_integrantes.getCount() > 0) {
                     r_integrantes.moveToFirst();
                     if (r_integrantes.getInt(0) == 37)
                         b.putBoolean("integrante", false);
 
                 }
                 r_integrantes.close();
-            }
-            else{
+            } else {
                 b.putBoolean("presidente", true);
                 b.putBoolean("tesorero", true);
                 b.putBoolean("secretario", true);
@@ -188,7 +179,7 @@ public class dialog_registro_integrante extends DialogFragment {
             if (!validator.validate(etNombre, new String[]{validator.REQUIRED, validator.ONLY_TEXT}) &&
                     !validator.validate(etPaterno, new String[]{validator.ONLY_TEXT}) &&
                     !validator.validate(etMaterno, new String[]{validator.ONLY_TEXT}) &&
-                    !validatorTV.validate(tvCargo, new String[]{validatorTV.REQUIRED})){
+                    !validatorTV.validate(tvCargo, new String[]{validatorTV.REQUIRED})) {
                 AlertDialog guardar_info_dlg = Popups.showDialogConfirm(ctx, Constants.question,
                         R.string.datos_correctos, R.string.yes, new Popups.DialogMessage() {
                             @Override
@@ -210,11 +201,11 @@ public class dialog_registro_integrante extends DialogFragment {
         }
     };
 
-    private void saveIntegrante(){
+    private void saveIntegrante() {
 
         int tipo = 1;
-        long id = 0;
-        if(id_integrante == 0) {
+        Long integranteId;
+        if (id_integrante == 0) {
             //Inserta registro de integrante
             HashMap<Integer, String> params = new HashMap<>();
             params.put(0, String.valueOf(id_credito));                              //ID CREDITO
@@ -240,11 +231,11 @@ public class dialog_registro_integrante extends DialogFragment {
             params.put(20, "0");                                                    //ESTATUS COMPLETO
             params.put(21, "0");                                                    //ID SOLICITUD INTEGRANTE
 
-            id = dBhelper.saveIntegrantesGpo(db, params, tipo);
+            integranteId = dBhelper.saveIntegrantesGpo(db, params, tipo);
 
             //Inserta registro de datos telefonicos
             params = new HashMap<>();
-            params.put(0, String.valueOf(id));              //ID INTEGRANTE
+            params.put(0, String.valueOf(integranteId));              //ID INTEGRANTE
             params.put(1, "");                              //TEL CASA
             params.put(2, "");                              //TEL CELULAR
             params.put(3, "");                              //TEL MENSAJES
@@ -255,7 +246,7 @@ public class dialog_registro_integrante extends DialogFragment {
 
             //Inserta registro de datos domicilio
             params = new HashMap<>();
-            params.put(0, String.valueOf(id));          //ID INTEGRANTE
+            params.put(0, String.valueOf(integranteId));          //ID INTEGRANTE
             params.put(1, "");                          //LATITUD
             params.put(2, "");                          //LONGITUD
             params.put(3, "");                          //CALLE
@@ -282,7 +273,7 @@ public class dialog_registro_integrante extends DialogFragment {
 
             //Inserta registro de negocio
             params = new HashMap<>();
-            params.put(0, String.valueOf(id));          //ID INTEGRANTE
+            params.put(0, String.valueOf(integranteId));          //ID INTEGRANTE
             params.put(1, "");                          //NOMBRE
             params.put(2, "");                          //LATITID
             params.put(3, "");                          //LONGITUD
@@ -321,7 +312,7 @@ public class dialog_registro_integrante extends DialogFragment {
 
             //Inserta registro del conyuge
             params = new HashMap<>();
-            params.put(0, String.valueOf(id));          //ID INTEGRANTE
+            params.put(0, String.valueOf(integranteId));          //ID INTEGRANTE
             params.put(1, "");                          //NOMBRE
             params.put(2, "");                          //PATERNO
             params.put(3, "");                          //MATERNO
@@ -348,7 +339,7 @@ public class dialog_registro_integrante extends DialogFragment {
 
             //Inserta otros datos del integrante
             params = new HashMap<>();
-            params.put(0, String.valueOf(id));          //ID INTEGRANTE
+            params.put(0, String.valueOf(integranteId));          //ID INTEGRANTE
             params.put(1, "");                          //CLASIFICACION RIESGO
             params.put(2, "");                          //MEDIO CONTACTO
             params.put(3, "");                          //EMAIL
@@ -363,7 +354,7 @@ public class dialog_registro_integrante extends DialogFragment {
 
             //Inserta registro de croquis
             params = new HashMap<>();
-            params.put(0, String.valueOf(id));                  //ID SOLICITUD
+            params.put(0, String.valueOf(integranteId));                  //ID SOLICITUD
             params.put(1, "");                                  //CALLE PRINCIPAL
             params.put(2, "");                                  //LATERAL UNO
             params.put(3, "");                                  //LATERAL DOS
@@ -375,7 +366,7 @@ public class dialog_registro_integrante extends DialogFragment {
 
             //Inserta registro de politicas de integrante
             params = new HashMap<>();
-            params.put(0, String.valueOf(id));      //ID INTEGRANTE
+            params.put(0, String.valueOf(integranteId));      //ID INTEGRANTE
             params.put(1, "0");                     //PROPIETARIO REAL
             params.put(2, "0");                     //PROVEEDOR RECURSOS
             params.put(3, "0");                     //PERSONA POLITICA
@@ -385,7 +376,7 @@ public class dialog_registro_integrante extends DialogFragment {
 
             //Inserta registro de documentos de integrante
             params = new HashMap<>();
-            params.put(0, String.valueOf(id));      //ID INTEGRANTE
+            params.put(0, String.valueOf(integranteId));      //ID INTEGRANTE
             params.put(1, "");                      //INE FRONTAL
             params.put(2, "");                      //INE REVERSO
             params.put(3, "");                      //CURP
@@ -394,14 +385,43 @@ public class dialog_registro_integrante extends DialogFragment {
 
             dBhelper.saveDocumentosIntegrante(db, params, tipo);
 
-            mListener.onComplete(id,etNombre.getText().toString().trim().toUpperCase(),etPaterno.getText().toString().trim().toUpperCase(),etMaterno.getText().toString().trim().toUpperCase(), tvCargo.getText().toString());
+            SolicitudCampana solicitudCampana = new SolicitudCampana();
+            solicitudCampana.setSolicitudId(id_credito);
+            solicitudCampana.setIntegranteId(integranteId.intValue());
+            solicitudCampana.setTipoSolicitud(EntitiesCommonsContants.TIPO_SOLICITUD_GRUPAL_ORIGINACION);
+            solicitudCampana.setSolicitudRemotaId(0);
+            solicitudCampana.setNombreReferido("");
+            solicitudCampana.setCampanaNombre("");
+            Long solicitudCamapanaId = dBhelper.getSolicitudCampanaDao().insert(solicitudCampana);
+            solicitudCampana.setId(solicitudCamapanaId);
+
+            Beneficiario beneficiario = new Beneficiario();
+            beneficiario.setSolicitudId(id_credito);
+            beneficiario.setIntegranteId(integranteId.intValue());
+            beneficiario.setTipoSolicitud(EntitiesCommonsContants.TIPO_SOLICITUD_GRUPAL_ORIGINACION);
+            beneficiario.setSolicitudRemotaId(0);
+            beneficiario.setNombre("");
+            beneficiario.setPaterno("");
+            beneficiario.setMaterno("");
+            beneficiario.setParentesco("");
+            Long beneficiarioId = dBhelper.getBeneficiariosDao().insert(beneficiario);
+            beneficiario.setId(beneficiarioId);
+
+            mListener.onComplete(integranteId, etNombre.getText().toString().trim().toUpperCase(), etPaterno.getText().toString().trim().toUpperCase(), etMaterno.getText().toString().trim().toUpperCase(), tvCargo.getText().toString(), solicitudCampana, beneficiario);
             getDialog().dismiss();
-        }
-        else
-        {
+        } else {
+
+            SolicitudCampana solicitudCampana = dBhelper.getSolicitudCampanaDao()
+                    .findBySolicitudId((long) this.id_credito, id_integrante, EntitiesCommonsContants.TIPO_SOLICITUD_GRUPAL_ORIGINACION)
+                    .orElseThrow(RuntimeException::new);
+
+            Beneficiario beneficiario = dBhelper.getBeneficiariosDao()
+                    .findBySolicitudId((long) this.id_credito, id_integrante, EntitiesCommonsContants.TIPO_SOLICITUD_GRUPAL_ORIGINACION)
+                    .orElseThrow(RuntimeException::new);
+
             dBhelper.saveCargoIntegranteGpo(db, id_cargo, id_integrante);
 
-            mListener.onComplete(id_integrante, etNombre.getText().toString().trim().toUpperCase(), etPaterno.getText().toString().trim().toUpperCase(), etMaterno.getText().toString().trim().toUpperCase(), tvCargo.getText().toString());
+            mListener.onComplete(id_integrante, etNombre.getText().toString().trim().toUpperCase(), etPaterno.getText().toString().trim().toUpperCase(), etMaterno.getText().toString().trim().toUpperCase(), tvCargo.getText().toString(), solicitudCampana, beneficiario);
             getDialog().dismiss();
         }
 
@@ -410,11 +430,11 @@ public class dialog_registro_integrante extends DialogFragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        switch (requestCode){
+        switch (requestCode) {
             case 8652:
-                if (resultCode == 2658){
-                    if (data != null){
-                        id_cargo = data.getIntExtra("id_cargo",0);
+                if (resultCode == 2658) {
+                    if (data != null) {
+                        id_cargo = data.getIntExtra("id_cargo", 0);
                         tvCargo.setText(data.getStringExtra("cargo"));
                     }
                 }
@@ -425,7 +445,7 @@ public class dialog_registro_integrante extends DialogFragment {
     private View.OnClickListener btnCancelar_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            mListener.onComplete(0, null, null, null, null);
+            mListener.onComplete(0, null, null, null, null, null, null);
             getDialog().dismiss();
         }
     };

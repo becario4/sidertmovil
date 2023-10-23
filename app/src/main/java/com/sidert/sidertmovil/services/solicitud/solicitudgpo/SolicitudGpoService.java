@@ -42,7 +42,7 @@ public interface SolicitudGpoService {
 
 
     @Multipart
-    @POST("/api/solicitudes/creditos/grupales")
+    @POST("/api/v2/solicitudes/creditos/grupales")
     Call<MResSaveSolicitud> saveSolicitudGpo(
         @Header("Authorization") String token,
         @Part("solicitud") RequestBody solicitud,
@@ -58,15 +58,4 @@ public interface SolicitudGpoService {
         @Part MultipartBody.Part ine_selfie
     );
 
-    @Multipart
-    @POST("/api/solicitudes/credito/beneficiario")
-    Call<Beneficiario>sendDataBeneficiarioGpo(
-            @Part("id_solicitiud") RequestBody id_solicitud,
-            @Part("id_grupo") RequestBody id_grupo,
-            @Part("nombreBeneficiario")RequestBody nombreBeneficiario,
-            @Part("apellidoPaterno")RequestBody apellidoPaterno,
-            @Part("apellidoMaterno ")RequestBody apellidoMaterno,
-            @Part("parentesco") RequestBody parentesco,
-            @Part("serieid") RequestBody serieid
-    );
 }

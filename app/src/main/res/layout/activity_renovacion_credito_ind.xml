@@ -161,8 +161,6 @@
 
                 </LinearLayout>
 
-
-
                 <!-- Datos del conyuge -->
                 <LinearLayout
                     android:id="@+id/llConyuge"
@@ -286,10 +284,6 @@
                     </LinearLayout>
 
                 </LinearLayout>
-
-
-
-
 
                 <!-- Datos del negocio -->
                 <LinearLayout

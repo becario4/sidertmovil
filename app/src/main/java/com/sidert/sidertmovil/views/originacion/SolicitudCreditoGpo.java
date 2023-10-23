@@ -12,17 +12,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RectF;
 import android.graphics.drawable.ColorDrawable;
-//import android.support.design.widget.FloatingActionButton;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
-
-import androidx.core.content.ContextCompat;
-import androidx.recyclerview.widget.ItemTouchHelper;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.appcompat.widget.Toolbar;
-//import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -65,11 +55,8 @@ import com.sidert.sidertmovil.models.solicitudes.solicitudgpo.originacion.Politi
 import com.sidert.sidertmovil.models.solicitudes.solicitudgpo.originacion.PoliticaPldIntegranteDao;
 import com.sidert.sidertmovil.models.solicitudes.solicitudgpo.originacion.TelefonoIntegrante;
 import com.sidert.sidertmovil.models.solicitudes.solicitudgpo.originacion.TelefonoIntegranteDao;
-import com.sidert.sidertmovil.models.solicitudes.solicitudind.originacion.Beneficiario;
-import com.sidert.sidertmovil.services.beneficiario.BeneficiarioService;
 import com.sidert.sidertmovil.services.permiso.IPermisoService;
 import com.sidert.sidertmovil.services.solicitud.solicitudgpo.SolicitudGpoService;
-import com.sidert.sidertmovil.utils.Constants;
 import com.sidert.sidertmovil.utils.DatosCompartidos;
 import com.sidert.sidertmovil.utils.ManagerInterface;
 import com.sidert.sidertmovil.utils.Miscellaneous;
@@ -78,15 +65,26 @@ import com.sidert.sidertmovil.utils.Popups;
 import com.sidert.sidertmovil.utils.RetrofitClient;
 import com.sidert.sidertmovil.utils.SessionManager;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.TimeUnit;
 
-import static com.sidert.sidertmovil.utils.Constants.CONTROLLER_API;
-import static com.sidert.sidertmovil.utils.Constants.CONTROLLER_MOVIL;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.ItemTouchHelper;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
 import static com.sidert.sidertmovil.utils.Constants.CONTROLLER_SOLICITUDES;
 import static com.sidert.sidertmovil.utils.Constants.ES_RENOVACION;
 import static com.sidert.sidertmovil.utils.Constants.ID_SOLICITUD;
@@ -94,7 +92,6 @@ import static com.sidert.sidertmovil.utils.Constants.REQUEST_CODE_ADD_INTEGRANTE
 import static com.sidert.sidertmovil.utils.Constants.TBL_CONYUGE_INTEGRANTE;
 import static com.sidert.sidertmovil.utils.Constants.TBL_CREDITO_GPO;
 import static com.sidert.sidertmovil.utils.Constants.TBL_CROQUIS_GPO;
-import static com.sidert.sidertmovil.utils.Constants.TBL_DATOS_BENEFICIARIO;
 import static com.sidert.sidertmovil.utils.Constants.TBL_DATOS_BENEFICIARIO_GPO;
 import static com.sidert.sidertmovil.utils.Constants.TBL_DATOS_CREDITO_CAMPANA_GPO;
 import static com.sidert.sidertmovil.utils.Constants.TBL_DOCUMENTOS_INTEGRANTE;
@@ -107,17 +104,6 @@ import static com.sidert.sidertmovil.utils.Constants.TBL_SOLICITUDES;
 import static com.sidert.sidertmovil.utils.Constants.TBL_TELEFONOS_INTEGRANTE;
 import static com.sidert.sidertmovil.utils.Constants.question;
 import static com.sidert.sidertmovil.utils.Constants.warning;
-
-import org.json.JSONArray;
-import org.json.JSONObject;
-
-import okhttp3.OkHttpClient;
-import okhttp3.logging.HttpLoggingInterceptor;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 public class SolicitudCreditoGpo extends AppCompatActivity implements dialog_originacion_gpo.OnCompleteListener {
 
@@ -178,12 +164,11 @@ public class SolicitudCreditoGpo extends AppCompatActivity implements dialog_ori
         tvInfoCredito.setOnClickListener(tvInfoCredito_OnClick);
         fabAgregar.setOnClickListener(fabAgregar_OnClick);
 
-        if (getIntent().getBooleanExtra("is_new",true)) {
+        if (getIntent().getBooleanExtra("is_new", true)) {
             is_edit = true;
             is_new = true;
             openInfoOriginacion();
-        }
-        else{
+        } else {
             is_new = false;
             id_solicitud = Long.parseLong(getIntent().getStringExtra("id_solicitud"));
 
@@ -210,12 +195,11 @@ public class SolicitudCreditoGpo extends AppCompatActivity implements dialog_ori
             row.moveToFirst();
             if (row.getInt(0) < 40) {
                 Intent i_agregar_integrante = new Intent(ctx, AgregarIntegrante.class);
-                Log.e("id_credito", "credito"+id_credito);
+                Log.e("id_credito", "credito" + id_credito);
                 i_agregar_integrante.putExtra("id_credito", String.valueOf(id_credito));
                 i_agregar_integrante.putExtra("periodicidad", Miscellaneous.GetPeriodicidad(periodicidad));
                 startActivityForResult(i_agregar_integrante, REQUEST_CODE_ADD_INTEGRANTE);
-            }
-            else
+            } else
                 Toast.makeText(ctx, "Ha superado el límite de integrantes por grupo", Toast.LENGTH_SHORT).show();
         }
     };
@@ -235,19 +219,18 @@ public class SolicitudCreditoGpo extends AppCompatActivity implements dialog_ori
             b.putString("dia_desembolso", dia_desembolso);
             b.putString("hora_visita", hora_visita);
             originacion_gpo.setArguments(b);
-        }
-        else
+        } else
             b.putBoolean("is_edit", true);
 
         originacion_gpo.setArguments(b);
         originacion_gpo.show(getSupportFragmentManager(), NameFragments.DIALOGORIGINACIONGPO);
     }
 
-    private void initComponents(String idSolicitud){
+    private void initComponents(String idSolicitud) {
         String sql = "SELECT c.*, s.estatus FROM " + TBL_CREDITO_GPO + " AS c INNER JOIN " + TBL_SOLICITUDES + " AS s ON c.id_solicitud = s.id_solicitud WHERE c.id_solicitud = ?";
         Cursor row = db.rawQuery(sql, new String[]{idSolicitud});
         //Cursor row = dBhelper.getRecords(TBL_CREDITO_GPO, " WHERE id_solicitud = ?", "",new String[]{idSolicitud});
-        row .moveToFirst();
+        row.moveToFirst();
         id_credito = row.getInt(0);
         nombre_gpo = row.getString(2);
         plazo = row.getString(3);
@@ -262,13 +245,13 @@ public class SolicitudCreditoGpo extends AppCompatActivity implements dialog_ori
         row.close();
 
         Cursor row_integrantes = dBhelper.getRecords(TBL_INTEGRANTES_GPO, " WHERE id_credito = ?", " ORDER BY nombre ASC", new String[]{String.valueOf(id_credito)});
-        if (row_integrantes.getCount() > 0){
+        if (row_integrantes.getCount() > 0) {
             row_integrantes.moveToFirst();
-            ArrayList<HashMap<Integer,String>> data = new ArrayList<>();
-            for(int i = 0; i < row_integrantes.getCount(); i++){
-                HashMap<Integer, String> item = new HashMap();
-                item.put(0,row_integrantes.getString(0));
-                String nombre = row_integrantes.getString(3) + " " +row_integrantes.getString(4) + " " + row_integrantes.getString(5);
+            ArrayList<HashMap<Integer, String>> data = new ArrayList<>();
+            for (int i = 0; i < row_integrantes.getCount(); i++) {
+                HashMap<Integer, String> item = new HashMap<>();
+                item.put(0, row_integrantes.getString(0));
+                String nombre = row_integrantes.getString(3) + " " + row_integrantes.getString(4) + " " + row_integrantes.getString(5);
                 item.put(1, nombre.trim().toUpperCase());
                 item.put(2, "2");
                 item.put(3, row_integrantes.getString(21));
@@ -284,17 +267,13 @@ public class SolicitudCreditoGpo extends AppCompatActivity implements dialog_ori
             adapter = new adapter_originacion(ctx, data, new adapter_originacion.Event() {
                 @Override
                 public void FichaOnClick(HashMap<Integer, String> item) {
-                    Intent i_integrante = null;
-
-                    if (i_integrante == null) {
-                        i_integrante = new Intent(ctx, AgregarIntegrante.class);
-                        i_integrante.putExtra("is_new", false);
-                        i_integrante.putExtra("id_integrante", item.get(0));
-                        i_integrante.putExtra("id_credito", item.get(6));
-                        i_integrante.putExtra("periodicidad", Miscellaneous.GetPeriodicidad(periodicidad));
-                        i_integrante.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                        startActivity(i_integrante);
-                    }
+                    Intent i_integrante = new Intent(ctx, AgregarIntegrante.class);
+                    i_integrante.putExtra("is_new", false);
+                    i_integrante.putExtra("id_integrante", item.get(0));
+                    i_integrante.putExtra("id_credito", item.get(6));
+                    i_integrante.putExtra("periodicidad", Miscellaneous.GetPeriodicidad(periodicidad));
+                    i_integrante.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    startActivity(i_integrante);
                 }
             });
 
@@ -309,7 +288,7 @@ public class SolicitudCreditoGpo extends AppCompatActivity implements dialog_ori
     }
 
     private void initSwipe() {
-        ItemTouchHelper.SimpleCallback simpleCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT|ItemTouchHelper.LEFT) {
+        ItemTouchHelper.SimpleCallback simpleCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT | ItemTouchHelper.LEFT) {
             @Override
             public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
                 return false;
@@ -318,7 +297,7 @@ public class SolicitudCreditoGpo extends AppCompatActivity implements dialog_ori
             @Override
             public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
                 int position = viewHolder.getAdapterPosition();
-                if (direction == ItemTouchHelper.RIGHT){
+                if (direction == ItemTouchHelper.RIGHT) {
                     BorrarSolicitud(adapter.getItem(position).get(0), position);
                 } else {
                     BorrarSolicitud(adapter.getItem(position).get(0), position);
@@ -328,24 +307,24 @@ public class SolicitudCreditoGpo extends AppCompatActivity implements dialog_ori
             @Override
             public void onChildDraw(Canvas c, RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
                 Bitmap icon;
-                if(actionState == ItemTouchHelper.ACTION_STATE_SWIPE){
+                if (actionState == ItemTouchHelper.ACTION_STATE_SWIPE) {
                     View itemView = viewHolder.itemView;
-                    float height  = (float) itemView.getBottom() - (float) itemView.getTop();
-                    float width   = height /4;
-                    if(dX > 0){
+                    float height = (float) itemView.getBottom() - (float) itemView.getTop();
+                    float width = height / 4;
+                    if (dX > 0) {
                         p.setColor(Color.RED);
-                        RectF background = new RectF((float) itemView.getLeft(), (float) itemView.getTop(), dX,(float) itemView.getBottom());
-                        c.drawRect(background,p);
+                        RectF background = new RectF((float) itemView.getLeft(), (float) itemView.getTop(), dX, (float) itemView.getBottom());
+                        c.drawRect(background, p);
                         icon = BitmapFactory.decodeResource(getResources(), R.drawable.ic_delete_forever);
-                        RectF icon_dest = new RectF((float) itemView.getLeft() + width ,(float) itemView.getTop() + width,(float) itemView.getLeft()+ 3*width,(float)itemView.getBottom() - width);
-                        c.drawBitmap(icon,null,icon_dest,p);
+                        RectF icon_dest = new RectF((float) itemView.getLeft() + width, (float) itemView.getTop() + width, (float) itemView.getLeft() + 3 * width, (float) itemView.getBottom() - width);
+                        c.drawBitmap(icon, null, icon_dest, p);
                     } else {
                         p.setColor(Color.RED);
-                        RectF background = new RectF((float) itemView.getRight() + dX, (float) itemView.getTop(),(float) itemView.getRight(), (float) itemView.getBottom());
-                        c.drawRect(background,p);
+                        RectF background = new RectF((float) itemView.getRight() + dX, (float) itemView.getTop(), (float) itemView.getRight(), (float) itemView.getBottom());
+                        c.drawRect(background, p);
                         icon = BitmapFactory.decodeResource(getResources(), R.drawable.ic_delete_forever);
-                        RectF icon_dest = new RectF((float) itemView.getRight() - 3*width ,(float) itemView.getTop() + width,(float) itemView.getRight() - width,(float)itemView.getBottom() - width);
-                        c.drawBitmap(icon,null,icon_dest,p);
+                        RectF icon_dest = new RectF((float) itemView.getRight() - 3 * width, (float) itemView.getTop() + width, (float) itemView.getRight() - width, (float) itemView.getBottom() - width);
+                        c.drawBitmap(icon, null, icon_dest, p);
                     }
                 }
                 super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
@@ -355,7 +334,7 @@ public class SolicitudCreditoGpo extends AppCompatActivity implements dialog_ori
         helper.attachToRecyclerView(rvIntegrantes);
     }
 
-    private void BorrarSolicitud (final String id_integrante, final int position){
+    private void BorrarSolicitud(final String id_integrante, final int position) {
         AlertDialog borrar_soli_dlg = Popups.showDialogConfirm(ctx, question,
                 R.string.borrar_solicitud, R.string.yes, new Popups.DialogMessage() {
                     @Override
@@ -375,7 +354,7 @@ public class SolicitudCreditoGpo extends AppCompatActivity implements dialog_ori
                                         db.delete(TBL_POLITICAS_PLD_INTEGRANTE, "id_integrante = ?", new String[]{id_integrante});
                                         db.delete(TBL_DOCUMENTOS_INTEGRANTE, "id_integrante = ?", new String[]{id_integrante});
                                         db.delete(TBL_DATOS_BENEFICIARIO_GPO, "id_integrante = ?", new String[]{id_integrante});
-                                        db.delete(TBL_DATOS_CREDITO_CAMPANA_GPO,"id_solicitud = ?", new String[]{id_integrante});
+                                        db.delete(TBL_DATOS_CREDITO_CAMPANA_GPO, "id_solicitud = ?", new String[]{id_integrante});
 
                                         adapter.removeItem(position);
                                         dialog.dismiss();
@@ -455,7 +434,7 @@ public class SolicitudCreditoGpo extends AppCompatActivity implements dialog_ori
         return super.onOptionsItemSelected(item);
     }
 
-    private void Mensaje(String mess){
+    private void Mensaje(String mess) {
         final AlertDialog solicitud;
         solicitud = Popups.showDialogMessage(ctx, warning,
                 mess, R.string.accept, new Popups.DialogMessage() {
@@ -482,8 +461,7 @@ public class SolicitudCreditoGpo extends AppCompatActivity implements dialog_ori
             this.dia_desembolso = dia;
             this.hora_visita = hora;
             is_edit = isEdit;
-        }
-        else if (nombre == null )
+        } else if (nombre == null)
             finish();
 
     }
@@ -495,8 +473,7 @@ public class SolicitudCreditoGpo extends AppCompatActivity implements dialog_ori
             initComponents(String.valueOf(id_solicitud));
     }
 
-    private void activarModoSuper()
-    {
+    private void activarModoSuper() {
         final AlertDialog loadingDesbloqueo = Popups.showLoadingDialog(ctx, R.string.please_wait, R.string.loading_info);
         loadingDesbloqueo.show();
 
@@ -545,35 +522,32 @@ public class SolicitudCreditoGpo extends AppCompatActivity implements dialog_ori
         });
     }
 
-    private void desactivarModoSuper()
-    {
+    private void desactivarModoSuper() {
         modoSuperUsuario = false;
         deshabilitarCampos();
         TBmain.getMenu().getItem(MENU_INDEX_DESBLOQUEAR).setIcon(ContextCompat.getDrawable(ctx, R.drawable.ic_baseline_lock_24_white));
         TBmain.getMenu().getItem(MENU_INDEX_DEVMODE).setVisible(modoSuperUsuario);
     }
 
-    private void deshabilitarCampos()
-    {
+    private void deshabilitarCampos() {
         SolicitudDao solicitudDao = new SolicitudDao(ctx);
         Solicitud solicitud = solicitudDao.findByIdSolicitud(Integer.parseInt(String.valueOf(id_solicitud)));
         if (solicitud != null && solicitud.getEstatus() > 1) {
             if (TBmain.getMenu().size() > 1)
                 TBmain.getMenu().getItem(MENU_INDEX_UPDATE_ESTATUS).setVisible(true);
-        }
-        else {
+        } else {
             if (TBmain.getMenu().size() > 1)
                 TBmain.getMenu().getItem(MENU_INDEX_UPDATE_ESTATUS).setVisible(false);
         }
 
         if (!is_edit) {
-            if(TBmain.getMenu().size() > 0) TBmain.getMenu().getItem(MENU_INDEX_ENVIAR).setVisible(false);
+            if (TBmain.getMenu().size() > 0)
+                TBmain.getMenu().getItem(MENU_INDEX_ENVIAR).setVisible(false);
             fabAgregar.hide();
         }
     }
 
-    private void habilitarCampos()
-    {
+    private void habilitarCampos() {
         TBmain.getMenu().getItem(MENU_INDEX_ENVIAR).setVisible(true);
         TBmain.getMenu().getItem(MENU_INDEX_UPDATE_ESTATUS).setVisible(false);
     }
@@ -586,20 +560,16 @@ public class SolicitudCreditoGpo extends AppCompatActivity implements dialog_ori
         SolicitudDao solicitudDao = new SolicitudDao(ctx);
         Solicitud solicitud = solicitudDao.findByIdSolicitud(Integer.valueOf(String.valueOf(id_solicitud)));
 
-        if(solicitud != null)
-        {
+        if (solicitud != null) {
             CreditoGpoDao creditoGpoDao = new CreditoGpoDao(ctx);
             CreditoGpo creditoGpo = creditoGpoDao.findByIdSolicitud(solicitud.getIdSolicitud());
 
-            if(creditoGpo != null)
-            {
+            if (creditoGpo != null) {
                 IntegranteGpoDao integranteGpoDao = new IntegranteGpoDao(ctx);
                 List<IntegranteGpo> integranteGpoList = integranteGpoDao.findAllByIdCredito(creditoGpo.getId());
 
-                if(integranteGpoList.size() > 0)
-                {
-                    for(IntegranteGpo integranteGpo : integranteGpoList)
-                    {
+                if (integranteGpoList.size() > 0) {
+                    for (IntegranteGpo integranteGpo : integranteGpoList) {
                         integranteGpo.setEstatusCompletado(0);
                         integranteGpo.setEstatusRechazo(0);
                         integranteGpoDao.updateEstatus(integranteGpo);
@@ -625,20 +595,16 @@ public class SolicitudCreditoGpo extends AppCompatActivity implements dialog_ori
         SolicitudDao solicitudDao = new SolicitudDao(ctx);
         Solicitud solicitud = solicitudDao.findByIdSolicitud(Integer.valueOf(String.valueOf(id_solicitud)));
 
-        if(solicitud != null)
-        {
+        if (solicitud != null) {
             CreditoGpoDao creditoGpoDao = new CreditoGpoDao(ctx);
             CreditoGpo creditoGpo = creditoGpoDao.findByIdSolicitud(solicitud.getIdSolicitud());
 
-            if(creditoGpo != null)
-            {
+            if (creditoGpo != null) {
                 IntegranteGpoDao integranteGpoDao = new IntegranteGpoDao(ctx);
                 List<IntegranteGpo> integranteGpoList = integranteGpoDao.findAllByIdCredito(creditoGpo.getId());
 
-                if(integranteGpoList.size() > 0)
-                {
-                    for(IntegranteGpo integranteGpo : integranteGpoList)
-                    {
+                if (integranteGpoList.size() > 0) {
+                    for (IntegranteGpo integranteGpo : integranteGpoList) {
                         integranteGpo.setEstatusCompletado(2);
                         integranteGpo.setEstatusRechazo(0);
                         integranteGpoDao.updateEstatus(integranteGpo);
@@ -655,22 +621,19 @@ public class SolicitudCreditoGpo extends AppCompatActivity implements dialog_ori
         return solicitudBloqueada;
     }
 
-    private void enviarJSONObjects()
-    {
+    private void enviarJSONObjects() {
         JSONObject json_solicitud = new JSONObject();
         SolicitudDao solicitudDao = new SolicitudDao(ctx);
         Solicitud solicitud = solicitudDao.findByIdSolicitud(Integer.valueOf(String.valueOf(id_solicitud)));
 
-        if(solicitud != null)
-        {
+        if (solicitud != null) {
             try {
                 json_solicitud.put(Solicitud.TBL, solicitud);
 
                 CreditoGpoDao creditoGpoDao = new CreditoGpoDao(ctx);
                 CreditoGpo creditoGpo = creditoGpoDao.findByIdSolicitud(solicitud.getIdSolicitud());
 
-                if(creditoGpo != null)
-                {
+                if (creditoGpo != null) {
                     json_solicitud.put(CreditoGpo.TBL, creditoGpo);
 
                     IntegranteGpoDao integranteGpoDao = new IntegranteGpoDao(ctx);
@@ -678,44 +641,50 @@ public class SolicitudCreditoGpo extends AppCompatActivity implements dialog_ori
 
                     JSONArray json_integrantes = new JSONArray();
 
-                    if(integranteGpoList.size() > 0)
-                    {
-                        for(IntegranteGpo integrante : integranteGpoList)
-                        {
+                    if (integranteGpoList.size() > 0) {
+                        for (IntegranteGpo integrante : integranteGpoList) {
                             JSONObject json_integrante = new JSONObject();
                             json_integrante.put(IntegranteGpo.TBL, integrante);
 
                             TelefonoIntegranteDao telefonoIntegranteDao = new TelefonoIntegranteDao(ctx);
                             TelefonoIntegrante telefonoIntegrante = telefonoIntegranteDao.findByIdIntegrante(integrante.getId());
-                            if(telefonoIntegrante != null) json_integrante.put(telefonoIntegrante.TBL, telefonoIntegrante);
+                            if (telefonoIntegrante != null)
+                                json_integrante.put(telefonoIntegrante.TBL, telefonoIntegrante);
 
                             DomicilioIntegranteDao domicilioIntegranteDao = new DomicilioIntegranteDao(ctx);
                             DomicilioIntegrante domicilioIntegrante = domicilioIntegranteDao.findByIdIntegrante(Long.valueOf(integrante.getId()));
-                            if(domicilioIntegrante != null) json_integrante.put(domicilioIntegrante.TBL, domicilioIntegrante);
+                            if (domicilioIntegrante != null)
+                                json_integrante.put(domicilioIntegrante.TBL, domicilioIntegrante);
 
                             NegocioIntegranteDao negocioIntegranteDao = new NegocioIntegranteDao(ctx);
                             NegocioIntegrante negocioIntegrante = negocioIntegranteDao.findByIdIntegrante(integrante.getId());
-                            if(negocioIntegrante != null) json_integrante.put(negocioIntegrante.TBL, negocioIntegrante);
+                            if (negocioIntegrante != null)
+                                json_integrante.put(negocioIntegrante.TBL, negocioIntegrante);
 
                             ConyugueIntegranteDao conyugueIntegranteDao = new ConyugueIntegranteDao(ctx);
                             ConyugueIntegrante conyugueIntegrante = conyugueIntegranteDao.findByIdIntegrante(integrante.getId());
-                            if(conyugueIntegrante != null) json_integrante.put(conyugueIntegrante.TBL, conyugueIntegrante);
+                            if (conyugueIntegrante != null)
+                                json_integrante.put(conyugueIntegrante.TBL, conyugueIntegrante);
 
                             OtrosDatosIntegranteDao otrosDatosIntegranteDao = new OtrosDatosIntegranteDao(ctx);
                             OtrosDatosIntegrante otrosDatosIntegrante = otrosDatosIntegranteDao.findByIdIntegrante(integrante.getId());
-                            if(otrosDatosIntegrante != null) json_integrante.put(otrosDatosIntegrante.TBL, otrosDatosIntegrante);
+                            if (otrosDatosIntegrante != null)
+                                json_integrante.put(otrosDatosIntegrante.TBL, otrosDatosIntegrante);
 
                             CroquisIntegranteDao croquisIntegranteDao = new CroquisIntegranteDao(ctx);
                             CroquisIntegrante croquisIntegrante = croquisIntegranteDao.findByIdIntegrante(integrante.getId());
-                            if(croquisIntegrante != null) json_integrante.put(croquisIntegrante.TBL, croquisIntegrante);
+                            if (croquisIntegrante != null)
+                                json_integrante.put(croquisIntegrante.TBL, croquisIntegrante);
 
                             PoliticaPldIntegranteDao politicaPldIntegranteDao = new PoliticaPldIntegranteDao(ctx);
                             PoliticaPldIntegrante politicaPldIntegrante = politicaPldIntegranteDao.findByIdIntegrante(integrante.getId());
-                            if(politicaPldIntegrante != null) json_integrante.put(politicaPldIntegrante.TBL, politicaPldIntegrante);
+                            if (politicaPldIntegrante != null)
+                                json_integrante.put(politicaPldIntegrante.TBL, politicaPldIntegrante);
 
                             DocumentoIntegranteDao documentoIntegranteDao = new DocumentoIntegranteDao(ctx);
                             DocumentoIntegrante documentoIntegrante = documentoIntegranteDao.findByIdIntegrante(integrante.getId());
-                            if(documentoIntegrante != null) json_integrante.put(documentoIntegrante.TBL, documentoIntegrante);
+                            if (documentoIntegrante != null)
+                                json_integrante.put(documentoIntegrante.TBL, documentoIntegrante);
 
                             json_integrantes.put(json_integrante);
 
@@ -724,8 +693,7 @@ public class SolicitudCreditoGpo extends AppCompatActivity implements dialog_ori
                         json_solicitud.put("integrantes", json_integrantes);
                     }
                 }
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 e.printStackTrace();
                 Toast.makeText(ctx, e.getMessage(), Toast.LENGTH_SHORT).show();
             }
@@ -774,10 +742,8 @@ public class SolicitudCreditoGpo extends AppCompatActivity implements dialog_ori
 
     }
 
-    private void sendSolicitud()
-    {
-        if(esSolicitudValida())
-        {
+    private void sendSolicitud() {
+        if (esSolicitudValida()) {
             ContentValues cv = new ContentValues();
             cv.put("estatus_completado", 1);
 
@@ -799,47 +765,39 @@ public class SolicitudCreditoGpo extends AppCompatActivity implements dialog_ori
         }
     }
 
-    private boolean esSolicitudValida()
-    {
+    private boolean esSolicitudValida() {
         boolean flag = false;
 
         Cursor row_credito = dBhelper.getRecords(TBL_INTEGRANTES_GPO, " WHERE id_credito = ? AND estatus_completado <> 3", "", new String[]{String.valueOf(id_credito)});
 
-        if (row_credito.getCount() > 3)
-        {
+        if (row_credito.getCount() > 3) {
             Cursor row_cargo = dBhelper.customSelect(TBL_INTEGRANTES_GPO, "DISTINCT (cargo)", " WHERE id_credito = ? AND cargo <> 4 AND estatus_completado IN (0,1,2)", "", new String[]{String.valueOf(id_credito)});
 
-            if (row_cargo.getCount() == 3)
-            {
+            if (row_cargo.getCount() == 3) {
                 Cursor row_reunion = dBhelper.customSelect(TBL_OTROS_DATOS_INTEGRANTE + " AS o", "casa_reunion", " INNER JOIN " + TBL_CREDITO_GPO + " AS c ON c.id = i.id_credito INNER JOIN " + TBL_INTEGRANTES_GPO + " AS i ON i.id = o.id_integrante WHERE c.id = ? AND o.casa_reunion = 1 AND i.estatus_completado IN (0,1,2)", "", new String[]{String.valueOf(id_credito)});
                 Cursor row_total = dBhelper.customSelect(TBL_INTEGRANTES_GPO, "SUM (CASE WHEN estatus_completado = 1 THEN 1 ELSE 0 END) AS completadas, SUM (CASE WHEN estatus_completado = 0 THEN 1 ELSE 0 END) AS pendientes", " WHERE id_credito = ?", " GROUP BY id_credito", new String[]{String.valueOf(id_credito)});
                 row_total.moveToFirst();
 
-                if (row_total.getInt(1) == 0){
+                if (row_total.getInt(1) == 0) {
                     flag = true;
-                }
-                else
+                } else
                     Mensaje("Existen integrantes pedientes por guardar");
-            }
-            else
+            } else
                 Mensaje("Falta elegir al comité del grupo");
-        }
-        else
+        } else
             Mensaje("No cuenta con la cantidad de integrantes para formar un grupo");
 
         return flag;
     }
 
-    private void obtenerEstatusSolicitud()
-    {
+    private void obtenerEstatusSolicitud() {
         final AlertDialog loadingEstatus = Popups.showLoadingDialog(ctx, R.string.please_wait, R.string.loading_info);
         loadingEstatus.show();
 
         SolicitudDao solicitudDao = new SolicitudDao(ctx);
         Solicitud solicitud = solicitudDao.findByIdSolicitud(Integer.valueOf(String.valueOf(id_solicitud)));
 
-        if (solicitud != null && solicitud.getEstatus() > 1)
-        {
+        if (solicitud != null && solicitud.getEstatus() > 1) {
             SessionManager session = SessionManager.getInstance(ctx);
             SolicitudGpoService solicitudGpoService = RetrofitClient.newInstance(ctx).create(SolicitudGpoService.class);
             Call<List<SolicitudDetalleEstatusGpo>> call = solicitudGpoService.showEstatusSolicitudes("Bearer " + session.getUser().get(7));
@@ -862,30 +820,29 @@ public class SolicitudCreditoGpo extends AppCompatActivity implements dialog_ori
 
                                     integrante = integranteDao.findByIdSolicitudIntegrante(se.getIdSolicitudIntegrante());
 
-                                    if(integrante != null) credito = creditoDao.findById(integrante.getIdCredito());
-                                    if(credito != null) solicitudTemp = solicitudDao.findByIdSolicitud(credito.getIdSolicitud());
+                                    if (integrante != null)
+                                        credito = creditoDao.findById(integrante.getIdCredito());
+                                    if (credito != null)
+                                        solicitudTemp = solicitudDao.findByIdSolicitud(credito.getIdSolicitud());
 
-                                    if(solicitudTemp != null)
-                                    {
+                                    if (solicitudTemp != null) {
                                         solicitudTemp.setIdOriginacion(se.getId());
                                         solicitudDao.updateIdOriginacion(solicitudTemp);
                                     }
 
-                                    if(solicitudTemp != null && Integer.compare(solicitudTemp.getIdSolicitud(), solicitud.getIdSolicitud()) == 0)
-                                    {
+                                    if (solicitudTemp != null && Integer.compare(solicitudTemp.getIdSolicitud(), solicitud.getIdSolicitud()) == 0) {
                                         String comentario = "";
 
-                                        if(se.getSolicitudEstadoIdIntegrante() == 1)
-                                        {
+                                        if (se.getSolicitudEstadoIdIntegrante() == 1) {
                                             comentario = "EN REVISIÓN";
-                                        }
-                                        else if (se.getSolicitudEstadoIdIntegrante() == 3)
-                                        {
+                                        } else if (se.getSolicitudEstadoIdIntegrante() == 3) {
                                             comentario = "VALIDADO";
                                         }
 
-                                        if(se.getSolicitudEstadoIdSolicitud() == 2) solicitud.setEstatus(5);
-                                        if(se.getSolicitudEstadoIdSolicitud() == 3) solicitud.setEstatus(3);
+                                        if (se.getSolicitudEstadoIdSolicitud() == 2)
+                                            solicitud.setEstatus(5);
+                                        if (se.getSolicitudEstadoIdSolicitud() == 3)
+                                            solicitud.setEstatus(3);
 
                                         Log.e("AQUI ORI", String.valueOf(se.getId()));
 
@@ -915,13 +872,12 @@ public class SolicitudCreditoGpo extends AppCompatActivity implements dialog_ori
         }
     }
 
-    private void obtenerRechazo(AlertDialog alert, Solicitud solicitud)
-    {
+    private void obtenerRechazo(AlertDialog alert, Solicitud solicitud) {
         SessionManager session = SessionManager.getInstance(ctx);
         SolicitudDao solicitudDao = new SolicitudDao(ctx);
 
         ManagerInterface api = RetrofitClient.generalRF(CONTROLLER_SOLICITUDES, ctx).create(ManagerInterface.class);
-        Call<List<MSolicitudRechazoGpo>> call = api.getSolicitudRechazoGpo("Bearer "+ session.getUser().get(7));
+        Call<List<MSolicitudRechazoGpo>> call = api.getSolicitudRechazoGpo("Bearer " + session.getUser().get(7));
 
         call.enqueue(new Callback<List<MSolicitudRechazoGpo>>() {
             @Override
@@ -945,8 +901,10 @@ public class SolicitudCreditoGpo extends AppCompatActivity implements dialog_ori
 
                                 integrante = integranteDao.findByIdSolicitudIntegrante(item.getIdSolicitudIntegrante());
 
-                                if(integrante != null) credito = creditoDao.findById(integrante.getIdCredito());
-                                if(credito != null) solicitudTemp = solicitudDao.findByIdSolicitud(credito.getIdSolicitud());
+                                if (integrante != null)
+                                    credito = creditoDao.findById(integrante.getIdCredito());
+                                if (credito != null)
+                                    solicitudTemp = solicitudDao.findByIdSolicitud(credito.getIdSolicitud());
 
                                 if (item.getTipoSolicitud() == 1 && solicitudTemp != null && Integer.compare(solicitudTemp.getIdSolicitud(), solicitud.getIdSolicitud()) == 0) {
 
@@ -1053,8 +1011,7 @@ public class SolicitudCreditoGpo extends AppCompatActivity implements dialog_ori
             }
 
             @Override
-            public void onFailure(Call<List<MSolicitudRechazoGpo>> call, Throwable t)
-            {
+            public void onFailure(Call<List<MSolicitudRechazoGpo>> call, Throwable t) {
                 Log.e("ERROR ", t.getMessage());
                 alert.dismiss();
             }

@@ -1,9 +1,144 @@
 package com.sidert.sidertmovil.v2.di.modules;
 
-import com.sidert.sidertmovil.v2.SidertMovilApplication;
 import com.sidert.sidertmovil.database.DBhelper;
+import com.sidert.sidertmovil.v2.SidertMovilApplication;
 import com.sidert.sidertmovil.v2.domain.AppDatabase;
-import com.sidert.sidertmovil.v2.domain.daos.*;
+import com.sidert.sidertmovil.v2.domain.Migrations;
+import com.sidert.sidertmovil.v2.domain.daos.AmortizacionesDao;
+import com.sidert.sidertmovil.v2.domain.daos.ArqueoCajaDao;
+import com.sidert.sidertmovil.v2.domain.daos.AvalAutoDao;
+import com.sidert.sidertmovil.v2.domain.daos.AvalDao;
+import com.sidert.sidertmovil.v2.domain.daos.AvalIndDao;
+import com.sidert.sidertmovil.v2.domain.daos.AvalRenDao;
+import com.sidert.sidertmovil.v2.domain.daos.CancelacionesDao;
+import com.sidert.sidertmovil.v2.domain.daos.CarteraGrupoDao;
+import com.sidert.sidertmovil.v2.domain.daos.CarteraIndividualDao;
+import com.sidert.sidertmovil.v2.domain.daos.CatColoniasDao;
+import com.sidert.sidertmovil.v2.domain.daos.CatalogoCampanasDao;
+import com.sidert.sidertmovil.v2.domain.daos.CentroCostoDao;
+import com.sidert.sidertmovil.v2.domain.daos.CierreDiaDao;
+import com.sidert.sidertmovil.v2.domain.daos.ClienteIndAutoDao;
+import com.sidert.sidertmovil.v2.domain.daos.ClienteIndDao;
+import com.sidert.sidertmovil.v2.domain.daos.ClienteIndRenDao;
+import com.sidert.sidertmovil.v2.domain.daos.CodigosOxxoDao;
+import com.sidert.sidertmovil.v2.domain.daos.ConsultaCcDao;
+import com.sidert.sidertmovil.v2.domain.daos.ConyugeIndAutoDao;
+import com.sidert.sidertmovil.v2.domain.daos.ConyugeIndDao;
+import com.sidert.sidertmovil.v2.domain.daos.ConyugeIndRenDao;
+import com.sidert.sidertmovil.v2.domain.daos.ConyugeIntegranteAutoDao;
+import com.sidert.sidertmovil.v2.domain.daos.ConyugeIntegranteDao;
+import com.sidert.sidertmovil.v2.domain.daos.ConyugeIntegranteRenDao;
+import com.sidert.sidertmovil.v2.domain.daos.CreditoGpoAutoDao;
+import com.sidert.sidertmovil.v2.domain.daos.CreditoGpoDao;
+import com.sidert.sidertmovil.v2.domain.daos.CreditoGpoRenDao;
+import com.sidert.sidertmovil.v2.domain.daos.CreditoIndAutoDao;
+import com.sidert.sidertmovil.v2.domain.daos.CreditoIndDao;
+import com.sidert.sidertmovil.v2.domain.daos.CreditoIndRenDao;
+import com.sidert.sidertmovil.v2.domain.daos.CroquisGpoAutoDao;
+import com.sidert.sidertmovil.v2.domain.daos.CroquisGpoDao;
+import com.sidert.sidertmovil.v2.domain.daos.CroquisGpoRenDao;
+import com.sidert.sidertmovil.v2.domain.daos.CroquisIndAutoDao;
+import com.sidert.sidertmovil.v2.domain.daos.CroquisIndDao;
+import com.sidert.sidertmovil.v2.domain.daos.CroquisIndRenDao;
+import com.sidert.sidertmovil.v2.domain.daos.DatosBeneficiarioGpoDao;
+import com.sidert.sidertmovil.v2.domain.daos.DatosBeneficiarioGpoRenDao;
+import com.sidert.sidertmovil.v2.domain.daos.DatosBeneficiarioIndDao;
+import com.sidert.sidertmovil.v2.domain.daos.DatosBeneficiarioIndRenDao;
+import com.sidert.sidertmovil.v2.domain.daos.DatosCreditoCampanaDao;
+import com.sidert.sidertmovil.v2.domain.daos.DatosCreditoCampanaGpoDao;
+import com.sidert.sidertmovil.v2.domain.daos.DatosCreditoCampanaGpoRenDao;
+import com.sidert.sidertmovil.v2.domain.daos.DatosEntregaCarteraDao;
+import com.sidert.sidertmovil.v2.domain.daos.DestinosCreditoDao;
+import com.sidert.sidertmovil.v2.domain.daos.DireccionDao;
+import com.sidert.sidertmovil.v2.domain.daos.DireccionesAutoDao;
+import com.sidert.sidertmovil.v2.domain.daos.DireccionesRenDao;
+import com.sidert.sidertmovil.v2.domain.daos.DocumentosClientesDao;
+import com.sidert.sidertmovil.v2.domain.daos.DocumentosDao;
+import com.sidert.sidertmovil.v2.domain.daos.DocumentosIntegranteDao;
+import com.sidert.sidertmovil.v2.domain.daos.DocumentosIntegranteRenDao;
+import com.sidert.sidertmovil.v2.domain.daos.DocumentosRenDao;
+import com.sidert.sidertmovil.v2.domain.daos.DomicilioIntegranteAutoDao;
+import com.sidert.sidertmovil.v2.domain.daos.DomicilioIntegranteDao;
+import com.sidert.sidertmovil.v2.domain.daos.DomicilioIntegranteRenDao;
+import com.sidert.sidertmovil.v2.domain.daos.EconomicosIndAutoDao;
+import com.sidert.sidertmovil.v2.domain.daos.EconomicosIndDao;
+import com.sidert.sidertmovil.v2.domain.daos.EconomicosIndRenDao;
+import com.sidert.sidertmovil.v2.domain.daos.EstadosCivilesDao;
+import com.sidert.sidertmovil.v2.domain.daos.EstadosDao;
+import com.sidert.sidertmovil.v2.domain.daos.FichasDao;
+import com.sidert.sidertmovil.v2.domain.daos.GeoDao;
+import com.sidert.sidertmovil.v2.domain.daos.GeolocalizacionDao;
+import com.sidert.sidertmovil.v2.domain.daos.GestionesVerDomDao;
+import com.sidert.sidertmovil.v2.domain.daos.IdentificacionTipoDao;
+import com.sidert.sidertmovil.v2.domain.daos.ImpresionesVencidaDao;
+import com.sidert.sidertmovil.v2.domain.daos.ImpresionesVigenteDao;
+import com.sidert.sidertmovil.v2.domain.daos.IntegrantesGpoAutoDao;
+import com.sidert.sidertmovil.v2.domain.daos.IntegrantesGpoDao;
+import com.sidert.sidertmovil.v2.domain.daos.IntegrantesGpoRenDao;
+import com.sidert.sidertmovil.v2.domain.daos.LocalidadesDao;
+import com.sidert.sidertmovil.v2.domain.daos.LoginReportDao;
+import com.sidert.sidertmovil.v2.domain.daos.MediosContactoDao;
+import com.sidert.sidertmovil.v2.domain.daos.MediosPagoOriDao;
+import com.sidert.sidertmovil.v2.domain.daos.MiembrosGpoDao;
+import com.sidert.sidertmovil.v2.domain.daos.MiembrosPagosDao;
+import com.sidert.sidertmovil.v2.domain.daos.MunicipiosDao;
+import com.sidert.sidertmovil.v2.domain.daos.NegocioIndAutoDao;
+import com.sidert.sidertmovil.v2.domain.daos.NegocioIndDao;
+import com.sidert.sidertmovil.v2.domain.daos.NegocioIndRenDao;
+import com.sidert.sidertmovil.v2.domain.daos.NegocioIntegranteAutoDao;
+import com.sidert.sidertmovil.v2.domain.daos.NegocioIntegranteDao;
+import com.sidert.sidertmovil.v2.domain.daos.NegocioIntegranteRenDao;
+import com.sidert.sidertmovil.v2.domain.daos.NivelesEstudiosDao;
+import com.sidert.sidertmovil.v2.domain.daos.OcupacionesDao;
+import com.sidert.sidertmovil.v2.domain.daos.OtrosDatosIntegranteAutoDao;
+import com.sidert.sidertmovil.v2.domain.daos.OtrosDatosIntegranteDao;
+import com.sidert.sidertmovil.v2.domain.daos.OtrosDatosIntegranteRenDao;
+import com.sidert.sidertmovil.v2.domain.daos.PagosDao;
+import com.sidert.sidertmovil.v2.domain.daos.PagosIndDao;
+import com.sidert.sidertmovil.v2.domain.daos.ParentescosDao;
+import com.sidert.sidertmovil.v2.domain.daos.PlazosPrestamosDao;
+import com.sidert.sidertmovil.v2.domain.daos.PoliticasPldIndAutoDao;
+import com.sidert.sidertmovil.v2.domain.daos.PoliticasPldIndDao;
+import com.sidert.sidertmovil.v2.domain.daos.PoliticasPldIndRenDao;
+import com.sidert.sidertmovil.v2.domain.daos.PoliticasPldIntegranteAutoDao;
+import com.sidert.sidertmovil.v2.domain.daos.PoliticasPldIntegranteDao;
+import com.sidert.sidertmovil.v2.domain.daos.PoliticasPldIntegranteRenDao;
+import com.sidert.sidertmovil.v2.domain.daos.PrestamosDao;
+import com.sidert.sidertmovil.v2.domain.daos.PrestamosGpoDao;
+import com.sidert.sidertmovil.v2.domain.daos.PrestamosIndDao;
+import com.sidert.sidertmovil.v2.domain.daos.PrestamosToRenovarDao;
+import com.sidert.sidertmovil.v2.domain.daos.RecibosAgfCcDao;
+import com.sidert.sidertmovil.v2.domain.daos.RecibosCcDao;
+import com.sidert.sidertmovil.v2.domain.daos.RecibosDao;
+import com.sidert.sidertmovil.v2.domain.daos.RecuperacionRecibosCcDao;
+import com.sidert.sidertmovil.v2.domain.daos.RecuperacionRecibosDao;
+import com.sidert.sidertmovil.v2.domain.daos.ReferenciaIndAutoDao;
+import com.sidert.sidertmovil.v2.domain.daos.ReferenciaIndDao;
+import com.sidert.sidertmovil.v2.domain.daos.ReferenciaIndRenDao;
+import com.sidert.sidertmovil.v2.domain.daos.ReimpresionVigenteDao;
+import com.sidert.sidertmovil.v2.domain.daos.ReporteSesionesDao;
+import com.sidert.sidertmovil.v2.domain.daos.RespuestasGpoDao;
+import com.sidert.sidertmovil.v2.domain.daos.RespuestasIndDao;
+import com.sidert.sidertmovil.v2.domain.daos.RespuestasIndVDao;
+import com.sidert.sidertmovil.v2.domain.daos.RespuestasIntegranteVDao;
+import com.sidert.sidertmovil.v2.domain.daos.ResumenesGestionDao;
+import com.sidert.sidertmovil.v2.domain.daos.SectoresDao;
+import com.sidert.sidertmovil.v2.domain.daos.ServiciosSincronizadosDao;
+import com.sidert.sidertmovil.v2.domain.daos.SincronizadoDao;
+import com.sidert.sidertmovil.v2.domain.daos.SolicitudesAutoDao;
+import com.sidert.sidertmovil.v2.domain.daos.SolicitudesDao;
+import com.sidert.sidertmovil.v2.domain.daos.SolicitudesRenDao;
+import com.sidert.sidertmovil.v2.domain.daos.SoporteDao;
+import com.sidert.sidertmovil.v2.domain.daos.SucursalesDao;
+import com.sidert.sidertmovil.v2.domain.daos.SucursalesLocalidadesDao;
+import com.sidert.sidertmovil.v2.domain.daos.TelefonosClienteDao;
+import com.sidert.sidertmovil.v2.domain.daos.TelefonosIntegranteAutoDao;
+import com.sidert.sidertmovil.v2.domain.daos.TelefonosIntegranteDao;
+import com.sidert.sidertmovil.v2.domain.daos.TelefonosIntegranteRenDao;
+import com.sidert.sidertmovil.v2.domain.daos.TicketsDao;
+import com.sidert.sidertmovil.v2.domain.daos.TrackerAsesorDao;
+import com.sidert.sidertmovil.v2.domain.daos.VerificacionesDomiciliariasDao;
+import com.sidert.sidertmovil.v2.domain.daos.ViviendaTiposDao;
 
 import javax.inject.Singleton;
 
@@ -23,7 +158,7 @@ public interface DatabaseModule {
                         DBhelper.DATABASE_NAME
                 )
                 .createFromAsset("database/sidertmovil.db")
-                .fallbackToDestructiveMigration()
+                .addMigrations(Migrations.MIGRATION_1_2)
                 .build();
     }
 
@@ -62,6 +197,15 @@ public interface DatabaseModule {
     static AvalRenDao provideAvalRenDao(AppDatabase appDatabase) {
         return appDatabase.avalRenDao();
     }
+
+/*
+    @Singleton
+    @Provides
+    static BeneficiariosDao provideBeneficiarioDao(AppDatabase appDatabase) {
+        return appDatabase.beneficiariosDao();
+    }
+*/
+
 
     @Singleton
     @Provides
@@ -764,6 +908,14 @@ public interface DatabaseModule {
     static SolicitudesAutoDao provideSolicitudesAutoDao(AppDatabase appDatabase) {
         return appDatabase.solicitudesAutoDao();
     }
+
+/*
+    @Singleton
+    @Provides
+    static SolicitudCampanaDao provideSolicitudCamapanaDao(AppDatabase appDatabase) {
+        return appDatabase.solicitudCampanaDao();
+    }
+*/
 
     @Singleton
     @Provides

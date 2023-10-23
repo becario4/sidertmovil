@@ -17,7 +17,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.Editable;
-import android.text.TextWatcher;
+
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -54,6 +54,11 @@ import com.sidert.sidertmovil.activities.CapturarFirma;
 import com.sidert.sidertmovil.activities.Catalogos;
 import com.sidert.sidertmovil.activities.VerImagen;
 import com.sidert.sidertmovil.database.DBhelper;
+import com.sidert.sidertmovil.database.EntitiesCommonsContants;
+import com.sidert.sidertmovil.database.dao.BeneficiariosDao;
+import com.sidert.sidertmovil.database.dao.SolicitudCampanaDao;
+import com.sidert.sidertmovil.database.entities.Beneficiario;
+import com.sidert.sidertmovil.database.entities.SolicitudCampana;
 import com.sidert.sidertmovil.fragments.dialogs.DialogSelectorFecha;
 import com.sidert.sidertmovil.fragments.dialogs.dialog_date_picker;
 import com.sidert.sidertmovil.fragments.dialogs.dialog_input_calle;
@@ -65,14 +70,12 @@ import com.sidert.sidertmovil.models.MSolicitudRechazoInd;
 import com.sidert.sidertmovil.models.ModeloCatalogoGral;
 import com.sidert.sidertmovil.models.catalogos.Colonia;
 import com.sidert.sidertmovil.models.catalogos.ColoniaDao;
-import com.sidert.sidertmovil.models.datosCampañas.datosCampanaDao;
 import com.sidert.sidertmovil.models.permiso.PermisoResponse;
 import com.sidert.sidertmovil.models.solicitudes.SolicitudRen;
 import com.sidert.sidertmovil.models.solicitudes.SolicitudRenDao;
 import com.sidert.sidertmovil.models.solicitudes.solicitudind.SolicitudDetalleEstatusInd;
 import com.sidert.sidertmovil.models.solicitudes.solicitudind.renovacion.AvalRen;
 import com.sidert.sidertmovil.models.solicitudes.solicitudind.renovacion.AvalRenDao;
-import com.sidert.sidertmovil.models.solicitudes.solicitudind.renovacion.BeneficiarioIndRenDao;
 import com.sidert.sidertmovil.models.solicitudes.solicitudind.renovacion.ClienteRen;
 import com.sidert.sidertmovil.models.solicitudes.solicitudind.renovacion.ClienteRenDao;
 import com.sidert.sidertmovil.models.solicitudes.solicitudind.renovacion.ConyugueRen;
@@ -101,6 +104,7 @@ import com.sidert.sidertmovil.utils.NetworkStatus;
 import com.sidert.sidertmovil.utils.Popups;
 import com.sidert.sidertmovil.utils.RetrofitClient;
 import com.sidert.sidertmovil.utils.SessionManager;
+import com.sidert.sidertmovil.utils.TextWatcherAdapter;
 import com.sidert.sidertmovil.utils.Validator;
 import com.sidert.sidertmovil.utils.ValidatorTextView;
 
@@ -120,6 +124,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -203,10 +208,7 @@ import static com.sidert.sidertmovil.utils.Constants.TBL_CONYUGE_IND_REN;
 import static com.sidert.sidertmovil.utils.Constants.TBL_CREDITO_IND;
 import static com.sidert.sidertmovil.utils.Constants.TBL_CREDITO_IND_REN;
 import static com.sidert.sidertmovil.utils.Constants.TBL_CROQUIS_IND_REN;
-import static com.sidert.sidertmovil.utils.Constants.TBL_DATOS_BENEFICIARIO_REN;
-import static com.sidert.sidertmovil.utils.Constants.TBL_DATOS_CREDITO_CAMPANA;
 import static com.sidert.sidertmovil.utils.Constants.TBL_DIRECCIONES_REN;
-import static com.sidert.sidertmovil.utils.Constants.TBL_DOCUMENTOS_INTEGRANTE_REN;
 import static com.sidert.sidertmovil.utils.Constants.TBL_DOCUMENTOS_REN;
 import static com.sidert.sidertmovil.utils.Constants.TBL_ECONOMICOS_IND_REN;
 import static com.sidert.sidertmovil.utils.Constants.TBL_NEGOCIO_IND;
@@ -229,6 +231,8 @@ import static io.card.payment.CardIOActivity.RESULT_SCAN_SUPPRESSED;
  * Clase para guardar los datos de la solicitud de renovacion individual
  */
 public class RenovacionCreditoInd extends AppCompatActivity implements dialog_plazo_ind.OnCompleteListener {
+
+    private static final String SIN_REFERENCIA = "NINGUNO";
     private Context ctx;
     private String[] _dias_semana;
     private String[] _plazo;
@@ -730,6 +734,8 @@ public class RenovacionCreditoInd extends AppCompatActivity implements dialog_pl
     private final int MENU_INDEX_UPDATE_ESTATUS = 1;
     private final int MENU_INDEX_ENVIAR = 0;
     private boolean modoSuperUsuario = false;
+    private long solicitudCampanaId;
+    private long beneficiarioId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -751,7 +757,6 @@ public class RenovacionCreditoInd extends AppCompatActivity implements dialog_pl
         TBmain = findViewById(R.id.TBmain);
         ClienteRen ren = new ClienteRen();
         cliente_id = ren.getIdCliente();
-
 
         /**Se cargan catalogos de tipo dialog*/
         _plazo = getResources().getStringArray(R.array.intervalo);
@@ -1128,17 +1133,7 @@ public class RenovacionCreditoInd extends AppCompatActivity implements dialog_pl
         //==========================================================================================
 
         //============================== LINEAR LAYOUT  ============================================
-        llCredito.setOnClickListener(llCredito_OnClick);
-        llPersonales.setOnClickListener(llPersonales_OnClick);
-        llConyuge.setOnClickListener(llConyuge_OnClick);
-        llEconomicos.setOnClickListener(llEconomicos_OnClick);
-        llNegocio.setOnClickListener(llNegocio_OnClick);
-        llAval.setOnClickListener(llAval_OnClick);
-        llReferencia.setOnClickListener(llReferencia_OnClick);
-        //llCroquis.setOnClickListener(llCroquis_OnClick);
-        llPoliticas.setOnClickListener(llPoliticas_OnClick);
-        llDocumentos.setOnClickListener(llDocumentos_OnClick);
-        llBeneficiario.setOnClickListener(llBeneficiario_OnClick);
+
 
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         //==========================================================================================
@@ -1153,14 +1148,6 @@ public class RenovacionCreditoInd extends AppCompatActivity implements dialog_pl
         llFotoIneReverso.setVisibility(View.VISIBLE);
 
         llFotoCurp.setVisibility(View.GONE);
-
-
-        Intent intent = this.getIntent();
-        if (intent != null) {
-            String solicitudId = intent.getStringExtra("id_solicitud");
-            id_solicitud = Long.parseLong(solicitudId);
-            initComponents(solicitudId);
-        }
 
         //=================================  FLOATING BUTTON  ======================================
         btnContinuar0 = findViewById(R.id.btnContinuar0);
@@ -1232,8 +1219,21 @@ public class RenovacionCreditoInd extends AppCompatActivity implements dialog_pl
         ivError11 = findViewById(R.id.ivError11);
         //=========================================================
 
-        //================================= FLOATING BUTTON LISTENER  ==============================
+        //================================= LISTENER  ==============================
         /**Evento click para avanzar o retroceder en las secciones*/
+
+
+        llCredito.setOnClickListener(llCredito_OnClick);
+        llPersonales.setOnClickListener(llPersonales_OnClick);
+        llConyuge.setOnClickListener(llConyuge_OnClick);
+        llEconomicos.setOnClickListener(llEconomicos_OnClick);
+        llNegocio.setOnClickListener(llNegocio_OnClick);
+        llAval.setOnClickListener(llAval_OnClick);
+        llReferencia.setOnClickListener(llReferencia_OnClick);
+//llCroquis.setOnClickListener(llCroquis_OnClick);
+        llPoliticas.setOnClickListener(llPoliticas_OnClick);
+        llDocumentos.setOnClickListener(llDocumentos_OnClick);
+        llBeneficiario.setOnClickListener(llBeneficiario_OnClick);
         btnContinuar0.setOnClickListener(btnContinuar0_OnClick);
         btnContinuar1.setOnClickListener(btnContinuar1_OnClick);
         btnContinuar2.setOnClickListener(btnContinuar2_OnClick);
@@ -1242,10 +1242,8 @@ public class RenovacionCreditoInd extends AppCompatActivity implements dialog_pl
         btnContinuar4.setOnClickListener(btnContinuar4_OnClick);
         btnContinuar5.setOnClickListener(btnContinuar5_OnClick);
         btnContinuar6.setOnClickListener(btnContinuar6_OnClick);
-        //btnContinuar7.setOnClickListener(btnContinuar7_OnClick);
+//btnContinuar7.setOnClickListener(btnContinuar7_OnClick);
         btnContinuar8.setOnClickListener(btnContinuar8_OnClick);
-
-
         btnRegresar1.setOnClickListener(btnRegresar1_OnClick);
         btnRegresar2.setOnClickListener(btnRegresar2_OnClick);
         btnRegresarBeni.setOnClickListener(btnRegresarBeni_OnClick);
@@ -1253,29 +1251,116 @@ public class RenovacionCreditoInd extends AppCompatActivity implements dialog_pl
         btnRegresar4.setOnClickListener(btnRegresar4_OnClick);
         btnRegresar5.setOnClickListener(btnRegresar5_OnClick);
         btnRegresar6.setOnClickListener(btnRegresar6_OnClick);
-        //btnRegresar7.setOnClickListener(btnRegresar7_OnClick);
+//btnRegresar7.setOnClickListener(btnRegresar7_OnClick);
         btnRegresar8.setOnClickListener(btnRegresar8_OnClick);
         btnRegresar10.setOnClickListener(btnRegresar10_OnClick);
-
-        dialog.dismiss();
-        //==========================================================================================
-        //================================  CREDITO LISTENER =======================================
-        /**Evento click y escuchadores(editText o textView) en la seccion del credito para cambios al momento
-         * en los escuchas de .addTextChangedListener se van actualizando las columnas al momento de hacer algun cambio*/
         tvPlazo.setOnClickListener(tvPlazo_OnClick);
         tvFrecuencia.setOnClickListener(tvFrecuencia_OnClick);
         tvFechaDesembolso.setOnClickListener(tvFechaDesembolso_OnClick);
         tvHoraVisita.setOnClickListener(tvHoraVisita_OnClick);
         ibFirmaAsesor.setOnClickListener(ibFirmaAsesor_OnClick);
-        etMontoPrestamo.addTextChangedListener(new TextWatcher() {
+        tvDestino.setOnClickListener(tvDestino_OnClick);
+        tvRiesgo.setOnClickListener(tvRiesgo_OnClick);
+        tvComportamiento.setOnClickListener(tvComportamiento_OnClick);
+        txtCampanaRen.setOnClickListener(txtCampana_OnClick);
+        tvOcupacionCli.setOnClickListener(tvOcupacionClie_OnClick);
+        tvTipoIdentificacion.setOnClickListener(tvTipoIdentificacion_OnClick);
+        tvEstudiosCli.setOnClickListener(tvEstudiosCli_OnClick);
+        tvEstadoCivilCli.setOnClickListener(tvEstadoCivilCli_OnClick);
+        tvTipoCasaCli.setOnClickListener(tvTipoCasaCli_OnClick);
+        tvCasaFamiliar.setOnClickListener(tvCasaFamiliar_OnClick);
+        ibMapCli.setOnClickListener(ibMapCli_OnClick);
+        tvColoniaCli.setOnClickListener(etColonia_OnClick);
+        tvLocalidadCli.setOnClickListener(tvLocalidadCli_OnClick);
+        tvDependientes.setOnClickListener(tvDependientes_OnClick);
+        tvEnteroNosotros.setOnClickListener(tvEnteroNosotros_OnClick);
+        tvEstadoCuenta.setOnClickListener(tvEstadoCuenta_OnClick);
+        tvEstudiosCli.setOnClickListener(tvEstudiosCli_OnClick);
+        ibFotoFachCli.setOnClickListener(ibFotoFachCli_OnClick);
+        ibFirmaCli.setOnClickListener(ibFirmaCli_OnClick);
+        tvOcupacionCony.setOnClickListener(tvOcupacionConyuge_OnClick);
+        tvColoniaCony.setOnClickListener(tvColoniaCony_OnClick);
+        tvLocalidadCony.setOnClickListener(tvLocalidadCony_OnClick);
+        txtParentescoBeneficiario.setOnClickListener(txtParentescoBen_OnClick);
+        ibMapNeg.setOnClickListener(ibMapNeg_OnClick);
+        tvColoniaNeg.setOnClickListener(etColoniaNeg_OnClick);
+        tvLocalidadNeg.setOnClickListener(tvLocalidadNeg_OnClick);
+        tvActEcoEspNeg.setOnClickListener(tvActEcoEspNeg_OnClick);
+        tvDestinoNeg.setOnClickListener(tvDestinoNeg_OnClick);
+        tvMediosPagoNeg.setOnClickListener(tvMediosPagoNeg_OnClick);
+        tvNumOperacionNeg.setOnClickListener(tvNumOperacionNeg_OnClick);
+        etNumOperacionEfectNeg.setOnClickListener(etNumOperacionEfectNeg_OnClick);
+        tvDiasVentaNeg.setOnClickListener(etDiasVenta_OnClick);
+        ibFotoFachNeg.setOnClickListener(ibFotoFachNeg_OnClick);
+        cbNegEnDomCli.setOnClickListener(cbNegEnDomCli_OnCheck);
+        tvParentescoAval.setOnClickListener(tvParentescoAval_OnClick);
+        tvTipoIdentificacionAval.setOnClickListener(tvTipoIdentificacionAval_OnClick);
+        tvOcupacionAval.setOnClickListener(tvOcupacionAval_OnClick);
+        ibMapAval.setOnClickListener(ibMapAval_OnClick);
+        tvColoniaAval.setOnClickListener(tvColoniaAval_OnClick);
+        tvLocalidadAval.setOnClickListener(tvLocalidadAval_OnClick);
+        tvTipoCasaAval.setOnClickListener(tvTipoCasaAval_OnClick);
+        tvFamiliarAval.setOnClickListener(tvFamiliarAval_OnClick);
+        tvMediosPagoAval.setOnClickListener(tvMediosPagoAval_OnClick);
+        tvHoraLocAval.setOnClickListener(tvHoraLocAval_OnClick);
+        tvActivosObservables.setOnClickListener(tvActivosObservables_OnClick);
+        ibFotoFachAval.setOnClickListener(ibFotoFachAval_OnClick);
+        ibFirmaAval.setOnClickListener(ibFirmaAval_OnClick);
+        tvFechaNacRef.setOnClickListener(tvFechaNacRef_OnClick);
+        tvColoniaRef.setOnClickListener(tvColoniaRef_OnClick);
+        tvLocalidadRef.setOnClickListener(tvLocalidadRef_OnClick);
+        tvCasa.setOnClickListener(tvCasa_OnClick);
+        tvPrincipal.setOnClickListener(tvPrincipal_OnClick);
+        tvTrasera.setOnClickListener(tvTrasera_OnClick);
+        tvLateraUno.setOnClickListener(tvLateralUno_OnClick);
+        tvLateraDos.setOnClickListener(tvLateralDos_OnClick);
+        ibIneFrontal.setOnClickListener(ibIneFrontal_OnClick);
+        ibIneReverso.setOnClickListener(ibIneReverso_OnClick);
+        ibIneSelfie.setOnClickListener(ibIneSelfie_OnClick);
+//ibCurp.setOnClickListener(ibCurp_OnClick);
+        ibComprobante.setOnClickListener(ibComprobante_OnClick);
+        ibComprobanteGarantia.setOnClickListener(ibComprobanteGarantia_OnClick);
+        ibIneFrontalAval.setOnClickListener(ibIneFrontalAval_OnClick);
+        ibIneReversoAval.setOnClickListener(ibIneReversoAval_OnClick);
+        ibCurpAval.setOnClickListener(ibCurpAval_OnClick);
+        ibComprobanteAval.setOnClickListener(ibComprobanteAval_OnClick);
+        ivFotoFachCli.setOnClickListener(ivFotoFachCli_OnClick);
+        ivFirmaCli.setOnClickListener(ivFirmaCli_OnClick);
+        ivFotoFachNeg.setOnClickListener(ivFotoFachNeg_OnClick);
+        ivFotoFachAval.setOnClickListener(ivFotoFachAval_OnClick);
+        ivFirmaAval.setOnClickListener(ivFirmaAval_OnClick);
+        ivIneFrontal.setOnClickListener(ivIneFrontal_OnClik);
+        ivIneReverso.setOnClickListener(ivIneReverso_OnClick);
+        ivIneSelfie.setOnClickListener(ivIneSelfie_OnClik);
+//ivCurp.setOnClickListener(ivCurp_OnClick);
+        ivComprobante.setOnClickListener(ivComprobante_OnClick);
+        ivFirmaAsesor.setOnClickListener(ivFirmaAsesor_OnClick);
+        ivComprobanteGarantia.setOnClickListener(ivComprobanteGarantia_OnClick);
+        ivIneFrontalAval.setOnClickListener(ivIneFrontalAval_OnClik);
+        ivIneReversoAval.setOnClickListener(ivIneReversoAval_OnClick);
+        ivCurpAval.setOnClickListener(ivCurpAval_OnClick);
+        ivComprobanteAval.setOnClickListener(ivComprobanteAval_OnClick);
+        tvFechaNacCli.setOnClickListener(tvFechaNac_OnClick);
+        tvEstadoNacCli.setOnClickListener(etEstadoNac_OnClick);
+        tvFechaNacAval.setOnClickListener(tvFechaNacAval_OnClick);
+        tvEstadoNacAval.setOnClickListener(tvEstadoNacAval_OnClick);
+        tvFechaNacAval.setOnClickListener(tvFechaNacAval_OnClick);
+        tvEstadoNacAval.setOnClickListener(tvEstadoNacAval_OnClick);
+        tvFechaNacAval.setOnClickListener(tvFechaNacAval_OnClick);
+        tvEstadoNacAval.setOnClickListener(tvEstadoNacAval_OnClick);
+        tvFechaNacAval.setOnClickListener(tvFechaNacAval_OnClick);
+        tvEstadoNacAval.setOnClickListener(tvEstadoNacAval_OnClick);
+
+        //==========================================================================================
+        //================================  CREDITO LISTENER =======================================
+        /**Evento click y escuchadores(editText o textView) en la seccion del credito para cambios al momento
+         * en los escuchas de .addTextChangedListener se van actualizando las columnas al momento de hacer algun cambio*/
+
+
+        etMontoPrestamo.addTextChangedListener(new TextWatcherAdapter() {
             private final String PATTERN_MONTO_CREDITO = "[1-9][0-9][0-9][0][0][0]|[1-9][0-9][0][0][0]|[1-9][0][0][0]";
             private Pattern pattern;
             private Matcher matcher;
-
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
@@ -1309,9 +1394,7 @@ public class RenovacionCreditoInd extends AppCompatActivity implements dialog_pl
                         // place cursor at the end?
                         etMontoPrestamo.setSelection(Miscellaneous.GetStr(etMontoPrestamo).length() - 1);
                     }
-                } catch (NumberFormatException nfe) {
-                    // do nothing?
-                } catch (ParseException e) {
+                } catch (NumberFormatException | ParseException nfe) {
                     // do nothing?
                 }
 
@@ -1338,37 +1421,18 @@ public class RenovacionCreditoInd extends AppCompatActivity implements dialog_pl
                 etMontoPrestamo.addTextChangedListener(this);
             }
         });
-        tvDestino.setOnClickListener(tvDestino_OnClick);
-        tvRiesgo.setOnClickListener(tvRiesgo_OnClick);
-        tvComportamiento.setOnClickListener(tvComportamiento_OnClick);
-        etObservaciones.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
-            }
 
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable e) {
-                if (e.length() > 0) {
-                    Update("observaciones", TBL_CREDITO_IND_REN, e.toString().trim().toUpperCase());
-                } else
-                    Update("observaciones", TBL_CREDITO_IND_REN, "");
-            }
+        etObservaciones.addTextChangedListener((TextWatcherAdapter) e -> {
+            if (e.length() > 0) {
+                Update("observaciones", TBL_CREDITO_IND_REN, e.toString().trim().toUpperCase());
+            } else
+                Update("observaciones", TBL_CREDITO_IND_REN, "");
         });
-        etMontoRefinanciar.addTextChangedListener(new TextWatcher() {
+        etMontoRefinanciar.addTextChangedListener(new TextWatcherAdapter() {
             private final String PATTERN_MONTO_CREDITO = "[0-9]+";
             private Pattern pattern;
             private Matcher matcher;
-
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
@@ -1421,417 +1485,240 @@ public class RenovacionCreditoInd extends AppCompatActivity implements dialog_pl
                 etMontoRefinanciar.addTextChangedListener(this);
             }
         });
-        txtCampanaRen.setOnClickListener(txtCamapana_OnClick);
-        txtNombreRefieroRen.addTextChangedListener(new TextWatcher() {
 
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+        txtNombreRefieroRen.addTextChangedListener((TextWatcherAdapter) editable -> {
+            String referidoNombre = editable.toString().trim().toUpperCase();
+            String campanaNombre = txtCampanaRen.getText().toString();
 
-            }
+            SolicitudCampana solicitudCampana = new SolicitudCampana();
+            solicitudCampana.setId(solicitudCampanaId);
+            solicitudCampana.setCampanaNombre(campanaNombre);
+            solicitudCampana.setNombreReferido(referidoNombre);
 
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-                if (editable.length() > 0) {
-                    Update("nombre_refiero", TBL_DATOS_CREDITO_CAMPANA, editable.toString().trim().toUpperCase());
-                } else {
-                    Update("nombre_refiero", TBL_DATOS_CREDITO_CAMPANA, " ");
-                }
-            }
+            dBhelper.getSolicitudCampanaDao().update(solicitudCampana);
 
         });
         //==============================  PERSONALES LISTENER ======================================
         /**Evento click y escuchadores(editText o textView) en la seccion de datos personales para cambios al momento
          * en los escuchas de .addTextChangedListener se van actualizando las columnas al momento de hacer algun cambio*/
-        etNombreCli.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+        etNombreCli.addTextChangedListener((TextWatcherAdapter) s -> {
+            HashMap<Integer, String> params = new HashMap<>();
+            if (s.length() > 0) {
+                params.put(0, s.toString());
+                params.put(1, Miscellaneous.GetStr(etApPaternoCli));
+                params.put(2, Miscellaneous.GetStr(etApMaternoCli));
+                params.put(3, Miscellaneous.GetStr(tvFechaNacCli));
 
-            }
+                if (rgGeneroCli.getCheckedRadioButtonId() == R.id.rbHombre)
+                    params.put(4, "Hombre");
+                else if (rgGeneroCli.getCheckedRadioButtonId() == R.id.rbMujer)
+                    params.put(4, "Mujer");
+                else
+                    params.put(4, "");
 
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (!Miscellaneous.GetStr(tvEstadoNacCli).isEmpty())
+                    params.put(5, Miscellaneous.GetStr(tvEstadoNacCli));
+                else
+                    params.put(5, "");
+                etCurpCli.setText(Miscellaneous.GenerarCurp(params));
+            } else {
+                params.put(0, "");
+                params.put(1, Miscellaneous.GetStr(etApPaternoCli));
+                params.put(2, Miscellaneous.GetStr(etApMaternoCli));
+                params.put(3, Miscellaneous.GetStr(tvFechaNacCli));
 
-            }
+                if (rgGeneroCli.getCheckedRadioButtonId() == R.id.rbHombre)
+                    params.put(4, "Hombre");
+                else if (rgGeneroCli.getCheckedRadioButtonId() == R.id.rbMujer)
+                    params.put(4, "Mujer");
+                else
+                    params.put(4, "");
 
-            @Override
-            public void afterTextChanged(Editable s) {
-                HashMap<Integer, String> params = new HashMap<>();
-                if (s.length() > 0) {
-                    params.put(0, s.toString());
-                    params.put(1, Miscellaneous.GetStr(etApPaternoCli));
-                    params.put(2, Miscellaneous.GetStr(etApMaternoCli));
-                    params.put(3, Miscellaneous.GetStr(tvFechaNacCli));
-
-                    if (rgGeneroCli.getCheckedRadioButtonId() == R.id.rbHombre)
-                        params.put(4, "Hombre");
-                    else if (rgGeneroCli.getCheckedRadioButtonId() == R.id.rbMujer)
-                        params.put(4, "Mujer");
-                    else
-                        params.put(4, "");
-
-                    if (!Miscellaneous.GetStr(tvEstadoNacCli).isEmpty())
-                        params.put(5, Miscellaneous.GetStr(tvEstadoNacCli));
-                    else
-                        params.put(5, "");
-                    etCurpCli.setText(Miscellaneous.GenerarCurp(params));
-                } else {
-                    params.put(0, "");
-                    params.put(1, Miscellaneous.GetStr(etApPaternoCli));
-                    params.put(2, Miscellaneous.GetStr(etApMaternoCli));
-                    params.put(3, Miscellaneous.GetStr(tvFechaNacCli));
-
-                    if (rgGeneroCli.getCheckedRadioButtonId() == R.id.rbHombre)
-                        params.put(4, "Hombre");
-                    else if (rgGeneroCli.getCheckedRadioButtonId() == R.id.rbMujer)
-                        params.put(4, "Mujer");
-                    else
-                        params.put(4, "");
-
-                    if (!Miscellaneous.GetStr(tvEstadoNacCli).isEmpty())
-                        params.put(5, Miscellaneous.GetStr(tvEstadoNacCli));
-                    else
-                        params.put(5, "");
-                    etCurpCli.setText(Miscellaneous.GenerarCurp(params));
-                }
+                if (!Miscellaneous.GetStr(tvEstadoNacCli).isEmpty())
+                    params.put(5, Miscellaneous.GetStr(tvEstadoNacCli));
+                else
+                    params.put(5, "");
+                etCurpCli.setText(Miscellaneous.GenerarCurp(params));
             }
         });
-        etApPaternoCli.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+        etApPaternoCli.addTextChangedListener((TextWatcherAdapter) s -> {
+            HashMap<Integer, String> params = new HashMap<>();
+            if (s.length() > 0) {
+                params.put(0, Miscellaneous.GetStr(etNombreCli));
+                params.put(1, s.toString());
+                params.put(2, Miscellaneous.GetStr(etApMaternoCli));
+                params.put(3, Miscellaneous.GetStr(tvFechaNacCli));
 
-            }
+                if (rgGeneroCli.getCheckedRadioButtonId() == R.id.rbHombre)
+                    params.put(4, "Hombre");
+                else if (rgGeneroCli.getCheckedRadioButtonId() == R.id.rbMujer)
+                    params.put(4, "Mujer");
+                else
+                    params.put(4, "");
 
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (!Miscellaneous.GetStr(tvEstadoNacCli).isEmpty())
+                    params.put(5, Miscellaneous.GetStr(tvEstadoNacCli));
+                else
+                    params.put(5, "");
+                etCurpCli.setText(Miscellaneous.GenerarCurp(params));
+            } else {
+                params.put(0, Miscellaneous.GetStr(etNombreCli));
+                params.put(1, "");
+                params.put(2, Miscellaneous.GetStr(etApMaternoCli));
+                params.put(3, Miscellaneous.GetStr(tvFechaNacCli));
 
-            }
+                if (rgGeneroCli.getCheckedRadioButtonId() == R.id.rbHombre)
+                    params.put(4, "Hombre");
+                else if (rgGeneroCli.getCheckedRadioButtonId() == R.id.rbMujer)
+                    params.put(4, "Mujer");
+                else
+                    params.put(4, "");
 
-            @Override
-            public void afterTextChanged(Editable s) {
-                HashMap<Integer, String> params = new HashMap<>();
-                if (s.length() > 0) {
-                    params.put(0, Miscellaneous.GetStr(etNombreCli));
-                    params.put(1, s.toString());
-                    params.put(2, Miscellaneous.GetStr(etApMaternoCli));
-                    params.put(3, Miscellaneous.GetStr(tvFechaNacCli));
-
-                    if (rgGeneroCli.getCheckedRadioButtonId() == R.id.rbHombre)
-                        params.put(4, "Hombre");
-                    else if (rgGeneroCli.getCheckedRadioButtonId() == R.id.rbMujer)
-                        params.put(4, "Mujer");
-                    else
-                        params.put(4, "");
-
-                    if (!Miscellaneous.GetStr(tvEstadoNacCli).isEmpty())
-                        params.put(5, Miscellaneous.GetStr(tvEstadoNacCli));
-                    else
-                        params.put(5, "");
-                    etCurpCli.setText(Miscellaneous.GenerarCurp(params));
-                } else {
-                    params.put(0, Miscellaneous.GetStr(etNombreCli));
-                    params.put(1, "");
-                    params.put(2, Miscellaneous.GetStr(etApMaternoCli));
-                    params.put(3, Miscellaneous.GetStr(tvFechaNacCli));
-
-                    if (rgGeneroCli.getCheckedRadioButtonId() == R.id.rbHombre)
-                        params.put(4, "Hombre");
-                    else if (rgGeneroCli.getCheckedRadioButtonId() == R.id.rbMujer)
-                        params.put(4, "Mujer");
-                    else
-                        params.put(4, "");
-
-                    if (!Miscellaneous.GetStr(tvEstadoNacCli).isEmpty())
-                        params.put(5, Miscellaneous.GetStr(tvEstadoNacCli));
-                    else
-                        params.put(5, "");
-                    etCurpCli.setText(Miscellaneous.GenerarCurp(params));
-                }
+                if (!Miscellaneous.GetStr(tvEstadoNacCli).isEmpty())
+                    params.put(5, Miscellaneous.GetStr(tvEstadoNacCli));
+                else
+                    params.put(5, "");
+                etCurpCli.setText(Miscellaneous.GenerarCurp(params));
             }
         });
-        etApMaternoCli.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+        etApMaternoCli.addTextChangedListener((TextWatcherAdapter) s -> {
+            HashMap<Integer, String> params = new HashMap<>();
+            if (s.length() > 0) {
+                params.put(0, Miscellaneous.GetStr(etNombreCli));
+                params.put(1, Miscellaneous.GetStr(etApPaternoCli));
+                params.put(2, s.toString());
+                params.put(3, Miscellaneous.GetStr(tvFechaNacCli));
 
-            }
+                if (rgGeneroCli.getCheckedRadioButtonId() == R.id.rbHombre)
+                    params.put(4, "Hombre");
+                else if (rgGeneroCli.getCheckedRadioButtonId() == R.id.rbMujer)
+                    params.put(4, "Mujer");
+                else
+                    params.put(4, "");
 
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (!Miscellaneous.GetStr(tvEstadoNacCli).isEmpty())
+                    params.put(5, Miscellaneous.GetStr(tvEstadoNacCli));
+                else
+                    params.put(5, "");
+                etCurpCli.setText(Miscellaneous.GenerarCurp(params));
+            } else {
+                params.put(0, Miscellaneous.GetStr(etNombreCli));
+                params.put(1, Miscellaneous.GetStr(etApPaternoCli));
+                params.put(2, "");
+                params.put(3, Miscellaneous.GetStr(tvFechaNacCli));
 
-            }
+                if (rgGeneroCli.getCheckedRadioButtonId() == R.id.rbHombre)
+                    params.put(4, "Hombre");
+                else if (rgGeneroCli.getCheckedRadioButtonId() == R.id.rbMujer)
+                    params.put(4, "Mujer");
+                else
+                    params.put(4, "");
 
-            @Override
-            public void afterTextChanged(Editable s) {
-                HashMap<Integer, String> params = new HashMap<>();
-                if (s.length() > 0) {
-                    params.put(0, Miscellaneous.GetStr(etNombreCli));
-                    params.put(1, Miscellaneous.GetStr(etApPaternoCli));
-                    params.put(2, s.toString());
-                    params.put(3, Miscellaneous.GetStr(tvFechaNacCli));
-
-                    if (rgGeneroCli.getCheckedRadioButtonId() == R.id.rbHombre)
-                        params.put(4, "Hombre");
-                    else if (rgGeneroCli.getCheckedRadioButtonId() == R.id.rbMujer)
-                        params.put(4, "Mujer");
-                    else
-                        params.put(4, "");
-
-                    if (!Miscellaneous.GetStr(tvEstadoNacCli).isEmpty())
-                        params.put(5, Miscellaneous.GetStr(tvEstadoNacCli));
-                    else
-                        params.put(5, "");
-                    etCurpCli.setText(Miscellaneous.GenerarCurp(params));
-                } else {
-                    params.put(0, Miscellaneous.GetStr(etNombreCli));
-                    params.put(1, Miscellaneous.GetStr(etApPaternoCli));
-                    params.put(2, "");
-                    params.put(3, Miscellaneous.GetStr(tvFechaNacCli));
-
-                    if (rgGeneroCli.getCheckedRadioButtonId() == R.id.rbHombre)
-                        params.put(4, "Hombre");
-                    else if (rgGeneroCli.getCheckedRadioButtonId() == R.id.rbMujer)
-                        params.put(4, "Mujer");
-                    else
-                        params.put(4, "");
-
-                    if (!Miscellaneous.GetStr(tvEstadoNacCli).isEmpty())
-                        params.put(5, Miscellaneous.GetStr(tvEstadoNacCli));
-                    else
-                        params.put(5, "");
-                    etCurpCli.setText(Miscellaneous.GenerarCurp(params));
-                }
+                if (!Miscellaneous.GetStr(tvEstadoNacCli).isEmpty())
+                    params.put(5, Miscellaneous.GetStr(tvEstadoNacCli));
+                else
+                    params.put(5, "");
+                etCurpCli.setText(Miscellaneous.GenerarCurp(params));
             }
         });
 
-        etCurpCli.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                if (s.length() > 0) {
-                    if (s.toString().contains("Curp no válida")) {
-                        tvRfcCli.setText("Rfc no válida");
-                        Update("rfc", TBL_CLIENTE_IND_REN, "");
-                        Update("curp", TBL_CLIENTE_IND_REN, "");
-                    } else {
-                        Update("curp", TBL_CLIENTE_IND_REN, s.toString().trim().toUpperCase());
-                        if (s.toString().trim().length() >= 10) {
-                            tvRfcCli.setText(Miscellaneous.GenerarRFC(s.toString().substring(0, 10), Miscellaneous.GetStr(etNombreCli), Miscellaneous.GetStr(etApPaternoCli), Miscellaneous.GetStr(etApMaternoCli)));
-                            Update("rfc", TBL_CLIENTE_IND_REN, Miscellaneous.GetStr(tvRfcCli));
-                        } else {
-                            tvRfcCli.setText("");
-                            Update("rfc", TBL_CLIENTE_IND_REN, Miscellaneous.GetStr(tvRfcCli));
-                        }
-
-                    }
-                } else {
+        etCurpCli.addTextChangedListener((TextWatcherAdapter) s -> {
+            if (s.length() > 0) {
+                if (s.toString().contains("Curp no válida")) {
                     tvRfcCli.setText("Rfc no válida");
                     Update("rfc", TBL_CLIENTE_IND_REN, "");
                     Update("curp", TBL_CLIENTE_IND_REN, "");
-                }
-            }
-        });
-
-        tvOcupacionCli.setOnClickListener(tvOcupacionClie_OnClick);
-        tvTipoIdentificacion.setOnClickListener(tvTipoIdentificacion_OnClick);
-        etNumIdentifCli.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable e) {
-                if (e.length() > 0) {
-                    Update("no_identificacion", TBL_CLIENTE_IND_REN, e.toString());
-                } else
-                    Update("no_identificacion", TBL_CLIENTE_IND_REN, "");
-            }
-        });
-        tvEstudiosCli.setOnClickListener(tvEstudiosCli_OnClick);
-        tvEstadoCivilCli.setOnClickListener(tvEstadoCivilCli_OnClick);
-        tvTipoCasaCli.setOnClickListener(tvTipoCasaCli_OnClick);
-        tvCasaFamiliar.setOnClickListener(tvCasaFamiliar_OnClick);
-        etOTroTipoCli.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable e) {
-                if (e.length() > 0) {
-                    Update("otro_tipo_vivienda", TBL_CLIENTE_IND_REN, e.toString());
-                } else
-                    Update("otro_tipo_vivienda", TBL_CLIENTE_IND_REN, "");
-            }
-        });
-        ibMapCli.setOnClickListener(ibMapCli_OnClick);
-        etCalleCli.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable e) {
-                if (e.length() > 0)
-                    UpdateDireccion("calle", e.toString(), direccionIdCli, "CLIENTE");
-                else
-                    UpdateDireccion("calle", "", direccionIdCli, "CLIENTE");
-            }
-        });
-        etNoExtCli.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable e) {
-                if (e.length() > 0)
-                    UpdateDireccion("num_exterior", e.toString(), direccionIdCli, "CLIENTE");
-                else
-                    UpdateDireccion("num_exterior", "", direccionIdCli, "CLIENTE");
-            }
-        });
-        etNoIntCli.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable e) {
-                if (e.length() > 0)
-                    UpdateDireccion("num_interior", e.toString(), direccionIdCli, "CLIENTE");
-                else
-                    UpdateDireccion("num_interior", "", direccionIdCli, "CLIENTE");
-            }
-        });
-        etManzanaCli.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable e) {
-                if (e.length() > 0)
-                    UpdateDireccion("manzana", e.toString(), direccionIdCli, "CLIENTE");
-                else
-                    UpdateDireccion("manzana", "", direccionIdCli, "CLIENTE");
-            }
-        });
-        etLoteCli.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable e) {
-                if (e.length() > 0)
-                    UpdateDireccion("lote", e.toString(), direccionIdCli, "CLIENTE");
-                else
-                    UpdateDireccion("lote", "", direccionIdCli, "CLIENTE");
-
-            }
-        });
-        etCpCli.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable e) {
-                if (e.length() == 5) {
-                    Cursor row = dBhelper.getDireccionByCP(e.toString());
-                    if (row.getCount() > 0) {
-                        UpdateDireccion("cp", e.toString(), direccionIdCli, "CLIENTE");
-                        row.moveToFirst();
-                        if (row.getCount() == 1) {
-                            UpdateDireccion("colonia", row.getString(7), direccionIdCli, "CLIENTE");
-                            UpdateDireccion("municipio", row.getString(4), direccionIdCli, "CLIENTE");
-                            UpdateDireccion("estado", row.getString(1), direccionIdCli, "CLIENTE");
-                            tvColoniaCli.setText(row.getString(7));
-                            tvMunicipioCli.setText(row.getString(4));
-                            tvEstadoCli.setText(row.getString(1));
-                        } else {
-                            if (tvColoniaCli.isEnabled() && tvColoniaCli.getText().toString().equals("")) {
-                                UpdateDireccion("colonia", "", direccionIdCli, "CLIENTE");
-                                tvColoniaCli.setText("");
-                            }
-
-                            UpdateDireccion("municipio", row.getString(4), direccionIdCli, "CLIENTE");
-                            UpdateDireccion("estado", row.getString(1), direccionIdCli, "CLIENTE");
-
-                            tvMunicipioCli.setText(row.getString(4));
-                            tvEstadoCli.setText(row.getString(1));
-                        }
+                } else {
+                    Update("curp", TBL_CLIENTE_IND_REN, s.toString().trim().toUpperCase());
+                    if (s.toString().trim().length() >= 10) {
+                        tvRfcCli.setText(Miscellaneous.GenerarRFC(s.toString().substring(0, 10), Miscellaneous.GetStr(etNombreCli), Miscellaneous.GetStr(etApPaternoCli), Miscellaneous.GetStr(etApMaternoCli)));
+                        Update("rfc", TBL_CLIENTE_IND_REN, Miscellaneous.GetStr(tvRfcCli));
                     } else {
-                        UpdateDireccion("cp", "", direccionIdCli, "CLIENTE");
-                        UpdateDireccion("colonia", "", direccionIdCli, "CLIENTE");
-                        UpdateDireccion("municipio", "", direccionIdCli, "CLIENTE");
-                        UpdateDireccion("estado", "", direccionIdCli, "CLIENTE");
-                        tvColoniaCli.setText(R.string.not_found);
-                        tvMunicipioCli.setText(R.string.not_found);
-                        tvEstadoCli.setText(R.string.not_found);
+                        tvRfcCli.setText("");
+                        Update("rfc", TBL_CLIENTE_IND_REN, Miscellaneous.GetStr(tvRfcCli));
                     }
-                    row.close();
+
+                }
+            } else {
+                tvRfcCli.setText("Rfc no válida");
+                Update("rfc", TBL_CLIENTE_IND_REN, "");
+                Update("curp", TBL_CLIENTE_IND_REN, "");
+            }
+        });
+
+
+        etNumIdentifCli.addTextChangedListener((TextWatcherAdapter) e -> {
+            if (e.length() > 0) {
+                Update("no_identificacion", TBL_CLIENTE_IND_REN, e.toString());
+            } else
+                Update("no_identificacion", TBL_CLIENTE_IND_REN, "");
+        });
+
+
+        etOTroTipoCli.addTextChangedListener((TextWatcherAdapter) e -> {
+            if (e.length() > 0) {
+                Update("otro_tipo_vivienda", TBL_CLIENTE_IND_REN, e.toString());
+            } else
+                Update("otro_tipo_vivienda", TBL_CLIENTE_IND_REN, "");
+        });
+
+        etCalleCli.addTextChangedListener((TextWatcherAdapter) e -> {
+            if (e.length() > 0)
+                UpdateDireccion("calle", e.toString(), direccionIdCli, "CLIENTE");
+            else
+                UpdateDireccion("calle", "", direccionIdCli, "CLIENTE");
+        });
+        etNoExtCli.addTextChangedListener((TextWatcherAdapter) e -> {
+            if (e.length() > 0)
+                UpdateDireccion("num_exterior", e.toString(), direccionIdCli, "CLIENTE");
+            else
+                UpdateDireccion("num_exterior", "", direccionIdCli, "CLIENTE");
+        });
+        etNoIntCli.addTextChangedListener((TextWatcherAdapter) e -> {
+            if (e.length() > 0)
+                UpdateDireccion("num_interior", e.toString(), direccionIdCli, "CLIENTE");
+            else
+                UpdateDireccion("num_interior", "", direccionIdCli, "CLIENTE");
+        });
+        etManzanaCli.addTextChangedListener((TextWatcherAdapter) e -> {
+            if (e.length() > 0)
+                UpdateDireccion("manzana", e.toString(), direccionIdCli, "CLIENTE");
+            else
+                UpdateDireccion("manzana", "", direccionIdCli, "CLIENTE");
+        });
+        etLoteCli.addTextChangedListener((TextWatcherAdapter) e -> {
+            if (e.length() > 0)
+                UpdateDireccion("lote", e.toString(), direccionIdCli, "CLIENTE");
+            else
+                UpdateDireccion("lote", "", direccionIdCli, "CLIENTE");
+
+        });
+        etCpCli.addTextChangedListener((TextWatcherAdapter) e -> {
+
+            if (e.length() == 5) {
+                Cursor row = dBhelper.getDireccionByCP(e.toString());
+                if (row.getCount() > 0) {
+                    UpdateDireccion("cp", e.toString(), direccionIdCli, "CLIENTE");
+                    row.moveToFirst();
+                    if (row.getCount() == 1) {
+                        UpdateDireccion("colonia", row.getString(7), direccionIdCli, "CLIENTE");
+                        UpdateDireccion("municipio", row.getString(4), direccionIdCli, "CLIENTE");
+                        UpdateDireccion("estado", row.getString(1), direccionIdCli, "CLIENTE");
+                        tvColoniaCli.setText(row.getString(7));
+                        tvMunicipioCli.setText(row.getString(4));
+                        tvEstadoCli.setText(row.getString(1));
+                    } else {
+                        if (tvColoniaCli.isEnabled() && tvColoniaCli.getText().toString().equals("")) {
+                            UpdateDireccion("colonia", "", direccionIdCli, "CLIENTE");
+                            tvColoniaCli.setText("");
+                        }
+
+                        UpdateDireccion("municipio", row.getString(4), direccionIdCli, "CLIENTE");
+                        UpdateDireccion("estado", row.getString(1), direccionIdCli, "CLIENTE");
+
+                        tvMunicipioCli.setText(row.getString(4));
+                        tvEstadoCli.setText(row.getString(1));
+                    }
                 } else {
                     UpdateDireccion("cp", "", direccionIdCli, "CLIENTE");
                     UpdateDireccion("colonia", "", direccionIdCli, "CLIENTE");
@@ -1841,460 +1728,215 @@ public class RenovacionCreditoInd extends AppCompatActivity implements dialog_pl
                     tvMunicipioCli.setText(R.string.not_found);
                     tvEstadoCli.setText(R.string.not_found);
                 }
+                row.close();
+            } else {
+                UpdateDireccion("cp", "", direccionIdCli, "CLIENTE");
+                UpdateDireccion("colonia", "", direccionIdCli, "CLIENTE");
+                UpdateDireccion("municipio", "", direccionIdCli, "CLIENTE");
+                UpdateDireccion("estado", "", direccionIdCli, "CLIENTE");
+                tvColoniaCli.setText(R.string.not_found);
+                tvMunicipioCli.setText(R.string.not_found);
+                tvEstadoCli.setText(R.string.not_found);
             }
         });
-        tvColoniaCli.setOnClickListener(etColonia_OnClick);
-        etCiudadCli.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable e) {
-                if (e.length() > 0)
-                    UpdateDireccion("ciudad", e.toString(), direccionIdCli, "CLIENTE");
-                else
-                    UpdateDireccion("ciudad", "", direccionIdCli, "CLIENTE");
-            }
+        etCiudadCli.addTextChangedListener((TextWatcherAdapter) e -> {
+            if (e.length() > 0)
+                UpdateDireccion("ciudad", e.toString(), direccionIdCli, "CLIENTE");
+            else
+                UpdateDireccion("ciudad", "", direccionIdCli, "CLIENTE");
         });
-        tvLocalidadCli.setOnClickListener(tvLocalidadCli_OnClick);
-        etTelCasaCli.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                if (s.length() > 0) {
-                    if (s.length() == 10) {
-                        etTelCasaCli.setError(null);
-                        Update("tel_casa", TBL_CLIENTE_IND_REN, Miscellaneous.GetStr(etTelCasaCli));
-                    } else {
-                        Update("tel_casa", TBL_CLIENTE_IND_REN, "");
-                        etTelCasaCli.setError(ctx.getResources().getString(R.string.mensaje_telefono));
-                    }
+        etTelCasaCli.addTextChangedListener((TextWatcherAdapter) s -> {
+            if (s.length() > 0) {
+                if (s.length() == 10) {
+                    etTelCasaCli.setError(null);
+                    Update("tel_casa", TBL_CLIENTE_IND_REN, Miscellaneous.GetStr(etTelCasaCli));
                 } else {
                     Update("tel_casa", TBL_CLIENTE_IND_REN, "");
-                    etTelCasaCli.setError(null);
+                    etTelCasaCli.setError(ctx.getResources().getString(R.string.mensaje_telefono));
                 }
+            } else {
+                Update("tel_casa", TBL_CLIENTE_IND_REN, "");
+                etTelCasaCli.setError(null);
             }
         });
-        etCelularCli.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable e) {
-                if (e.length() > 0) {
-                    if (e.length() == 10) {
-                        etCelularCli.setError(null);
-                        Update("tel_celular", TBL_CLIENTE_IND_REN, e.toString());
-                    } else {
-                        Update("tel_celular", TBL_CLIENTE_IND_REN, "");
-                        etCelularCli.setError(ctx.getResources().getString(R.string.mensaje_telefono));
-                    }
+        etCelularCli.addTextChangedListener((TextWatcherAdapter) e -> {
+            if (e.length() > 0) {
+                if (e.length() == 10) {
+                    etCelularCli.setError(null);
+                    Update("tel_celular", TBL_CLIENTE_IND_REN, e.toString());
                 } else {
                     Update("tel_celular", TBL_CLIENTE_IND_REN, "");
-                    etCelularCli.setError(null);
+                    etCelularCli.setError(ctx.getResources().getString(R.string.mensaje_telefono));
                 }
+            } else {
+                Update("tel_celular", TBL_CLIENTE_IND_REN, "");
+                etCelularCli.setError(null);
             }
         });
-        etTelMensCli.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable e) {
-                if (e.length() > 0) {
-                    if (e.length() == 10) {
-                        etTelMensCli.setError(null);
-                        Update("tel_mensajes", TBL_CLIENTE_IND_REN, e.toString());
-                    } else {
-                        Update("tel_mensajes", TBL_CLIENTE_IND_REN, "");
-                        etTelMensCli.setError(ctx.getResources().getString(R.string.mensaje_telefono));
-                    }
+        etTelMensCli.addTextChangedListener((TextWatcherAdapter) e -> {
+            if (e.length() > 0) {
+                if (e.length() == 10) {
+                    etTelMensCli.setError(null);
+                    Update("tel_mensajes", TBL_CLIENTE_IND_REN, e.toString());
                 } else {
                     Update("tel_mensajes", TBL_CLIENTE_IND_REN, "");
-                    etTelMensCli.setError(null);
+                    etTelMensCli.setError(ctx.getResources().getString(R.string.mensaje_telefono));
                 }
+            } else {
+                Update("tel_mensajes", TBL_CLIENTE_IND_REN, "");
+                etTelMensCli.setError(null);
             }
         });
-        etTelTrabajoCli.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable e) {
-                if (e.length() > 0) {
-                    if (e.length() == 10) {
-                        etTelTrabajoCli.setError(null);
-                        Update("tel_trabajo", TBL_CLIENTE_IND_REN, e.toString());
-                    } else {
-                        Update("tel_trabajo", TBL_CLIENTE_IND_REN, "");
-                        etTelTrabajoCli.setError(ctx.getResources().getString(R.string.mensaje_telefono));
-                    }
+        etTelTrabajoCli.addTextChangedListener((TextWatcherAdapter) e -> {
+            if (e.length() > 0) {
+                if (e.length() == 10) {
+                    etTelTrabajoCli.setError(null);
+                    Update("tel_trabajo", TBL_CLIENTE_IND_REN, e.toString());
                 } else {
                     Update("tel_trabajo", TBL_CLIENTE_IND_REN, "");
-                    etTelTrabajoCli.setError(null);
+                    etTelTrabajoCli.setError(ctx.getResources().getString(R.string.mensaje_telefono));
                 }
+            } else {
+                Update("tel_trabajo", TBL_CLIENTE_IND_REN, "");
+                etTelTrabajoCli.setError(null);
             }
         });
-        etTiempoSitio.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable e) {
-                if (!validator.validate(etTiempoSitio, new String[]{validator.REQUIRED, validator.ONLY_NUMBER, validator.YEARS})) {
-                    Update("tiempo_vivir_sitio", TBL_CLIENTE_IND_REN, e.toString());
-                } else {
-                    Update("tiempo_vivir_sitio", TBL_CLIENTE_IND_REN, "0");
-                }
+        etTiempoSitio.addTextChangedListener((TextWatcherAdapter) e -> {
+            if (!validator.validate(etTiempoSitio, new String[]{validator.REQUIRED, validator.ONLY_NUMBER, validator.YEARS})) {
+                Update("tiempo_vivir_sitio", TBL_CLIENTE_IND_REN, e.toString());
+            } else {
+                Update("tiempo_vivir_sitio", TBL_CLIENTE_IND_REN, "0");
             }
         });
-        tvDependientes.setOnClickListener(tvDependientes_OnClick);
-        tvEnteroNosotros.setOnClickListener(tvEnteroNosotros_OnClick);
-        tvEstadoCuenta.setOnClickListener(tvEstadoCuenta_OnClick);
-        tvEstudiosCli.setOnClickListener(tvEstudiosCli_OnClick);
-        etEmail.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
-            }
 
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable e) {
-                if (!validator.validate(etEmail, new String[]{validator.EMAIL})) {
-                    Update("email", TBL_CLIENTE_IND_REN, e.toString());
-                } else {
-                    Update("email", TBL_CLIENTE_IND_REN, "");
-                }
+        etEmail.addTextChangedListener((TextWatcherAdapter) e -> {
+            if (!validator.validate(etEmail, new String[]{validator.EMAIL})) {
+                Update("email", TBL_CLIENTE_IND_REN, e.toString());
+            } else {
+                Update("email", TBL_CLIENTE_IND_REN, "");
             }
         });
-        etReferenciCli.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable e) {
-                if (e.length() > 0)
-                    Update("ref_domiciliaria", TBL_CLIENTE_IND_REN, e.toString());
-                else
-                    Update("ref_domiciliaria", TBL_CLIENTE_IND_REN, "");
-            }
+        etReferenciCli.addTextChangedListener((TextWatcherAdapter) e -> {
+            if (e.length() > 0)
+                Update("ref_domiciliaria", TBL_CLIENTE_IND_REN, e.toString());
+            else
+                Update("ref_domiciliaria", TBL_CLIENTE_IND_REN, "");
         });
-        ibFotoFachCli.setOnClickListener(ibFotoFachCli_OnClick);
-        ibFirmaCli.setOnClickListener(ibFirmaCli_OnClick);
+
+
         //==================================  CONYUGE LISTENER  ====================================
         /**Evento click y escuchadores(editText o textView) en la seccion del conyuge para cambios al momento
          * en los escuchas de .addTextChangedListener se van actualizando las columnas al momento de hacer algun cambio*/
-        etNombreCony.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable e) {
-                if (e.length() > 0)
-                    Update("nombre", TBL_CONYUGE_IND_REN, e.toString());
-                else
-                    Update("nombre", TBL_CONYUGE_IND_REN, "");
-            }
+        etNombreCony.addTextChangedListener((TextWatcherAdapter) e -> {
+            if (e.length() > 0)
+                Update("nombre", TBL_CONYUGE_IND_REN, e.toString());
+            else
+                Update("nombre", TBL_CONYUGE_IND_REN, "");
         });
-        etApPaternoCony.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable e) {
-                if (e.length() > 0)
-                    Update("paterno", TBL_CONYUGE_IND_REN, e.toString());
-                else
-                    Update("paterno", TBL_CONYUGE_IND_REN, "");
-            }
+        etApPaternoCony.addTextChangedListener((TextWatcherAdapter) e -> {
+            if (e.length() > 0)
+                Update("paterno", TBL_CONYUGE_IND_REN, e.toString());
+            else
+                Update("paterno", TBL_CONYUGE_IND_REN, "");
         });
-        etApMaternoCony.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable e) {
-                if (e.length() > 0) {
-                    Update("materno", TBL_CONYUGE_IND_REN, e.toString());
-                } else
-                    Update("materno", TBL_CONYUGE_IND_REN, "");
-            }
+        etApMaternoCony.addTextChangedListener((TextWatcherAdapter) e -> {
+            if (e.length() > 0) {
+                Update("materno", TBL_CONYUGE_IND_REN, e.toString());
+            } else
+                Update("materno", TBL_CONYUGE_IND_REN, "");
         });
-        etNacionalidadCony.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable e) {
-                if (e.length() > 0) {
-                    Update("nacionalidad", TBL_CONYUGE_IND_REN, e.toString());
-                } else
-                    Update("nacionalidad", TBL_CONYUGE_IND_REN, "");
-            }
+        etNacionalidadCony.addTextChangedListener((TextWatcherAdapter) e -> {
+            if (e.length() > 0) {
+                Update("nacionalidad", TBL_CONYUGE_IND_REN, e.toString());
+            } else
+                Update("nacionalidad", TBL_CONYUGE_IND_REN, "");
         });
-        tvOcupacionCony.setOnClickListener(tvOcupacionConyuge_OnClick);
-        etCalleCony.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable e) {
-                if (e.length() > 0)
-                    UpdateDireccion("calle", e.toString().trim().toUpperCase(), direccionIdCony, "CONYUGE");
-                else
-                    UpdateDireccion("calle", "", direccionIdCony, "CONYUGE");
-            }
+        etCalleCony.addTextChangedListener((TextWatcherAdapter) e -> {
+            if (e.length() > 0)
+                UpdateDireccion("calle", e.toString().trim().toUpperCase(), direccionIdCony, "CONYUGE");
+            else
+                UpdateDireccion("calle", "", direccionIdCony, "CONYUGE");
         });
-        etNoExtCony.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable e) {
-                if (e.length() > 0)
-                    UpdateDireccion("num_exterior", e.toString().trim().toUpperCase(), direccionIdCony, "CONYUGE");
-                else
-                    UpdateDireccion("num_exterior", "", direccionIdCony, "CONYUGE");
-            }
+        etNoExtCony.addTextChangedListener((TextWatcherAdapter) e -> {
+            if (e.length() > 0)
+                UpdateDireccion("num_exterior", e.toString().trim().toUpperCase(), direccionIdCony, "CONYUGE");
+            else
+                UpdateDireccion("num_exterior", "", direccionIdCony, "CONYUGE");
         });
-        etNoIntCony.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable e) {
-                if (e.length() > 0)
-                    UpdateDireccion("num_interior", e.toString().trim().toUpperCase(), direccionIdCony, "CONYUGE");
-                else
-                    UpdateDireccion("num_interior", "", direccionIdCony, "CONYUGE");
-            }
+        etNoIntCony.addTextChangedListener((TextWatcherAdapter) e -> {
+            if (e.length() > 0)
+                UpdateDireccion("num_interior", e.toString().trim().toUpperCase(), direccionIdCony, "CONYUGE");
+            else
+                UpdateDireccion("num_interior", "", direccionIdCony, "CONYUGE");
         });
-        etManzanaCony.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable e) {
-                if (e.length() > 0)
-                    UpdateDireccion("manzana", e.toString().trim().toUpperCase(), direccionIdCony, "CONYUGE");
-                else
-                    UpdateDireccion("manzana", "", direccionIdCony, "CONYUGE");
-            }
+        etManzanaCony.addTextChangedListener((TextWatcherAdapter) e -> {
+            if (e.length() > 0)
+                UpdateDireccion("manzana", e.toString().trim().toUpperCase(), direccionIdCony, "CONYUGE");
+            else
+                UpdateDireccion("manzana", "", direccionIdCony, "CONYUGE");
         });
-        etLoteCony.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable e) {
-                if (e.length() > 0)
-                    UpdateDireccion("lote", e.toString().trim().toUpperCase(), direccionIdCony, "CONYUGE");
-                else
-                    UpdateDireccion("lote", "", direccionIdCony, "CONYUGE");
-            }
+        etLoteCony.addTextChangedListener((TextWatcherAdapter) e -> {
+            if (e.length() > 0)
+                UpdateDireccion("lote", e.toString().trim().toUpperCase(), direccionIdCony, "CONYUGE");
+            else
+                UpdateDireccion("lote", "", direccionIdCony, "CONYUGE");
         });
-        etCpCony.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                if (s.length() == 5) {
-                    Cursor row = dBhelper.getDireccionByCP(s.toString());
-                    if (row.getCount() > 0) {
-                        UpdateDireccion("cp", s.toString(), direccionIdCony, "CONYUGE");
-                        row.moveToFirst();
-                        if (row.getCount() == 1) {
-                            UpdateDireccion("colonia", row.getString(7), direccionIdCony, "CONYUGE");
-                            UpdateDireccion("municipio", row.getString(4), direccionIdCony, "CONYUGE");
-                            UpdateDireccion("estado", row.getString(1), direccionIdCony, "CONYUGE");
-                            tvColoniaCony.setText(row.getString(7));
-                            tvMunicipioCony.setText(row.getString(4));
-                            tvEstadoCony.setText(row.getString(1));
-                        } else {
-                            if (tvColoniaCony.isEnabled() && tvColoniaCony.getText().toString().equals("")) {
-                                UpdateDireccion("colonia", "", direccionIdCony, "CONYUGE");
-                                tvColoniaCony.setText("");
-                            }
-
-                            UpdateDireccion("municipio", row.getString(4), direccionIdCony, "CONYUGE");
-                            UpdateDireccion("estado", row.getString(1), direccionIdCony, "CONYUGE");
-
-                            tvMunicipioCony.setText(row.getString(4));
-                            tvEstadoCony.setText(row.getString(1));
-                        }
+        etCpCony.addTextChangedListener((TextWatcherAdapter) s -> {
+            if (s.length() == 5) {
+                Cursor row = dBhelper.getDireccionByCP(s.toString());
+                if (row.getCount() > 0) {
+                    UpdateDireccion("cp", s.toString(), direccionIdCony, "CONYUGE");
+                    row.moveToFirst();
+                    if (row.getCount() == 1) {
+                        UpdateDireccion("colonia", row.getString(7), direccionIdCony, "CONYUGE");
+                        UpdateDireccion("municipio", row.getString(4), direccionIdCony, "CONYUGE");
+                        UpdateDireccion("estado", row.getString(1), direccionIdCony, "CONYUGE");
+                        tvColoniaCony.setText(row.getString(7));
+                        tvMunicipioCony.setText(row.getString(4));
+                        tvEstadoCony.setText(row.getString(1));
                     } else {
-                        UpdateDireccion("cp", "", direccionIdCony, "CONYUGE");
-                        UpdateDireccion("colonia", "", direccionIdCony, "CONYUGE");
-                        UpdateDireccion("municipio", "", direccionIdCony, "CONYUGE");
-                        UpdateDireccion("estado", "", direccionIdCony, "CONYUGE");
-                        tvColoniaCony.setText(R.string.not_found);
-                        tvMunicipioCony.setText(R.string.not_found);
-                        tvEstadoCony.setText(R.string.not_found);
+                        if (tvColoniaCony.isEnabled() && tvColoniaCony.getText().toString().equals("")) {
+                            UpdateDireccion("colonia", "", direccionIdCony, "CONYUGE");
+                            tvColoniaCony.setText("");
+                        }
+
+                        UpdateDireccion("municipio", row.getString(4), direccionIdCony, "CONYUGE");
+                        UpdateDireccion("estado", row.getString(1), direccionIdCony, "CONYUGE");
+
+                        tvMunicipioCony.setText(row.getString(4));
+                        tvEstadoCony.setText(row.getString(1));
                     }
-                    row.close();
                 } else {
                     UpdateDireccion("cp", "", direccionIdCony, "CONYUGE");
                     UpdateDireccion("colonia", "", direccionIdCony, "CONYUGE");
+                    UpdateDireccion("municipio", "", direccionIdCony, "CONYUGE");
+                    UpdateDireccion("estado", "", direccionIdCony, "CONYUGE");
                     tvColoniaCony.setText(R.string.not_found);
                     tvMunicipioCony.setText(R.string.not_found);
                     tvEstadoCony.setText(R.string.not_found);
                 }
+                row.close();
+            } else {
+                UpdateDireccion("cp", "", direccionIdCony, "CONYUGE");
+                UpdateDireccion("colonia", "", direccionIdCony, "CONYUGE");
+                tvColoniaCony.setText(R.string.not_found);
+                tvMunicipioCony.setText(R.string.not_found);
+                tvEstadoCony.setText(R.string.not_found);
             }
         });
-        tvColoniaCony.setOnClickListener(tvColoniaCony_OnClick);
-        etCiudadCony.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable e) {
-                if (e.length() > 0)
-                    UpdateDireccion("ciudad", e.toString().trim().toUpperCase(), direccionIdCony, "CONYUGE");
-                else
-                    UpdateDireccion("ciudad", "", direccionIdCony, "CONYUGE");
-            }
+        etCiudadCony.addTextChangedListener((TextWatcherAdapter) e -> {
+            if (e.length() > 0)
+                UpdateDireccion("ciudad", e.toString().trim().toUpperCase(), direccionIdCony, "CONYUGE");
+            else
+                UpdateDireccion("ciudad", "", direccionIdCony, "CONYUGE");
         });
-        tvLocalidadCony.setOnClickListener(tvLocalidadCony_OnClick);
-        etIngMenCony.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
-            }
-
+        etIngMenCony.addTextChangedListener(new TextWatcherAdapter() {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 if (s.toString().contains(String.valueOf(df.getDecimalFormatSymbols().getDecimalSeparator()))) {
@@ -2341,12 +1983,7 @@ public class RenovacionCreditoInd extends AppCompatActivity implements dialog_pl
                 etIngMenCony.addTextChangedListener(this);
             }
         });
-        etGastoMenCony.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
+        etGastoMenCony.addTextChangedListener(new TextWatcherAdapter() {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 if (s.toString().contains(String.valueOf(df.getDecimalFormatSymbols().getDecimalSeparator()))) {
@@ -2393,363 +2030,150 @@ public class RenovacionCreditoInd extends AppCompatActivity implements dialog_pl
                 etGastoMenCony.addTextChangedListener(this);
             }
         });
-        etCasaCony.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                if (s.length() > 0) {
-                    if (s.length() == 10) {
-                        Update("tel_casa", TBL_CONYUGE_IND_REN, s.toString());
-                        etCasaCony.setError(null);
-                    } else {
-                        Update("tel_casa", TBL_CONYUGE_IND_REN, "");
-                        etCasaCony.setError(ctx.getResources().getString(R.string.mensaje_telefono));
-                    }
+        etCasaCony.addTextChangedListener((TextWatcherAdapter) s -> {
+            if (s.length() > 0) {
+                if (s.length() == 10) {
+                    Update("tel_casa", TBL_CONYUGE_IND_REN, s.toString());
+                    etCasaCony.setError(null);
                 } else {
                     Update("tel_casa", TBL_CONYUGE_IND_REN, "");
-                    etCasaCony.setError(null);
+                    etCasaCony.setError(ctx.getResources().getString(R.string.mensaje_telefono));
                 }
+            } else {
+                Update("tel_casa", TBL_CONYUGE_IND_REN, "");
+                etCasaCony.setError(null);
             }
         });
-        etCelularCony.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                if (s.length() > 0) {
-                    if (s.length() == 10) {
-                        etCelularCony.setError(null);
-                        Update("tel_celular", TBL_CONYUGE_IND_REN, s.toString());
-                    } else {
-                        Update("tel_celular", TBL_CONYUGE_IND_REN, "");
-                        etCelularCony.setError(ctx.getResources().getString(R.string.mensaje_telefono));
-                    }
+        etCelularCony.addTextChangedListener((TextWatcherAdapter) s -> {
+            if (s.length() > 0) {
+                if (s.length() == 10) {
+                    etCelularCony.setError(null);
+                    Update("tel_celular", TBL_CONYUGE_IND_REN, s.toString());
                 } else {
                     Update("tel_celular", TBL_CONYUGE_IND_REN, "");
-                    etCelularCony.setError(null);
+                    etCelularCony.setError(ctx.getResources().getString(R.string.mensaje_telefono));
                 }
+            } else {
+                Update("tel_celular", TBL_CONYUGE_IND_REN, "");
+                etCelularCony.setError(null);
             }
         });
         //===============================  ECONOMICOS LISTENER  ====================================
         /**Evento click y escuchadores(editText o textView) en la seccion de datos economicos para cambios al momento
          * en los escuchas de .addTextChangedListener se van actualizando las columnas al momento de hacer algun cambio*/
-        etPropiedadesEco.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable e) {
-                if (e.length() > 0)
-                    Update("propiedades", TBL_ECONOMICOS_IND_REN, e.toString());
-                else
-                    Update("propiedades", TBL_ECONOMICOS_IND_REN, "");
-            }
+        etPropiedadesEco.addTextChangedListener((TextWatcherAdapter) e -> {
+            if (e.length() > 0)
+                Update("propiedades", TBL_ECONOMICOS_IND_REN, e.toString());
+            else
+                Update("propiedades", TBL_ECONOMICOS_IND_REN, "");
         });
-        etValorAproxEco.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable e) {
-                if (e.length() > 0)
-                    Update("valor_aproximado", TBL_ECONOMICOS_IND_REN, e.toString());
-                else
-                    Update("valor_aproximado", TBL_ECONOMICOS_IND_REN, "");
-            }
+        etValorAproxEco.addTextChangedListener((TextWatcherAdapter) e -> {
+            if (e.length() > 0)
+                Update("valor_aproximado", TBL_ECONOMICOS_IND_REN, e.toString());
+            else
+                Update("valor_aproximado", TBL_ECONOMICOS_IND_REN, "");
         });
-        etUbicacionEco.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable e) {
-                if (e.length() > 0)
-                    Update("ubicacion", TBL_ECONOMICOS_IND_REN, e.toString());
-                else
-                    Update("ubicacion", TBL_ECONOMICOS_IND_REN, "");
-            }
+        etUbicacionEco.addTextChangedListener((TextWatcherAdapter) e -> {
+            if (e.length() > 0)
+                Update("ubicacion", TBL_ECONOMICOS_IND_REN, e.toString());
+            else
+                Update("ubicacion", TBL_ECONOMICOS_IND_REN, "");
         });
         //==============================  BENEFICIARIO LISTENER ======================================
-        txtNombreBeneficiario.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-                if (editable.length() > 0) {
-                    Update("nombre", TBL_DATOS_BENEFICIARIO_REN, editable.toString().trim().toUpperCase());
-                } else
-                    Update("nombre", TBL_DATOS_BENEFICIARIO_REN, " ");
-            }
+        txtNombreBeneficiario.addTextChangedListener((TextWatcherAdapter) editable -> {
+            String beneficiarioNombre = editable.toString().trim().toUpperCase();
+            Beneficiario beneficiario = new Beneficiario();
+            beneficiario.setId(beneficiarioId);
+            beneficiario.setNombre(beneficiarioNombre);
+            dBhelper.getBeneficiariosDao().update(beneficiario);
         });
-        txtApellidoPaterno.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-                if (editable.length() > 0) {
-                    Update("paterno", TBL_DATOS_BENEFICIARIO_REN, editable.toString().trim().toUpperCase());
-                } else
-                    Update("paterno", TBL_DATOS_BENEFICIARIO_REN, " ");
-            }
+        txtApellidoPaterno.addTextChangedListener((TextWatcherAdapter) editable -> {
+            String beneficiarioApellidoPaterno = editable.toString().trim().toUpperCase();
+            Beneficiario beneficiario = new Beneficiario();
+            beneficiario.setId(beneficiarioId);
+            beneficiario.setPaterno(beneficiarioApellidoPaterno);
+            dBhelper.getBeneficiariosDao().update(beneficiario);
         });
-        txtApellidoMaterno.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-                if (editable.length() > 0) {
-                    Update("materno", TBL_DATOS_BENEFICIARIO_REN, editable.toString().trim().toUpperCase());
-                } else
-                    Update("materno", TBL_DATOS_BENEFICIARIO_REN, " ");
-            }
+        txtApellidoMaterno.addTextChangedListener((TextWatcherAdapter) editable -> {
+            String beneficiarioApellidoMaterno = editable.toString().trim().toUpperCase();
+            Beneficiario beneficiario = new Beneficiario();
+            beneficiario.setId(beneficiarioId);
+            beneficiario.setMaterno(beneficiarioApellidoMaterno);
+            dBhelper.getBeneficiariosDao().update(beneficiario);
         });
-        txtParentescoBeneficiario.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-                if (editable.length() > 0) {
-                    Update("parentesco", TBL_DATOS_BENEFICIARIO_REN, editable.toString().trim().toUpperCase());
-                } else
-                    Update("parentesco", TBL_DATOS_BENEFICIARIO_REN, " ");
-            }
+        txtParentescoBeneficiario.addTextChangedListener((TextWatcherAdapter) editable -> {
+            String beneficiarioParentesco = editable.toString().trim().toUpperCase();
+            Beneficiario beneficiario = new Beneficiario();
+            beneficiario.setId(beneficiarioId);
+            beneficiario.setParentesco(beneficiarioParentesco);
+            dBhelper.getBeneficiariosDao().update(beneficiario);
         });
-        txtParentescoBeneficiario.setOnClickListener(txtParentescoBen_OnClick);
+
         //==================================  NEGOCIO LISTENER  ====================================
         /**Evento click y escuchadores(editText o textView) en la seccion del negocio para cambios al momento
          * en los escuchas de .addTextChangedListener se van actualizando las columnas al momento de hacer algun cambio*/
-        etNombreNeg.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable e) {
-                if (e.length() > 0)
-                    Update("nombre", TBL_NEGOCIO_IND_REN, e.toString());
-                else
-                    Update("nombre", TBL_NEGOCIO_IND_REN, "");
-            }
+        etNombreNeg.addTextChangedListener((TextWatcherAdapter) e -> {
+            if (e.length() > 0)
+                Update("nombre", TBL_NEGOCIO_IND_REN, e.toString());
+            else
+                Update("nombre", TBL_NEGOCIO_IND_REN, "");
         });
-        ibMapNeg.setOnClickListener(ibMapNeg_OnClick);
-        etCalleNeg.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable e) {
-                if (e.length() > 0)
-                    UpdateDireccion("calle", e.toString(), direccionIdNeg, "NEGOCIO");
-                else
-                    UpdateDireccion("calle", "", direccionIdNeg, "NEGOCIO");
-            }
+        etCalleNeg.addTextChangedListener((TextWatcherAdapter) e -> {
+            if (e.length() > 0)
+                UpdateDireccion("calle", e.toString(), direccionIdNeg, "NEGOCIO");
+            else
+                UpdateDireccion("calle", "", direccionIdNeg, "NEGOCIO");
         });
-        etNoExtNeg.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable e) {
-                if (e.length() > 0)
-                    UpdateDireccion("num_exterior", e.toString(), direccionIdNeg, "NEGOCIO");
-                else
-                    UpdateDireccion("num_exterior", "", direccionIdNeg, "NEGOCIO");
-            }
+        etNoExtNeg.addTextChangedListener((TextWatcherAdapter) e -> {
+            if (e.length() > 0)
+                UpdateDireccion("num_exterior", e.toString(), direccionIdNeg, "NEGOCIO");
+            else
+                UpdateDireccion("num_exterior", "", direccionIdNeg, "NEGOCIO");
         });
-        etNoIntNeg.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable e) {
-                if (e.length() > 0)
-                    UpdateDireccion("num_interior", e.toString(), direccionIdNeg, "NEGOCIO");
-                else
-                    UpdateDireccion("num_interior", "", direccionIdNeg, "NEGOCIO");
-            }
+        etNoIntNeg.addTextChangedListener((TextWatcherAdapter) e -> {
+            if (e.length() > 0)
+                UpdateDireccion("num_interior", e.toString(), direccionIdNeg, "NEGOCIO");
+            else
+                UpdateDireccion("num_interior", "", direccionIdNeg, "NEGOCIO");
         });
-        etManzanaNeg.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable e) {
-                if (e.length() > 0)
-                    UpdateDireccion("manzana", e.toString(), direccionIdNeg, "NEGOCIO");
-                else
-                    UpdateDireccion("manzana", "", direccionIdNeg, "NEGOCIO");
-            }
+        etManzanaNeg.addTextChangedListener((TextWatcherAdapter) e -> {
+            if (e.length() > 0)
+                UpdateDireccion("manzana", e.toString(), direccionIdNeg, "NEGOCIO");
+            else
+                UpdateDireccion("manzana", "", direccionIdNeg, "NEGOCIO");
         });
-        etLoteNeg.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable e) {
-                if (e.length() > 0)
-                    UpdateDireccion("lote", e.toString(), direccionIdNeg, "NEGOCIO");
-                else
-                    UpdateDireccion("lote", "", direccionIdNeg, "NEGOCIO");
-            }
+        etLoteNeg.addTextChangedListener((TextWatcherAdapter) e -> {
+            if (e.length() > 0)
+                UpdateDireccion("lote", e.toString(), direccionIdNeg, "NEGOCIO");
+            else
+                UpdateDireccion("lote", "", direccionIdNeg, "NEGOCIO");
         });
-        etCpNeg.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable e) {
-                if (e.length() == 5) {
-                    Cursor row = dBhelper.getDireccionByCP(e.toString());
-                    if (row.getCount() > 0) {
-                        UpdateDireccion("cp", e.toString(), direccionIdNeg, "NEGOCIO");
-                        row.moveToFirst();
-                        if (row.getCount() == 1) {
-                            UpdateDireccion("colonia", row.getString(7), direccionIdNeg, "NEGOCIO");
-                            UpdateDireccion("municipio", row.getString(4), direccionIdNeg, "NEGOCIO");
-                            UpdateDireccion("estado", row.getString(1), direccionIdNeg, "NEGOCIO");
-                            tvColoniaNeg.setText(row.getString(7));
-                            tvMunicipioNeg.setText(row.getString(4));
-                            tvEstadoNeg.setText(row.getString(1));
-                        } else {
-                            if (tvColoniaNeg.isEnabled() && tvColoniaNeg.getText().toString().equals("")) {
-                                UpdateDireccion("colonia", "", direccionIdNeg, "NEGOCIO");
-                                tvColoniaNeg.setText("");
-                            }
-
-                            UpdateDireccion("municipio", row.getString(4), direccionIdNeg, "NEGOCIO");
-                            UpdateDireccion("estado", row.getString(1), direccionIdNeg, "NEGOCIO");
-
-                            tvMunicipioNeg.setText(row.getString(4));
-                            tvEstadoNeg.setText(row.getString(1));
-                        }
+        etCpNeg.addTextChangedListener((TextWatcherAdapter) e -> {
+            if (e.length() == 5) {
+                Cursor row = dBhelper.getDireccionByCP(e.toString());
+                if (row.getCount() > 0) {
+                    UpdateDireccion("cp", e.toString(), direccionIdNeg, "NEGOCIO");
+                    row.moveToFirst();
+                    if (row.getCount() == 1) {
+                        UpdateDireccion("colonia", row.getString(7), direccionIdNeg, "NEGOCIO");
+                        UpdateDireccion("municipio", row.getString(4), direccionIdNeg, "NEGOCIO");
+                        UpdateDireccion("estado", row.getString(1), direccionIdNeg, "NEGOCIO");
+                        tvColoniaNeg.setText(row.getString(7));
+                        tvMunicipioNeg.setText(row.getString(4));
+                        tvEstadoNeg.setText(row.getString(1));
                     } else {
-                        UpdateDireccion("colonia", "", direccionIdNeg, "NEGOCIO");
-                        UpdateDireccion("municipio", "", direccionIdNeg, "NEGOCIO");
-                        UpdateDireccion("estado", "", direccionIdNeg, "NEGOCIO");
-                        tvColoniaNeg.setText(R.string.not_found);
-                        tvMunicipioNeg.setText(R.string.not_found);
-                        tvEstadoNeg.setText(R.string.not_found);
+                        if (tvColoniaNeg.isEnabled() && tvColoniaNeg.getText().toString().equals("")) {
+                            UpdateDireccion("colonia", "", direccionIdNeg, "NEGOCIO");
+                            tvColoniaNeg.setText("");
+                        }
+
+                        UpdateDireccion("municipio", row.getString(4), direccionIdNeg, "NEGOCIO");
+                        UpdateDireccion("estado", row.getString(1), direccionIdNeg, "NEGOCIO");
+
+                        tvMunicipioNeg.setText(row.getString(4));
+                        tvEstadoNeg.setText(row.getString(1));
                     }
-                    row.close();
                 } else {
                     UpdateDireccion("colonia", "", direccionIdNeg, "NEGOCIO");
                     UpdateDireccion("municipio", "", direccionIdNeg, "NEGOCIO");
@@ -2758,79 +2182,43 @@ public class RenovacionCreditoInd extends AppCompatActivity implements dialog_pl
                     tvMunicipioNeg.setText(R.string.not_found);
                     tvEstadoNeg.setText(R.string.not_found);
                 }
+                row.close();
+            } else {
+                UpdateDireccion("colonia", "", direccionIdNeg, "NEGOCIO");
+                UpdateDireccion("municipio", "", direccionIdNeg, "NEGOCIO");
+                UpdateDireccion("estado", "", direccionIdNeg, "NEGOCIO");
+                tvColoniaNeg.setText(R.string.not_found);
+                tvMunicipioNeg.setText(R.string.not_found);
+                tvEstadoNeg.setText(R.string.not_found);
             }
         });
-        tvColoniaNeg.setOnClickListener(etColoniaNeg_OnClick);
-        etCiudadNeg.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable e) {
-                if (e.length() > 0)
-                    UpdateDireccion("ciudad", e.toString().trim().toUpperCase(), direccionIdNeg, "NEGOCIO");
-                else
-                    UpdateDireccion("ciudad", "", direccionIdNeg, "NEGOCIO");
-            }
+        etCiudadNeg.addTextChangedListener((TextWatcherAdapter) e -> {
+            if (e.length() > 0)
+                UpdateDireccion("ciudad", e.toString().trim().toUpperCase(), direccionIdNeg, "NEGOCIO");
+            else
+                UpdateDireccion("ciudad", "", direccionIdNeg, "NEGOCIO");
         });
-        tvLocalidadNeg.setOnClickListener(tvLocalidadNeg_OnClick);
-        tvActEcoEspNeg.setOnClickListener(tvActEcoEspNeg_OnClick);
-        tvDestinoNeg.setOnClickListener(tvDestinoNeg_OnClick);
-        etOtroDestinoNeg.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
-            }
 
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                if (s.length() > 0)
-                    Update("otro_destino", TBL_NEGOCIO_IND_REN, s.toString().trim().toUpperCase());
-                else
-                    Update("otro_destino", TBL_NEGOCIO_IND_REN, "");
-            }
+        etOtroDestinoNeg.addTextChangedListener((TextWatcherAdapter) s -> {
+            if (s.length() > 0)
+                Update("otro_destino", TBL_NEGOCIO_IND_REN, s.toString().trim().toUpperCase());
+            else
+                Update("otro_destino", TBL_NEGOCIO_IND_REN, "");
         });
-        etAntiguedadNeg.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable e) {
-                if (e.length() > 0) {
-                    if (Integer.parseInt(Miscellaneous.GetStr(etAntiguedadNeg)) > 0) {
-                        Update("antiguedad", TBL_NEGOCIO_IND_REN, e.toString());
-                    } else {
-                        Update("antiguedad", TBL_NEGOCIO_IND_REN, "0");
-                        etAntiguedadNeg.setError("No se permiten cantidades iguales a cero");
-                    }
-                } else
+        etAntiguedadNeg.addTextChangedListener((TextWatcherAdapter) e -> {
+            if (e.length() > 0) {
+                if (Integer.parseInt(Miscellaneous.GetStr(etAntiguedadNeg)) > 0) {
+                    Update("antiguedad", TBL_NEGOCIO_IND_REN, e.toString());
+                } else {
                     Update("antiguedad", TBL_NEGOCIO_IND_REN, "0");
-            }
+                    etAntiguedadNeg.setError("No se permiten cantidades iguales a cero");
+                }
+            } else
+                Update("antiguedad", TBL_NEGOCIO_IND_REN, "0");
         });
-        etIngMenNeg.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
+        etIngMenNeg.addTextChangedListener(new TextWatcherAdapter() {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
@@ -2881,12 +2269,7 @@ public class RenovacionCreditoInd extends AppCompatActivity implements dialog_pl
                 etIngMenNeg.addTextChangedListener(this);
             }
         });
-        etOtrosIngNeg.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
+        etOtrosIngNeg.addTextChangedListener(new TextWatcherAdapter() {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 if (s.toString().contains(String.valueOf(df.getDecimalFormatSymbols().getDecimalSeparator()))) {
@@ -2934,7 +2317,7 @@ public class RenovacionCreditoInd extends AppCompatActivity implements dialog_pl
                 etOtrosIngNeg.addTextChangedListener(this);
             }
         });
-        etGastosMenNeg.addTextChangedListener(new TextWatcher() {
+        etGastosMenNeg.addTextChangedListener(new TextWatcherAdapter() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
                 if (s.toString().contains(String.valueOf(df.getDecimalFormatSymbols().getDecimalSeparator()))) {
@@ -2942,11 +2325,6 @@ public class RenovacionCreditoInd extends AppCompatActivity implements dialog_pl
                 } else {
                     hasFractionalPart = false;
                 }
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-
             }
 
             @Override
@@ -2988,12 +2366,7 @@ public class RenovacionCreditoInd extends AppCompatActivity implements dialog_pl
                 etGastosMenNeg.addTextChangedListener(this);
             }
         });
-        etGastosAguaNeg.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
+        etGastosAguaNeg.addTextChangedListener(new TextWatcherAdapter() {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 if (s.toString().contains(String.valueOf(df.getDecimalFormatSymbols().getDecimalSeparator()))) {
@@ -3041,12 +2414,7 @@ public class RenovacionCreditoInd extends AppCompatActivity implements dialog_pl
                 etGastosAguaNeg.addTextChangedListener(this);
             }
         });
-        etGastosLuzNeg.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
+        etGastosLuzNeg.addTextChangedListener(new TextWatcherAdapter() {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 if (s.toString().contains(String.valueOf(df.getDecimalFormatSymbols().getDecimalSeparator()))) {
@@ -3094,11 +2462,7 @@ public class RenovacionCreditoInd extends AppCompatActivity implements dialog_pl
                 etGastosLuzNeg.addTextChangedListener(this);
             }
         });
-        etGastosTelNeg.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
+        etGastosTelNeg.addTextChangedListener(new TextWatcherAdapter() {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
@@ -3147,11 +2511,7 @@ public class RenovacionCreditoInd extends AppCompatActivity implements dialog_pl
                 etGastosTelNeg.addTextChangedListener(this);
             }
         });
-        etGastosRentaNeg.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
+        etGastosRentaNeg.addTextChangedListener(new TextWatcherAdapter() {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
@@ -3200,12 +2560,7 @@ public class RenovacionCreditoInd extends AppCompatActivity implements dialog_pl
                 etGastosRentaNeg.addTextChangedListener(this);
             }
         });
-        etGastosOtrosNeg.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
+        etGastosOtrosNeg.addTextChangedListener(new TextWatcherAdapter() {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 if (s.toString().contains(String.valueOf(df.getDecimalFormatSymbols().getDecimalSeparator()))) {
@@ -3253,27 +2608,14 @@ public class RenovacionCreditoInd extends AppCompatActivity implements dialog_pl
                 etGastosOtrosNeg.addTextChangedListener(this);
             }
         });
-        tvMediosPagoNeg.setOnClickListener(tvMediosPagoNeg_OnClick);
-        etOtroMedioPagoNeg.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable e) {
-                if (e.length() > 0)
-                    Update("otro_medio_pago", TBL_NEGOCIO_IND_REN, e.toString().trim().toUpperCase());
-                else
-                    Update("otro_medio_pago", TBL_NEGOCIO_IND_REN, "");
-            }
+        etOtroMedioPagoNeg.addTextChangedListener((TextWatcherAdapter) e -> {
+            if (e.length() > 0)
+                Update("otro_medio_pago", TBL_NEGOCIO_IND_REN, e.toString().trim().toUpperCase());
+            else
+                Update("otro_medio_pago", TBL_NEGOCIO_IND_REN, "");
         });
-        etCapacidadPagoNeg.addTextChangedListener(new TextWatcher() {
+        etCapacidadPagoNeg.addTextChangedListener(new TextWatcherAdapter() {
             @Override
             public void beforeTextChanged(CharSequence s, int i, int i1, int i2) {
                 if (s.toString().contains(String.valueOf(df.getDecimalFormatSymbols().getDecimalSeparator()))) {
@@ -3281,11 +2623,6 @@ public class RenovacionCreditoInd extends AppCompatActivity implements dialog_pl
                 } else {
                     hasFractionalPart = false;
                 }
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
             }
 
             @Override
@@ -3339,428 +2676,237 @@ public class RenovacionCreditoInd extends AppCompatActivity implements dialog_pl
                 etCapacidadPagoNeg.addTextChangedListener(this);
             }
         });
-        /*etNumOperacionEfectNeg.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
-            }
 
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable e) {
-                if (e.length() > 0)
-                    try {
-                        if (Integer.parseInt(e.toString()) > 0)
-                            Update("num_operacion_efectivo", TBL_NEGOCIO_IND_REN, e.toString().trim().toUpperCase());
-
-                    } catch (NumberFormatException exception) {
-                        Update("num_operacion_efectivo", TBL_NEGOCIO_IND_REN, "0");
-                    }
-
-                else
-                    Update("num_operacion_efectivo", TBL_NEGOCIO_IND_REN, "0");
-            }
-        });*/
-        tvNumOperacionNeg.setOnClickListener(tvNumOperacionNeg_OnClick);
-        etNumOperacionEfectNeg.setOnClickListener(etNumOperacionEfectNeg_OnClick);
-        tvDiasVentaNeg.setOnClickListener(etDiasVenta_OnClick);
-        ibFotoFachNeg.setOnClickListener(ibFotoFachNeg_OnClick);
-        etReferenciNeg.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable e) {
-                if (e.length() > 0)
-                    Update("ref_domiciliaria", TBL_NEGOCIO_IND_REN, e.toString());
-                else
-                    Update("ref_domiciliaria", TBL_NEGOCIO_IND_REN, "");
-            }
+        etReferenciNeg.addTextChangedListener((TextWatcherAdapter) e -> {
+            if (e.length() > 0)
+                Update("ref_domiciliaria", TBL_NEGOCIO_IND_REN, e.toString());
+            else
+                Update("ref_domiciliaria", TBL_NEGOCIO_IND_REN, "");
         });
-        cbNegEnDomCli.setOnClickListener(cbNegEnDomCli_OnCheck);
+
         //====================================  AVAL LISTENER  =====================================
         /**Evento click y escuchadores(editText o textView) en la seccion del aval para cambios al momento
          * en los escuchas de .addTextChangedListener se van actualizando las columnas al momento de hacer algun cambio*/
-        etNombreAval.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+        etNombreAval.addTextChangedListener((TextWatcherAdapter) e -> {
+            HashMap<Integer, String> params = new HashMap<>();
+            if (e.length() > 0) {
+                Update("nombre", TBL_AVAL_IND_REN, e.toString().trim().toUpperCase());
+                params.put(0, e.toString());
+                params.put(1, Miscellaneous.GetStr(etApPaternoAval));
+                params.put(2, Miscellaneous.GetStr(etApMaternoAval));
+                params.put(3, Miscellaneous.GetStr(tvFechaNacCli));
 
-            }
+                if (rgGeneroAval.getCheckedRadioButtonId() == R.id.rbHombre)
+                    params.put(4, "Hombre");
+                else if (rgGeneroAval.getCheckedRadioButtonId() == R.id.rbMujer)
+                    params.put(4, "Mujer");
+                else
+                    params.put(4, "");
 
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (!Miscellaneous.GetStr(tvEstadoNacAval).isEmpty())
+                    params.put(5, Miscellaneous.GetStr(tvEstadoNacAval));
+                else
+                    params.put(5, "");
+                etCurpAval.setText(Miscellaneous.GenerarCurp(params));
+            } else {
+                Update("nombre", TBL_AVAL_IND_REN, "");
+                params.put(0, "");
+                params.put(1, Miscellaneous.GetStr(etApPaternoAval));
+                params.put(2, Miscellaneous.GetStr(etApMaternoAval));
+                params.put(3, Miscellaneous.GetStr(tvFechaNacAval));
 
-            }
+                if (rgGeneroAval.getCheckedRadioButtonId() == R.id.rbHombre)
+                    params.put(4, "Hombre");
+                else if (rgGeneroAval.getCheckedRadioButtonId() == R.id.rbMujer)
+                    params.put(4, "Mujer");
+                else
+                    params.put(4, "");
 
-            @Override
-            public void afterTextChanged(Editable e) {
-                HashMap<Integer, String> params = new HashMap<>();
-                if (e.length() > 0) {
-                    Update("nombre", TBL_AVAL_IND_REN, e.toString().trim().toUpperCase());
-                    params.put(0, e.toString());
-                    params.put(1, Miscellaneous.GetStr(etApPaternoAval));
-                    params.put(2, Miscellaneous.GetStr(etApMaternoAval));
-                    params.put(3, Miscellaneous.GetStr(tvFechaNacCli));
-
-                    if (rgGeneroAval.getCheckedRadioButtonId() == R.id.rbHombre)
-                        params.put(4, "Hombre");
-                    else if (rgGeneroAval.getCheckedRadioButtonId() == R.id.rbMujer)
-                        params.put(4, "Mujer");
-                    else
-                        params.put(4, "");
-
-                    if (!Miscellaneous.GetStr(tvEstadoNacAval).isEmpty())
-                        params.put(5, Miscellaneous.GetStr(tvEstadoNacAval));
-                    else
-                        params.put(5, "");
-                    etCurpAval.setText(Miscellaneous.GenerarCurp(params));
-                } else {
-                    Update("nombre", TBL_AVAL_IND_REN, "");
-                    params.put(0, "");
-                    params.put(1, Miscellaneous.GetStr(etApPaternoAval));
-                    params.put(2, Miscellaneous.GetStr(etApMaternoAval));
-                    params.put(3, Miscellaneous.GetStr(tvFechaNacAval));
-
-                    if (rgGeneroAval.getCheckedRadioButtonId() == R.id.rbHombre)
-                        params.put(4, "Hombre");
-                    else if (rgGeneroAval.getCheckedRadioButtonId() == R.id.rbMujer)
-                        params.put(4, "Mujer");
-                    else
-                        params.put(4, "");
-
-                    if (!Miscellaneous.GetStr(tvEstadoNacAval).isEmpty())
-                        params.put(5, Miscellaneous.GetStr(tvEstadoNacAval));
-                    else
-                        params.put(5, "");
-                    etCurpAval.setText(Miscellaneous.GenerarCurp(params));
-                }
+                if (!Miscellaneous.GetStr(tvEstadoNacAval).isEmpty())
+                    params.put(5, Miscellaneous.GetStr(tvEstadoNacAval));
+                else
+                    params.put(5, "");
+                etCurpAval.setText(Miscellaneous.GenerarCurp(params));
             }
         });
-        etApPaternoAval.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+        etApPaternoAval.addTextChangedListener((TextWatcherAdapter) e -> {
+            HashMap<Integer, String> params = new HashMap<>();
+            if (e.length() > 0) {
+                Update("paterno", TBL_AVAL_IND_REN, e.toString().toUpperCase());
+                params.put(0, Miscellaneous.GetStr(etNombreAval));
+                params.put(1, e.toString());
+                params.put(2, Miscellaneous.GetStr(etApMaternoAval));
+                params.put(3, Miscellaneous.GetStr(tvFechaNacAval));
 
-            }
+                if (rgGeneroAval.getCheckedRadioButtonId() == R.id.rbHombre)
+                    params.put(4, "Hombre");
+                else if (rgGeneroAval.getCheckedRadioButtonId() == R.id.rbMujer)
+                    params.put(4, "Mujer");
+                else
+                    params.put(4, "");
 
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (!Miscellaneous.GetStr(tvEstadoNacAval).isEmpty())
+                    params.put(5, Miscellaneous.GetStr(tvEstadoNacAval));
+                else
+                    params.put(5, "");
+                etCurpAval.setText(Miscellaneous.GenerarCurp(params));
+            } else {
+                Update("paterno", TBL_AVAL_IND_REN, "");
+                params.put(0, Miscellaneous.GetStr(etNombreAval));
+                params.put(1, "");
+                params.put(2, Miscellaneous.GetStr(etApMaternoAval));
+                params.put(3, Miscellaneous.GetStr(tvFechaNacAval));
 
-            }
+                if (rgGeneroAval.getCheckedRadioButtonId() == R.id.rbHombre)
+                    params.put(4, "Hombre");
+                else if (rgGeneroAval.getCheckedRadioButtonId() == R.id.rbMujer)
+                    params.put(4, "Mujer");
+                else
+                    params.put(4, "");
 
-            @Override
-            public void afterTextChanged(Editable e) {
-                HashMap<Integer, String> params = new HashMap<>();
-                if (e.length() > 0) {
-                    Update("paterno", TBL_AVAL_IND_REN, e.toString().toUpperCase());
-                    params.put(0, Miscellaneous.GetStr(etNombreAval));
-                    params.put(1, e.toString());
-                    params.put(2, Miscellaneous.GetStr(etApMaternoAval));
-                    params.put(3, Miscellaneous.GetStr(tvFechaNacAval));
-
-                    if (rgGeneroAval.getCheckedRadioButtonId() == R.id.rbHombre)
-                        params.put(4, "Hombre");
-                    else if (rgGeneroAval.getCheckedRadioButtonId() == R.id.rbMujer)
-                        params.put(4, "Mujer");
-                    else
-                        params.put(4, "");
-
-                    if (!Miscellaneous.GetStr(tvEstadoNacAval).isEmpty())
-                        params.put(5, Miscellaneous.GetStr(tvEstadoNacAval));
-                    else
-                        params.put(5, "");
-                    etCurpAval.setText(Miscellaneous.GenerarCurp(params));
-                } else {
-                    Update("paterno", TBL_AVAL_IND_REN, "");
-                    params.put(0, Miscellaneous.GetStr(etNombreAval));
-                    params.put(1, "");
-                    params.put(2, Miscellaneous.GetStr(etApMaternoAval));
-                    params.put(3, Miscellaneous.GetStr(tvFechaNacAval));
-
-                    if (rgGeneroAval.getCheckedRadioButtonId() == R.id.rbHombre)
-                        params.put(4, "Hombre");
-                    else if (rgGeneroAval.getCheckedRadioButtonId() == R.id.rbMujer)
-                        params.put(4, "Mujer");
-                    else
-                        params.put(4, "");
-
-                    if (!Miscellaneous.GetStr(tvEstadoNacAval).isEmpty())
-                        params.put(5, Miscellaneous.GetStr(tvEstadoNacAval));
-                    else
-                        params.put(5, "");
-                    etCurpAval.setText(Miscellaneous.GenerarCurp(params));
-                }
-            }
-        });
-        etApMaternoAval.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable e) {
-                HashMap<Integer, String> params = new HashMap<>();
-                if (e.length() > 0) {
-                    Update("materno", TBL_AVAL_IND_REN, e.toString());
-                    params.put(0, Miscellaneous.GetStr(etNombreAval));
-                    params.put(1, Miscellaneous.GetStr(etApPaternoAval));
-                    params.put(2, e.toString());
-                    params.put(3, Miscellaneous.GetStr(tvFechaNacAval));
-
-                    if (rgGeneroAval.getCheckedRadioButtonId() == R.id.rbHombre)
-                        params.put(4, "Hombre");
-                    else if (rgGeneroAval.getCheckedRadioButtonId() == R.id.rbMujer)
-                        params.put(4, "Mujer");
-                    else
-                        params.put(4, "");
-
-                    if (!Miscellaneous.GetStr(tvEstadoNacAval).isEmpty())
-                        params.put(5, Miscellaneous.GetStr(tvEstadoNacAval));
-                    else
-                        params.put(5, "");
-                    etCurpAval.setText(Miscellaneous.GenerarCurp(params));
-                } else {
-                    Update("materno", TBL_AVAL_IND_REN, "");
-                    params.put(0, Miscellaneous.GetStr(etNombreAval));
-                    params.put(1, Miscellaneous.GetStr(etApPaternoAval));
-                    params.put(2, "");
-                    params.put(3, Miscellaneous.GetStr(tvFechaNacAval));
-
-                    if (rgGeneroAval.getCheckedRadioButtonId() == R.id.rbHombre)
-                        params.put(4, "Hombre");
-                    else if (rgGeneroAval.getCheckedRadioButtonId() == R.id.rbMujer)
-                        params.put(4, "Mujer");
-                    else
-                        params.put(4, "");
-
-                    if (!Miscellaneous.GetStr(tvEstadoNacAval).isEmpty())
-                        params.put(5, Miscellaneous.GetStr(tvEstadoNacAval));
-                    else
-                        params.put(5, "");
-                    etCurpAval.setText(Miscellaneous.GenerarCurp(params));
-                }
+                if (!Miscellaneous.GetStr(tvEstadoNacAval).isEmpty())
+                    params.put(5, Miscellaneous.GetStr(tvEstadoNacAval));
+                else
+                    params.put(5, "");
+                etCurpAval.setText(Miscellaneous.GenerarCurp(params));
             }
         });
 
-        etCurpAval.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+        etApMaternoAval.addTextChangedListener((TextWatcherAdapter) e -> {
+            HashMap<Integer, String> params = new HashMap<>();
+            if (e.length() > 0) {
+                Update("materno", TBL_AVAL_IND_REN, e.toString());
+                params.put(0, Miscellaneous.GetStr(etNombreAval));
+                params.put(1, Miscellaneous.GetStr(etApPaternoAval));
+                params.put(2, e.toString());
+                params.put(3, Miscellaneous.GetStr(tvFechaNacAval));
 
+                if (rgGeneroAval.getCheckedRadioButtonId() == R.id.rbHombre)
+                    params.put(4, "Hombre");
+                else if (rgGeneroAval.getCheckedRadioButtonId() == R.id.rbMujer)
+                    params.put(4, "Mujer");
+                else
+                    params.put(4, "");
+
+                if (!Miscellaneous.GetStr(tvEstadoNacAval).isEmpty())
+                    params.put(5, Miscellaneous.GetStr(tvEstadoNacAval));
+                else
+                    params.put(5, "");
+                etCurpAval.setText(Miscellaneous.GenerarCurp(params));
+            } else {
+                Update("materno", TBL_AVAL_IND_REN, "");
+                params.put(0, Miscellaneous.GetStr(etNombreAval));
+                params.put(1, Miscellaneous.GetStr(etApPaternoAval));
+                params.put(2, "");
+                params.put(3, Miscellaneous.GetStr(tvFechaNacAval));
+
+                if (rgGeneroAval.getCheckedRadioButtonId() == R.id.rbHombre)
+                    params.put(4, "Hombre");
+                else if (rgGeneroAval.getCheckedRadioButtonId() == R.id.rbMujer)
+                    params.put(4, "Mujer");
+                else
+                    params.put(4, "");
+
+                if (!Miscellaneous.GetStr(tvEstadoNacAval).isEmpty())
+                    params.put(5, Miscellaneous.GetStr(tvEstadoNacAval));
+                else
+                    params.put(5, "");
+                etCurpAval.setText(Miscellaneous.GenerarCurp(params));
             }
 
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
+        });
 
-            }
-
-            @Override
-            public void afterTextChanged(Editable e) {
-                if (e.length() > 0) {
-                    if (e.toString().contains("Curp no válida")) {
-                        tvRfcAval.setText("Rfc no válida");
-                        Update("rfc", TBL_AVAL_IND_REN, "");
-                        Update("curp", TBL_AVAL_IND_REN, "");
-                    } else {
-                        Update("curp", TBL_AVAL_IND_REN, e.toString().trim().toUpperCase());
-                        if (e.toString().length() >= 10) {
-                            tvRfcAval.setText(Miscellaneous.GenerarRFC(e.toString().substring(0, 10), Miscellaneous.GetStr(etNombreAval), Miscellaneous.GetStr(etApPaternoAval), Miscellaneous.GetStr(etApMaternoAval)));
-
-                            Update("rfc", TBL_AVAL_IND_REN, Miscellaneous.GetStr(tvRfcAval));
-                        } else {
-                            tvRfcAval.setText("");
-
-                            Update("rfc", TBL_AVAL_IND_REN, Miscellaneous.GetStr(tvRfcAval));
-                        }
-
-                    }
-
-                } else {
+        etCurpAval.addTextChangedListener((TextWatcherAdapter) e -> {
+            if (e.length() > 0) {
+                if (e.toString().contains("Curp no válida")) {
+                    tvRfcAval.setText("Rfc no válida");
                     Update("rfc", TBL_AVAL_IND_REN, "");
                     Update("curp", TBL_AVAL_IND_REN, "");
-                    tvRfcAval.setText("Rfc no válida");
-                }
-            }
-        });
-        tvParentescoAval.setOnClickListener(tvParentescoAval_OnClick);
-        tvTipoIdentificacionAval.setOnClickListener(tvTipoIdentificacionAval_OnClick);
-        etNumIdentifAval.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                } else {
+                    Update("curp", TBL_AVAL_IND_REN, e.toString().trim().toUpperCase());
+                    if (e.toString().length() >= 10) {
+                        tvRfcAval.setText(Miscellaneous.GenerarRFC(e.toString().substring(0, 10), Miscellaneous.GetStr(etNombreAval), Miscellaneous.GetStr(etApPaternoAval), Miscellaneous.GetStr(etApMaternoAval)));
 
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable e) {
-                if (e.length() > 0)
-                    Update("no_identificacion", TBL_AVAL_IND_REN, e.toString());
-                else
-                    Update("no_identificacion", TBL_AVAL_IND_REN, "");
-            }
-        });
-        tvOcupacionAval.setOnClickListener(tvOcupacionAval_OnClick);
-        ibMapAval.setOnClickListener(ibMapAval_OnClick);
-        etCalleAval.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable e) {
-                if (e.length() > 0)
-                    UpdateDireccion("calle", e.toString().trim().toUpperCase(), direccionIdAval, "AVAL");
-                else
-                    UpdateDireccion("calle", "", direccionIdAval, "AVAL");
-            }
-        });
-        etNoExtAval.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable e) {
-                if (e.length() > 0)
-                    UpdateDireccion("num_exterior", e.toString(), direccionIdAval, "AVAL");
-                else
-                    UpdateDireccion("num_exterior", "", direccionIdAval, "AVAL");
-            }
-        });
-        etNoIntAval.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable e) {
-                if (e.length() > 0)
-                    UpdateDireccion("num_interior", e.toString(), direccionIdAval, "AVAL");
-                else
-                    UpdateDireccion("num_interior", "", direccionIdAval, "AVAL");
-            }
-        });
-        etManzanaAval.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable e) {
-                if (e.length() > 0)
-                    UpdateDireccion("manzana", e.toString().trim().toUpperCase(), direccionIdAval, "AVAL");
-                else
-                    UpdateDireccion("manzana", "", direccionIdAval, "AVAL");
-            }
-        });
-        etLoteAval.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable e) {
-                if (e.length() > 0)
-                    UpdateDireccion("lote", e.toString().trim().toUpperCase(), direccionIdAval, "AVAL");
-                else
-                    UpdateDireccion("lote", "", direccionIdAval, "AVAL");
-            }
-        });
-        etCpAval.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable e) {
-                if (e.length() == 5) {
-                    Cursor row = dBhelper.getDireccionByCP(e.toString());
-                    if (row.getCount() > 0) {
-                        UpdateDireccion("cp", e.toString(), direccionIdAval, "AVAL");
-                        row.moveToFirst();
-                        if (row.getCount() == 1) {
-                            UpdateDireccion("colonia", row.getString(7), direccionIdAval, "AVAL");
-                            UpdateDireccion("municipio", row.getString(4), direccionIdAval, "AVAL");
-                            UpdateDireccion("estado", row.getString(1), direccionIdAval, "AVAL");
-                            tvColoniaAval.setText(row.getString(7));
-                            tvMunicipioAval.setText(row.getString(4));
-                            tvEstadoAval.setText(row.getString(1));
-                        } else {
-                            if (tvColoniaAval.isEnabled() && tvColoniaAval.getText().toString().equals("")) {
-                                UpdateDireccion("colonia", "", direccionIdAval, "AVAL");
-                                tvColoniaAval.setText("");
-                            }
-
-                            UpdateDireccion("municipio", row.getString(4), direccionIdAval, "AVAL");
-                            UpdateDireccion("estado", row.getString(1), direccionIdAval, "AVAL");
-                            tvMunicipioAval.setText(row.getString(4));
-                            tvEstadoAval.setText(row.getString(1));
-                        }
+                        Update("rfc", TBL_AVAL_IND_REN, Miscellaneous.GetStr(tvRfcAval));
                     } else {
-                        UpdateDireccion("cp", "", direccionIdAval, "AVAL");
-                        UpdateDireccion("colonia", "", direccionIdAval, "AVAL");
-                        UpdateDireccion("municipio", "", direccionIdAval, "AVAL");
-                        UpdateDireccion("estado", "", direccionIdAval, "AVAL");
-                        tvColoniaAval.setText(R.string.not_found);
-                        tvMunicipioAval.setText(R.string.not_found);
-                        tvEstadoAval.setText(R.string.not_found);
+                        tvRfcAval.setText("");
+
+                        Update("rfc", TBL_AVAL_IND_REN, Miscellaneous.GetStr(tvRfcAval));
                     }
-                    row.close();
+
+                }
+
+            } else {
+                Update("rfc", TBL_AVAL_IND_REN, "");
+                Update("curp", TBL_AVAL_IND_REN, "");
+                tvRfcAval.setText("Rfc no válida");
+            }
+        });
+
+
+        etNumIdentifAval.addTextChangedListener((TextWatcherAdapter) e -> {
+            if (e.length() > 0)
+                Update("no_identificacion", TBL_AVAL_IND_REN, e.toString());
+            else
+                Update("no_identificacion", TBL_AVAL_IND_REN, "");
+        });
+
+
+        etCalleAval.addTextChangedListener((TextWatcherAdapter) e -> {
+            if (e.length() > 0)
+                UpdateDireccion("calle", e.toString().trim().toUpperCase(), direccionIdAval, "AVAL");
+            else
+                UpdateDireccion("calle", "", direccionIdAval, "AVAL");
+        });
+        etNoExtAval.addTextChangedListener((TextWatcherAdapter) e -> {
+            if (e.length() > 0)
+                UpdateDireccion("num_exterior", e.toString(), direccionIdAval, "AVAL");
+            else
+                UpdateDireccion("num_exterior", "", direccionIdAval, "AVAL");
+        });
+        etNoIntAval.addTextChangedListener((TextWatcherAdapter) e -> {
+            if (e.length() > 0)
+                UpdateDireccion("num_interior", e.toString(), direccionIdAval, "AVAL");
+            else
+                UpdateDireccion("num_interior", "", direccionIdAval, "AVAL");
+        });
+        etManzanaAval.addTextChangedListener((TextWatcherAdapter) e -> {
+            if (e.length() > 0)
+                UpdateDireccion("manzana", e.toString().trim().toUpperCase(), direccionIdAval, "AVAL");
+            else
+                UpdateDireccion("manzana", "", direccionIdAval, "AVAL");
+        });
+        etLoteAval.addTextChangedListener((TextWatcherAdapter) e -> {
+            if (e.length() > 0)
+                UpdateDireccion("lote", e.toString().trim().toUpperCase(), direccionIdAval, "AVAL");
+            else
+                UpdateDireccion("lote", "", direccionIdAval, "AVAL");
+        });
+        etCpAval.addTextChangedListener((TextWatcherAdapter) e -> {
+            if (e.length() == 5) {
+                Cursor row = dBhelper.getDireccionByCP(e.toString());
+                if (row.getCount() > 0) {
+                    UpdateDireccion("cp", e.toString(), direccionIdAval, "AVAL");
+                    row.moveToFirst();
+                    if (row.getCount() == 1) {
+                        UpdateDireccion("colonia", row.getString(7), direccionIdAval, "AVAL");
+                        UpdateDireccion("municipio", row.getString(4), direccionIdAval, "AVAL");
+                        UpdateDireccion("estado", row.getString(1), direccionIdAval, "AVAL");
+                        tvColoniaAval.setText(row.getString(7));
+                        tvMunicipioAval.setText(row.getString(4));
+                        tvEstadoAval.setText(row.getString(1));
+                    } else {
+                        if (tvColoniaAval.isEnabled() && tvColoniaAval.getText().toString().equals("")) {
+                            UpdateDireccion("colonia", "", direccionIdAval, "AVAL");
+                            tvColoniaAval.setText("");
+                        }
+
+                        UpdateDireccion("municipio", row.getString(4), direccionIdAval, "AVAL");
+                        UpdateDireccion("estado", row.getString(1), direccionIdAval, "AVAL");
+                        tvMunicipioAval.setText(row.getString(4));
+                        tvEstadoAval.setText(row.getString(1));
+                    }
                 } else {
                     UpdateDireccion("cp", "", direccionIdAval, "AVAL");
                     UpdateDireccion("colonia", "", direccionIdAval, "AVAL");
@@ -3770,116 +2916,55 @@ public class RenovacionCreditoInd extends AppCompatActivity implements dialog_pl
                     tvMunicipioAval.setText(R.string.not_found);
                     tvEstadoAval.setText(R.string.not_found);
                 }
+                row.close();
+            } else {
+                UpdateDireccion("cp", "", direccionIdAval, "AVAL");
+                UpdateDireccion("colonia", "", direccionIdAval, "AVAL");
+                UpdateDireccion("municipio", "", direccionIdAval, "AVAL");
+                UpdateDireccion("estado", "", direccionIdAval, "AVAL");
+                tvColoniaAval.setText(R.string.not_found);
+                tvMunicipioAval.setText(R.string.not_found);
+                tvEstadoAval.setText(R.string.not_found);
             }
         });
-        tvColoniaAval.setOnClickListener(tvColoniaAval_OnClick);
-        etCiudadAval.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
-            }
+        etCiudadAval.addTextChangedListener((TextWatcherAdapter) e -> {
+            if (e.length() > 0)
+                UpdateDireccion("ciudad", e.toString().trim().toUpperCase(), direccionIdAval, "AVAL");
+            else
+                UpdateDireccion("ciudad", "", direccionIdAval, "AVAL");
+        });
 
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
-            }
+        etNombreTitularAval.addTextChangedListener((TextWatcherAdapter) e -> {
+            if (e.length() > 0)
+                Update("nombre_titular", TBL_AVAL_IND_REN, e.toString().trim().toUpperCase());
+            else
+                Update("nombre_titular", TBL_AVAL_IND_REN, "");
+        });
+        etCaracteristicasAval.addTextChangedListener((TextWatcherAdapter) e -> {
+            if (e.length() > 0)
+                Update("caracteristicas_domicilio", TBL_AVAL_IND_REN, e.toString().trim().toUpperCase());
+            else
+                Update("caracteristicas_domicilio", TBL_AVAL_IND_REN, "");
+        });
+        etNombreNegocioAval.addTextChangedListener((TextWatcherAdapter) e -> {
+            if (e.length() > 0)
+                Update("nombre_negocio", TBL_AVAL_IND_REN, e.toString().trim().toUpperCase());
+            else
+                Update("nombre_negocio", TBL_AVAL_IND_REN, "");
 
-            @Override
-            public void afterTextChanged(Editable e) {
-                if (e.length() > 0)
-                    UpdateDireccion("ciudad", e.toString().trim().toUpperCase(), direccionIdAval, "AVAL");
+        });
+        etAntiguedadAval.addTextChangedListener((TextWatcherAdapter) e -> {
+            if (e.length() > 0) {
+                if (Integer.parseInt(e.toString().trim()) > 0)
+                    Update("antigueda", TBL_AVAL_IND_REN, e.toString().trim());
                 else
-                    UpdateDireccion("ciudad", "", direccionIdAval, "AVAL");
-            }
-        });
-        tvLocalidadAval.setOnClickListener(tvLocalidadAval_OnClick);
-        tvTipoCasaAval.setOnClickListener(tvTipoCasaAval_OnClick);
-        tvFamiliarAval.setOnClickListener(tvFamiliarAval_OnClick);
-        etNombreTitularAval.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable e) {
-                if (e.length() > 0)
-                    Update("nombre_titular", TBL_AVAL_IND_REN, e.toString().trim().toUpperCase());
-                else
-                    Update("nombre_titular", TBL_AVAL_IND_REN, "");
-            }
-        });
-        etCaracteristicasAval.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable e) {
-                if (e.length() > 0)
-                    Update("caracteristicas_domicilio", TBL_AVAL_IND_REN, e.toString().trim().toUpperCase());
-                else
-                    Update("caracteristicas_domicilio", TBL_AVAL_IND_REN, "");
-            }
-        });
-        etNombreNegocioAval.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable e) {
-                if (e.length() > 0)
-                    Update("nombre_negocio", TBL_AVAL_IND_REN, e.toString().trim().toUpperCase());
-                else
-                    Update("nombre_negocio", TBL_AVAL_IND_REN, "");
-
-            }
-        });
-        etAntiguedadAval.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable e) {
-                if (e.length() > 0) {
-                    if (Integer.parseInt(e.toString().trim()) > 0)
-                        Update("antigueda", TBL_AVAL_IND_REN, e.toString().trim());
-                    else
-                        Update("antigueda", TBL_AVAL_IND_REN, "0");
-                } else
                     Update("antigueda", TBL_AVAL_IND_REN, "0");
-            }
+            } else
+                Update("antigueda", TBL_AVAL_IND_REN, "0");
         });
-        etIngMenAval.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
+        etIngMenAval.addTextChangedListener(new TextWatcherAdapter() {
 
             @Override
             public void onTextChanged(CharSequence s, int i, int i1, int i2) {
@@ -3930,12 +3015,7 @@ public class RenovacionCreditoInd extends AppCompatActivity implements dialog_pl
                 etIngMenAval.addTextChangedListener(this);
             }
         });
-        etIngOtrosAval.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
+        etIngOtrosAval.addTextChangedListener(new TextWatcherAdapter() {
             @Override
             public void onTextChanged(CharSequence s, int i, int i1, int i2) {
                 if (s.toString().contains(String.valueOf(df.getDecimalFormatSymbols().getDecimalSeparator()))) {
@@ -3984,11 +3064,7 @@ public class RenovacionCreditoInd extends AppCompatActivity implements dialog_pl
                 etIngOtrosAval.addTextChangedListener(this);
             }
         });
-        etGastosSemAval.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
+        etGastosSemAval.addTextChangedListener(new TextWatcherAdapter() {
 
             @Override
             public void onTextChanged(CharSequence s, int i, int i1, int i2) {
@@ -4039,12 +3115,7 @@ public class RenovacionCreditoInd extends AppCompatActivity implements dialog_pl
                 etGastosSemAval.addTextChangedListener(this);
             }
         });
-        etGastosAguaAval.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
+        etGastosAguaAval.addTextChangedListener(new TextWatcherAdapter() {
             @Override
             public void onTextChanged(CharSequence s, int i, int i1, int i2) {
                 if (s.toString().contains(String.valueOf(df.getDecimalFormatSymbols().getDecimalSeparator()))) {
@@ -4093,12 +3164,7 @@ public class RenovacionCreditoInd extends AppCompatActivity implements dialog_pl
                 etGastosAguaAval.addTextChangedListener(this);
             }
         });
-        etGastosLuzAval.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
+        etGastosLuzAval.addTextChangedListener(new TextWatcherAdapter() {
             @Override
             public void onTextChanged(CharSequence s, int i, int i1, int i2) {
                 if (s.toString().contains(String.valueOf(df.getDecimalFormatSymbols().getDecimalSeparator()))) {
@@ -4147,12 +3213,7 @@ public class RenovacionCreditoInd extends AppCompatActivity implements dialog_pl
                 etGastosLuzAval.addTextChangedListener(this);
             }
         });
-        etGastosTelAval.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
+        etGastosTelAval.addTextChangedListener(new TextWatcherAdapter() {
             @Override
             public void onTextChanged(CharSequence s, int i, int i1, int i2) {
                 if (s.toString().contains(String.valueOf(df.getDecimalFormatSymbols().getDecimalSeparator()))) {
@@ -4201,11 +3262,7 @@ public class RenovacionCreditoInd extends AppCompatActivity implements dialog_pl
                 etGastosTelAval.addTextChangedListener(this);
             }
         });
-        etGastosRentaAval.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
+        etGastosRentaAval.addTextChangedListener(new TextWatcherAdapter() {
 
             @Override
             public void onTextChanged(CharSequence s, int i, int i1, int i2) {
@@ -4255,11 +3312,7 @@ public class RenovacionCreditoInd extends AppCompatActivity implements dialog_pl
                 etGastosRentaAval.addTextChangedListener(this);
             }
         });
-        etGastosOtrosAval.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
+        etGastosOtrosAval.addTextChangedListener(new TextWatcherAdapter() {
 
             @Override
             public void onTextChanged(CharSequence s, int i, int i1, int i2) {
@@ -4309,32 +3362,14 @@ public class RenovacionCreditoInd extends AppCompatActivity implements dialog_pl
                 etGastosOtrosAval.addTextChangedListener(this);
             }
         });
-        tvMediosPagoAval.setOnClickListener(tvMediosPagoAval_OnClick);
-        etOtroMedioPagoAval.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable e) {
-                if (e.length() > 0)
-                    Update("otro_medio_pago", TBL_AVAL_IND_REN, e.toString().trim().toUpperCase());
-                else
-                    Update("otro_medio_pago", TBL_AVAL_IND_REN, "");
-            }
+        etOtroMedioPagoAval.addTextChangedListener((TextWatcherAdapter) e -> {
+            if (e.length() > 0)
+                Update("otro_medio_pago", TBL_AVAL_IND_REN, e.toString().trim().toUpperCase());
+            else
+                Update("otro_medio_pago", TBL_AVAL_IND_REN, "");
         });
-        etCapacidadPagoAval.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
+        etCapacidadPagoAval.addTextChangedListener(new TextWatcherAdapter() {
             @Override
             public void onTextChanged(CharSequence s, int i, int i1, int i2) {
                 if (s.toString().contains(String.valueOf(df.getDecimalFormatSymbols().getDecimalSeparator()))) {
@@ -4395,361 +3430,158 @@ public class RenovacionCreditoInd extends AppCompatActivity implements dialog_pl
                 etCapacidadPagoAval.addTextChangedListener(this);
             }
         });
-        tvHoraLocAval.setOnClickListener(tvHoraLocAval_OnClick);
-        tvActivosObservables.setOnClickListener(tvActivosObservables_OnClick);
-        etTelCasaAval.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
-            }
 
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable e) {
-                if (e.length() > 0) {
-                    if (e.length() == 10) {
-                        etTelCasaAval.setError(null);
-                        Update("tel_casa", TBL_AVAL_IND_REN, e.toString().trim());
-                    } else {
-                        Update("tel_casa", TBL_AVAL_IND_REN, "");
-                        etTelCasaAval.setError(ctx.getResources().getString(R.string.mensaje_telefono));
-                    }
-                } else {
-                    Update("tel_casa", TBL_AVAL_IND_REN, "");
+        etTelCasaAval.addTextChangedListener((TextWatcherAdapter) e -> {
+            if (e.length() > 0) {
+                if (e.length() == 10) {
                     etTelCasaAval.setError(null);
-                }
-            }
-        });
-        etCelularAval.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable e) {
-                if (e.length() > 0) {
-                    if (e.length() == 10) {
-                        etCelularAval.setError(null);
-                        Update("tel_celular", TBL_AVAL_IND_REN, e.toString().trim());
-                    } else {
-                        Update("tel_casa", TBL_AVAL_IND_REN, "");
-                        etCelularAval.setError(ctx.getResources().getString(R.string.mensaje_telefono));
-                    }
+                    Update("tel_casa", TBL_AVAL_IND_REN, e.toString().trim());
                 } else {
                     Update("tel_casa", TBL_AVAL_IND_REN, "");
-                    etCelularAval.setError(null);
+                    etTelCasaAval.setError(ctx.getResources().getString(R.string.mensaje_telefono));
                 }
+            } else {
+                Update("tel_casa", TBL_AVAL_IND_REN, "");
+                etTelCasaAval.setError(null);
             }
         });
-        etTelMensAval.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
+        etCelularAval.addTextChangedListener((TextWatcherAdapter) e -> {
+            if (e.length() > 0) {
+                if (e.length() == 10) {
+                    etCelularAval.setError(null);
+                    Update("tel_celular", TBL_AVAL_IND_REN, e.toString().trim());
+                } else {
+                    Update("tel_casa", TBL_AVAL_IND_REN, "");
+                    etCelularAval.setError(ctx.getResources().getString(R.string.mensaje_telefono));
+                }
+            } else {
+                Update("tel_casa", TBL_AVAL_IND_REN, "");
+                etCelularAval.setError(null);
             }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable e) {
-                if (e.length() > 0) {
-                    if (e.length() == 10) {
-                        etTelMensAval.setError(null);
-                        Update("tel_mensajes", TBL_AVAL_IND_REN, e.toString());
-                    } else {
-                        Update("tel_mensajes", TBL_AVAL_IND_REN, "");
-                        etTelMensAval.setError(ctx.getResources().getString(R.string.mensaje_telefono));
-                    }
+        });
+        etTelMensAval.addTextChangedListener((TextWatcherAdapter) e -> {
+            if (e.length() > 0) {
+                if (e.length() == 10) {
+                    etTelMensAval.setError(null);
+                    Update("tel_mensajes", TBL_AVAL_IND_REN, e.toString());
                 } else {
                     Update("tel_mensajes", TBL_AVAL_IND_REN, "");
-                    etTelMensAval.setError(null);
+                    etTelMensAval.setError(ctx.getResources().getString(R.string.mensaje_telefono));
                 }
+            } else {
+                Update("tel_mensajes", TBL_AVAL_IND_REN, "");
+                etTelMensAval.setError(null);
             }
         });
-        etTelTrabajoAval.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable e) {
-                if (e.length() > 0) {
-                    if (e.length() == 10) {
-                        etTelTrabajoAval.setError(null);
-                        Update("tel_trabajo", TBL_AVAL_IND_REN, e.toString());
-                    } else {
-                        Update("tel_trabajo", TBL_AVAL_IND_REN, "");
-                        etTelTrabajoAval.setError(ctx.getResources().getString(R.string.mensaje_telefono));
-                    }
+        etTelTrabajoAval.addTextChangedListener((TextWatcherAdapter) e -> {
+            if (e.length() > 0) {
+                if (e.length() == 10) {
+                    etTelTrabajoAval.setError(null);
+                    Update("tel_trabajo", TBL_AVAL_IND_REN, e.toString());
                 } else {
                     Update("tel_trabajo", TBL_AVAL_IND_REN, "");
-                    etTelTrabajoAval.setError(null);
+                    etTelTrabajoAval.setError(ctx.getResources().getString(R.string.mensaje_telefono));
                 }
+            } else {
+                Update("tel_trabajo", TBL_AVAL_IND_REN, "");
+                etTelTrabajoAval.setError(null);
             }
         });
-        etEmailAval.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable e) {
-                if (!validator.validate(etEmail, new String[]{validator.EMAIL})) {
-                    Update("email", TBL_AVAL_IND_REN, e.toString());
-                } else {
-                    Update("email", TBL_AVAL_IND_REN, "");
-                }
+        etEmailAval.addTextChangedListener((TextWatcherAdapter) e -> {
+            if (!validator.validate(etEmail, new String[]{validator.EMAIL})) {
+                Update("email", TBL_AVAL_IND_REN, e.toString());
+            } else {
+                Update("email", TBL_AVAL_IND_REN, "");
             }
         });
-        ibFotoFachAval.setOnClickListener(ibFotoFachAval_OnClick);
-        etReferenciaAval.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable e) {
-                if (e.length() > 0)
-                    Update("ref_domiciliaria", TBL_AVAL_IND_REN, e.toString().trim().toUpperCase());
-                else
-                    Update("ref_domiciliaria", TBL_AVAL_IND_REN, "");
-            }
+        etReferenciaAval.addTextChangedListener((TextWatcherAdapter) e -> {
+            if (e.length() > 0)
+                Update("ref_domiciliaria", TBL_AVAL_IND_REN, e.toString().trim().toUpperCase());
+            else
+                Update("ref_domiciliaria", TBL_AVAL_IND_REN, "");
         });
-        ibFirmaAval.setOnClickListener(ibFirmaAval_OnClick);
+
         //============== REFERENCIA ================================
         /**Evento click y escuchadores(editText o textView) en la seccion de la referencia para cambios al momento
          * en los escuchas de .addTextChangedListener se van actualizando las columnas al momento de hacer algun cambio*/
-        etNombreRef.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable e) {
-                if (e.length() > 0)
-                    Update("nombre", TBL_REFERENCIA_IND_REN, e.toString().trim().toUpperCase());
-                else
-                    Update("nombre", TBL_REFERENCIA_IND_REN, "");
-            }
+        etNombreRef.addTextChangedListener((TextWatcherAdapter) e -> {
+            if (e.length() > 0)
+                Update("nombre", TBL_REFERENCIA_IND_REN, e.toString().trim().toUpperCase());
+            else
+                Update("nombre", TBL_REFERENCIA_IND_REN, "");
         });
-        etApPaternoRef.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable e) {
-                if (e.length() > 0)
-                    Update("paterno", TBL_REFERENCIA_IND_REN, e.toString().trim().toUpperCase());
-                else
-                    Update("paterno", TBL_REFERENCIA_IND_REN, "");
-            }
+        etApPaternoRef.addTextChangedListener((TextWatcherAdapter) e -> {
+            if (e.length() > 0)
+                Update("paterno", TBL_REFERENCIA_IND_REN, e.toString().trim().toUpperCase());
+            else
+                Update("paterno", TBL_REFERENCIA_IND_REN, "");
         });
-        etApMaternoRef.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable e) {
-                if (e.length() > 0)
-                    Update("materno", TBL_REFERENCIA_IND_REN, e.toString().trim().toUpperCase());
-                else
-                    Update("materno", TBL_REFERENCIA_IND_REN, "");
-            }
+        etApMaternoRef.addTextChangedListener((TextWatcherAdapter) e -> {
+            if (e.length() > 0)
+                Update("materno", TBL_REFERENCIA_IND_REN, e.toString().trim().toUpperCase());
+            else
+                Update("materno", TBL_REFERENCIA_IND_REN, "");
         });
-        tvFechaNacRef.setOnClickListener(tvFechaNacRef_OnClick);
-        etCalleRef.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable e) {
-                if (e.length() > 0)
-                    UpdateDireccion("calle", e.toString(), direccionIdRef, "REFERENCIA");
-                else
-                    UpdateDireccion("calle", "", direccionIdRef, "REFERENCIA");
-            }
+        etCalleRef.addTextChangedListener((TextWatcherAdapter) e -> {
+            if (e.length() > 0)
+                UpdateDireccion("calle", e.toString(), direccionIdRef, "REFERENCIA");
+            else
+                UpdateDireccion("calle", "", direccionIdRef, "REFERENCIA");
         });
-        etNoExtRef.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable e) {
-                if (e.length() > 0)
-                    UpdateDireccion("num_exterior", e.toString(), direccionIdRef, "REFERENCIA");
-                else
-                    UpdateDireccion("num_exterior", "", direccionIdRef, "REFERENCIA");
-            }
+        etNoExtRef.addTextChangedListener((TextWatcherAdapter) e -> {
+            if (e.length() > 0)
+                UpdateDireccion("num_exterior", e.toString(), direccionIdRef, "REFERENCIA");
+            else
+                UpdateDireccion("num_exterior", "", direccionIdRef, "REFERENCIA");
         });
-        etNoIntRef.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable e) {
-                if (e.length() > 0)
-                    UpdateDireccion("num_interior", e.toString(), direccionIdRef, "REFERENCIA");
-                else
-                    UpdateDireccion("num_interior", "", direccionIdRef, "REFERENCIA");
-            }
+        etNoIntRef.addTextChangedListener((TextWatcherAdapter) e -> {
+            if (e.length() > 0)
+                UpdateDireccion("num_interior", e.toString(), direccionIdRef, "REFERENCIA");
+            else
+                UpdateDireccion("num_interior", "", direccionIdRef, "REFERENCIA");
         });
-        etManzanaRef.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable e) {
-                if (e.length() > 0)
-                    UpdateDireccion("manzana", e.toString(), direccionIdRef, "REFERENCIA");
-                else
-                    UpdateDireccion("manzana", "", direccionIdRef, "REFERENCIA");
-            }
+        etManzanaRef.addTextChangedListener((TextWatcherAdapter) e -> {
+            if (e.length() > 0)
+                UpdateDireccion("manzana", e.toString(), direccionIdRef, "REFERENCIA");
+            else
+                UpdateDireccion("manzana", "", direccionIdRef, "REFERENCIA");
         });
-        etLoteRef.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+        etLoteRef.addTextChangedListener((TextWatcherAdapter) e -> {
+            if (e.length() > 0)
+                UpdateDireccion("lote", e.toString(), direccionIdRef, "REFERENCIA");
+            else
+                UpdateDireccion("lote", "", direccionIdRef, "REFERENCIA");
 
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable e) {
-                if (e.length() > 0)
-                    UpdateDireccion("lote", e.toString(), direccionIdRef, "REFERENCIA");
-                else
-                    UpdateDireccion("lote", "", direccionIdRef, "REFERENCIA");
-
-            }
         });
-        etCpRef.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+        etCpRef.addTextChangedListener((TextWatcherAdapter) e -> {
 
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable e) {
-                if (e.length() == 5) {
-                    Cursor row = dBhelper.getDireccionByCP(e.toString());
-                    if (row.getCount() > 0) {
-                        UpdateDireccion("cp", e.toString(), direccionIdRef, "REFERENCIA");
-                        row.moveToFirst();
-                        if (row.getCount() == 1) {
-                            UpdateDireccion("colonia", row.getString(7), direccionIdRef, "REFERENCIA");
-                            UpdateDireccion("municipio", row.getString(4), direccionIdRef, "REFERENCIA");
-                            UpdateDireccion("estado", row.getString(1), direccionIdRef, "REFERENCIA");
-                            tvColoniaRef.setText(row.getString(7));
-                            tvMunicipioRef.setText(row.getString(4));
-                            tvEstadoRef.setText(row.getString(1));
-                        } else {
-                            if (tvColoniaRef.isEnabled() && tvColoniaRef.getText().toString().equals("")) {
-                                UpdateDireccion("colonia", "", direccionIdRef, "REFERENCIA");
-                                tvColoniaRef.setText("");
-                            }
-
-                            UpdateDireccion("municipio", row.getString(4), direccionIdRef, "REFERENCIA");
-                            UpdateDireccion("estado", row.getString(1), direccionIdRef, "REFERENCIA");
-
-                            tvMunicipioRef.setText(row.getString(4));
-                            tvEstadoRef.setText(row.getString(1));
-                        }
+            if (e.length() == 5) {
+                Cursor row = dBhelper.getDireccionByCP(e.toString());
+                if (row.getCount() > 0) {
+                    UpdateDireccion("cp", e.toString(), direccionIdRef, "REFERENCIA");
+                    row.moveToFirst();
+                    if (row.getCount() == 1) {
+                        UpdateDireccion("colonia", row.getString(7), direccionIdRef, "REFERENCIA");
+                        UpdateDireccion("municipio", row.getString(4), direccionIdRef, "REFERENCIA");
+                        UpdateDireccion("estado", row.getString(1), direccionIdRef, "REFERENCIA");
+                        tvColoniaRef.setText(row.getString(7));
+                        tvMunicipioRef.setText(row.getString(4));
+                        tvEstadoRef.setText(row.getString(1));
                     } else {
-                        UpdateDireccion("cp", "", direccionIdRef, "REFERENCIA");
-                        UpdateDireccion("colonia", "", direccionIdRef, "REFERENCIA");
-                        UpdateDireccion("municipio", "", direccionIdRef, "REFERENCIA");
-                        UpdateDireccion("estado", "", direccionIdRef, "REFERENCIA");
-                        tvColoniaRef.setText(R.string.not_found);
-                        tvMunicipioRef.setText(R.string.not_found);
-                        tvEstadoRef.setText(R.string.not_found);
+                        if (tvColoniaRef.isEnabled() && tvColoniaRef.getText().toString().equals("")) {
+                            UpdateDireccion("colonia", "", direccionIdRef, "REFERENCIA");
+                            tvColoniaRef.setText("");
+                        }
+
+                        UpdateDireccion("municipio", row.getString(4), direccionIdRef, "REFERENCIA");
+                        UpdateDireccion("estado", row.getString(1), direccionIdRef, "REFERENCIA");
+
+                        tvMunicipioRef.setText(row.getString(4));
+                        tvEstadoRef.setText(row.getString(1));
                     }
-                    row.close();
                 } else {
                     UpdateDireccion("cp", "", direccionIdRef, "REFERENCIA");
                     UpdateDireccion("colonia", "", direccionIdRef, "REFERENCIA");
@@ -4759,115 +3591,61 @@ public class RenovacionCreditoInd extends AppCompatActivity implements dialog_pl
                     tvMunicipioRef.setText(R.string.not_found);
                     tvEstadoRef.setText(R.string.not_found);
                 }
+                row.close();
+            } else {
+                UpdateDireccion("cp", "", direccionIdRef, "REFERENCIA");
+                UpdateDireccion("colonia", "", direccionIdRef, "REFERENCIA");
+                UpdateDireccion("municipio", "", direccionIdRef, "REFERENCIA");
+                UpdateDireccion("estado", "", direccionIdRef, "REFERENCIA");
+                tvColoniaRef.setText(R.string.not_found);
+                tvMunicipioRef.setText(R.string.not_found);
+                tvEstadoRef.setText(R.string.not_found);
             }
         });
-        tvColoniaRef.setOnClickListener(tvColoniaRef_OnClick);
-        etCiudadRef.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
-            }
 
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable e) {
-                if (e.length() > 0)
-                    UpdateDireccion("ciudad", e.toString(), direccionIdRef, "REFERENCIA");
-                else
-                    UpdateDireccion("ciudad", "", direccionIdRef, "REFERENCIA");
-            }
+        etCiudadRef.addTextChangedListener((TextWatcherAdapter) e -> {
+            if (e.length() > 0)
+                UpdateDireccion("ciudad", e.toString(), direccionIdRef, "REFERENCIA");
+            else
+                UpdateDireccion("ciudad", "", direccionIdRef, "REFERENCIA");
         });
-        tvLocalidadRef.setOnClickListener(tvLocalidadRef_OnClick);
-        etTelCelRef.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable e) {
-                if (e.length() > 0) {
-                    if (e.length() == 10) {
-                        etTelCelRef.setError(null);
-                        Update("tel_celular", TBL_REFERENCIA_IND_REN, e.toString().trim());
-                    } else {
-                        Update("tel_celular", TBL_REFERENCIA_IND_REN, "");
-                        etTelCelRef.setError(ctx.getResources().getString(R.string.mensaje_telefono));
-                    }
+        etTelCelRef.addTextChangedListener((TextWatcherAdapter) e -> {
+            if (e.length() > 0) {
+                if (e.length() == 10) {
+                    etTelCelRef.setError(null);
+                    Update("tel_celular", TBL_REFERENCIA_IND_REN, e.toString().trim());
                 } else {
                     Update("tel_celular", TBL_REFERENCIA_IND_REN, "");
-                    etTelCelRef.setError(null);
+                    etTelCelRef.setError(ctx.getResources().getString(R.string.mensaje_telefono));
                 }
+            } else {
+                Update("tel_celular", TBL_REFERENCIA_IND_REN, "");
+                etTelCelRef.setError(null);
             }
         });
         //============== CROQUIS ==================================
         /**Evento click y escuchadores(editText o textView) en la seccion del croquis para cambios al momento
          * en los escuchas de .addTextChangedListener se van actualizando las columnas al momento de hacer algun cambio*/
-        tvCasa.setOnClickListener(tvCasa_OnClick);
-        tvPrincipal.setOnClickListener(tvPrincipal_OnClick);
-        tvTrasera.setOnClickListener(tvTrasera_OnClick);
-        tvLateraUno.setOnClickListener(tvLateralUno_OnClick);
-        tvLateraDos.setOnClickListener(tvLateralDos_OnClick);
-        etReferencia.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
-            }
 
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable e) {
-                if (e.length() > 0)
-                    Update("referencias", TBL_CROQUIS_IND_REN, e.toString().trim().toUpperCase());
-                else
-                    Update("referencias", TBL_CROQUIS_IND_REN, "");
-            }
+        etReferencia.addTextChangedListener((TextWatcherAdapter) e -> {
+            if (e.length() > 0)
+                Update("referencias", TBL_CROQUIS_IND_REN, e.toString().trim().toUpperCase());
+            else
+                Update("referencias", TBL_CROQUIS_IND_REN, "");
         });
-        etCaracteristicasDomicilio.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable e) {
-                if (e.length() > 0)
-                    Update("caracteristicas_domicilio", TBL_CROQUIS_IND_REN, e.toString().trim().toUpperCase());
-                else
-                    Update("caracteristicas_domicilio", TBL_CROQUIS_IND_REN, "");
-            }
+        etCaracteristicasDomicilio.addTextChangedListener((TextWatcherAdapter) e -> {
+            if (e.length() > 0)
+                Update("caracteristicas_domicilio", TBL_CROQUIS_IND_REN, e.toString().trim().toUpperCase());
+            else
+                Update("caracteristicas_domicilio", TBL_CROQUIS_IND_REN, "");
         });
         //================================  ESCANEAR DOCUMENTOS  ===================================
         /**Evento click en la seccion de documentos para cambios al momento*/
-        ibIneFrontal.setOnClickListener(ibIneFrontal_OnClick);
-        ibIneReverso.setOnClickListener(ibIneReverso_OnClick);
-        ibIneSelfie.setOnClickListener(ibIneSelfie_OnClick);
 
-        //ibCurp.setOnClickListener(ibCurp_OnClick);
-        ibComprobante.setOnClickListener(ibComprobante_OnClick);
-        ibComprobanteGarantia.setOnClickListener(ibComprobanteGarantia_OnClick);
-        ibIneFrontalAval.setOnClickListener(ibIneFrontalAval_OnClick);
-        ibIneReversoAval.setOnClickListener(ibIneReversoAval_OnClick);
-        ibCurpAval.setOnClickListener(ibCurpAval_OnClick);
-        ibComprobanteAval.setOnClickListener(ibComprobanteAval_OnClick);
+
         //================================  CLIENTE GENERO LISTENER  ===============================
         rgGeneroCli.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
@@ -5052,27 +3830,22 @@ public class RenovacionCreditoInd extends AppCompatActivity implements dialog_pl
             }
         });
 
-        /**Evento de click para capturar fotografias o firmas digitales*/
-        ivFotoFachCli.setOnClickListener(ivFotoFachCli_OnClick);
-        ivFirmaCli.setOnClickListener(ivFirmaCli_OnClick);
-        ivFotoFachNeg.setOnClickListener(ivFotoFachNeg_OnClick);
-        ivFotoFachAval.setOnClickListener(ivFotoFachAval_OnClick);
-        ivFirmaAval.setOnClickListener(ivFirmaAval_OnClick);
+        Intent intent = this.getIntent();
+        if (intent != null) {
+            String solicitudId = intent.getStringExtra("id_solicitud");
+            if (solicitudId != null) {
+                id_solicitud = Long.parseLong(solicitudId);
+                initComponents(solicitudId);
+                dialog.dismiss();
+            } else {
+                Toast.makeText(this, "Se requiere un id de la solicitud para cargar la informacion", Toast.LENGTH_LONG).show();
+                this.finish();
+            }
+        } else {
+            Toast.makeText(this, "Se requiere un id de la solicitud para cargar la informacion", Toast.LENGTH_LONG).show();
+            this.finish();
+        }
 
-        ivIneFrontal.setOnClickListener(ivIneFrontal_OnClik);
-        ivIneReverso.setOnClickListener(ivIneReverso_OnClick);
-        ivIneSelfie.setOnClickListener(ivIneSelfie_OnClik);
-
-        //ivCurp.setOnClickListener(ivCurp_OnClick);
-        ivComprobante.setOnClickListener(ivComprobante_OnClick);
-        ivFirmaAsesor.setOnClickListener(ivFirmaAsesor_OnClick);
-
-        ivComprobanteGarantia.setOnClickListener(ivComprobanteGarantia_OnClick);
-        ivIneFrontalAval.setOnClickListener(ivIneFrontalAval_OnClik);
-        ivIneReversoAval.setOnClickListener(ivIneReversoAval_OnClick);
-        ivCurpAval.setOnClickListener(ivCurpAval_OnClick);
-        ;
-        ivComprobanteAval.setOnClickListener(ivComprobanteAval_OnClick);
 
         tvRiesgo.setText(_riesgo[2]);
         Update("clasificacion_riesgo", TBL_CREDITO_IND, Miscellaneous.GetStr(tvRiesgo));
@@ -5103,6 +3876,7 @@ public class RenovacionCreditoInd extends AppCompatActivity implements dialog_pl
             }
             rowDireccion.close();
         }
+
     }
 
     @Override
@@ -5452,7 +4226,7 @@ public class RenovacionCreditoInd extends AppCompatActivity implements dialog_pl
         }
     };
 
-    private View.OnClickListener txtCamapana_OnClick = new View.OnClickListener() {
+    private View.OnClickListener txtCampana_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
             Intent i_campanas = new Intent(ctx, Catalogos.class);
@@ -7650,7 +6424,7 @@ public class RenovacionCreditoInd extends AppCompatActivity implements dialog_pl
         }
     };
 
-    private View.OnClickListener llBeneficiario_OnClick = new View.OnClickListener() {
+    private final View.OnClickListener llBeneficiario_OnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
 
@@ -8095,31 +6869,41 @@ public class RenovacionCreditoInd extends AppCompatActivity implements dialog_pl
         return save_credito;
     }
 
+
     private boolean saveDatosCampana() {
-        boolean save_campana = false;
-        ContentValues cv = new ContentValues();
 
-        boolean auxiliar = datosCampanaDao.validarEstatus(ctx, Integer.parseInt(String.valueOf(id_solicitud)));
+        Optional<SolicitudCampana> optionalSolicitudCampana = dBhelper.getSolicitudCampanaDao()
+                .findBySolicitudId(id_solicitud, 0, EntitiesCommonsContants.TIPO_SOLICITUD_INDIVIDUAL_RENOVACION);
 
-        if (!validatorTV.validate(txtCampanaRen, new String[]{validator.ONLY_TEXT}) && !validator.validate(txtNombreRefieroRen, new String[]{validator.ONLY_TEXT})) {
-            cv.put("id_solicitud", id_solicitud);
-            cv.put("id_campana", Miscellaneous.selectCampana(ctx, Miscellaneous.GetStr(txtCampanaRen)));
-            cv.put("tipo_campana", Miscellaneous.GetStr(txtCampanaRen));
-            cv.put("nombre_refiero", Miscellaneous.GetStr(txtNombreRefieroRen));
+        if (optionalSolicitudCampana.isPresent()) {
+            SolicitudCampana solicitudCampana = optionalSolicitudCampana.get();
+            String nombreCampana = solicitudCampana.getCampanaNombre();
+            nombreCampana = (nombreCampana == null) ? "" : nombreCampana.trim();
 
-            if (!auxiliar) {
-                db.insert(TBL_DATOS_CREDITO_CAMPANA, null, cv);
+            String nombreRefiero = solicitudCampana.getNombreReferido();
+            nombreRefiero = (nombreRefiero == null) ? "" : nombreRefiero.trim();
+
+            boolean nombreCampanaValidacion = nombreCampana.isEmpty();
+            boolean nombreRefieroValidacion = nombreRefiero.isEmpty();
+
+            if (nombreCampanaValidacion) {
+                txtCampanaRen.setError("Esta campo es requerido");
+                ivError1.setVisibility(View.VISIBLE);
             }
 
-            if (auxiliar) {
-                db.update(TBL_DATOS_CREDITO_CAMPANA, cv, " id_solicitud  = ? ", new String[]{String.valueOf(id_solicitud)});
+            if (nombreRefieroValidacion) {
+                txtNombreRefieroRen.setError("Este campo es requerido");
+                ivError1.setVisibility(View.VISIBLE);
             }
-            save_campana = true;
+
+            return (!nombreCampanaValidacion) && (!nombreRefieroValidacion);
+
         } else {
-            txtCampanaRen.setError("Este campo es requerido");
+            ivError1.setVisibility(View.VISIBLE);
+            txtCampanaRen.setError("Esta campo es requerido");
             txtNombreRefieroRen.setError("Este campo es requerido");
+            return false;
         }
-        return save_campana;
     }
 
     /**
@@ -9026,24 +7810,42 @@ public class RenovacionCreditoInd extends AppCompatActivity implements dialog_pl
         boolean flagByteIneSelfie = byteIneSelfie != null;
         boolean faglByteFirmaCli = byteFirmaCli != null;
         boolean flagByteComprobante = byteComprobante != null;
+        boolean faglByteFirmaAsesor = byteFirmaAsesor != null;
 
         if (!flagByteIneFrontal) {
             tvIneFrontal.setError("");
+        } else {
+            tvIneFrontal.setError("Documento Requerido");
         }
+
         if (!flagByteIneReverso) {
             tvIneReverso.setError("");
+        } else {
+            tvIneReverso.setError("Documento Requerido");
         }
         if (!flagByteIneSelfie) {
             tvIneSelfie.setError("");
+        } else {
+            tvIneSelfie.setError("Documento Requerido");
         }
         if (!flagByteComprobante) {
             tvComprobante.setError("");
+        } else {
+            tvComprobante.setError("Documento Requerido");
         }
         if (!faglByteFirmaCli) {
             tvFirmaCli.setError("");
+        } else {
+            tvFirmaCli.setError("Documento Requerido");
         }
 
-        if (flagByteIneFrontal && flagByteIneReverso && flagByteIneSelfie && faglByteFirmaCli && flagByteComprobante) {
+        if (!faglByteFirmaAsesor) {
+            tvFirmaAsesor.setError("");
+        } else {
+            tvFirmaAsesor.setError("Documento Requerido");
+        }
+
+        if (flagByteIneFrontal && flagByteIneReverso && flagByteIneSelfie && faglByteFirmaCli && flagByteComprobante && faglByteFirmaAsesor) {
             ivError9.setVisibility(View.GONE);
             return true;
         } else {
@@ -9053,65 +7855,58 @@ public class RenovacionCreditoInd extends AppCompatActivity implements dialog_pl
 
     }
 
+
+    /**
+     * Guarda un beneficiario en la base de datos o actualiza si ya existe, y realiza validaciones.
+     *
+     * @return True si todas las validaciones pasan y se guarda o actualiza el beneficiario, False en caso contrario.
+     */
     private boolean saveBeneficiario() {
+        // Obtener un Optional con el Beneficiario a partir de la solicitud.
+        Optional<Beneficiario> optionalBeneficiario = dBhelper.getBeneficiariosDao()
+                .findBySolicitudId(id_solicitud, 0, EntitiesCommonsContants.TIPO_SOLICITUD_INDIVIDUAL_RENOVACION);
 
-        ContentValues cv = new ContentValues();
+        if (optionalBeneficiario.isPresent()) {
+            Beneficiario beneficiario = optionalBeneficiario.get();
 
-        int grupo_id = 1;
+            // Obtener los datos del beneficiario y asegurarse de que no sean nulos.
+            String beneficiarioNombre = beneficiario.getNombre() == null ? "" : beneficiario.getNombre();
+            String beneficiarioPaterno = beneficiario.getPaterno() == null ? "" : beneficiario.getPaterno();
+            String beneficiarioMaterno = beneficiario.getMaterno() == null ? "" : beneficiario.getMaterno();
+            String beneficiarioParentesco = beneficiario.getParentesco() == null ? "" : beneficiario.getParentesco();
 
-        int id_cliente = BeneficiarioIndRenDao.obtenerClienteIndRen(Integer.parseInt(String.valueOf(id_solicitud)), ctx);
+            // Variable para indicar si la validación es correcta.
+            boolean validacionCorrecta = true;
 
-        boolean estatus = BeneficiarioIndRenDao.validarBeneficiarioIndRen(Integer.parseInt(String.valueOf(id_solicitud)), ctx);
-
-        int serieIdA = BeneficiarioIndRenDao.obtenerSerieAsesor(ctx);//Miscellaneous.obtenerSerieAsesor(ctx);
-
-        int id_originacion = BeneficiarioIndRenDao.obtenerIdOriginacionRen(Integer.parseInt(String.valueOf(id_solicitud)), ctx);
-
-        boolean save_beneficiario = false;
-
-
-        if (!validator.validate(txtNombreBeneficiario, new String[]{validator.REQUIRED})) {
-            if (!validator.validate(txtApellidoPaterno, new String[]{validator.ONLY_TEXT})) {
-                if (!validator.validate(txtApellidoMaterno, new String[]{validator.ONLY_TEXT})) {
-                    if (!validatorTV.validate(txtParentescoBeneficiario, new String[]{validatorTV.REQUIRED})) {
-
-                        cv.put("id_solicitud", id_solicitud);
-                        cv.put("id_originacion", id_originacion);
-                        cv.put("id_cliente", id_cliente);
-                        cv.put("id_grupo", grupo_id);
-                        cv.put("nombre", Miscellaneous.GetStr(txtNombreBeneficiario));
-                        cv.put("paterno", Miscellaneous.GetStr(txtApellidoPaterno));
-                        cv.put("materno", Miscellaneous.GetStr(txtApellidoMaterno));
-                        cv.put("parentesco", Miscellaneous.GetStr(txtParentescoBeneficiario));
-                        cv.put("serieid", serieIdA);
-
-                        if (!estatus) {
-                            db.insert(TBL_DATOS_BENEFICIARIO_REN, null, cv);
-                        }
-
-                        if (estatus) {
-                            db.update(TBL_DATOS_BENEFICIARIO_REN, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
-                        }
-
-                        save_beneficiario = true;
-                    } else {
-                        ivError11.setVisibility(View.VISIBLE);
-                        txtParentescoBeneficiario.setError("CAMPO REQUERIDO");
-
-                    }
-                } else {
-                    ivError11.setVisibility(View.VISIBLE);
-                    txtApellidoMaterno.setError("CAMPO REQUERIDO");
-                }
-            } else {
+            // Realizar las validaciones y mostrar errores si es necesario.
+            if (beneficiarioNombre.isEmpty()) {
+                this.txtNombreBeneficiario.setError("CAMPO REQUERIDO");
                 ivError11.setVisibility(View.VISIBLE);
-                txtApellidoPaterno.setError("CAMPO REQUERIDO");
+                validacionCorrecta = false;
             }
+            if (beneficiarioPaterno.isEmpty()) {
+                this.txtApellidoPaterno.setError("CAMPO REQUERIDO");
+                ivError11.setVisibility(View.VISIBLE);
+                validacionCorrecta = false;
+            }
+            if (beneficiarioMaterno.isEmpty()) {
+                this.txtApellidoMaterno.setError("CAMPO REQUERIDO");
+                ivError11.setVisibility(View.VISIBLE);
+                validacionCorrecta = false;
+            }
+            if (beneficiarioParentesco.isEmpty()) {
+                this.txtParentescoBeneficiario.setError("CAMPO REQUERIDO");
+                ivError11.setVisibility(View.VISIBLE);
+                validacionCorrecta = false;
+            }
+
+            // Devolver true solo si todas las validaciones pasan.
+            return validacionCorrecta;
+
         } else {
-            ivError11.setVisibility(View.VISIBLE);
-            txtNombreBeneficiario.setError("CAMPO REQUERIDO");
+            // Si no se encuentra el beneficiario, retornar false.
+            return false;
         }
-        return save_beneficiario;
     }
 
     /**
@@ -9328,26 +8123,32 @@ public class RenovacionCreditoInd extends AppCompatActivity implements dialog_pl
 
             case REQUEST_CODE_CAMAPANAS:
                 if (data != null) {
-                    Integer id_campana;
                     ModeloCatalogoGral modeloCatalogoGral = (ModeloCatalogoGral) data.getSerializableExtra(ITEM);
-                    if (modeloCatalogoGral != null) {
-                        String campanaNombre = modeloCatalogoGral.getNombre();
-                        txtCampanaRen.setError(null);
-                        txtCampanaRen.setText(campanaNombre);
+                    if (modeloCatalogoGral == null) return;
 
-                        if (campanaNombre.equals("NINGUNO")) {
-                            txtNombreRefieroRen.setEnabled(false);
-                            txtNombreRefieroRen.setText("SIN REFERENCIA");
-                        } else {
-                            txtNombreRefieroRen.setEnabled(true);
-                            txtNombreRefieroRen.setText("");
-                        }
+                    String campanaNombre = modeloCatalogoGral.getNombre();
 
-                        ContentValues cv = new ContentValues();
-                        id_campana = Miscellaneous.selectCampana(ctx, Miscellaneous.GetStr(txtCampanaRen));
-                        cv.put("id_campana", id_campana);
-                        db.update(TBL_CREDITO_IND, cv, "id_solicitud = ?", new String[]{String.valueOf(id_solicitud)});
+                    SolicitudCampana solicitudCampana = new SolicitudCampana();
+                    solicitudCampana.setId(solicitudCampanaId);
+                    solicitudCampana.setCampanaNombre(campanaNombre);
+
+                    if (campanaNombre.equals("NINGUNO")) {
+                        txtNombreRefieroRen.setText(SIN_REFERENCIA);
+                        txtNombreRefieroRen.setEnabled(false);
+                        solicitudCampana.setNombreReferido(SIN_REFERENCIA);
+                    } else {
+                        txtNombreRefieroRen.setText("");
+                        txtNombreRefieroRen.setEnabled(true);
+                        solicitudCampana.setNombreReferido("");
                     }
+
+                    this.dBhelper.getSolicitudCampanaDao().update(solicitudCampana);
+
+                    txtCampanaRen.setError(null);
+                    txtCampanaRen.setText(campanaNombre);
+                    txtCampanaRen.setTag(modeloCatalogoGral);
+
+
                 }
                 break;
 
@@ -10000,6 +8801,30 @@ public class RenovacionCreditoInd extends AppCompatActivity implements dialog_pl
                 Update("num_operacion_mensuales", TBL_NEGOCIO_IND_REN, "1");
                 break;
         }
+
+        BeneficiariosDao beneficiariosDao = dBhelper.getBeneficiariosDao();
+        SolicitudCampanaDao solicitudCampanaDao = dBhelper.getSolicitudCampanaDao();
+
+        SolicitudCampana solicitudCampana = new SolicitudCampana();
+        solicitudCampana.setSolicitudId(Math.toIntExact(id_solicitud));
+        solicitudCampana.setTipoSolicitud(EntitiesCommonsContants.TIPO_SOLICITUD_INDIVIDUAL_RENOVACION);
+        solicitudCampana.setIntegranteId(0);
+        solicitudCampana.setSolicitudRemotaId(0);
+        solicitudCampana.setNombreReferido("");
+        solicitudCampana.setCampanaNombre("");
+        this.solicitudCampanaId = solicitudCampanaDao.insert(solicitudCampana);
+
+        Beneficiario beneficiario = new Beneficiario();
+        beneficiario.setSolicitudId(Math.toIntExact(id_solicitud));
+        beneficiario.setTipoSolicitud(EntitiesCommonsContants.TIPO_SOLICITUD_INDIVIDUAL_RENOVACION);
+        beneficiario.setIntegranteId(0);
+        beneficiario.setSolicitudRemotaId(0);
+        beneficiario.setNombre("");
+        beneficiario.setPaterno("");
+        beneficiario.setMaterno("");
+        beneficiario.setParentesco("");
+        this.beneficiarioId = beneficiariosDao.insert(beneficiario);
+
     }
 
     //===================== Listener GPS  =======================================================
@@ -10749,14 +9574,6 @@ public class RenovacionCreditoInd extends AppCompatActivity implements dialog_pl
 
         row.close(); //Cierra dato del credito
 
-        row = dBhelper.getRecords(TBL_DATOS_CREDITO_CAMPANA, " WHERE id_solicitud = ?", " ", new String[]{idSolicitud});
-
-        if (row.getCount() > 0) {
-            row.moveToFirst();
-            txtNombreRefieroRen.setText(row.getString(5));
-            row.close();
-        }
-
         /***Obtiene los datos personales del cliente*/
         //Llenado de datos del cliente
         row = dBhelper.getRecords(TBL_CLIENTE_IND_REN, " WHERE id_solicitud = ?", "", new String[]{idSolicitud});
@@ -10821,8 +9638,8 @@ public class RenovacionCreditoInd extends AppCompatActivity implements dialog_pl
             tvFechaNacCli.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
             tvEstadoNacCli.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
         } else {
-            tvFechaNacCli.setOnClickListener(tvFechaNac_OnClick);
-            tvEstadoNacCli.setOnClickListener(etEstadoNac_OnClick);
+
+
         }
 
         //etCurpIdCli.setText(row.getString(11)); etCurpIdCli.setEnabled(false);
@@ -10993,22 +9810,6 @@ public class RenovacionCreditoInd extends AppCompatActivity implements dialog_pl
         etCelularCony.setEnabled(isEditCon);
         row.close(); //Cierra datos del conyuge
 
-        /** LLENADO DE LOS DATOS BENEFICIARIO */
-
-        //=============================================DATOS DEL BENEFICIARIO==============================================\\
-
-        row = dBhelper.getRecords(TBL_DATOS_BENEFICIARIO_REN, " where id_solicitud = ?", " ", new String[]{idSolicitud});
-
-        if (row.getCount() > 0) {
-            row.moveToFirst();
-
-            txtNombreBeneficiario.setText(row.getString(5).trim().toUpperCase());
-            txtApellidoPaterno.setText(row.getString(6).trim().toUpperCase());
-            txtApellidoMaterno.setText(row.getString(7).trim().toUpperCase());
-            txtParentescoBeneficiario.setText(row.getString(8).trim().toUpperCase());
-
-            row.close();
-        }
 
         /**Obtiene los datos economicos para precargarlos, solo cuando el credito es mayor a $29,000
          * de lo contrario esta seccion se oculta*/
@@ -11539,6 +10340,50 @@ public class RenovacionCreditoInd extends AppCompatActivity implements dialog_pl
 
         deshabilitarCampos();
 
+        SolicitudCampana solicitudCampana = dBhelper.getSolicitudCampanaDao()
+                .findBySolicitudId(id_solicitud, 0, EntitiesCommonsContants.TIPO_SOLICITUD_INDIVIDUAL_ORIGINACION)
+                .orElseGet(() -> {
+                    SolicitudCampana _solicitudCampana = new SolicitudCampana();
+                    _solicitudCampana.setSolicitudId((int) id_solicitud);
+                    _solicitudCampana.setIntegranteId(0);
+                    _solicitudCampana.setTipoSolicitud(EntitiesCommonsContants.TIPO_SOLICITUD_INDIVIDUAL_RENOVACION);
+                    _solicitudCampana.setSolicitudRemotaId(0);
+                    _solicitudCampana.setNombreReferido("NINGUNO");
+                    _solicitudCampana.setCampanaNombre("NINGUNO");
+                    Long solicitudCampanaId = dBhelper.getSolicitudCampanaDao().insert(_solicitudCampana);
+                    _solicitudCampana.setId(solicitudCampanaId);
+                    return _solicitudCampana;
+                });
+
+        String campanaNombre = solicitudCampana.getCampanaNombre();
+        this.solicitudCampanaId = solicitudCampana.getId();
+        this.txtCampanaRen.setText(campanaNombre);
+        this.txtNombreRefieroRen.setText(solicitudCampana.getNombreReferido());
+        this.txtNombreRefieroRen.setEnabled(!campanaNombre.equals("NINGUNO"));
+
+        Beneficiario beneficiario = dBhelper.getBeneficiariosDao()
+                .findBySolicitudId(id_solicitud, 0, EntitiesCommonsContants.TIPO_SOLICITUD_INDIVIDUAL_RENOVACION)
+                .orElseGet(() -> {
+                    Beneficiario _beneficiario = new Beneficiario();
+                    _beneficiario.setSolicitudId((int) id_solicitud);
+                    _beneficiario.setIntegranteId(0);
+                    _beneficiario.setTipoSolicitud(EntitiesCommonsContants.TIPO_SOLICITUD_INDIVIDUAL_ORIGINACION);
+                    _beneficiario.setSolicitudRemotaId(0);
+                    _beneficiario.setNombre("");
+                    _beneficiario.setPaterno("");
+                    _beneficiario.setMaterno("");
+                    _beneficiario.setParentesco("");
+                    Long beneficiarioId = dBhelper.getBeneficiariosDao().insert(_beneficiario);
+                    _beneficiario.setId(beneficiarioId);
+                    return _beneficiario;
+                });
+
+        this.beneficiarioId = beneficiario.getId();
+        this.txtNombreBeneficiario.setText(beneficiario.getNombre());
+        this.txtApellidoPaterno.setText(beneficiario.getPaterno());
+        this.txtApellidoMaterno.setText(beneficiario.getMaterno());
+        this.txtParentescoBeneficiario.setText(beneficiario.getParentesco());
+
     }
 
     private boolean getGastoMen() {
@@ -11826,8 +10671,8 @@ public class RenovacionCreditoInd extends AppCompatActivity implements dialog_pl
                 tvFechaNacAval.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
                 tvEstadoNacAval.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
             } else {
-                tvFechaNacAval.setOnClickListener(tvFechaNacAval_OnClick);
-                tvEstadoNacAval.setOnClickListener(tvEstadoNacAval_OnClick);
+
+
             }
 
             tvParentescoAval.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
@@ -11881,8 +10726,8 @@ public class RenovacionCreditoInd extends AppCompatActivity implements dialog_pl
             ibFotoFachAval.setEnabled(true);
             ibFotoFachAval.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
             ibMapAval.setVisibility(View.VISIBLE);
-            tvFechaNacAval.setOnClickListener(tvFechaNacAval_OnClick);
-            tvEstadoNacAval.setOnClickListener(tvEstadoNacAval_OnClick);
+
+
         }
 
         /**Valida si la seccion de la referencia ya fue guardada para bloquear los campos*/
@@ -12135,8 +10980,8 @@ public class RenovacionCreditoInd extends AppCompatActivity implements dialog_pl
                 tvFechaNacAval.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
                 tvEstadoNacAval.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
             } else {
-                tvFechaNacAval.setOnClickListener(tvFechaNacAval_OnClick);
-                tvEstadoNacAval.setOnClickListener(tvEstadoNacAval_OnClick);
+
+
             }
 
             tvParentescoAval.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
@@ -12191,8 +11036,8 @@ public class RenovacionCreditoInd extends AppCompatActivity implements dialog_pl
             ibFotoFachAval.setBackground(ContextCompat.getDrawable(ctx, R.drawable.bkg_rounded_edges_blocked));
             ibMapAval.setVisibility(View.GONE);
         } else {
-            tvFechaNacAval.setOnClickListener(tvFechaNacAval_OnClick);
-            tvEstadoNacAval.setOnClickListener(tvEstadoNacAval_OnClick);
+
+
         }
 
         /**Valida si la seccion de la referencia ya fue guardada para bloquear los campos*/
@@ -12440,6 +11285,7 @@ public class RenovacionCreditoInd extends AppCompatActivity implements dialog_pl
         boolean credito, cliente, campana, beneficiario, conyuge, economicos, negocio, aval, referencia, croquis, politicas, documentacion;
         credito = saveDatosCredito();
         campana = saveDatosCampana();
+        beneficiario = saveBeneficiario();
         croquis = saveCroquis();
         cliente = saveDatosPersonales();
         if (Miscellaneous.GetStr(tvEstadoCivilCli).equals("CASADO(A)") ||
@@ -12452,7 +11298,6 @@ public class RenovacionCreditoInd extends AppCompatActivity implements dialog_pl
         else
             economicos = true;
 
-        beneficiario = saveBeneficiario();
         negocio = saveDatosNegocio();
         aval = saveDatosAval();
         referencia = saveReferencia();

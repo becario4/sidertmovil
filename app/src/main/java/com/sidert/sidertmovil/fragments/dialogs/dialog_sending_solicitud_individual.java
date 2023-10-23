@@ -1,9 +1,9 @@
 package com.sidert.sidertmovil.fragments.dialogs;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
-import android.database.Cursor;
 import android.os.Bundle;
+import android.text.Html;
+import android.text.Spanned;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,10 +14,13 @@ import android.widget.Toast;
 
 import com.sidert.sidertmovil.R;
 import com.sidert.sidertmovil.database.DBhelper;
+import com.sidert.sidertmovil.database.EntitiesCommonsContants;
+import com.sidert.sidertmovil.database.dao.BeneficiariosDao;
+import com.sidert.sidertmovil.database.dao.SolicitudCampanaDao;
+import com.sidert.sidertmovil.database.entities.Beneficiario;
+import com.sidert.sidertmovil.database.entities.SolicitudCampana;
 import com.sidert.sidertmovil.models.MResSaveSolicitud;
 import com.sidert.sidertmovil.models.catalogos.MedioPagoDao;
-import com.sidert.sidertmovil.models.datosCampañas.datoCampana;
-import com.sidert.sidertmovil.models.dto.BeneficiarioDto;
 import com.sidert.sidertmovil.models.solicitudes.Solicitud;
 import com.sidert.sidertmovil.models.solicitudes.SolicitudDao;
 import com.sidert.sidertmovil.models.solicitudes.SolicitudRen;
@@ -66,9 +69,7 @@ import com.sidert.sidertmovil.models.solicitudes.solicitudind.renovacion.Politic
 import com.sidert.sidertmovil.models.solicitudes.solicitudind.renovacion.PoliticaPldRenDao;
 import com.sidert.sidertmovil.models.solicitudes.solicitudind.renovacion.ReferenciaRen;
 import com.sidert.sidertmovil.models.solicitudes.solicitudind.renovacion.ReferenciaRenDao;
-import com.sidert.sidertmovil.services.beneficiario.BeneficiarioService;
 import com.sidert.sidertmovil.services.solicitud.solicitudind.SolicitudIndService;
-import com.sidert.sidertmovil.utils.ManagerInterface;
 import com.sidert.sidertmovil.utils.Miscellaneous;
 import com.sidert.sidertmovil.utils.RetrofitClient;
 import com.sidert.sidertmovil.utils.SessionManager;
@@ -77,7 +78,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.util.Map;
+import java.util.Optional;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -88,145 +89,8 @@ import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import timber.log.Timber;
 
-import static com.sidert.sidertmovil.utils.Constants.CONTROLLER_API;
-import static com.sidert.sidertmovil.utils.Constants.ES_RENOVACION;
-import static com.sidert.sidertmovil.utils.Constants.ID_SOLICITUD;
-import static com.sidert.sidertmovil.utils.Constants.K_ACTIVIDAD_ECONOMICA;
-import static com.sidert.sidertmovil.utils.Constants.K_ACTIVOS_OBSERVABLES;
-import static com.sidert.sidertmovil.utils.Constants.K_ANTIGUEDAD;
-import static com.sidert.sidertmovil.utils.Constants.K_AVAL_LATITUD;
-import static com.sidert.sidertmovil.utils.Constants.K_AVAL_LOCATED_AT;
-import static com.sidert.sidertmovil.utils.Constants.K_AVAL_LONGITUD;
-import static com.sidert.sidertmovil.utils.Constants.K_BIENES;
-import static com.sidert.sidertmovil.utils.Constants.K_CALLE;
-import static com.sidert.sidertmovil.utils.Constants.K_CALLE_ATRAS;
-import static com.sidert.sidertmovil.utils.Constants.K_CALLE_ENFRENTE;
-import static com.sidert.sidertmovil.utils.Constants.K_CALLE_LATERAL_DER;
-import static com.sidert.sidertmovil.utils.Constants.K_CALLE_LATERAL_IZQ;
-import static com.sidert.sidertmovil.utils.Constants.K_CAPACIDAD_PAGO;
-import static com.sidert.sidertmovil.utils.Constants.K_CARACTERISTICAS_DOMICILIO;
-import static com.sidert.sidertmovil.utils.Constants.K_CIUDAD;
-import static com.sidert.sidertmovil.utils.Constants.K_CLASIFICACION_RIESGO;
-import static com.sidert.sidertmovil.utils.Constants.K_CLIENTE_ID;
-import static com.sidert.sidertmovil.utils.Constants.K_CODIGO_BARRAS;
-import static com.sidert.sidertmovil.utils.Constants.K_CODIGO_POSTAL;
-import static com.sidert.sidertmovil.utils.Constants.K_COLONIA;
-import static com.sidert.sidertmovil.utils.Constants.K_COMPORTAMIENTO_PAGO;
-import static com.sidert.sidertmovil.utils.Constants.K_COMPROBANTE_DOMICILIO;
-import static com.sidert.sidertmovil.utils.Constants.K_COMPROBANTE_DOMICILIO_AVAL;
-import static com.sidert.sidertmovil.utils.Constants.K_COMPROBANTE_GARANTIA;
-import static com.sidert.sidertmovil.utils.Constants.K_CURP;
-import static com.sidert.sidertmovil.utils.Constants.K_CURP_AVAL;
-import static com.sidert.sidertmovil.utils.Constants.K_DEPENDIENTES_ECONOMICO;
-import static com.sidert.sidertmovil.utils.Constants.K_DESTINO_CREDITO;
-import static com.sidert.sidertmovil.utils.Constants.K_DESTINO_PRESTAMO;
-import static com.sidert.sidertmovil.utils.Constants.K_DIAS_VENTA;
-import static com.sidert.sidertmovil.utils.Constants.K_EDAD;
-import static com.sidert.sidertmovil.utils.Constants.K_EMAIL;
-import static com.sidert.sidertmovil.utils.Constants.K_ESTADO;
-import static com.sidert.sidertmovil.utils.Constants.K_ESTADO_CIVIL;
-import static com.sidert.sidertmovil.utils.Constants.K_ESTADO_CUENTA;
-import static com.sidert.sidertmovil.utils.Constants.K_ESTADO_NACIMIENTO;
-import static com.sidert.sidertmovil.utils.Constants.K_FECHA_DESEMBOLSO;
-import static com.sidert.sidertmovil.utils.Constants.K_FECHA_ENVIO;
-import static com.sidert.sidertmovil.utils.Constants.K_FECHA_INICIO;
-import static com.sidert.sidertmovil.utils.Constants.K_FECHA_NACIMIENTO;
-import static com.sidert.sidertmovil.utils.Constants.K_FECHA_TERMINO;
-import static com.sidert.sidertmovil.utils.Constants.K_FIRMA;
-import static com.sidert.sidertmovil.utils.Constants.K_FIRMA_ASESOR;
-import static com.sidert.sidertmovil.utils.Constants.K_FOTO_FACHADA;
-import static com.sidert.sidertmovil.utils.Constants.K_GASTO_AGUA;
-import static com.sidert.sidertmovil.utils.Constants.K_GASTO_LUZ;
-import static com.sidert.sidertmovil.utils.Constants.K_GASTO_MENSUAL;
-import static com.sidert.sidertmovil.utils.Constants.K_GASTO_OTROS;
-import static com.sidert.sidertmovil.utils.Constants.K_GASTO_RENTA;
-import static com.sidert.sidertmovil.utils.Constants.K_GASTO_TELEFONO;
-import static com.sidert.sidertmovil.utils.Constants.K_GENERO;
-import static com.sidert.sidertmovil.utils.Constants.K_HORA_LOCALIZACION;
-import static com.sidert.sidertmovil.utils.Constants.K_HORA_VISITA;
-import static com.sidert.sidertmovil.utils.Constants.K_IDENTIFICACION_FRONTAL;
-import static com.sidert.sidertmovil.utils.Constants.K_IDENTIFICACION_FRONTAL_AVAL;
-import static com.sidert.sidertmovil.utils.Constants.K_IDENTIFICACION_REVERSO;
-import static com.sidert.sidertmovil.utils.Constants.K_IDENTIFICACION_REVERSO_AVAL;
-import static com.sidert.sidertmovil.utils.Constants.K_IDENTIFICACION_SELFIE;
-import static com.sidert.sidertmovil.utils.Constants.K_IDENTIFICACION_TIPO;
-import static com.sidert.sidertmovil.utils.Constants.K_ID_CAMPANA;
-import static com.sidert.sidertmovil.utils.Constants.K_INGRESO;
-import static com.sidert.sidertmovil.utils.Constants.K_INGRESOS_OTROS;
-import static com.sidert.sidertmovil.utils.Constants.K_INGRESO_MENSUAL;
-import static com.sidert.sidertmovil.utils.Constants.K_LATITUD;
-import static com.sidert.sidertmovil.utils.Constants.K_LOCALIDAD;
-import static com.sidert.sidertmovil.utils.Constants.K_LOCATED_AT;
-import static com.sidert.sidertmovil.utils.Constants.K_LONGITUD;
-import static com.sidert.sidertmovil.utils.Constants.K_MATERNO;
-import static com.sidert.sidertmovil.utils.Constants.K_MEDIOS_PAGOS;
-import static com.sidert.sidertmovil.utils.Constants.K_MEDIO_CONTACTO;
-import static com.sidert.sidertmovil.utils.Constants.K_MONTO_LETRA;
-import static com.sidert.sidertmovil.utils.Constants.K_MONTO_MAXIMO;
-import static com.sidert.sidertmovil.utils.Constants.K_MONTO_PRESTAMO;
-import static com.sidert.sidertmovil.utils.Constants.K_MONTO_REFINANCIAR;
-import static com.sidert.sidertmovil.utils.Constants.K_MUNICIPIO;
-import static com.sidert.sidertmovil.utils.Constants.K_NACIONALIDAD;
-import static com.sidert.sidertmovil.utils.Constants.K_NIVEL_ESTUDIO;
-import static com.sidert.sidertmovil.utils.Constants.K_NOMBRE;
-import static com.sidert.sidertmovil.utils.Constants.K_NOMBRE_NEGOCIO;
-import static com.sidert.sidertmovil.utils.Constants.K_NOMBRE_QUIEN_FIRMA;
-import static com.sidert.sidertmovil.utils.Constants.K_NOMBRE_TITULAR;
-import static com.sidert.sidertmovil.utils.Constants.K_NO_EXTERIOR;
-import static com.sidert.sidertmovil.utils.Constants.K_NO_IDENTIFICACION;
-import static com.sidert.sidertmovil.utils.Constants.K_NO_INTERIOR;
-import static com.sidert.sidertmovil.utils.Constants.K_NO_LOTE;
-import static com.sidert.sidertmovil.utils.Constants.K_NO_MANZANA;
-import static com.sidert.sidertmovil.utils.Constants.K_NUM_OPERACIONES_MENSUAL;
-import static com.sidert.sidertmovil.utils.Constants.K_NUM_OPERACIONES_MENSUAL_EFECTIVO;
-import static com.sidert.sidertmovil.utils.Constants.K_OBSERVACIONES;
-import static com.sidert.sidertmovil.utils.Constants.K_OCUPACION;
-import static com.sidert.sidertmovil.utils.Constants.K_OTRO_DESTINO_CREDITO;
-import static com.sidert.sidertmovil.utils.Constants.K_OTRO_MEDIOS_PAGOS;
-import static com.sidert.sidertmovil.utils.Constants.K_OTRO_TIPO_VIVIENDA;
-import static com.sidert.sidertmovil.utils.Constants.K_PARENTESCO;
-import static com.sidert.sidertmovil.utils.Constants.K_PARENTESCO_SOLICITANTE;
-import static com.sidert.sidertmovil.utils.Constants.K_PARENTESCO_TITULAR;
-import static com.sidert.sidertmovil.utils.Constants.K_PATERNO;
-import static com.sidert.sidertmovil.utils.Constants.K_PERIODICIDAD;
-import static com.sidert.sidertmovil.utils.Constants.K_PLAZO;
-import static com.sidert.sidertmovil.utils.Constants.K_POLITICAMENTE_EXP;
-import static com.sidert.sidertmovil.utils.Constants.K_PROPIEDADES;
-import static com.sidert.sidertmovil.utils.Constants.K_PROPIETARIO;
-import static com.sidert.sidertmovil.utils.Constants.K_PROVEEDOR_RECURSOS;
-import static com.sidert.sidertmovil.utils.Constants.K_REFERENCIAS;
-import static com.sidert.sidertmovil.utils.Constants.K_REFERENCIA_DOMICILIARIA;
-import static com.sidert.sidertmovil.utils.Constants.K_REFERENCIA_NEGOCIO;
-import static com.sidert.sidertmovil.utils.Constants.K_RFC;
-import static com.sidert.sidertmovil.utils.Constants.K_SOLICITANTE;
-import static com.sidert.sidertmovil.utils.Constants.K_SOLICITANTE_AVAL;
-import static com.sidert.sidertmovil.utils.Constants.K_SOLICITANTE_CONYUGE;
-import static com.sidert.sidertmovil.utils.Constants.K_SOLICITANTE_CROQUIS;
-import static com.sidert.sidertmovil.utils.Constants.K_SOLICITANTE_DATOS_ECONOMICOS;
-import static com.sidert.sidertmovil.utils.Constants.K_SOLICITANTE_DOCUMENTOS;
-import static com.sidert.sidertmovil.utils.Constants.K_SOLICITANTE_NEGOCIO;
-import static com.sidert.sidertmovil.utils.Constants.K_SOLICITANTE_POLITICAS;
-import static com.sidert.sidertmovil.utils.Constants.K_SOLICITANTE_REFERENCIA;
-import static com.sidert.sidertmovil.utils.Constants.K_SOL_LATITUD;
-import static com.sidert.sidertmovil.utils.Constants.K_SOL_LOCATED_AT;
-import static com.sidert.sidertmovil.utils.Constants.K_SOL_LONGITUD;
-import static com.sidert.sidertmovil.utils.Constants.K_TEL_CASA;
-import static com.sidert.sidertmovil.utils.Constants.K_TEL_CELULAR;
-import static com.sidert.sidertmovil.utils.Constants.K_TEL_MENSAJE;
-import static com.sidert.sidertmovil.utils.Constants.K_TEL_TRABAJO;
-import static com.sidert.sidertmovil.utils.Constants.K_TIEMPO_VIVIR_SITIO;
-import static com.sidert.sidertmovil.utils.Constants.K_TIENE_FIRMA;
-import static com.sidert.sidertmovil.utils.Constants.K_TIENE_NEGOCIO;
-import static com.sidert.sidertmovil.utils.Constants.K_TIPO_SOLICITUD;
-import static com.sidert.sidertmovil.utils.Constants.K_TIPO_VIVIENDA;
-import static com.sidert.sidertmovil.utils.Constants.K_UBICACION;
-import static com.sidert.sidertmovil.utils.Constants.K_VALOR_APROXIMADO;
-import static com.sidert.sidertmovil.utils.Constants.TBL_DATOS_BENEFICIARIO;
-import static com.sidert.sidertmovil.utils.Constants.TBL_DATOS_BENEFICIARIO_REN;
-import static com.sidert.sidertmovil.utils.Constants.TBL_DATOS_CREDITO_CAMPANA;
-import static com.sidert.sidertmovil.utils.Constants.TIMESTAMP;
+import static com.sidert.sidertmovil.utils.Constants.*;
 
 public class dialog_sending_solicitud_individual extends DialogFragment {
     private Context ctx;
@@ -234,6 +98,7 @@ public class dialog_sending_solicitud_individual extends DialogFragment {
     private TextView tvCliente;
     private TextView tvError;
     private SessionManager session;
+    private boolean canICloseTheActivity;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -298,26 +163,39 @@ public class dialog_sending_solicitud_individual extends DialogFragment {
                 CroquisRenDao croquisRenDao = new CroquisRenDao(ctx);
                 CroquisRen croquisRen = croquisRenDao.findByIdSolicitud(solicitudRen.getIdSolicitud());
 
-                JSONObject json_solicitud = new JSONObject();
+                SolicitudCampanaDao solicitudCampanaDao = DBhelper.getInstance(ctx).getSolicitudCampanaDao();
+                Optional<SolicitudCampana> solicitudCampanaOptional = solicitudCampanaDao.findBySolicitudId(idSolicitud, 0, EntitiesCommonsContants.TIPO_SOLICITUD_INDIVIDUAL_RENOVACION);
 
-                fillSolicitudRenJson(json_solicitud, solicitudRen);
-                fillCreditoRenJson(json_solicitud, creditoIndRen);
-                fillClienteRenJson(json_solicitud, clienteRen, creditoIndRen);
+                BeneficiariosDao beneficiariosDao = DBhelper.getInstance(ctx).getBeneficiariosDao();
+                Optional<Beneficiario> beneficiarioOptional = beneficiariosDao.findBySolicitudId(idSolicitud, 0, EntitiesCommonsContants.TIPO_SOLICITUD_INDIVIDUAL_RENOVACION);
+
+                JSONObject jsonSolicitud = new JSONObject();
+
+                fillSolicitudRenJson(jsonSolicitud, solicitudRen);
+                fillCreditoRenJson(jsonSolicitud, creditoIndRen);
+                fillClienteRenJson(jsonSolicitud, clienteRen, creditoIndRen);
 
                 if ((clienteRen.getEstadoCivil().equals("CASADO(A)") || clienteRen.getEstadoCivil().equals("UNION LIBRE")) && conyugueRen != null) {
-                    fillConyugueRenJson(json_solicitud, conyugueRen);
+                    fillConyugueRenJson(jsonSolicitud, conyugueRen);
                 }
 
                 if (Integer.parseInt(creditoIndRen.getMontoPrestamo().replace(",", "")) >= 30000) {
-                    fillEconomicoRenJson(json_solicitud, economicoRen);
+                    fillEconomicoRenJson(jsonSolicitud, economicoRen);
                 }
 
-                fillNegocioRenJson(json_solicitud, negocioRen);
-                fillAvalRenJson(json_solicitud, avalRen);
-                fillReferenciaRenJson(json_solicitud, referenciaRen);
-                fillCroquisRenJson(json_solicitud, croquisRen);
-                fillDocumentoRenJson(json_solicitud, documentoRen);
-                fillPoliticaPldRenJson(json_solicitud, politicaPldRen);
+                fillNegocioRenJson(jsonSolicitud, negocioRen);
+                fillAvalRenJson(jsonSolicitud, avalRen);
+                fillReferenciaRenJson(jsonSolicitud, referenciaRen);
+                fillCroquisRenJson(jsonSolicitud, croquisRen);
+                fillDocumentoRenJson(jsonSolicitud, documentoRen);
+                fillPoliticaPldRenJson(jsonSolicitud, politicaPldRen);
+
+                if (solicitudCampanaOptional.isPresent()) {
+                    fillSolicitudCampana(jsonSolicitud, solicitudCampanaOptional.get());
+                }
+                if (beneficiarioOptional.isPresent()) {
+                    fillBeneficiario(jsonSolicitud, beneficiarioOptional.get());
+                }
 
                 MultipartBody.Part fachada_cliente = clienteRen.getFachadaMBPart();
                 MultipartBody.Part firma_cliente = clienteRen.getFirmaMBPart();
@@ -335,7 +213,7 @@ public class dialog_sending_solicitud_individual extends DialogFragment {
                 MultipartBody.Part ine_reverso_aval = documentoRen.getIneReversoAvalMBPart();
                 MultipartBody.Part curp_aval = documentoRen.getCurpAvalMBPart();
                 MultipartBody.Part comprobante_aval = documentoRen.getComprobanteDomicilioAvalMBPart();
-                RequestBody solicitudBody = RequestBody.create(json_solicitud.toString(), MultipartBody.FORM);
+                RequestBody solicitudBody = RequestBody.create(jsonSolicitud.toString(), MultipartBody.FORM);
                 RequestBody solicitudIdBody = RequestBody.create(String.valueOf(solicitudRen.getIdOriginacion()), MultipartBody.FORM);
 
                 SolicitudIndService solicitudIndService = RetrofitClient.newInstance(ctx).create(SolicitudIndService.class);
@@ -372,11 +250,11 @@ public class dialog_sending_solicitud_individual extends DialogFragment {
 
                             solicitudRenDao.solicitudEnviada(solicitudRen);
 
-                            enviarDatosCampana(solicitudRen.getIdSolicitud());
-                            enviarDatosBeneficiarioRen(solicitudRen.getIdSolicitud());
+                            Spanned spanned = Html.fromHtml("<p>" + res.getMensaje() + "</p>", Html.FROM_HTML_SEPARATOR_LINE_BREAK_DIV);
+                            tvCliente.setText(spanned);
+                            ivClose.setVisibility(View.VISIBLE);
+                            canICloseTheActivity = true;
 
-                            Toast.makeText(ctx, "¡Solicitud enviada!", Toast.LENGTH_LONG).show();
-                            getActivity().finish();
                         } else {
                             try {
                                 Log.e("AQUI", "DEFAULT");
@@ -441,23 +319,37 @@ public class dialog_sending_solicitud_individual extends DialogFragment {
                 CroquisDao croquisDao = new CroquisDao(ctx);
                 Croquis croquis = croquisDao.findByIdSolicitud(solicitud.getIdSolicitud());
 
-                JSONObject json_solicitud = new JSONObject();
+                SolicitudCampanaDao solicitudCampanaDao = DBhelper.getInstance(ctx).getSolicitudCampanaDao();
+                Optional<SolicitudCampana> solicitudCampanaOptional = solicitudCampanaDao.findBySolicitudId(idSolicitud, 0, EntitiesCommonsContants.TIPO_SOLICITUD_INDIVIDUAL_ORIGINACION);
 
-                fillSolicitudJson(json_solicitud, solicitud);
-                fillCreditoJson(json_solicitud, creditoInd);
-                fillClienteJson(json_solicitud, cliente);
-                if ((cliente.getEstadoCivil().equals("CASADO(A)") || cliente.getEstadoCivil().equals("UNION LIBRE")) && conyugue != null)
-                    fillConyugueJson(json_solicitud, conyugue);
-                if (Integer.parseInt(creditoInd.getMontoPrestamo().replace(",", "")) >= 30000)
-                    fillEconomicoJson(json_solicitud, economico);
-                fillNegocioJson(json_solicitud, negocio);
-                fillAvalJson(json_solicitud, aval);
-                fillReferenciaJson(json_solicitud, referencia);
-                //fillBeneficiario(json_solicitud,beneficiario);
-                fillCroquisJson(json_solicitud, croquis);
-                fillDocumentoJson(json_solicitud, documento);
-                fillPoliticaPldJson(json_solicitud, politicaPld);
+                BeneficiariosDao beneficiariosDao = DBhelper.getInstance(ctx).getBeneficiariosDao();
+                Optional<Beneficiario> beneficiarioOptional = beneficiariosDao.findBySolicitudId(idSolicitud, 0, EntitiesCommonsContants.TIPO_SOLICITUD_INDIVIDUAL_ORIGINACION);
 
+
+                JSONObject jsonSolicitud = new JSONObject();
+
+                fillSolicitudJson(jsonSolicitud, solicitud);
+                fillCreditoJson(jsonSolicitud, creditoInd);
+                fillClienteJson(jsonSolicitud, cliente);
+                if ((cliente.getEstadoCivil().equals("CASADO(A)") || cliente.getEstadoCivil().equals("UNION LIBRE")) && conyugue != null) {
+                    fillConyugueJson(jsonSolicitud, conyugue);
+                }
+                if (Integer.parseInt(creditoInd.getMontoPrestamo().replace(",", "")) >= 30000) {
+                    fillEconomicoJson(jsonSolicitud, economico);
+                }
+                fillNegocioJson(jsonSolicitud, negocio);
+                fillAvalJson(jsonSolicitud, aval);
+                fillReferenciaJson(jsonSolicitud, referencia);
+                fillCroquisJson(jsonSolicitud, croquis);
+                fillDocumentoJson(jsonSolicitud, documento);
+                fillPoliticaPldJson(jsonSolicitud, politicaPld);
+
+                if (solicitudCampanaOptional.isPresent()) {
+                    fillSolicitudCampana(jsonSolicitud, solicitudCampanaOptional.get());
+                }
+                if (beneficiarioOptional.isPresent()) {
+                    fillBeneficiario(jsonSolicitud, beneficiarioOptional.get());
+                }
                 MultipartBody.Part fachada_cliente = cliente.getFachadaMBPart();
                 MultipartBody.Part firma_cliente = cliente.getFirmaMBPart();
                 MultipartBody.Part fachada_negocio = negocio.getFachadaMBPart();
@@ -475,9 +367,9 @@ public class dialog_sending_solicitud_individual extends DialogFragment {
                 MultipartBody.Part curp_aval = documento.getCurpAvalMBPart();
                 MultipartBody.Part comprobante_aval = documento.getComprobanteDomicilioAvalMBPart();
 
-                RequestBody solicitudBody = RequestBody.create(MultipartBody.FORM, json_solicitud.toString());
-                RequestBody solicitudIdBody = RequestBody.create(MultipartBody.FORM, String.valueOf(solicitud.getIdOriginacion()));
-                /** aqui obtenemos el id_originacion*/
+                RequestBody solicitudBody = RequestBody.create(jsonSolicitud.toString(), MultipartBody.FORM);
+                RequestBody solicitudIdBody = RequestBody.create(String.valueOf(solicitud.getIdOriginacion()), MultipartBody.FORM);
+                /* aqui obtenemos el id_originacion*/
                 SolicitudIndService solicitudIndService = RetrofitClient.newInstance(ctx).create(SolicitudIndService.class);
                 Call<MResSaveSolicitud> call = solicitudIndService.saveOriginacion("Bearer " + session.getUser().get(7),
                         solicitudBody,
@@ -507,13 +399,15 @@ public class dialog_sending_solicitud_individual extends DialogFragment {
                             MResSaveSolicitud res = response.body();
                             solicitud.setEstatus(2);
                             solicitud.setIdOriginacion(res.getIdSolicitud());
-                            solicitudDao.solicitudEnviada(solicitud, res);
-
-                            enviarDatosCampana(solicitud.getIdSolicitud());
-                            enviarDatosBeneficiario(solicitud.getIdSolicitud());
-
+                            solicitudDao.solicitudEnviada(solicitud);
                             Toast.makeText(ctx, "¡Solicitud enviada!", Toast.LENGTH_LONG).show();
                             getActivity().finish();
+
+                            Spanned spanned = Html.fromHtml("<p>" + res.getMensaje() + "</p>", Html.FROM_HTML_SEPARATOR_LINE_BREAK_DIV);
+                            tvCliente.setText(spanned);
+                            ivClose.setVisibility(View.VISIBLE);
+                            canICloseTheActivity = true;
+
                         } else {
                             try (ResponseBody responseError = response.errorBody()) {
                                 String message = (responseError != null) ? responseError.string() : "Error desconocido";
@@ -536,14 +430,25 @@ public class dialog_sending_solicitud_individual extends DialogFragment {
         }
     }
 
+    private void fillBeneficiario(JSONObject jsonSolicitud, Beneficiario beneficiario) throws JSONException {
+        JSONObject jsonBeneficiario = new JSONObject();
+        jsonBeneficiario.put("nombre", beneficiario.getNombre());
+        jsonBeneficiario.put("paterno", beneficiario.getPaterno());
+        jsonBeneficiario.put("materno", beneficiario.getMaterno());
+        jsonBeneficiario.put("parentesco", beneficiario.getParentesco());
+        jsonSolicitud.put("beneficiario_agf", jsonBeneficiario);
+    }
+
+    private void fillSolicitudCampana(JSONObject jsonSolicitud, SolicitudCampana solicitudCampana) throws JSONException {
+        JSONObject jsonCampana = new JSONObject();
+        jsonCampana.put("nombre_referido", solicitudCampana.getNombreReferido());
+        jsonCampana.put("nombre_campana", solicitudCampana.getCampanaNombre());
+        jsonSolicitud.put("solicitud_campana", jsonCampana);
+    }
+
     private void showError(String message) {
-        Log.e("AQUI", message);
-
-        int limit = message.length();
-
-        if (limit > 1000) limit = 1000;
-
-        tvError.setText(message.substring(0, limit));
+        Spanned spanned = Html.fromHtml(message, Html.FROM_HTML_SEPARATOR_LINE_BREAK_DIV);
+        tvError.setText(spanned);
         tvError.setVisibility(View.VISIBLE);
         ivClose.setVisibility(View.VISIBLE);
     }
@@ -551,7 +456,13 @@ public class dialog_sending_solicitud_individual extends DialogFragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        ivClose.setOnClickListener(buttonView -> dismiss());
+        ivClose.setOnClickListener(buttonView -> {
+            if (canICloseTheActivity) {
+                getActivity().finish();
+            } else {
+                dismiss();
+            }
+        });
     }
 
     private void fillSolicitudJson(JSONObject json_solicitud, Solicitud solicitud) throws JSONException {
@@ -1281,137 +1192,5 @@ public class dialog_sending_solicitud_individual extends DialogFragment {
         json_solicitud.put(K_SOLICITANTE_DOCUMENTOS, json_documentos);
     }
 
-    @SuppressLint("Range")
-    public void enviarDatosBeneficiario(int id_solicitud) {
-        DBhelper dBhelper = DBhelper.getInstance(ctx);
-        Cursor row = dBhelper.getBeneficiarioIndA(TBL_DATOS_BENEFICIARIO, String.valueOf(id_solicitud));
-
-        if (row != null && row.getCount() > 0 && row.moveToFirst()) {
-            String serieId = session.getUser().get(0);
-            BeneficiarioDto beneficiarioDto = new BeneficiarioDto(
-                    row.getLong(row.getColumnIndex("id_originacion")),
-                    row.getInt(row.getColumnIndex("id_cliente")),
-                    row.getInt(row.getColumnIndex("id_grupo")),
-                    row.getString(row.getColumnIndex("nombre")),
-                    row.getString(row.getColumnIndex("paterno")),
-                    row.getString(row.getColumnIndex("materno")),
-                    row.getString(row.getColumnIndex("parentesco")),
-                    serieId
-            );
-            row.close();
-
-            BeneficiarioService sa = RetrofitClient.generalRF(CONTROLLER_API, ctx).create(BeneficiarioService.class);
-            Call<Map<String, Object>> call = sa.senDataBeneficiario(
-                    "Bearer " + session.getUser().get(7),
-                    beneficiarioDto
-            );
-            call.enqueue(new Callback<Map<String, Object>>() {
-                @Override
-                public void onResponse(Call<Map<String, Object>> call, Response<Map<String, Object>> response) {
-                    if (response.code() == 200) {
-                        Map<String, Object> res = response.body();
-                        Timber.tag("AQUI:").e("REGISTRO COMPLETO");
-                    }
-                }
-
-                @Override
-                public void onFailure(Call<Map<String, Object>> call, Throwable t) {
-                    Timber.tag("AQUI;").e(" NO SE REGISTRO NADA");
-                }
-            });
-        } else {
-            Toast.makeText(ctx, "NO SE ENCONTRARON DATOS", Toast.LENGTH_SHORT).show();
-        }
-
-    }
-
-    @SuppressLint("Range")
-    public void enviarDatosBeneficiarioRen(int id_solicitud) {
-        DBhelper dBhelper = DBhelper.getInstance(ctx);
-
-        Cursor row = dBhelper.getBeneficiarioIndA(TBL_DATOS_BENEFICIARIO_REN, String.valueOf(id_solicitud));
-
-        if (row != null && row.getCount() > 0 && row.moveToFirst()) {
-            String serieId = session.getUser().get(0);
-            BeneficiarioDto beneficiarioDto = new BeneficiarioDto(
-                    row.getLong(row.getColumnIndex("id_originacion")),
-                    row.getInt(row.getColumnIndex("id_cliente")),
-                    row.getInt(row.getColumnIndex("id_grupo")),
-                    row.getString(row.getColumnIndex("nombre")),
-                    row.getString(row.getColumnIndex("paterno")),
-                    row.getString(row.getColumnIndex("materno")),
-                    row.getString(row.getColumnIndex("parentesco")),
-                    serieId
-            );
-            row.close();
-
-            BeneficiarioService sa = RetrofitClient.generalRF(CONTROLLER_API, ctx).create(BeneficiarioService.class);
-            Call<Map<String, Object>> call = sa.senDataBeneficiario(
-                    "Bearer " + session.getUser().get(7),
-                    beneficiarioDto
-            );
-            call.enqueue(new Callback<Map<String, Object>>() {
-                @Override
-                public void onResponse(Call<Map<String, Object>> call, Response<Map<String, Object>> response) {
-                    if (response.code() == 200) {
-                        Map<String, Object> res = response.body();
-                        Timber.tag("AQUI:").e("REGISTRO COMPLETO");
-                    }
-                }
-
-                @Override
-                public void onFailure(Call<Map<String, Object>> call, Throwable t) {
-                    Timber.tag("AQUI;").e(" NO SE REGISTRO NADA");
-                }
-            });
-        } else {
-            Toast.makeText(ctx, "NO SE ENCONTRARON LOS DATOS", Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    public void enviarDatosCampana(int id_solicitud) {
-        DBhelper dBhelper = DBhelper.getInstance(ctx);
-
-        datoCampana dc = new datoCampana();
-
-        Cursor row = dBhelper.getRecords(TBL_DATOS_CREDITO_CAMPANA, " WHERE id_solicitud = ?", " ", new String[]{String.valueOf(id_solicitud)});
-
-        if (row.getCount() > 0) {
-            row.moveToFirst();
-            dc.setId_originacion(row.getInt(2));
-            dc.setId_campana(row.getInt(3));
-            dc.setTipo_campana(row.getString(4));
-            dc.setNombre_refiero(row.getString(5));
-            row.close();
-        } else {
-            Toast.makeText(ctx, "NO SE ENCONTRARON LOS DATOS", Toast.LENGTH_SHORT).show();
-        }
-
-        ManagerInterface api = RetrofitClient.generalRF(CONTROLLER_API, ctx).create(ManagerInterface.class);
-
-        Call<datoCampana> call = api.saveCreditoCampana(
-                "Bearer " + session.getUser().get(7),
-                Long.valueOf(dc.getId_originacion()),
-                dc.getId_campana(),
-                dc.getTipo_campana(),
-                dc.getNombre_refiero()
-        );
-
-        call.enqueue(new Callback<datoCampana>() {
-            @Override
-            public void onResponse(Call<datoCampana> call, Response<datoCampana> response) {
-                switch (response.code()) {
-                    case 200:
-                        Log.e("AQUI:", "REGISTRO COMPLETO CREDITO CAMPAÑA");
-                        break;
-                }
-            }
-
-            @Override
-            public void onFailure(Call<datoCampana> call, Throwable t) {
-                Log.e("AQUI:", "NO SE REGISTRO LA CAMPAÑA");
-            }
-        });
-    }
 
 }
