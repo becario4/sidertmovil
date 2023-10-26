@@ -1044,9 +1044,13 @@ public class dialog_sending_solicitud_grupal extends DialogFragment {
             this.pbSending.setVisibility(View.INVISIBLE);
             this.closeDialogButton.setVisibility(View.VISIBLE);
             if (responseResultWrapper.kind == 2) {
-                SolicitudCreditoErrorMessage solicitudCreditoErrorMessage = Miscellaneous.jsonToObject(responseResultWrapper.message, SolicitudCreditoErrorMessage.class);
-                Spanned spanned = Html.fromHtml(String.format("<p>%s</p> <p>%s</p>", solicitudCreditoErrorMessage.getMensaje(), solicitudCreditoErrorMessage.getError()), Html.FROM_HTML_SEPARATOR_LINE_BREAK_DIV);
-                this.infoView.setText(spanned);
+                try {
+                    SolicitudCreditoErrorMessage solicitudCreditoErrorMessage = Miscellaneous.jsonToObject(responseResultWrapper.message, SolicitudCreditoErrorMessage.class);
+                    Spanned spanned = Html.fromHtml(String.format("<p>%s</p> <p>%s</p>", solicitudCreditoErrorMessage.getMensaje(), solicitudCreditoErrorMessage.getError()), Html.FROM_HTML_SEPARATOR_LINE_BREAK_DIV);
+                    this.infoView.setText(spanned);
+                } catch (Exception e) {
+                    this.infoView.setText(responseResultWrapper.message);
+                }
             } else {
                 this.infoView.setText(responseResultWrapper.message);
             }

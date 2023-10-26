@@ -7,11 +7,6 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-
-import androidx.fragment.app.DialogFragment;
-//import android.support.v4.app.Fragment;
-import androidx.appcompat.app.AlertDialog;
-
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,23 +17,24 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.sidert.sidertmovil.R;
+import com.sidert.sidertmovil.database.DBhelper;
 import com.sidert.sidertmovil.database.EntitiesCommonsContants;
-import com.sidert.sidertmovil.database.dao.BeneficiariosDao;
-import com.sidert.sidertmovil.database.dao.SolicitudCampanaDao;
 import com.sidert.sidertmovil.database.entities.Beneficiario;
 import com.sidert.sidertmovil.database.entities.SolicitudCampana;
-import com.sidert.sidertmovil.views.renovacion.RenovarIntegrante;
-import com.sidert.sidertmovil.database.DBhelper;
 import com.sidert.sidertmovil.utils.Constants;
 import com.sidert.sidertmovil.utils.NameFragments;
 import com.sidert.sidertmovil.utils.Popups;
 import com.sidert.sidertmovil.utils.SessionManager;
 import com.sidert.sidertmovil.utils.Validator;
 import com.sidert.sidertmovil.utils.ValidatorTextView;
+import com.sidert.sidertmovil.views.renovacion.RenovarIntegrante;
 
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Objects;
+
+import androidx.appcompat.app.AlertDialog;
+import androidx.fragment.app.DialogFragment;
 
 import static com.sidert.sidertmovil.utils.Constants.TBL_INTEGRANTES_GPO_REN;
 

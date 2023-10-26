@@ -3400,7 +3400,11 @@ public class RenovacionCreditoInd extends AppCompatActivity implements dialog_pl
                         etCapacidadPagoAval.setSelection(sel);
                     } else {
                         // place cursor at the end?
-                        etCapacidadPagoAval.setSelection(Miscellaneous.GetStr(etGastosRentaAval).length() - 1);
+                        String valueToSelection = Miscellaneous.GetStr(etGastosRentaAval);
+                        int lenOfValueToSelection = valueToSelection.length();
+                        if (lenOfValueToSelection > 0) {
+                            etCapacidadPagoAval.setSelection(lenOfValueToSelection - 1);
+                        }
                     }
                 } catch (NumberFormatException nfe) {
                     // do nothing?
@@ -6872,8 +6876,7 @@ public class RenovacionCreditoInd extends AppCompatActivity implements dialog_pl
 
     private boolean saveDatosCampana() {
 
-        Optional<SolicitudCampana> optionalSolicitudCampana = dBhelper.getSolicitudCampanaDao()
-                .findBySolicitudId(id_solicitud, 0, EntitiesCommonsContants.TIPO_SOLICITUD_INDIVIDUAL_RENOVACION);
+        Optional<SolicitudCampana> optionalSolicitudCampana = dBhelper.getSolicitudCampanaDao().findById(solicitudCampanaId);
 
         if (optionalSolicitudCampana.isPresent()) {
             SolicitudCampana solicitudCampana = optionalSolicitudCampana.get();
@@ -7863,8 +7866,7 @@ public class RenovacionCreditoInd extends AppCompatActivity implements dialog_pl
      */
     private boolean saveBeneficiario() {
         // Obtener un Optional con el Beneficiario a partir de la solicitud.
-        Optional<Beneficiario> optionalBeneficiario = dBhelper.getBeneficiariosDao()
-                .findBySolicitudId(id_solicitud, 0, EntitiesCommonsContants.TIPO_SOLICITUD_INDIVIDUAL_RENOVACION);
+        Optional<Beneficiario> optionalBeneficiario = dBhelper.getBeneficiariosDao().findById(beneficiarioId);
 
         if (optionalBeneficiario.isPresent()) {
             Beneficiario beneficiario = optionalBeneficiario.get();
@@ -10341,7 +10343,7 @@ public class RenovacionCreditoInd extends AppCompatActivity implements dialog_pl
         deshabilitarCampos();
 
         SolicitudCampana solicitudCampana = dBhelper.getSolicitudCampanaDao()
-                .findBySolicitudId(id_solicitud, 0, EntitiesCommonsContants.TIPO_SOLICITUD_INDIVIDUAL_ORIGINACION)
+                .findBySolicitudId(id_solicitud, 0, EntitiesCommonsContants.TIPO_SOLICITUD_INDIVIDUAL_RENOVACION)
                 .orElseGet(() -> {
                     SolicitudCampana _solicitudCampana = new SolicitudCampana();
                     _solicitudCampana.setSolicitudId((int) id_solicitud);
@@ -10367,7 +10369,7 @@ public class RenovacionCreditoInd extends AppCompatActivity implements dialog_pl
                     Beneficiario _beneficiario = new Beneficiario();
                     _beneficiario.setSolicitudId((int) id_solicitud);
                     _beneficiario.setIntegranteId(0);
-                    _beneficiario.setTipoSolicitud(EntitiesCommonsContants.TIPO_SOLICITUD_INDIVIDUAL_ORIGINACION);
+                    _beneficiario.setTipoSolicitud(EntitiesCommonsContants.TIPO_SOLICITUD_INDIVIDUAL_RENOVACION);
                     _beneficiario.setSolicitudRemotaId(0);
                     _beneficiario.setNombre("");
                     _beneficiario.setPaterno("");

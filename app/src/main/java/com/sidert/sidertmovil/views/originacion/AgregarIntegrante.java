@@ -92,7 +92,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -5482,7 +5481,7 @@ public class AgregarIntegrante
                     SolicitudCampana _solicitudCampana = new SolicitudCampana();
                     _solicitudCampana.setSolicitudId((int) id_solicitud);
                     _solicitudCampana.setIntegranteId(0);
-                    _solicitudCampana.setTipoSolicitud(EntitiesCommonsContants.TIPO_SOLICITUD_INDIVIDUAL_ORIGINACION);
+                    _solicitudCampana.setTipoSolicitud(EntitiesCommonsContants.TIPO_SOLICITUD_GRUPAL_ORIGINACION);
                     _solicitudCampana.setSolicitudRemotaId(0);
                     _solicitudCampana.setNombreReferido("NINGUNO");
                     _solicitudCampana.setCampanaNombre("NINGUNO");
@@ -5503,7 +5502,7 @@ public class AgregarIntegrante
                     Beneficiario _beneficiario = new Beneficiario();
                     _beneficiario.setSolicitudId((int) id_solicitud);
                     _beneficiario.setIntegranteId(0);
-                    _beneficiario.setTipoSolicitud(EntitiesCommonsContants.TIPO_SOLICITUD_INDIVIDUAL_ORIGINACION);
+                    _beneficiario.setTipoSolicitud(EntitiesCommonsContants.TIPO_SOLICITUD_GRUPAL_ORIGINACION);
                     _beneficiario.setSolicitudRemotaId(0);
                     _beneficiario.setNombre("");
                     _beneficiario.setPaterno("");

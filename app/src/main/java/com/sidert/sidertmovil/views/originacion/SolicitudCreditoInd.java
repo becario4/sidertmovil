@@ -8807,8 +8807,7 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
 
     private boolean saveDatosCampana() {
 
-        Optional<SolicitudCampana> optionalSolicitudCampana = dBhelper.getSolicitudCampanaDao()
-                .findBySolicitudId(id_solicitud, 0, EntitiesCommonsContants.TIPO_SOLICITUD_INDIVIDUAL_ORIGINACION);
+        Optional<SolicitudCampana> optionalSolicitudCampana = dBhelper.getSolicitudCampanaDao().findById(solicitudCampanaId);
 
         if (optionalSolicitudCampana.isPresent()) {
             SolicitudCampana solicitudCampana = optionalSolicitudCampana.get();
@@ -8848,8 +8847,7 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
      */
     private boolean saveBeneficiario() {
         // Obtener un Optional con el Beneficiario a partir de la solicitud.
-        Optional<Beneficiario> optionalBeneficiario = dBhelper.getBeneficiariosDao()
-                .findBySolicitudId(id_solicitud, 0, EntitiesCommonsContants.TIPO_SOLICITUD_INDIVIDUAL_ORIGINACION);
+        Optional<Beneficiario> optionalBeneficiario = dBhelper.getBeneficiariosDao().findById(beneficiarioId);
 
         if (optionalBeneficiario.isPresent()) {
             Beneficiario beneficiario = optionalBeneficiario.get();

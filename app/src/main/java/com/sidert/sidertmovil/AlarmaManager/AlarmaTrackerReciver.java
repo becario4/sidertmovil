@@ -1,6 +1,5 @@
 package com.sidert.sidertmovil.AlarmaManager;
 
-import android.Manifest;
 import android.app.AlarmManager;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -8,7 +7,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.location.LocationManager;
@@ -32,8 +30,6 @@ import org.json.JSONObject;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.StringJoiner;
-
-import androidx.core.app.ActivityCompat;
 
 import static android.content.Context.ALARM_SERVICE;
 import static com.sidert.sidertmovil.utils.Constants.ACCION;

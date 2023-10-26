@@ -1,7 +1,6 @@
 package com.sidert.sidertmovil.v2.di.modules;
 
 import com.sidert.sidertmovil.utils.SessionManager;
-import com.sidert.sidertmovil.v2.SidertMovilApplication;
 import com.sidert.sidertmovil.v2.remote.auth.LoginRemoteAuth;
 import com.sidert.sidertmovil.v2.remote.datasource.CarteraRemoteDatasource;
 import com.sidert.sidertmovil.v2.remote.datasource.CatalogosRemoteDatasource;
@@ -15,17 +14,13 @@ import com.sidert.sidertmovil.v2.remote.datasource.ReciboCcRemoteDatasource;
 import com.sidert.sidertmovil.v2.remote.datasource.SolicitudesRemoteDatasource;
 import com.sidert.sidertmovil.v2.remote.datasource.VerificacionDomiciliariaRemoteDatasource;
 
-import java.io.File;
 import java.time.Duration;
-import java.time.temporal.TemporalUnit;
-import java.util.concurrent.TimeUnit;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
-import okhttp3.Cache;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.logging.HttpLoggingInterceptor;
@@ -40,20 +35,12 @@ public interface NetworkModule {
 
     @Provides
     @Singleton
-    static Retrofit provideOkHttpClient(
-            SidertMovilApplication sidertMovilApplication,
-            @Named("baseUrl") String baseUrl,
-            SessionManager sessionManager) {
+    static Retrofit provideOkHttpClient(@Named("baseUrl") String baseUrl, SessionManager sessionManager) {
 
         HttpLoggingInterceptor httpLoggingInterceptor = new HttpLoggingInterceptor(message -> Timber.tag("OkHttp").d(message));
         httpLoggingInterceptor.setLevel(Level.BASIC);
 
-        int cacheSize = 10 * 1024 * 1024; // 10 MiB
-        File file = new File(sidertMovilApplication.getCacheDir(), "responses");
-        Cache cache = new Cache(file, cacheSize);
-
         OkHttpClient okHttpClient = new OkHttpClient.Builder()
-                .cache(cache)
                 .connectTimeout(Duration.ofMinutes(10))
                 .readTimeout(Duration.ofMinutes(10))
                 .writeTimeout(Duration.ofMinutes(10))
@@ -84,8 +71,23 @@ public interface NetworkModule {
 
     @Provides
     @Singleton
-    static LoginRemoteAuth provideLoginRemoteAuth(Retrofit retrofit) {
-        return retrofit.create(LoginRemoteAuth.class);
+    static LoginRemoteAuth provideLoginRemoteAuth(@Named("baseUrl") String baseUrl) {
+        HttpLoggingInterceptor httpLoggingInterceptor = new HttpLoggingInterceptor(message -> Timber.tag("OnlyLogin").d(message));
+        httpLoggingInterceptor.setLevel(Level.BASIC);
+
+        OkHttpClient okHttpClient = new OkHttpClient.Builder()
+                .connectTimeout(Duration.ofMinutes(10))
+                .readTimeout(Duration.ofMinutes(10))
+                .writeTimeout(Duration.ofMinutes(10))
+                .addInterceptor(httpLoggingInterceptor)
+                .build();
+
+        Retrofit loginRetrofit = new Retrofit.Builder()
+                .client(okHttpClient)
+                .addConverterFactory(GsonConverterFactory.create())
+                .baseUrl(baseUrl)
+                .build();
+        return loginRetrofit.create(LoginRemoteAuth.class);
     }
 
     @Provides
