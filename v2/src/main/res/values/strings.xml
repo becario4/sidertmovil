@@ -6,7 +6,7 @@
     <string name="default_asesor"></string>
     <string name="default_mac"></string>
 
-    <string name="api_url">http://sidert.ddns.net:91/</string>
+    <string name="api_url">https://33b0-187-188-168-167.ngrok-free.app/</string>
     <string name="api_user">androidapp</string>
     <string name="api_password">m1*cR0w4V3-s</string>
 

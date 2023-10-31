@@ -164,10 +164,10 @@ public class dialog_sending_solicitud_individual extends DialogFragment {
                 CroquisRen croquisRen = croquisRenDao.findByIdSolicitud(solicitudRen.getIdSolicitud());
 
                 SolicitudCampanaDao solicitudCampanaDao = DBhelper.getInstance(ctx).getSolicitudCampanaDao();
-                Optional<SolicitudCampana> solicitudCampanaOptional = solicitudCampanaDao.findBySolicitudId(idSolicitud, 0, EntitiesCommonsContants.TIPO_SOLICITUD_INDIVIDUAL_RENOVACION);
+                Optional<SolicitudCampana> solicitudCampanaOptional = solicitudCampanaDao.findBySolicitudId(Long.valueOf(idSolicitud).intValue(), 0, EntitiesCommonsContants.TIPO_SOLICITUD_INDIVIDUAL_RENOVACION);
 
                 BeneficiariosDao beneficiariosDao = DBhelper.getInstance(ctx).getBeneficiariosDao();
-                Optional<Beneficiario> beneficiarioOptional = beneficiariosDao.findBySolicitudId(idSolicitud, 0, EntitiesCommonsContants.TIPO_SOLICITUD_INDIVIDUAL_RENOVACION);
+                Optional<Beneficiario> beneficiarioOptional = beneficiariosDao.findBySolicitudId(Long.valueOf(idSolicitud).intValue(), 0, EntitiesCommonsContants.TIPO_SOLICITUD_INDIVIDUAL_RENOVACION);
 
                 JSONObject jsonSolicitud = new JSONObject();
 
@@ -320,10 +320,10 @@ public class dialog_sending_solicitud_individual extends DialogFragment {
                 Croquis croquis = croquisDao.findByIdSolicitud(solicitud.getIdSolicitud());
 
                 SolicitudCampanaDao solicitudCampanaDao = DBhelper.getInstance(ctx).getSolicitudCampanaDao();
-                Optional<SolicitudCampana> solicitudCampanaOptional = solicitudCampanaDao.findBySolicitudId(idSolicitud, 0, EntitiesCommonsContants.TIPO_SOLICITUD_INDIVIDUAL_ORIGINACION);
+                Optional<SolicitudCampana> solicitudCampanaOptional = solicitudCampanaDao.findBySolicitudId(Long.valueOf(idSolicitud).intValue(), 0, EntitiesCommonsContants.TIPO_SOLICITUD_INDIVIDUAL_ORIGINACION);
 
                 BeneficiariosDao beneficiariosDao = DBhelper.getInstance(ctx).getBeneficiariosDao();
-                Optional<Beneficiario> beneficiarioOptional = beneficiariosDao.findBySolicitudId(idSolicitud, 0, EntitiesCommonsContants.TIPO_SOLICITUD_INDIVIDUAL_ORIGINACION);
+                Optional<Beneficiario> beneficiarioOptional = beneficiariosDao.findBySolicitudId(Long.valueOf(idSolicitud).intValue(), 0, EntitiesCommonsContants.TIPO_SOLICITUD_INDIVIDUAL_ORIGINACION);
 
 
                 JSONObject jsonSolicitud = new JSONObject();

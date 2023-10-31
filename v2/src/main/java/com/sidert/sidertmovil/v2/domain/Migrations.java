@@ -1,7 +1,5 @@
 package com.sidert.sidertmovil.v2.domain;
 
-import android.util.Log;
-
 import androidx.annotation.NonNull;
 import androidx.room.migration.Migration;
 import androidx.sqlite.db.SupportSQLiteDatabase;
@@ -12,7 +10,6 @@ public class Migrations {
     private static final Timber.Tree LOG = Timber.tag(Migrations.class.getName());
 
     public static final Migration MIGRATION_1_2 = new Migration(1, 2) {
-
 
         @Override
         public void migrate(@NonNull SupportSQLiteDatabase database) {

@@ -293,7 +293,7 @@ public class BeneficiariosDaoImpl
     }
 
     @Override
-    public Optional<Beneficiario> findBySolicitudId(Long solicitudId, Integer integranteId, String tipoSolicitud) {
+    public Optional<Beneficiario> findBySolicitudId(Integer solicitudId, Integer integranteId, String tipoSolicitud) {
         String query = "SELECT * FROM " + Beneficiario.TABLE + " t0 " +
                 "WHERE t0." + Beneficiario.SOLICITUD_ID + " = ? " +
                 "AND t0." + Beneficiario.INTEGRANTE_ID + " = ? " +

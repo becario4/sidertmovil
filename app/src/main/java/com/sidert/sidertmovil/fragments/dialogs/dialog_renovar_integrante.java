@@ -63,18 +63,12 @@ public class dialog_renovar_integrante extends DialogFragment {
     private TextView tvCargo;
     private Button btnGuardar;
     private Button btnCancelar;
-    private Calendar mCalendar;
-
     private Validator validator;
     private ValidatorTextView validatorTV;
-
-    private SessionManager session;
-
     private DBhelper dBhelper;
     private SQLiteDatabase db;
 
     private int id_cargo = 0;
-
     private int id_credito = 0;
     private int id_integrante = 0;
 
@@ -84,7 +78,6 @@ public class dialog_renovar_integrante extends DialogFragment {
 
         ctx = getContext();
 
-        session = SessionManager.getInstance(ctx);
         validator = new Validator();
         validatorTV = new ValidatorTextView();
         dBhelper = DBhelper.getInstance(ctx);
@@ -210,7 +203,6 @@ public class dialog_renovar_integrante extends DialogFragment {
     private void saveIntegrante() {
 
         int tipo = 2;
-        Long solicitudId = 0L;
 
         if (id_integrante == 0) {
             //Inserta registro de integrante
@@ -242,11 +234,11 @@ public class dialog_renovar_integrante extends DialogFragment {
             params.put(24, "0");                                                     //CLIENTE ID
             params.put(25, "0.00");                                                     //CLIENTE ID
 
-            solicitudId = dBhelper.saveIntegrantesGpoRen(db, params);
+            id_integrante = dBhelper.saveIntegrantesGpoRen(db, params).intValue();
 
             //Inserta registro de datos telefonicos
             params = new HashMap<>();
-            params.put(0, String.valueOf(solicitudId));              //ID INTEGRANTE
+            params.put(0, String.valueOf(id_integrante));              //ID INTEGRANTE
             params.put(1, "");                              //TEL CASA
             params.put(2, "");                              //TEL CELULAR
             params.put(3, "");                              //TEL MENSAJES
@@ -257,7 +249,7 @@ public class dialog_renovar_integrante extends DialogFragment {
 
             //Inserta registro de datos domicilio
             params = new HashMap<>();
-            params.put(0, String.valueOf(solicitudId));          //ID INTEGRANTE
+            params.put(0, String.valueOf(id_integrante));          //ID INTEGRANTE
             params.put(1, "");                          //LATITUD
             params.put(2, "");                          //LONGITUD
             params.put(3, "");                          //CALLE
@@ -284,7 +276,7 @@ public class dialog_renovar_integrante extends DialogFragment {
 
             //Inserta registro de negocio
             params = new HashMap<>();
-            params.put(0, String.valueOf(solicitudId));          //ID INTEGRANTE
+            params.put(0, String.valueOf(id_integrante));          //ID INTEGRANTE
             params.put(1, "");                          //NOMBRE
             params.put(2, "");                          //LATITID
             params.put(3, "");                          //LONGITUD
@@ -323,7 +315,7 @@ public class dialog_renovar_integrante extends DialogFragment {
 
             //Inserta registro del conyuge
             params = new HashMap<>();
-            params.put(0, String.valueOf(solicitudId));          //ID INTEGRANTE
+            params.put(0, String.valueOf(id_integrante));          //ID INTEGRANTE
             params.put(1, "");                          //NOMBRE
             params.put(2, "");                          //PATERNO
             params.put(3, "");                          //MATERNO
@@ -350,7 +342,7 @@ public class dialog_renovar_integrante extends DialogFragment {
 
             //Inserta otros datos del integrante
             params = new HashMap<>();
-            params.put(0, String.valueOf(solicitudId));          //ID INTEGRANTE
+            params.put(0, String.valueOf(id_integrante));          //ID INTEGRANTE
             params.put(1, "");                          //CLASIFICACION RIESGO
             params.put(2, "");                          //MEDIO CONTACTO
             params.put(3, "");                          //EMAIL
@@ -365,7 +357,7 @@ public class dialog_renovar_integrante extends DialogFragment {
 
             //Inserta registro de croquis
             params = new HashMap<>();
-            params.put(0, String.valueOf(solicitudId));                  //ID SOLICITUD
+            params.put(0, String.valueOf(id_integrante));                  //ID SOLICITUD
             params.put(1, "");                                  //CALLE PRINCIPAL
             params.put(2, "");                                  //LATERAL UNO
             params.put(3, "");                                  //LATERAL DOS
@@ -377,7 +369,7 @@ public class dialog_renovar_integrante extends DialogFragment {
 
             //Inserta registro de politicas de integrante
             params = new HashMap<>();
-            params.put(0, String.valueOf(solicitudId));      //ID INTEGRANTE
+            params.put(0, String.valueOf(id_integrante));      //ID INTEGRANTE
             params.put(1, "0");                     //PROPIETARIO REAL
             params.put(2, "0");                     //PROVEEDOR RECURSOS
             params.put(3, "0");                     //PERSONA POLITICA
@@ -387,7 +379,7 @@ public class dialog_renovar_integrante extends DialogFragment {
 
             //Inserta registro de documentos de integrante
             params = new HashMap<>();
-            params.put(0, String.valueOf(solicitudId));      //ID INTEGRANTE
+            params.put(0, String.valueOf(id_integrante));      //ID INTEGRANTE
             params.put(1, "");                      //INE FRONTAL
             params.put(2, "");                      //INE REVERSO
             params.put(3, "");                      //CURP
@@ -395,40 +387,47 @@ public class dialog_renovar_integrante extends DialogFragment {
             params.put(5, "0");                     //ESTATUS COMPLETADO
 
             dBhelper.saveDocumentosIntegrante(db, params, tipo);
-
-            SolicitudCampana solicitudCampana = new SolicitudCampana();
-            solicitudCampana.setSolicitudId(solicitudId.intValue());
-            solicitudCampana.setTipoSolicitud(EntitiesCommonsContants.TIPO_SOLICITUD_GRUPAL_RENOVACION);
-            solicitudCampana.setId((long) id_integrante);
-            solicitudCampana.setNombreReferido("");
-            solicitudCampana.setCampanaNombre("");
-            dBhelper.getSolicitudCampanaDao().insert(solicitudCampana);
-
-            Beneficiario beneficiario = new Beneficiario();
-            beneficiario.setSolicitudId(solicitudId.intValue());
-            beneficiario.setTipoSolicitud(EntitiesCommonsContants.TIPO_SOLICITUD_GRUPAL_RENOVACION);
-            beneficiario.setId((long) id_integrante);
-            beneficiario.setNombre("");
-            beneficiario.setPaterno("");
-            beneficiario.setMaterno("");
-            beneficiario.setParentesco("");
-            dBhelper.getBeneficiariosDao().insert(beneficiario);
-
-            mListener.onComplete(solicitudId, etNombre.getText().toString().trim().toUpperCase(), etPaterno.getText().toString().trim().toUpperCase(), etMaterno.getText().toString().trim().toUpperCase(), tvCargo.getText().toString(), solicitudCampana, beneficiario);
-            getDialog().dismiss();
-        } else {
-            SolicitudCampana solicitudCampana = dBhelper.getSolicitudCampanaDao()
-                    .findBySolicitudId(solicitudId, id_integrante, EntitiesCommonsContants.TIPO_SOLICITUD_GRUPAL_RENOVACION)
-                    .orElseThrow(RuntimeException::new);
-            Beneficiario beneficiario = dBhelper.getBeneficiariosDao()
-                    .findBySolicitudId(solicitudId, id_integrante, EntitiesCommonsContants.TIPO_SOLICITUD_GRUPAL_RENOVACION)
-                    .orElseThrow(RuntimeException::new);
-
-            dBhelper.saveCargoIntegranteGpoRen(db, id_cargo, id_integrante);
-            mListener.onComplete(id_integrante, etNombre.getText().toString().trim().toUpperCase(), etPaterno.getText().toString().trim().toUpperCase(), etMaterno.getText().toString().trim().toUpperCase(), tvCargo.getText().toString(), solicitudCampana, beneficiario);
-            getDialog().dismiss();
         }
+        SolicitudCampana solicitudCampana = dBhelper.getSolicitudCampanaDao()
+                .findBySolicitudId(id_credito, id_integrante, EntitiesCommonsContants.TIPO_SOLICITUD_GRUPAL_RENOVACION)
+                .orElseGet(this::saveSolicitudCamapana);
+        Beneficiario beneficiario = dBhelper.getBeneficiariosDao()
+                .findBySolicitudId(id_credito, id_integrante, EntitiesCommonsContants.TIPO_SOLICITUD_GRUPAL_RENOVACION)
+                .orElseGet(this::saveBeneficiario);
+        dBhelper.saveCargoIntegranteGpoRen(db, id_cargo, id_integrante);
+        mListener.onComplete(id_integrante, etNombre.getText().toString().trim().toUpperCase(), etPaterno.getText().toString().trim().toUpperCase(), etMaterno.getText().toString().trim().toUpperCase(), tvCargo.getText().toString(), solicitudCampana, beneficiario);
+        getDialog().dismiss();
+
     }
+
+    private Beneficiario saveBeneficiario() {
+        Beneficiario newBeneficiario = new Beneficiario();
+        newBeneficiario.setSolicitudId(id_credito);
+        newBeneficiario.setIntegranteId(id_integrante);
+        newBeneficiario.setTipoSolicitud(EntitiesCommonsContants.TIPO_SOLICITUD_GRUPAL_RENOVACION);
+        newBeneficiario.setSolicitudRemotaId(0);
+        newBeneficiario.setNombre("");
+        newBeneficiario.setPaterno("");
+        newBeneficiario.setMaterno("");
+        newBeneficiario.setParentesco("");
+        Long beneficiarioId = dBhelper.getBeneficiariosDao().insert(newBeneficiario);
+        newBeneficiario.setId(beneficiarioId);
+        return newBeneficiario;
+    }
+
+    private SolicitudCampana saveSolicitudCamapana() {
+        SolicitudCampana newSolicitudCampana = new SolicitudCampana();
+        newSolicitudCampana.setSolicitudId(id_credito);
+        newSolicitudCampana.setIntegranteId(id_integrante);
+        newSolicitudCampana.setTipoSolicitud(EntitiesCommonsContants.TIPO_SOLICITUD_GRUPAL_RENOVACION);
+        newSolicitudCampana.setSolicitudRemotaId(0);
+        newSolicitudCampana.setNombreReferido("NINGUNO");
+        newSolicitudCampana.setCampanaNombre("NINGUNO");
+        Long solicitudCamapanaId = dBhelper.getSolicitudCampanaDao().insert(newSolicitudCampana);
+        newSolicitudCampana.setId(solicitudCamapanaId);
+        return newSolicitudCampana;
+    }
+
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {

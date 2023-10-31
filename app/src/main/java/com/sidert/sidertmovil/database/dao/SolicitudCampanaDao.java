@@ -19,7 +19,7 @@ public interface SolicitudCampanaDao {
 
     void delete(SolicitudCampana entity);
 
-    Optional<SolicitudCampana> findBySolicitudId(Long solicitudId, Integer integranteId, String tipoSolicitud);
+    Optional<SolicitudCampana> findBySolicitudId(Integer solicitudId, Integer integranteId, String tipoSolicitud);
 
 
 }

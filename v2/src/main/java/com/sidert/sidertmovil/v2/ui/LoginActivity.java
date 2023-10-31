@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.provider.Settings;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Toast;
 
 import com.sidert.sidertmovil.activities.ComunicadoCovid;
 import com.sidert.sidertmovil.fragments.dialogs.dialog_mailbox;
@@ -125,22 +126,16 @@ public class LoginActivity
      */
     private void alertNoGps() {
         Context context = this.getApplicationContext();
-        final AlertDialog.Builder builder = new AlertDialog.Builder(context);
-        builder.setMessage("El sistema de GPS se encuentra desactivado, favor de ACTIVARLO!!!")
-                .setCancelable(false)
-                .setPositiveButton("Aceptar", (dialogInterface, i) -> {
-                    ActivityResultLauncher<Intent> lunchActivity = this.registerForActivityResult(
-                            new ActivityResultContracts.StartActivityForResult(),
-                            result -> {
-                                if (result.getResultCode() == Activity.RESULT_CANCELED) {
-                                    alertNoGps();
-                                }
-                            }
-                    );
-                    lunchActivity.launch(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
-                });
-        AlertDialog alert = builder.create();
-        alert.show();
+        Toast.makeText(context, "El sistema de GPS se encuentra desactivado, favor de ACTIVARLO!!!", Toast.LENGTH_LONG).show();
+        ActivityResultLauncher<Intent> lunchActivity = this.registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    if (result.getResultCode() == Activity.RESULT_CANCELED) {
+                        alertNoGps();
+                    }
+                }
+        );
+        lunchActivity.launch(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
     }
 
 }

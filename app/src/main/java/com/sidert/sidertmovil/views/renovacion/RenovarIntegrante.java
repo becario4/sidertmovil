@@ -5715,7 +5715,7 @@ public class RenovarIntegrante
         row.close(); //Cierra datos de documentos del integrante
 
         SolicitudCampana solicitudCampana = dBhelper.getSolicitudCampanaDao()
-                .findBySolicitudId(Long.parseLong(this.id_credito), Integer.parseInt(id_integrante), EntitiesCommonsContants.TIPO_SOLICITUD_GRUPAL_RENOVACION)
+                .findBySolicitudId(Integer.parseInt(this.id_credito), Integer.parseInt(id_integrante), EntitiesCommonsContants.TIPO_SOLICITUD_GRUPAL_RENOVACION)
                 .orElseGet(() -> {
                     SolicitudCampana newSolicitudCampana = new SolicitudCampana();
                     newSolicitudCampana.setSolicitudId(Integer.parseInt(id_credito));
@@ -5729,15 +5729,10 @@ public class RenovarIntegrante
                     return newSolicitudCampana;
                 });
 
-        String solicitudCampanaNombre = solicitudCampana.getCampanaNombre();
-
-        this.solicitudCampanaAtomicReference.set(solicitudCampana);
-        this.txtCampanaGpoRen.setText(solicitudCampanaNombre);
-        this.txtNombreRefieroGpoRen.setText(solicitudCampana.getNombreReferido());
-        txtNombreRefieroGpoRen.setEnabled(!solicitudCampanaNombre.equals("NINGUNO"));
+        this.setDataToSolicitudCamapanaFields(solicitudCampana);
 
         Beneficiario beneficiario = dBhelper.getBeneficiariosDao()
-                .findBySolicitudId(Long.parseLong(this.id_credito), Integer.parseInt(id_integrante), EntitiesCommonsContants.TIPO_SOLICITUD_GRUPAL_RENOVACION)
+                .findBySolicitudId(Integer.parseInt(this.id_credito), Integer.parseInt(id_integrante), EntitiesCommonsContants.TIPO_SOLICITUD_GRUPAL_RENOVACION)
                 .orElseGet(() -> {
                     Beneficiario newBeneficiario = new Beneficiario();
                     newBeneficiario.setSolicitudId(Integer.parseInt(id_credito));
@@ -5753,13 +5748,7 @@ public class RenovarIntegrante
                     return newBeneficiario;
                 });
 
-
-        this.beneficiarioAtomicReference.set(beneficiario);
-        this.txtNombreBeneficiario.setText(beneficiario.getNombre());
-        this.txtApellidoPaterno.setText(beneficiario.getPaterno());
-        this.txtApellidoMaterno.setText(beneficiario.getMaterno());
-        this.txtParentescoBeneficiario.setText(beneficiario.getParentesco());
-
+        this.setDataToBeneficiarioFields(beneficiario);
 
         /**Valida si ya esta guardado la solicitud para bloquear todos los campos y eventos*/
         if (!is_edit) {
@@ -5982,6 +5971,26 @@ public class RenovarIntegrante
 
 
         return save_integrante;
+    }
+
+
+    private void setDataToBeneficiarioFields(Beneficiario beneficiario) {
+        this.beneficiarioAtomicReference.set(beneficiario);
+        this.txtNombreBeneficiario.setText(beneficiario.getNombre());
+        this.txtApellidoPaterno.setText(beneficiario.getPaterno());
+        this.txtApellidoMaterno.setText(beneficiario.getMaterno());
+        this.txtParentescoBeneficiario.setText(beneficiario.getParentesco());
+
+    }
+
+    private void setDataToSolicitudCamapanaFields(SolicitudCampana solicitudCampana) {
+        String solicitudCampanaNombre = solicitudCampana.getCampanaNombre();
+
+        this.solicitudCampanaAtomicReference.set(solicitudCampana);
+        this.txtCampanaGpoRen.setText(solicitudCampanaNombre);
+        this.txtNombreRefieroGpoRen.setText(solicitudCampana.getNombreReferido());
+        txtNombreRefieroGpoRen.setEnabled(!solicitudCampanaNombre.equals("NINGUNO"));
+
     }
 
     /**
@@ -6768,8 +6777,8 @@ public class RenovarIntegrante
 
             if (isNuevo) Log.e("AQUI", "cliente nuevo");
             else Log.e("AQUI", "cliente renovado");
-            solicitudCampanaAtomicReference.set(solicitudCampana);
-            beneficiarioAtomicReference.set(beneficiario);
+            this.setDataToSolicitudCamapanaFields(solicitudCampana);
+            this.setDataToBeneficiarioFields(beneficiario);
         } else {
             /**en caso de que cancelo el registo cierra el formulario de solicitud*/
             finish();

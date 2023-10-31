@@ -234,7 +234,7 @@ public class SolicitudCampanaDaoImpl implements SolicitudCampanaDao {
     }
 
     @Override
-    public Optional<SolicitudCampana> findBySolicitudId(Long solicitudId, Integer integranteId, String tipoSolicitud) {
+    public Optional<SolicitudCampana> findBySolicitudId(Integer solicitudId, Integer integranteId, String tipoSolicitud) {
         String query = "SELECT * FROM " + SolicitudCampana.TABLE + " t0 " +
                 "WHERE t0. " + SolicitudCampana.SOLICITUD_ID + " = ? " +
                 "and t0." + SolicitudCampana.INTEGRANTE_ID + "  = ? " +

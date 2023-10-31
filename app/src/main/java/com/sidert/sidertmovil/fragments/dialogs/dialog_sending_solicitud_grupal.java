@@ -330,11 +330,11 @@ public class dialog_sending_solicitud_grupal extends DialogFragment {
 
             SolicitudCampanaDao solicitudCampanaDao = DBhelper.getInstance(ctx).getSolicitudCampanaDao();
             SolicitudCampana solicitudCampana = solicitudCampanaDao
-                    .findBySolicitudId(creditoGpoId.longValue(), integranteId, EntitiesCommonsContants.TIPO_SOLICITUD_GRUPAL_RENOVACION)
+                    .findBySolicitudId(creditoGpoId, integranteId, EntitiesCommonsContants.TIPO_SOLICITUD_GRUPAL_RENOVACION)
                     .orElse(defaultCamapana);
 
             BeneficiariosDao beneficiariosDao = DBhelper.getInstance(ctx).getBeneficiariosDao();
-            Optional<Beneficiario> beneficiarioOptional = beneficiariosDao.findBySolicitudId(creditoGpoId.longValue(), integranteId, EntitiesCommonsContants.TIPO_SOLICITUD_GRUPAL_RENOVACION);
+            Optional<Beneficiario> beneficiarioOptional = beneficiariosDao.findBySolicitudId(creditoGpoId, integranteId, EntitiesCommonsContants.TIPO_SOLICITUD_GRUPAL_RENOVACION);
 
             FillSolicitudRen(json_solicitud, totalIntegrantesRenovacion, creditoGpoRen, solicitudRen);
             FillIntegranteRen(json_solicitud, integranteGpoRen, otrosDatosIntegranteRen, domicilioIntegranteRen);
@@ -493,11 +493,11 @@ public class dialog_sending_solicitud_grupal extends DialogFragment {
 
             SolicitudCampanaDao solicitudCampanaDao = DBhelper.getInstance(ctx).getSolicitudCampanaDao();
             SolicitudCampana solicitudCampana = solicitudCampanaDao
-                    .findBySolicitudId(creditoGpoId.longValue(), integranteId, EntitiesCommonsContants.TIPO_SOLICITUD_GRUPAL_ORIGINACION)
+                    .findBySolicitudId(creditoGpoId, integranteId, EntitiesCommonsContants.TIPO_SOLICITUD_GRUPAL_ORIGINACION)
                     .orElse(defaultCamapana);
 
             BeneficiariosDao beneficiariosDao = DBhelper.getInstance(ctx).getBeneficiariosDao();
-            Optional<Beneficiario> beneficiarioOptional = beneficiariosDao.findBySolicitudId(creditoGpoId.longValue(), integranteId, EntitiesCommonsContants.TIPO_SOLICITUD_GRUPAL_ORIGINACION);
+            Optional<Beneficiario> beneficiarioOptional = beneficiariosDao.findBySolicitudId(creditoGpoId, integranteId, EntitiesCommonsContants.TIPO_SOLICITUD_GRUPAL_ORIGINACION);
 
             FillSolicitud(json_solicitud, totalIntegrantes, creditoGpo, solicitud);
             FillIntegrante(json_solicitud, integranteGpo, otrosDatosIntegrante, domicilioIntegrante);

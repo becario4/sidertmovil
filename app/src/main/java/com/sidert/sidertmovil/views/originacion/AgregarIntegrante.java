@@ -5476,7 +5476,7 @@ public class AgregarIntegrante
         row.close(); //Cierra datos de documentos del integrante
 
         SolicitudCampana solicitudCampana = dBhelper.getSolicitudCampanaDao()
-                .findBySolicitudId(Long.parseLong(this.id_credito), Integer.parseInt(id_integrante), EntitiesCommonsContants.TIPO_SOLICITUD_GRUPAL_ORIGINACION)
+                .findBySolicitudId( Integer.parseInt(this.id_credito), Integer.parseInt(id_integrante), EntitiesCommonsContants.TIPO_SOLICITUD_GRUPAL_ORIGINACION)
                 .orElseGet(() -> {
                     SolicitudCampana _solicitudCampana = new SolicitudCampana();
                     _solicitudCampana.setSolicitudId((int) id_solicitud);
@@ -5489,15 +5489,10 @@ public class AgregarIntegrante
                     _solicitudCampana.setId(solicitudCampanaId);
                     return _solicitudCampana;
                 });
-
-        String campanaNombre = solicitudCampana.getCampanaNombre();
-        this.solicitudCampanaAtomicReference.set(solicitudCampana);
-        this.txtCampanaGpo.setText(campanaNombre);
-        this.txtNombreRefieroGpo.setText(solicitudCampana.getNombreReferido());
-        this.txtNombreRefieroGpo.setEnabled(!campanaNombre.equals("NINGUNO"));
+        this.setDataToSolicitudCamapanaFields(solicitudCampana);
 
         Beneficiario beneficiario = dBhelper.getBeneficiariosDao()
-                .findBySolicitudId(Long.parseLong(this.id_credito), Integer.parseInt(id_integrante), EntitiesCommonsContants.TIPO_SOLICITUD_GRUPAL_ORIGINACION)
+                .findBySolicitudId( Integer.parseInt(this.id_credito), Integer.parseInt(id_integrante), EntitiesCommonsContants.TIPO_SOLICITUD_GRUPAL_ORIGINACION)
                 .orElseGet(() -> {
                     Beneficiario _beneficiario = new Beneficiario();
                     _beneficiario.setSolicitudId((int) id_solicitud);
@@ -5512,11 +5507,8 @@ public class AgregarIntegrante
                     _beneficiario.setId(beneficiarioId);
                     return _beneficiario;
                 });
-        this.beneficiarioAtomicReference.set(beneficiario);
-        this.txtNombreBeneficiario.setText(beneficiario.getNombre());
-        this.txtApellidoPaterno.setText(beneficiario.getPaterno());
-        this.txtApellidoMaterno.setText(beneficiario.getMaterno());
-        this.txtParentescoBeneficiario.setText(beneficiario.getParentesco());
+        this.setDataToBeneficiarioFields(beneficiario);
+
 
 
         /**Se valida el estatus si ya fue guardada la solicitud del integrante
@@ -5750,6 +5742,23 @@ public class AgregarIntegrante
 
         return save_integrante;
     }
+
+    private void setDataToSolicitudCamapanaFields(SolicitudCampana solicitudCampana) {
+        String campanaNombre = solicitudCampana.getCampanaNombre();
+        this.solicitudCampanaAtomicReference.set(solicitudCampana);
+        this.txtCampanaGpo.setText(campanaNombre);
+        this.txtNombreRefieroGpo.setText(solicitudCampana.getNombreReferido());
+        this.txtNombreRefieroGpo.setEnabled(!campanaNombre.equals("NINGUNO"));
+    }
+
+    private void setDataToBeneficiarioFields(Beneficiario beneficiario) {
+        this.beneficiarioAtomicReference.set(beneficiario);
+        this.txtNombreBeneficiario.setText(beneficiario.getNombre());
+        this.txtApellidoPaterno.setText(beneficiario.getPaterno());
+        this.txtApellidoMaterno.setText(beneficiario.getMaterno());
+        this.txtParentescoBeneficiario.setText(beneficiario.getParentesco());
+    }
+
 
     /**
      * Funcion para validar los campos y actualizar la columnas del registro de los datos de telefono
@@ -6544,8 +6553,8 @@ public class AgregarIntegrante
             if (row_casa.getCount() > 0 && row_casa.getInt(0) != id_integrante) {
                 cbCasaReuniones.setEnabled(false);
             }
-            beneficiarioAtomicReference.set(beneficiario);
-            solicitudCampanaAtomicReference.set(solicitudCampana);
+            this.setDataToSolicitudCamapanaFields(solicitudCampana);
+            this.setDataToBeneficiarioFields(beneficiario);
         } else {
             /**en caso de que cancelo el registo cierra el formulario de solicitud*/
             finish();

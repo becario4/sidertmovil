@@ -10866,10 +10866,10 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
         deshabilitarCampos();
 
         SolicitudCampana solicitudCampana = dBhelper.getSolicitudCampanaDao()
-                .findBySolicitudId(id_solicitud, 0, EntitiesCommonsContants.TIPO_SOLICITUD_INDIVIDUAL_ORIGINACION)
+                .findBySolicitudId(Long.valueOf(id_solicitud).intValue(), 0, EntitiesCommonsContants.TIPO_SOLICITUD_INDIVIDUAL_ORIGINACION)
                 .orElseGet(() -> {
                     SolicitudCampana _solicitudCampana = new SolicitudCampana();
-                    _solicitudCampana.setSolicitudId((int) id_solicitud);
+                    _solicitudCampana.setSolicitudId(Long.valueOf(id_solicitud).intValue());
                     _solicitudCampana.setIntegranteId(0);
                     _solicitudCampana.setTipoSolicitud(EntitiesCommonsContants.TIPO_SOLICITUD_INDIVIDUAL_ORIGINACION);
                     _solicitudCampana.setSolicitudRemotaId(0);
@@ -10887,10 +10887,10 @@ public class SolicitudCreditoInd extends AppCompatActivity implements dialog_reg
         txtNombreRefiero.setEnabled(!campanaNombre.equals("NINGUNO"));
 
         Beneficiario beneficiario = dBhelper.getBeneficiariosDao()
-                .findBySolicitudId(id_solicitud, 0, EntitiesCommonsContants.TIPO_SOLICITUD_INDIVIDUAL_ORIGINACION)
+                .findBySolicitudId(Long.valueOf(id_solicitud).intValue(), 0, EntitiesCommonsContants.TIPO_SOLICITUD_INDIVIDUAL_ORIGINACION)
                 .orElseGet(() -> {
                     Beneficiario _beneficiario = new Beneficiario();
-                    _beneficiario.setSolicitudId((int) id_solicitud);
+                    _beneficiario.setSolicitudId(Long.valueOf(id_solicitud).intValue());
                     _beneficiario.setIntegranteId(0);
                     _beneficiario.setTipoSolicitud(EntitiesCommonsContants.TIPO_SOLICITUD_INDIVIDUAL_ORIGINACION);
                     _beneficiario.setSolicitudRemotaId(0);

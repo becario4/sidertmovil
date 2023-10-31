@@ -202,9 +202,7 @@ public class dialog_registro_integrante extends DialogFragment {
     };
 
     private void saveIntegrante() {
-
         int tipo = 1;
-        Long integranteId;
         if (id_integrante == 0) {
             //Inserta registro de integrante
             HashMap<Integer, String> params = new HashMap<>();
@@ -231,11 +229,11 @@ public class dialog_registro_integrante extends DialogFragment {
             params.put(20, "0");                                                    //ESTATUS COMPLETO
             params.put(21, "0");                                                    //ID SOLICITUD INTEGRANTE
 
-            integranteId = dBhelper.saveIntegrantesGpo(db, params, tipo);
+            id_integrante = dBhelper.saveIntegrantesGpo(db, params, tipo).intValue();
 
             //Inserta registro de datos telefonicos
             params = new HashMap<>();
-            params.put(0, String.valueOf(integranteId));              //ID INTEGRANTE
+            params.put(0, String.valueOf(id_integrante));              //ID INTEGRANTE
             params.put(1, "");                              //TEL CASA
             params.put(2, "");                              //TEL CELULAR
             params.put(3, "");                              //TEL MENSAJES
@@ -246,7 +244,7 @@ public class dialog_registro_integrante extends DialogFragment {
 
             //Inserta registro de datos domicilio
             params = new HashMap<>();
-            params.put(0, String.valueOf(integranteId));          //ID INTEGRANTE
+            params.put(0, String.valueOf(id_integrante));          //ID INTEGRANTE
             params.put(1, "");                          //LATITUD
             params.put(2, "");                          //LONGITUD
             params.put(3, "");                          //CALLE
@@ -273,7 +271,7 @@ public class dialog_registro_integrante extends DialogFragment {
 
             //Inserta registro de negocio
             params = new HashMap<>();
-            params.put(0, String.valueOf(integranteId));          //ID INTEGRANTE
+            params.put(0, String.valueOf(id_integrante));          //ID INTEGRANTE
             params.put(1, "");                          //NOMBRE
             params.put(2, "");                          //LATITID
             params.put(3, "");                          //LONGITUD
@@ -312,7 +310,7 @@ public class dialog_registro_integrante extends DialogFragment {
 
             //Inserta registro del conyuge
             params = new HashMap<>();
-            params.put(0, String.valueOf(integranteId));          //ID INTEGRANTE
+            params.put(0, String.valueOf(id_integrante));          //ID INTEGRANTE
             params.put(1, "");                          //NOMBRE
             params.put(2, "");                          //PATERNO
             params.put(3, "");                          //MATERNO
@@ -339,7 +337,7 @@ public class dialog_registro_integrante extends DialogFragment {
 
             //Inserta otros datos del integrante
             params = new HashMap<>();
-            params.put(0, String.valueOf(integranteId));          //ID INTEGRANTE
+            params.put(0, String.valueOf(id_integrante));          //ID INTEGRANTE
             params.put(1, "");                          //CLASIFICACION RIESGO
             params.put(2, "");                          //MEDIO CONTACTO
             params.put(3, "");                          //EMAIL
@@ -354,7 +352,7 @@ public class dialog_registro_integrante extends DialogFragment {
 
             //Inserta registro de croquis
             params = new HashMap<>();
-            params.put(0, String.valueOf(integranteId));                  //ID SOLICITUD
+            params.put(0, String.valueOf(id_integrante));                  //ID SOLICITUD
             params.put(1, "");                                  //CALLE PRINCIPAL
             params.put(2, "");                                  //LATERAL UNO
             params.put(3, "");                                  //LATERAL DOS
@@ -366,7 +364,7 @@ public class dialog_registro_integrante extends DialogFragment {
 
             //Inserta registro de politicas de integrante
             params = new HashMap<>();
-            params.put(0, String.valueOf(integranteId));      //ID INTEGRANTE
+            params.put(0, String.valueOf(id_integrante));      //ID INTEGRANTE
             params.put(1, "0");                     //PROPIETARIO REAL
             params.put(2, "0");                     //PROVEEDOR RECURSOS
             params.put(3, "0");                     //PERSONA POLITICA
@@ -376,7 +374,7 @@ public class dialog_registro_integrante extends DialogFragment {
 
             //Inserta registro de documentos de integrante
             params = new HashMap<>();
-            params.put(0, String.valueOf(integranteId));      //ID INTEGRANTE
+            params.put(0, String.valueOf(id_integrante));      //ID INTEGRANTE
             params.put(1, "");                      //INE FRONTAL
             params.put(2, "");                      //INE REVERSO
             params.put(3, "");                      //CURP
@@ -384,48 +382,46 @@ public class dialog_registro_integrante extends DialogFragment {
             params.put(5, "0");                     //ESTATUS COMPLETADO
 
             dBhelper.saveDocumentosIntegrante(db, params, tipo);
-
-            SolicitudCampana solicitudCampana = new SolicitudCampana();
-            solicitudCampana.setSolicitudId(id_credito);
-            solicitudCampana.setIntegranteId(integranteId.intValue());
-            solicitudCampana.setTipoSolicitud(EntitiesCommonsContants.TIPO_SOLICITUD_GRUPAL_ORIGINACION);
-            solicitudCampana.setSolicitudRemotaId(0);
-            solicitudCampana.setNombreReferido("");
-            solicitudCampana.setCampanaNombre("");
-            Long solicitudCamapanaId = dBhelper.getSolicitudCampanaDao().insert(solicitudCampana);
-            solicitudCampana.setId(solicitudCamapanaId);
-
-            Beneficiario beneficiario = new Beneficiario();
-            beneficiario.setSolicitudId(id_credito);
-            beneficiario.setIntegranteId(integranteId.intValue());
-            beneficiario.setTipoSolicitud(EntitiesCommonsContants.TIPO_SOLICITUD_GRUPAL_ORIGINACION);
-            beneficiario.setSolicitudRemotaId(0);
-            beneficiario.setNombre("");
-            beneficiario.setPaterno("");
-            beneficiario.setMaterno("");
-            beneficiario.setParentesco("");
-            Long beneficiarioId = dBhelper.getBeneficiariosDao().insert(beneficiario);
-            beneficiario.setId(beneficiarioId);
-
-            mListener.onComplete(integranteId, etNombre.getText().toString().trim().toUpperCase(), etPaterno.getText().toString().trim().toUpperCase(), etMaterno.getText().toString().trim().toUpperCase(), tvCargo.getText().toString(), solicitudCampana, beneficiario);
-            getDialog().dismiss();
-        } else {
-
-            SolicitudCampana solicitudCampana = dBhelper.getSolicitudCampanaDao()
-                    .findBySolicitudId((long) this.id_credito, id_integrante, EntitiesCommonsContants.TIPO_SOLICITUD_GRUPAL_ORIGINACION)
-                    .orElseThrow(RuntimeException::new);
-
-            Beneficiario beneficiario = dBhelper.getBeneficiariosDao()
-                    .findBySolicitudId((long) this.id_credito, id_integrante, EntitiesCommonsContants.TIPO_SOLICITUD_GRUPAL_ORIGINACION)
-                    .orElseThrow(RuntimeException::new);
-
-            dBhelper.saveCargoIntegranteGpo(db, id_cargo, id_integrante);
-
-            mListener.onComplete(id_integrante, etNombre.getText().toString().trim().toUpperCase(), etPaterno.getText().toString().trim().toUpperCase(), etMaterno.getText().toString().trim().toUpperCase(), tvCargo.getText().toString(), solicitudCampana, beneficiario);
-            getDialog().dismiss();
         }
-
+        SolicitudCampana solicitudCampana = dBhelper.getSolicitudCampanaDao()
+                .findBySolicitudId(id_credito, id_integrante, EntitiesCommonsContants.TIPO_SOLICITUD_GRUPAL_ORIGINACION)
+                .orElseGet(this::saveSolicitudCamapana);
+        Beneficiario beneficiario = dBhelper.getBeneficiariosDao()
+                .findBySolicitudId(id_credito, id_integrante, EntitiesCommonsContants.TIPO_SOLICITUD_GRUPAL_ORIGINACION)
+                .orElseGet(this::saveBeneficiario);
+        dBhelper.saveCargoIntegranteGpo(db, id_cargo, id_integrante);
+        mListener.onComplete(id_integrante, etNombre.getText().toString().trim().toUpperCase(), etPaterno.getText().toString().trim().toUpperCase(), etMaterno.getText().toString().trim().toUpperCase(), tvCargo.getText().toString(), solicitudCampana, beneficiario);
+        getDialog().dismiss();
     }
+
+    private Beneficiario saveBeneficiario() {
+        Beneficiario newBeneficiario = new Beneficiario();
+        newBeneficiario.setSolicitudId(id_credito);
+        newBeneficiario.setIntegranteId(id_integrante);
+        newBeneficiario.setTipoSolicitud(EntitiesCommonsContants.TIPO_SOLICITUD_GRUPAL_ORIGINACION);
+        newBeneficiario.setSolicitudRemotaId(0);
+        newBeneficiario.setNombre("");
+        newBeneficiario.setPaterno("");
+        newBeneficiario.setMaterno("");
+        newBeneficiario.setParentesco("");
+        Long beneficiarioId = dBhelper.getBeneficiariosDao().insert(newBeneficiario);
+        newBeneficiario.setId(beneficiarioId);
+        return newBeneficiario;
+    }
+
+    private SolicitudCampana saveSolicitudCamapana() {
+        SolicitudCampana newSolicitudCampana = new SolicitudCampana();
+        newSolicitudCampana.setSolicitudId(id_credito);
+        newSolicitudCampana.setIntegranteId(id_integrante);
+        newSolicitudCampana.setTipoSolicitud(EntitiesCommonsContants.TIPO_SOLICITUD_GRUPAL_ORIGINACION);
+        newSolicitudCampana.setSolicitudRemotaId(0);
+        newSolicitudCampana.setNombreReferido("NINGUNO");
+        newSolicitudCampana.setCampanaNombre("NINGUNO");
+        Long solicitudCamapanaId = dBhelper.getSolicitudCampanaDao().insert(newSolicitudCampana);
+        newSolicitudCampana.setId(solicitudCamapanaId);
+        return newSolicitudCampana;
+    }
+
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {

@@ -17,6 +17,6 @@ public interface BeneficiariosDao {
 
     void delete(Beneficiario entity);
 
-    Optional<Beneficiario> findBySolicitudId(Long solicitudId, Integer integranteId, String tipoSolicitud);
+    Optional<Beneficiario> findBySolicitudId(Integer solicitudId, Integer integranteId, String tipoSolicitud);
 
 }
